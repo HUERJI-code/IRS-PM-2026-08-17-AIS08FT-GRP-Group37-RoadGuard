@@ -15,15 +15,15 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Item | Value |
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
-| Group | Group 7; formal team name to be confirmed |
+| Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong, Singapore; exact study boundary to be defined |
 | Repair crews | Four simulated crews, sharing one fictional depot |
 | Current phase | Repository setup and scope definition |
-| Course start date / batch code | To be supplied for the final repository name |
+| Course start date / batch code | 2026-08-17 / AIS08FT |
 
-Required naming pattern: `IRS-PM-<CourseStartDate>-<BatchCode>-GRP-<TeamName>-RoadGuard`.
+Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
 
-The working directory name is temporary. The course start date must not be replaced with the repository creation date or submission deadline.
+`Group7` represents the confirmed group number; no separate formal team name has been supplied.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
@@ -61,7 +61,7 @@ The application is not runnable yet in this repository. Installation and startup
 Repository layout:
 
 ```text
-RoadGuard-Submission/
+IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
   README.md
   SystemCode/
     config/project.example.json
@@ -101,4 +101,4 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)
 
-The existing sibling `RoadGuard` prototype is outside this repository. Its code and historical results have not been imported or represented as results of the four-crew Jurong project.
+Development starts from this scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.

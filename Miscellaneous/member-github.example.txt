@@ -1,8 +1,8 @@
 Group number: 7
-Group name: TBD
+Group name: Group7 (group-number label)
 Project name: RoadGuard
-Course start date: TBD
-Batch code: TBD
+Course start date: 2026-08-17
+Batch code: AIS08FT
 GitHub repository URL: TBD
 
 Official full name | Student ID or permitted masked identifier

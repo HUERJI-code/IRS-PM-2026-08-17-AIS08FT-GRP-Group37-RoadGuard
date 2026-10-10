@@ -7,6 +7,9 @@ Recorded: 2026-10-10. This records the current project decision, not the date of
 - Default repair crews: **four**, replacing the proposal's two-crew scenario.
 - Demonstration area: **Jurong, Singapore**.
 - This delivery: a course-template repository scaffold for review before implementation.
+- Repository: private GitHub repository under the project owner's account.
+- Course start date: 2026-08-17. Batch code: AIS08FT. Repository team label: Group7.
+- The previous prototype is abandoned; implementation starts from this scaffold.
 
 ## Working scenario
 
@@ -33,4 +36,4 @@ Use four crews for the primary 10/15/20-task evaluation. Any optional two/three/
 
 ## Development boundary
 
-The existing `RoadGuard` sibling directory contains an earlier prototype. It has not been migrated into this repository. Reuse decisions should check the current scope and tests before importing code or experimental results.
+The project owner requested deletion of the earlier `RoadGuard` prototype. Do not migrate its code or historical experimental results into this baseline. The original course materials, proposal and presentation remain historical references in the parent workspace.

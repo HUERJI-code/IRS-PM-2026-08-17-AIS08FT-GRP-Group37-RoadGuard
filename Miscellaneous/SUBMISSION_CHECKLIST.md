@@ -7,7 +7,7 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 - [x] Template's four main directories: `SystemCode`, `ProjectReport`, `Video`, `Miscellaneous`.
 - [x] README's seven sections adapted to RoadGuard.
 - [x] Four-crew/Jurong scope recorded.
-- [ ] Course start date, batch code and formal team name confirmed.
+- [x] Course start date 2026-08-17 and batch code AIS08FT confirmed; use Group7 for the group number.
 - [ ] GitHub repository URL recorded and assessor access arranged as required.
 - [ ] Confirmed team roster and contribution table completed.
 
@@ -27,7 +27,7 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 
 ## Naming
 
-Use `IRS-PM-<CourseStartDate>-<BatchCode>-GRP-<TeamName>-RoadGuard` as the common prefix.
+Use `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard` as the common prefix.
 
 - Promotion video: `<prefix>-promotion.mp4`
 - System video: `<prefix>-system.mp4`
