@@ -23,6 +23,8 @@ This repository follows the [IRS-PM project submission template](https://github.
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
 
+Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard).
+
 `Group7` represents the confirmed group number; no separate formal team name has been supplied.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT

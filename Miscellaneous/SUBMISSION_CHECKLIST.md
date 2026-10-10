@@ -8,7 +8,8 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 - [x] README's seven sections adapted to RoadGuard.
 - [x] Four-crew/Jurong scope recorded.
 - [x] Course start date 2026-08-17 and batch code AIS08FT confirmed; use Group7 for the group number.
-- [ ] GitHub repository URL recorded and assessor access arranged as required.
+- [x] Private GitHub repository created and URL recorded.
+- [ ] Assessor access arranged as required by the course.
 - [ ] Confirmed team roster and contribution table completed.
 
 ## Group deliverables
