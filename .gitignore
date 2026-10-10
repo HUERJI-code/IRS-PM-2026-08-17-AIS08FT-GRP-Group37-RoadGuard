@@ -1,0 +1,50 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python and Node environments / generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+node_modules/
+dist/
+build/
+coverage/
+
+# Runtime data, datasets and trained weights
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+SystemCode/backend/data/
+SystemCode/backend/uploads/
+SystemCode/datasets/
+SystemCode/model/datasets/
+SystemCode/model/runs/
+SystemCode/model/weights/
+*.pt
+*.pth
+*.onnx
+
+# Locally prepared submission packages and confidential individual submissions
+member-github.txt
+IndividualSubmission/
+submission-dist/
+*.zip
+
+# Machine-specific files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

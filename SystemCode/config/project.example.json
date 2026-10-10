@@ -1,0 +1,25 @@
+{
+  "project_name": "RoadGuard",
+  "stage": "scaffold",
+  "scenario": {
+    "country": "Singapore",
+    "study_area": "Jurong",
+    "study_boundary": null,
+    "boundary_status": "to_be_defined_before_geographic_validation",
+    "task_data": "synthetic",
+    "depot": {
+      "type": "fictional_shared_depot",
+      "latitude": null,
+      "longitude": null
+    }
+  },
+  "planning": {
+    "default_crew_count": 4,
+    "crew_ids": ["crew-01", "crew-02", "crew-03", "crew-04"],
+    "optimizer": "genetic_algorithm",
+    "baseline": "greedy",
+    "task_counts_for_evaluation": [10, 15, 20],
+    "objectives": ["travel_time", "urgent_task_delay", "workload_balance"],
+    "constraint_parameters_status": "to_be_defined"
+  }
+}
