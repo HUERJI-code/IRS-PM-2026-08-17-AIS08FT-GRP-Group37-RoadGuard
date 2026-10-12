@@ -74,9 +74,10 @@ def test_repeated_previews_are_identical_and_never_create_records_or_revisions(c
     assert first == second
     assert client.get("/api/v1/health").json()["input_revision"] == before == 0
     with client.app.state.database.connect() as connection:
-        tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-    assert tables == {"infra_metadata"}
-    assert client.get("/api/v1/tasks").status_code == 404
+        assert connection.execute("SELECT count(*) FROM inspections").fetchone()[0] == 0
+        assert connection.execute("SELECT count(*) FROM tasks").fetchone()[0] == 0
+        assert connection.execute("SELECT count(*) FROM operation_keys").fetchone()[0] == 0
+    assert client.get("/api/v1/tasks").json()["items"] == []
 
 
 @pytest.mark.parametrize("payload", [

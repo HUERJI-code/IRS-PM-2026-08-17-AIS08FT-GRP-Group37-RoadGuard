@@ -12,8 +12,8 @@ This directory contains the new RoadGuard implementation. Its name follows the c
 | `config/` | Shared scenario configuration |
 | `contracts/` | Frozen DTO schemas and explicit demo fixtures for A/B/C integration |
 
-Step 5 adds `backend/roadguard/vision/` for named synthetic detections and `backend/roadguard/rules/` for configurable demo assessments. See the [demo guide](../Miscellaneous/DEMO_DETECTION_AND_RULES.md). No inspection or task records are written yet.
+Step 5 adds `backend/roadguard/vision/` for synthetic detections and `backend/roadguard/rules/` for configurable demo assessments. Step 6 adds `backend/roadguard/inspections/`, image storage, geography checks and persisted inspection/review/task APIs; see the [workflow guide](../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). `/demo` remains a stateless preview.
 
 `config/project.example.json` records the agreed scenario and is loaded by the backend at startup. Loading it does not create crew/task records or implement planning.
 
-Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the JE/JW task boundary and the shared NUS-ISS origin outside it. Geographic validation remains unimplemented. Configuration file paths are relative to the repository root; the return-to-depot policy remains undecided.
+Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the JE/JW task boundary and the shared NUS-ISS origin outside it. Task polygon validation is implemented; road eligibility is user-declared and must not be described as independently verified. Configuration file paths are relative to the repository root; the return-to-depot policy remains undecided.

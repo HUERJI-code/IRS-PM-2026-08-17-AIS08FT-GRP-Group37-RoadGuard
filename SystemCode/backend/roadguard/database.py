@@ -8,7 +8,31 @@ from typing import Iterator
 from roadguard.errors import StaleRevisionError
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+
+
+def _validate_workflow_schema(connection: sqlite3.Connection) -> None:
+    expected = {
+        "inspections": ("inspection_id", "status", "record_version", "created_at", "record_json", "policy_json"),
+        "tasks": ("task_id", "inspection_id", "status", "record_version", "created_at", "record_json"),
+        "operation_keys": ("scope", "request_key", "payload_hash", "resource_id", "created_at"),
+    }
+    for table, columns in expected.items():
+        info = connection.execute(f"PRAGMA table_info({table})").fetchall()
+        if tuple(row[1] for row in info) != columns:
+            raise DatabaseStateError("Workflow schema is missing or incompatible.")
+        if any(row[2] != ("INTEGER" if row[1] == "record_version" else "TEXT") for row in info):
+            raise DatabaseStateError("Workflow schema column types are incompatible.")
+        primary = tuple(row[1] for row in sorted(info, key=lambda row: row[5]) if row[5])
+        if primary != (("scope", "request_key") if table == "operation_keys" else (columns[0],)):
+            raise DatabaseStateError("Workflow schema primary keys are incompatible.")
+    foreign_keys = connection.execute("PRAGMA foreign_key_list(tasks)").fetchall()
+    if not any((row[2], row[3], row[4]) == ("inspections", "inspection_id", "inspection_id") for row in foreign_keys):
+        raise DatabaseStateError("Workflow task foreign key is missing.")
+    unique_indexes = [row[1] for row in connection.execute("PRAGMA index_list(tasks)") if row[2]]
+    if not any(tuple(row[0] for row in connection.execute("SELECT name FROM pragma_index_info(?) ORDER BY seqno", (index,))) == ("inspection_id",)
+               for index in unique_indexes):
+        raise DatabaseStateError("Workflow task uniqueness constraint is missing.")
 
 
 class DatabaseStateError(RuntimeError):
@@ -59,14 +83,16 @@ class Database:
         self.path = Path(path)
         self.busy_timeout_ms = busy_timeout_ms
 
-    def _open(self, *, read_only: bool = False) -> sqlite3.Connection:
-        # Read-only URI prevents a health/read request recreating a deleted DB.
-        target = self.path.resolve().as_uri() + "?mode=ro" if read_only else str(self.path)
+    def _open(self, *, read_only: bool = False, create: bool = False) -> sqlite3.Connection:
+        # Only explicit initialization may create files. Reads and normal writes
+        # must fail if the persistent DB disappeared, not recreate revision zero.
+        mode = "ro" if read_only else ("rwc" if create else "rw")
+        target = self.path.resolve().as_uri() + "?mode=" + mode
         connection = sqlite3.connect(
             target,
             timeout=self.busy_timeout_ms / 1000,
             isolation_level=None,
-            uri=read_only,
+            uri=True,
         )
         try:
             connection.row_factory = sqlite3.Row
@@ -94,7 +120,12 @@ class Database:
     @contextmanager
     def transaction(self, expected_revision: int | None = None) -> Iterator[sqlite3.Connection]:
         """Serialize writers; check stale inputs before the caller mutates data."""
-        connection = self._open()
+        with self._write_transaction(expected_revision) as connection:
+            yield connection
+
+    @contextmanager
+    def _write_transaction(self, expected_revision: int | None = None, *, create: bool = False) -> Iterator[sqlite3.Connection]:
+        connection = self._open(create=create)
         try:
             connection.execute("BEGIN IMMEDIATE")
             if expected_revision is not None:
@@ -110,16 +141,54 @@ class Database:
     def initialize(self) -> None:
         """Idempotent infrastructure migration entrypoint, called by lifespan."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.transaction() as connection:
+        with self._write_transaction(create=True) as connection:
+            tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            workflow_tables = {"inspections", "tasks", "operation_keys"}
+            if "infra_metadata" not in tables:
+                # An empty DB is new. Existing business/unknown tables without the
+                # singleton mean lost metadata, never permission to reset revision.
+                if any(not table.startswith("sqlite_") for table in tables):
+                    raise DatabaseStateError("Existing database is missing infrastructure metadata.")
+                connection.execute(
+                    "CREATE TABLE infra_metadata ("
+                    "singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1), "
+                    "schema_version INTEGER NOT NULL, "
+                    "input_revision INTEGER NOT NULL CHECK (input_revision >= 0))"
+                )
+                connection.execute("INSERT INTO infra_metadata VALUES (1,1,0)")
+            columns = connection.execute("PRAGMA table_info(infra_metadata)").fetchall()
+            if tuple(row[1] for row in columns) != ("singleton_id", "schema_version", "input_revision"):
+                raise DatabaseStateError("Infrastructure metadata schema is incompatible.")
+            row = connection.execute("SELECT schema_version, input_revision FROM infra_metadata WHERE singleton_id=1").fetchone()
+            if (row is None or row[0] not in {1, SCHEMA_VERSION} or type(row[1]) is not int or row[1] < 0
+                    or connection.execute("SELECT COUNT(*) FROM infra_metadata").fetchone()[0] != 1):
+                raise DatabaseStateError("Infrastructure schema is incompatible.")
+            if row[0] == SCHEMA_VERSION:
+                _validate_workflow_schema(connection)
+                read_revision(connection)
+                return
+            if tables & workflow_tables:
+                raise DatabaseStateError("Version 1 database has incompatible partial workflow tables.")
+            # Only v1 migrations create domain tables; missing v2 tables are corruption.
             connection.execute(
-                "CREATE TABLE IF NOT EXISTS infra_metadata ("
-                "singleton_id INTEGER PRIMARY KEY CHECK (singleton_id = 1), "
-                "schema_version INTEGER NOT NULL, "
-                "input_revision INTEGER NOT NULL CHECK (input_revision >= 0))"
+                "CREATE TABLE IF NOT EXISTS inspections (inspection_id TEXT PRIMARY KEY, "
+                "status TEXT NOT NULL CHECK(status IN ('no_detection','pending_review','accepted','rejected')), "
+                "record_version INTEGER NOT NULL CHECK(record_version>=1), created_at TEXT NOT NULL, "
+                "record_json TEXT NOT NULL, policy_json TEXT NOT NULL)"
             )
             connection.execute(
-                "INSERT OR IGNORE INTO infra_metadata (singleton_id, schema_version, input_revision) "
-                "VALUES (1, ?, 0)",
-                (SCHEMA_VERSION,),
+                "CREATE TABLE IF NOT EXISTS tasks (task_id TEXT PRIMARY KEY, "
+                "inspection_id TEXT NOT NULL UNIQUE REFERENCES inspections(inspection_id), "
+                "status TEXT NOT NULL CHECK(status IN ('active','completed','cancelled')), "
+                "record_version INTEGER NOT NULL CHECK(record_version>=1), created_at TEXT NOT NULL, record_json TEXT NOT NULL)"
             )
+            connection.execute(
+                "CREATE TABLE IF NOT EXISTS operation_keys (scope TEXT NOT NULL, request_key TEXT NOT NULL, "
+                "payload_hash TEXT NOT NULL, resource_id TEXT NOT NULL, created_at TEXT NOT NULL, "
+                "PRIMARY KEY(scope,request_key))"
+            )
+            connection.execute("CREATE INDEX IF NOT EXISTS inspections_status_created ON inspections(status,created_at,inspection_id)")
+            connection.execute("CREATE INDEX IF NOT EXISTS tasks_status_created ON tasks(status,created_at,task_id)")
+            _validate_workflow_schema(connection)
+            connection.execute("UPDATE infra_metadata SET schema_version=? WHERE singleton_id=1", (SCHEMA_VERSION,))
             read_revision(connection)
