@@ -7,10 +7,10 @@
 1. 接受仓库邀请，使用自己的 GitHub 账号克隆仓库。先读根目录 [AGENTS.md](../AGENTS.md)。
 2. 在工作区没有未处理修改时更新 `main`，为本次任务创建短期分支。
 3. 完成实现、相关测试与文档后，提交并推送自己的分支。
-4. 在 GitHub 创建 Pull Request，目标分支选择 `main`，标题统一英文（例如 `feat: add demo detection and rule assessment`），正文按自动出现的 PR 模板填写，可使用中文。
+4. 在 GitHub 创建 Pull Request，目标分支选择 `main`，按自动出现的英文 PR 模板填写。标题、正文、摘要、评论和合并说明全部用英文。暂不合并时创建 Draft PR。
 5. 创建 PR 或继续向该分支推送提交，都会自动运行 RoadGuard CI；查看最新提交的 Checks。
-6. 按项目发起人的约定，PR 无需另一位成员人工审核或批准。完成改动自检、适用检查通过且分支已同步最新 `main` 后，由 A 统筹 Squash and merge；agent 在获得合并任务授权后执行。若有冲突，先在功能分支同步 `main` 并解决，再推送重新检查。
-7. 合并到 `main` 后自动再运行 CI，验证合并后的版本。若失败，由对应成员发修复 PR；不会自动回滚已合并代码。
+6. 按项目发起人的明确授权，普通就绪 PR 通过下述条件后，由 RoadGuard Auto Merge 自动 Squash merge，无需人工审核、批准或再次点击合并。若落后于 `main` 或有冲突，先在功能分支同步并解决，再推送重新检查。
+7. 机器人合并成功后显式触发 `main` CI，验证合并后的版本；账号/agent 合并则由 push 事件触发。若失败，由对应成员发修复 PR，不自动回滚。涉及 `.github/` 的 PR 由 agent 完成自检和 CI 核对后合并，无需人类确认。
 
 示例（仅在没有待处理的本地修改时执行）：
 
@@ -30,18 +30,36 @@ git push -u origin feature/b-greedy-planner
 
 ## 2. 自动检查具体做什么
 
-配置文件：[ci.yml](../.github/workflows/ci.yml)。权限仅为 `contents: read`，工作流不自动推送、不批准 PR，也不执行部署。
+检查配置：[ci.yml](../.github/workflows/ci.yml)。检查工作流权限仅为 `contents: read`。独立的[自动合并工作流](../.github/workflows/auto-merge.yml)在 CI 完成后核对合并条件；两个工作流都不执行部署。
 
 | GitHub 检查 | 当前/后续行为 |
 | --- | --- |
-| Repository checks | 检查课程目录及规范文件、JSON、四队/Jurong 默认配置、Markdown 本地文件链接、未解决的合并标记、Python 语法和误提交的部分本地产物；运行 CI 脚本自身的回归测试 |
+| Repository checks | 检查课程目录及规范文件、JSON、四队/Jurong 默认配置、Markdown 本地文件链接、未解决的合并标记、Python 语法和误提交的部分本地产物；运行 CI 脚本回归测试，检查英文 PR 标题/正文 |
 | Python tests | 发现后端、模型、实验或共享测试目录中的 Python 代码后，安装明确的 CI 依赖并运行 pytest；没有业务代码时显示 skipped |
 | Frontend checks | 发现前端代码或 package.json 后，运行 npm ci、lint、test:ci、build；没有前端实现时显示 skipped |
 | CI | 汇总以上结果；必须通过仓库检查，且所有已存在模块的检查成功；失败、取消或意外跳过都不能得到通过结论 |
 
 当前已加入后端基础和公共 schema，Python tests 必须执行；前端尚未实现，因此 Frontend checks 仍显示 skipped。跳过只代表没有对应模块，不代表测试通过。检查脚本无法证明所有逻辑正确，提交者或 agent 仍须按改动完成自检；本项目不把人工审核设为 PR 门槛。Markdown 检查仅验证本地文件目标，不检查远程网页或标题锚点。
 
-## 3. A/B/C 后续如何接入真实测试
+英文检查要求非空标题/正文，只接受拉丁字母、数字、标点等字符；允许 Markdown、URL、重音拉丁字母与 emoji。它能拒绝中英文混写等情况，不能判断拉丁字母组成的文字是否真是英文。评论和摘要由成员及 agent 按规范撰写，不由此检查自动翻译或验证。编辑 PR 标题/正文会重新运行 CI。
+
+## 3. 自动合并的条件与执行方式
+
+[auto_merge.py](../.github/scripts/auto_merge.py)在每次 RoadGuard CI 完成后检查当前所有面向 `main` 的开放 PR，也可从 Actions 手动触发。满足以下条件才执行：
+
+- 非草稿、来源为本仓库，作者当前具有 write、maintain 或 admin 权限。
+- 英文标题与正文符合字符检查；不存在尚未解决的 changes requested。无需任何 APPROVED review。
+- 不修改 `.github/` 下的控制文件，包含重命名移入/移出。控制文件由 agent 审查并在 CI 通过后合并，已获项目发起人持续授权，不增加人工批准步骤。
+- 当前 PR head 对应的最新 RoadGuard CI 运行成功；核验受信工作流 ID、PR 关联、仓库、SHA、运行 attempt 和四个 job，不能使用旧提交或旧失败前的绿色结果。
+- 分支包含当前 `main`，GitHub 报告可合并且无冲突；临近合并再次读取 PR、head、main、review 和 CI，并用 head SHA 作为合并 API 的条件。
+
+工作流只从 `main` 检出检查脚本，不运行 PR 中的代码、不下载 PR 产物。写权限仅给合并 job，使用 GitHub 自带的短期 `GITHUB_TOKEN`，不新增 PAT 或外部密钥。所有合并运行串行执行；主分支更新后其他落后分支须自行同步，再跑 CI。
+
+`GITHUB_TOKEN` 产生的合并不会自动触发普通 push 工作流，因此脚本在成功合并后显式 dispatch `ci.yml` 的 `main` 运行。若合并已完成而 dispatch 失败，Actions 会明确报错并给出合并 SHA；agent 需重试 main CI。不会假报完整交付成功，也不回滚已合并提交。[GitHub token 触发规则](https://docs.github.com/en/actions/concepts/security/github_token)
+
+看到 PR 没有自动合并时，先查看 RoadGuard Auto Merge 的日志：修正英文描述、转为 Ready、修复失败测试、同步 `main` 或处理已提出的问题后重试。不要靠手动跳过失败检查合并。
+
+## 4. A/B/C 后续如何接入真实测试
 
 为统一运行环境，本 CI 使用 Python 3.11、Node 22、npm 和 Ubuntu 标准 runner。首次业务环境搭建须采用这些版本，或在同一 PR 中协调修改 CI 与开发说明。
 
@@ -66,17 +84,17 @@ python -m unittest discover -s .github/scripts -p "test_*.py" -v
 python .github/scripts/check_repository.py
 ```
 
-## 4. 当前套餐的限制
+## 5. 当前套餐的限制
 
 2026-10-12 查询此私有仓库时，GitHub 的分支保护和 rulesets 接口均返回：需要升级 GitHub Pro 或变更仓库可见性。仓库继续保持私有，不因设置 CI 改为公开。
 
-- 当前流程：功能分支、PR、改动自检、自动 CI、执行合并和合并后 CI；无需人工批准。
-- 当前无法强制：禁止直接推 main、必须一人批准、必须 CI 通过才允许合并，以及 GitHub 原生自动合并。
-- 不使用自建机器人绕过上述限制，也不让 PR 中的代码拿到用于写入/合并的密钥。合并执行方主动核对最新提交的 CI、主分支同步状态和冲突情况。取消人工审核不启用原生自动合并；仅要求创建 PR 时，交付停在 PR 与检查结果。
+- 当前流程：功能分支 → 英文 PR → 自动 CI → 独立 Actions 核对并合并 → main CI；无需人工批准。
+- 原生 auto-merge 仍未启用，当前使用项目维护的 Actions 实现；无需为了这个流程升级套餐。
+- 当前套餐无法强制阻止有写权限的成员直接推 `main` 或手动绕过检查。GitHub 合并 API 仅支持 head SHA 条件，无法原子锁定 main；临近合并再次检查会缩小窗口，但不能阻止外部账号同时直接更新 main。因此所有成员均须遵守分支与 PR 流程。
 
-如果以后账户获得支持私有仓库保护的套餐，A 可对 `main` 启用：必须 PR、要求 `CI` 检查且分支保持最新、处理未解决的问题、禁止强制推送和删除、管理员也遵守；所需人工批准数量保持为零。获得自动合并配置授权后，再开启仓库 Auto-merge，并在具体 PR 中启用。此次没有开通付费套餐或原生自动合并。
+如果以后账户获得支持私有仓库保护的套餐，A 可对 `main` 启用：必须 PR、要求 `CI` 检查且分支保持最新、处理未解决的问题、禁止强制推送和删除、管理员也遵守；所需人工批准数量保持为零。迁移到原生自动合并时停用本工作流，避免双重控制。此次没有开通付费套餐或更改仓库可见性。
 
-## 5. 费用与运行限制
+## 6. 费用与运行限制
 
 GitHub Free 的 Actions 标准 runner 每月含 2,000 分钟，按账户共享；私有仓库的原生自动合并和分支保护需要 Pro 等支持的套餐。这里采用标准 Linux runner，不使用付费的大型 runner、不保留构建产物、不启用依赖缓存，单个任务设置 2～10 分钟超时，并取消同一 PR 的旧运行。
 
