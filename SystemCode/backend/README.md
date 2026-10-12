@@ -1,6 +1,6 @@
 # RoadGuard 共用后端基础
 
-A 维护唯一的 FastAPI 应用入口、配置、SQLite 连接、错误和路由注册。本阶段已实现这些基础及 `GET /api/v1/health`，尚未实现视觉、规则、图片上传、任务 CRUD、工程队、调度或助手服务。公共 DTO 的冻结格式见 [API 契约](../../Miscellaneous/API_CONTRACT.md)；后续模块遵守该契约，DTO 已定义不代表业务功能已经可用。
+A 维护唯一的 FastAPI 应用入口、配置、SQLite 连接、错误和路由注册。当前实现健康检查，以及明确的模拟检测/演示规则预览。真实视觉、图片上传、审核/任务 CRUD、工程队、调度和助手服务仍待实现。公共 DTO 的冻结格式见 [API 契约](../../Miscellaneous/API_CONTRACT.md)；后续模块遵守该契约，DTO 已定义不代表对应持久化业务功能已经可用。
 
 ## 环境与启动
 
@@ -15,7 +15,7 @@ python -m pip install -r SystemCode/backend/requirements-ci.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
-本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，真实 OpenAPI `/openapi.json`。当前 OpenAPI 仅声明已实现的健康接口。`roadguard.main.create_app(settings=None)` 创建可隔离测试的应用；模块导入不读取配置、不创建数据库。FastAPI lifespan 在启动时读取配置并初始化基础表。配置错误、目录权限错误或不兼容数据库会使启动失败，应修复原因后重启，不能静默重建已有数据库。
+本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，真实 OpenAPI `/openapi.json`。当前 OpenAPI 声明健康、案例目录和规则预览三个接口。`roadguard.main.create_app(settings=None)` 创建可隔离测试的应用；模块导入不读取场景/规则配置、不创建数据库。FastAPI lifespan 在启动时读取并校验配置，再初始化基础表。配置错误、目录权限错误或不兼容数据库会使启动失败，应修复原因后重启，不能静默重建已有数据库。
 
 健康响应：
 
@@ -25,14 +25,19 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 此状态仅表示应用和 SQLite 基础可读，不表示模型、道路行程 API、GA 或助手已就绪。启动后数据库不可读、缺表或版本不兼容时返回 HTTP 503。
 
+## 跑通第 5 步
+
+在 `/docs` 中先调用 `GET /api/v1/demo/scenarios`，再向 `POST /api/v1/demo/assessments` 发送 `{"scenario_id":"high_confidence"}`。默认得到 P2、45 分钟的演示候选；`low_confidence` 得到 pending_review，`no_detection` 不产生候选。完整七个案例、阈值边界与八类演示映射见[模拟检测与规则指南](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md)。这些接口不接收图片、不创建数据库记录，也不更新 input_revision。
+
 ## 配置入口
 
-默认读取 `SystemCode/config/project.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持两个环境变量：
+默认读取 `SystemCode/config/project.example.json` 与演示策略 `SystemCode/config/demo_rules.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持以下环境变量：
 
 | 变量 | 用途 |
 | --- | --- |
 | `ROADGUARD_CONFIG_PATH` | 指向本地 UTF-8 JSON 项目配置 |
 | `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
+| `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
 
 默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
 
@@ -83,4 +88,4 @@ B/C 提供各自 `APIRouter` 后由 A 在 `roadguard.api.create_api_router()` �
 python -m pytest SystemCode/tests -q
 ```
 
-基础测试覆盖配置路径/不可变性/错误、lifespan 延迟初始化、实际健康响应与 OpenAPI、数据库异常 503、统一安全错误、幂等初始化、持久化、事务回滚、过期输入拒绝和并发写入。测试使用独立临时数据库，不写默认运行数据库。公共 DTO 另有契约样例与验证；业务流程、训练和道路/助手调用尚未实现，不能据此声称端到端通过。
+基础测试覆盖配置路径/不可变性/错误、lifespan 延迟初始化、实际响应与 OpenAPI、数据库异常 503、统一安全错误、幂等初始化、持久化、事务回滚、过期输入拒绝和并发写入。新增 vision/rules/demo API 测试覆盖固定检测、八类演示映射、阈值、确定性、配置覆盖及预览不写库。测试使用独立临时数据库，不写默认运行数据库。完整上传/审核/任务流程、训练和道路/助手调用尚未实现，不能据此声称完整业务端到端通过。

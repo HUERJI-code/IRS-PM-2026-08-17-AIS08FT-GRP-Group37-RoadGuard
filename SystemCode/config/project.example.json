@@ -1,6 +1,6 @@
 {
   "project_name": "RoadGuard",
-  "stage": "backend_foundation",
+  "stage": "demo_detection_rules",
   "scenario": {
     "country": "Singapore",
     "study_area": "Jurong",

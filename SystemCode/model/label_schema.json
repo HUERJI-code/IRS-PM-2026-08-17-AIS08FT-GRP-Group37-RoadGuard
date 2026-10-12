@@ -10,7 +10,7 @@
   "class_count": 8,
   "class_id_base": 0,
   "annotation_format": "yolo_detection_normalized_xywh",
-  "business_rule_mapping_status": "not_defined",
+  "business_rule_mapping_status": "demo_mapping_available_production_not_defined",
   "classes": [
     {
       "class_id": 0,

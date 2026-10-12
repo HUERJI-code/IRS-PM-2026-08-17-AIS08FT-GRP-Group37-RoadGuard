@@ -1,12 +1,12 @@
 # RoadGuard
 
-**Status: shared API contracts and backend foundation implemented.**
+**Status: shared backend and demo detection/rule assessment implemented.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend, SQLite infrastructure and initial data contracts are ready. Vision inference, business workflows, routing, frontend and evaluation results remain pending.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend, SQLite infrastructure and initial data contracts are ready. Named synthetic scenarios now run through an explicit demo detector and configurable rules. Real image inference, persisted business workflows, routing, frontend and evaluation results remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3、4 步提供统一接口格式和可运行的后端基础，尚未实现图片上传和调度流程。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～5 步已提供公共契约、后端基础和模拟检测/规则预览。规则参数为演示假设，候选尚未写入任务队列。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -18,7 +18,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Initial API contracts and shared backend foundation |
+| Current phase | Demo detection and rule assessment; task workflow pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -58,7 +58,7 @@ See [Video/README.md](Video/README.md) for naming and recording requirements.
 
 ## SECTION 5 : USER GUIDE
 
-Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md). The implemented endpoint is `GET /api/v1/health`; interactive documentation is at `/docs`. There is no frontend or image-processing workflow yet. The [initial API contract](Miscellaneous/API_CONTRACT.md) and [fixed demo examples](SystemCode/contracts/README.md) let B/C develop against the same data structures. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the current delivery boundary.
+Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md), then open `/docs`. Alongside health, `GET /api/v1/demo/scenarios` and `POST /api/v1/demo/assessments` run seven synthetic detector/rule cases; see the [step 5 demo guide](Miscellaneous/DEMO_DETECTION_AND_RULES.md). There is no frontend or image-upload workflow yet. The [API contract](Miscellaneous/API_CONTRACT.md) and [fixed DTO examples](SystemCode/contracts/README.md) let B/C develop against the same structures. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the delivery boundary.
 
 Repository layout:
 
@@ -108,6 +108,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
 - [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
 - [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
+- [Run demo detection and business rules (中文)](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)

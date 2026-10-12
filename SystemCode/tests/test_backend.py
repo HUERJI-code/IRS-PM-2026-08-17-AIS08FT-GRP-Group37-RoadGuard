@@ -85,13 +85,15 @@ def test_factory_defers_config_loading_and_initialization(settings, monkeypatch)
     assert app.state.database is None
 
 
-def test_health_and_only_implemented_openapi(settings):
+def test_health_and_implemented_openapi(settings):
     with TestClient(create_app(settings)) as client:
         response = client.get("/api/v1/health")
         assert response.status_code == 200
         assert response.json() == {"status": "ok", "database": "ok", "api_version": "v1", "input_revision": 0}
         openapi = client.get("/openapi.json").json()
-        assert set(openapi["paths"]) == {"/api/v1/health"}
+        assert set(openapi["paths"]) == {
+            "/api/v1/health", "/api/v1/demo/scenarios", "/api/v1/demo/assessments",
+        }
         health_schema = openapi["paths"]["/api/v1/health"]["get"]
         assert health_schema["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/HealthResponse")
         assert health_schema["responses"]["503"]["content"]["application/json"]["schema"]["$ref"].endswith("/ErrorResponse")

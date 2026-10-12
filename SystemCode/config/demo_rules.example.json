@@ -1,0 +1,49 @@
+{
+  "rule_version": "demo-rules-v1",
+  "is_demo": true,
+  "status": "demonstration_assumptions",
+  "confidence_threshold": 0.60,
+  "selection_strategy": "priority_severity_duration_confidence_id",
+  "rules": {
+    "longitudinal_crack": {
+      "severity": "low", "priority": "P3", "service_minutes": 20,
+      "recommendation": "Demo suggestion: inspect and assess a crack repair method.",
+      "reason": "Project demonstration assumes low severity, P3 and 20 minutes; not a measured engineering assessment."
+    },
+    "longitudinal_crack_wide": {
+      "severity": "medium", "priority": "P2", "service_minutes": 35,
+      "recommendation": "Demo suggestion: inspect and assess a crack repair method.",
+      "reason": "Project demonstration assumes medium severity, P2 and 35 minutes; visual label is not a measured width."
+    },
+    "transverse_crack": {
+      "severity": "low", "priority": "P3", "service_minutes": 20,
+      "recommendation": "Demo suggestion: inspect and assess a crack repair method.",
+      "reason": "Project demonstration assumes low severity, P3 and 20 minutes; not a measured engineering assessment."
+    },
+    "transverse_crack_wide": {
+      "severity": "medium", "priority": "P2", "service_minutes": 35,
+      "recommendation": "Demo suggestion: inspect and assess a crack repair method.",
+      "reason": "Project demonstration assumes medium severity, P2 and 35 minutes; visual label is not a measured width."
+    },
+    "alligator_crack": {
+      "severity": "medium", "priority": "P2", "service_minutes": 45,
+      "recommendation": "Demo suggestion: inspect and assess a surface repair method.",
+      "reason": "Project demonstration assumes medium severity, P2 and 45 minutes; no structural diagnosis is inferred."
+    },
+    "alligator_crack_sunken": {
+      "severity": "high", "priority": "P1", "service_minutes": 60,
+      "recommendation": "Demo suggestion: inspect and assess a surface repair method.",
+      "reason": "Project demonstration assumes high severity, P1 and 60 minutes; no measured depth or structural diagnosis is inferred."
+    },
+    "pothole": {
+      "severity": "medium", "priority": "P2", "service_minutes": 45,
+      "recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "reason": "Project demonstration assumes medium severity, P2 and 45 minutes; not a measured engineering assessment."
+    },
+    "pothole_deep": {
+      "severity": "high", "priority": "P1", "service_minutes": 60,
+      "recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "reason": "Project demonstration assumes high severity, P1 and 60 minutes; visual label is not a measured depth."
+    }
+  }
+}

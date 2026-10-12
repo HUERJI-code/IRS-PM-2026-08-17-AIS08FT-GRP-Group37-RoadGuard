@@ -7,7 +7,7 @@
 1. 接受仓库邀请，使用自己的 GitHub 账号克隆仓库。先读根目录 [AGENTS.md](../AGENTS.md)。
 2. 在工作区没有未处理修改时更新 `main`，为本次任务创建短期分支。
 3. 完成实现、相关测试与文档后，提交并推送自己的分支。
-4. 在 GitHub 创建 Pull Request，目标分支选择 `main`，按自动出现的 PR 模板填写。
+4. 在 GitHub 创建 Pull Request，目标分支选择 `main`，标题统一英文（例如 `feat: add demo detection and rule assessment`），正文按自动出现的 PR 模板填写，可使用中文。
 5. 创建 PR 或继续向该分支推送提交，都会自动运行 RoadGuard CI；查看最新提交的 Checks。
 6. 按项目发起人的约定，PR 无需另一位成员人工审核或批准。完成改动自检、适用检查通过且分支已同步最新 `main` 后，由 A 统筹 Squash and merge；agent 在获得合并任务授权后执行。若有冲突，先在功能分支同步 `main` 并解决，再推送重新检查。
 7. 合并到 `main` 后自动再运行 CI，验证合并后的版本。若失败，由对应成员发修复 PR；不会自动回滚已合并代码。
