@@ -1,0 +1,38 @@
+name: RoadGuard Auto Merge
+
+on:
+  workflow_run:
+    workflows: [RoadGuard CI]
+    types: [completed]
+  workflow_dispatch:
+
+permissions: {}
+
+# Scan current open PRs under one lock, including when an earlier event was coalesced.
+concurrency:
+  group: roadguard-auto-merge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    name: Merge eligible pull requests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: read
+      actions: write
+    steps:
+      # Privileged execution uses only trusted default-branch code, never PR content.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Verify current checks, merge and dispatch main CI
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/auto_merge.py
