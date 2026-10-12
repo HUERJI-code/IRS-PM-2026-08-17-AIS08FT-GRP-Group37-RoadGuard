@@ -1,0 +1,113 @@
+name: RoadGuard CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roadguard-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository:
+    name: Repository checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      python: ${{ steps.inspect.outputs.python }}
+      frontend: ${{ steps.inspect.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Test the CI guardrails
+        run: python -m unittest discover -s .github/scripts -p 'test_*.py' -v
+      - name: Validate repository and detect application code
+        id: inspect
+        run: python .github/scripts/check_repository.py
+
+  python:
+    name: Python tests
+    needs: repository
+    if: needs.repository.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Install the declared CI dependencies
+        run: python -m pip install -r SystemCode/backend/requirements-ci.txt
+      - name: Run Python tests (zero collected tests is a failure)
+        run: python -m pytest SystemCode/tests -q
+
+  frontend:
+    name: Frontend checks
+    needs: repository
+    if: needs.repository.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: SystemCode/frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Run tests without watch mode
+        run: npm run test:ci
+      - name: Build
+        run: npm run build
+
+  ci:
+    name: CI
+    needs: [repository, python, frontend]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      REPOSITORY_RESULT: ${{ needs.repository.result }}
+      PYTHON_REQUIRED: ${{ needs.repository.outputs.python }}
+      PYTHON_RESULT: ${{ needs.python.result }}
+      FRONTEND_REQUIRED: ${{ needs.repository.outputs.frontend }}
+      FRONTEND_RESULT: ${{ needs.frontend.result }}
+    steps:
+      - name: Require every applicable check to pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$REPOSITORY_RESULT" = success
+          for component in PYTHON FRONTEND; do
+            required_var="${component}_REQUIRED"
+            result_var="${component}_RESULT"
+            required="${!required_var}"
+            result="${!result_var}"
+            if [ "$required" = true ]; then
+              test "$result" = success
+            else
+              test "$required" = false
+              test "$result" = skipped
+            fi
+            echo "${component}: required=${required}, result=${result}" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo 'All applicable checks passed. Skipped application jobs mean the module has no implementation yet.' >> "$GITHUB_STEP_SUMMARY"

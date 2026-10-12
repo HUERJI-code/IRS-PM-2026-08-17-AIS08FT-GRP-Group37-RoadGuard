@@ -65,6 +65,7 @@ Repository layout:
 ```text
 IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
   README.md
+  AGENTS.md
   SystemCode/
     config/project.example.json
     backend/
@@ -89,6 +90,8 @@ IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
 
 Start by reviewing the [project scope](Miscellaneous/PROJECT_SCOPE.md), [example configuration](SystemCode/config/project.example.json) and [implementation plan](Miscellaneous/IMPLEMENTATION_PLAN.md).
 
+All contributors and coding agents should first read the shared [project and agent collaboration rules (中文)](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
+
 ## SECTION 6 : PROJECT REPORT / PAPER
 
 The [report outline](ProjectReport/REPORT_OUTLINE.md) reserves the sections required by the course. The final group report will be delivered as DOCX or PDF in `ProjectReport/`.
@@ -97,8 +100,11 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 
 ## SECTION 7 : MISCELLANEOUS
 
+- [Project and agent collaboration rules (中文)](AGENTS.md)
+- [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
+- [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)

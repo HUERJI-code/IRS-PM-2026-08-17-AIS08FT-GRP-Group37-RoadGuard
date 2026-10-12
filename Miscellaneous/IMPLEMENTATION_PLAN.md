@@ -2,6 +2,8 @@
 
 All application milestones below are pending.
 
+See [the three-person work allocation and interface draft](TEAM_WORK_ALLOCATION.md) for ownership: A (project owner) leads vision, rules, backend foundations and integration; B leads four-crew routing; C leads the frontend and assistant. These are planned responsibilities, not completed contributions.
+
 | Step | Deliverable | Acceptance evidence |
 | --- | --- | --- |
 | 1 | Confirm study boundary, depot, task model and routing constraints | Written scenario and consistent configuration |
