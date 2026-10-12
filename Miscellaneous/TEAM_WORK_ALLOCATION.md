@@ -4,7 +4,7 @@
 
 所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
 
-项目范围：新加坡 Jurong；一个模拟维修部门；四支工程队；一个模拟共用基地；单张照片输入；RDD2022ES / YOLO；规则与人工审核；GA 与 Greedy；React 网页；GPT + RAG 路线助手。
+项目范围：新加坡 Jurong East 与 Jurong West；一个模拟维修部门；四支工程队；共用 NUS-ISS 模拟起点（位于任务区域外）；单张照片输入；RDD2022ES / YOLO；规则与人工审核；GA 与 Greedy；React 网页；GPT + RAG 路线助手。地理资料和对接要求见[范围与基地文档](JURONG_SCOPE_AND_DEPOT.md)。
 
 本表将 A 指定为项目发起人（你），B、C 的姓名待填。按照你的要求，A 承担较多工作，包括后端基础、业务数据与系统联调，让 B 集中做路线优化，让 C 集中做界面和助手。下文的接口、字段、目录归属和验收条件都是开发约定草案，不表示相关功能已经存在。
 
@@ -99,7 +99,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | **PlanningInput** | A/B → B | `input_revision`、`planning_start_at`、`tasks`、`crews`、班次/返基地设置、目标权重、`random_seed` | 一个规划批次使用一致输入；任务或队伍配置变化时通过共用方法更新输入版本 |
 | **TravelMatrix** | B 内部，摘要供 A/C | `node_ids`、`duration_minutes`、`provider`、`generated_at` | 第 i 行第 j 列表示 i→j；不假设对称；不可达用空值并显式处理；同一轮 GA/Greedy 共用矩阵 |
 | **RoutePlan** | B → A/C | `plan_id`、`input_revision`、`algorithm`、`planning_start_at`、`crew_routes`、`unassigned_tasks`、`metrics`、`matrix_provider`、`is_stale` | `algorithm` 为 `ga` 或 `greedy`；输出四队记录；未分配项包含任务 ID 和原因；方案保存后按 ID 查询 |
-| **CrewRoute / Stop** | B → C | 队伍 ID、按顺序的任务 ID、坐标、相对开始时间的到达/完成分钟数、行程/维修/总时长、可选路线几何 | 总时长计入规定的返基地行程；没有真实道路几何时前端显示带说明的示意线 |
+| **CrewRoute / Stop** | B → C | 队伍 ID、按顺序的任务 ID、坐标、相对开始时间的到达/完成分钟数、行程/维修/总时长、可选路线几何 | 计入 NUS-ISS 至首个任务的行程；返基地策略确定后按配置计入；没有真实道路几何时前端显示带说明的示意线 |
 | **Explanation** | C → 前端 | `plan_id`、`answer`、`sources`、`supported` | 优先引用对应方案事实和 A 的知识文档；无依据时说明信息不足 |
 | **ChangeRequest** | C → 前端/B | `request_id`、`based_on_plan_id`、`input_revision`、`type`、结构化参数、`status`、确认后 `result_plan_id` | 首批类型为 `crew_availability`；状态至少区分 `pending` / `confirmed` / `cancelled` / `failed`；不能只凭自然语言直接修改业务数据 |
 
@@ -109,7 +109,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 | 指标 | 建议定义 | 负责人 |
 | --- | --- | --- |
-| 总行程时间 | 各队行驶时间之和；按配置包含返基地行程 | B |
+| 总行程时间 | 各队行驶时间之和，包含 NUS-ISS 至首个任务的行程；返基地策略确定后按配置计算 | B |
 | 总完工时间 | 从统一规划开始时刻到最后一支队伍结束工作所需的时间 | B |
 | 任务延误 | 有期限任务的 `max(0, completion_at - due_at)`；同时报告延误任务数 | A 确认业务期限；B 计算 |
 | 工作量平衡 | 可用队伍总工作时长的标准差，包含行程与维修；闲置可用队伍按零计入 | B；A 确认业务含义 |
@@ -198,11 +198,11 @@ A 优先交付数据格式、模拟检测和公共后端，训练可并行进行
 
 ## 11. 开发前要共同确认的业务选项
 
-以下是建议，不是已经获得确认的业务规则；由 A 组织三人讨论后冻结。
+Jurong 边界与 NUS-ISS 起点已于 2026-10-12 记录为本项目的地理基线。其余选项仍按本表的草案状态处理，由 A 组织三人讨论后冻结；完成地理子步骤不等于完成整个 M0。
 
 | 事项 | 建议首版处理 | 负责推动 |
 | --- | --- | --- |
-| Jurong 边界 | 明确一个可检查的研究区域；选定区域内的模拟基地，不把名称直接当作边界多边形 | A；B 检查路线适用性 |
+| Jurong 边界与起点（已记录） | JE／JW 的 URA MP2025 边界；共用区域外的 NUS-ISS 起点；详见[范围文档](JURONG_SCOPE_AND_DEPOT.md) | A 维护版本；B 后续核验车辆入口；C 展示边界和基地 |
 | 队伍能力与班次 | 四队同能力、共用基地、统一可配置班次；是否返基地写进配置 | B 提案，A 确认 |
 | 多个检测对应的任务数 | 同一巡检地点先生成一个维修任务；保留所有检测，按业务规则选定代表损坏，避免同一点重复派工 | A 提案，B/C 复核 |
 | 无检测结果 | 保存巡检记录，不自动生成维修任务 | A |
@@ -217,6 +217,7 @@ A 优先交付数据格式、模拟检测和公共后端，训练可并行进行
 ## 12. 与现有项目资料的关系
 
 - [当前项目范围](PROJECT_SCOPE.md)
+- [Jurong 具体范围与 NUS-ISS 模拟起点](JURONG_SCOPE_AND_DEPOT.md)
 - [总体开发计划](IMPLEMENTATION_PLAN.md)
 - [课程提交清单](SUBMISSION_CHECKLIST.md)
 - [课程技术映射](../ProjectReport/COURSE_MAPPING.md)

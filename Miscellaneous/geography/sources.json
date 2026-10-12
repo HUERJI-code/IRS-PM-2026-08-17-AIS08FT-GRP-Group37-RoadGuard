@@ -1,0 +1,74 @@
+{
+  "scope_version": "jurong-je-jw-mp2025-v1",
+  "recorded_date": "2026-10-12",
+  "boundary_source": {
+    "agency": "Urban Redevelopment Authority (URA)",
+    "dataset_title": "Master Plan 2025 Planning Area Boundary (No Sea)",
+    "dataset_id": "d_2cc750190544007400b2cfd5d7f53209",
+    "dataset_page": "https://data.gov.sg/datasets/d_2cc750190544007400b2cfd5d7f53209/view",
+    "download_api": "https://api-open.data.gov.sg/v1/public/api/datasets/d_2cc750190544007400b2cfd5d7f53209/poll-download",
+    "data_period": "2025-12",
+    "catalog_last_updated": "2026-02-27",
+    "downloaded_bytes": 2191270,
+    "download_sha256": "e6ecc1743de5c39ec154a30b3b8037896fbc6c5f863e10c7dbfd77de12706c9c",
+    "source_feature_count": 55,
+    "filter_field": "PLN_AREA_N",
+    "filter_values": [
+      "JURONG EAST",
+      "JURONG WEST"
+    ],
+    "geometry_processing": "Subset only; original selected features, properties and coordinates preserved; no simplification.",
+    "derived_file": "jurong-boundary-mp2025.geojson",
+    "derived_sha256": "f5bd23ee8dd54102199d36fdfee2633955ed69ff258f360c0ec8015520f86270",
+    "coordinate_order": "[longitude, latitude]",
+    "coordinate_reference": "WGS84 geographic degrees",
+    "license": "Singapore Open Data Licence v1.0",
+    "license_url": "https://data.gov.sg/open-data-licence"
+  },
+  "depot_source": {
+    "selected_by": "Project owner: use NUS-ISS as simulated dispatch origin",
+    "official_address_url": "https://www.iss.nus.edu.sg/about-us/getting-to-nus-iss",
+    "coordinate_provider": "Singapore Land Authority / OneMap",
+    "query_url": "https://www.onemap.gov.sg/api/common/elastic/search?searchVal=25%20HENG%20MUI%20KENG%20TERRACE&returnGeom=Y&getAddrDetails=Y&pageNum=1",
+    "matched_result": {
+      "SEARCHVAL": "NATIONAL UNIVERSITY OF SINGAPORE (INSTITUTE OF SYSTEM SCIENCE)",
+      "BLK_NO": "25",
+      "ROAD_NAME": "HENG MUI KENG TERRACE",
+      "BUILDING": "NATIONAL UNIVERSITY OF SINGAPORE (INSTITUTE OF SYSTEM SCIENCE)",
+      "ADDRESS": "25 HENG MUI KENG TERRACE NATIONAL UNIVERSITY OF SINGAPORE (INSTITUTE OF SYSTEM SCIENCE) SINGAPORE 119615",
+      "POSTAL": "119615",
+      "X": "21682.24439725839",
+      "Y": "30504.80711111799",
+      "LATITUDE": "1.292148512297166",
+      "LONGITUDE": "103.776550885502"
+    },
+    "rounding_decimal_places": 6,
+    "latitude": 1.292149,
+    "longitude": 103.776551,
+    "derived_file": "nus-iss-depot.geojson",
+    "derived_sha256": "20dc4ddcfdd3c72434a1f84e17f99824fc052eeb887fe57e67b1e3269c0bf182",
+    "limitations": "Address point, not a verified vehicle entrance. Simulation only; no institutional endorsement or actual road-maintenance role implied."
+  },
+  "verification": {
+    "feature_count": 2,
+    "feature_names": [
+      "JURONG EAST",
+      "JURONG WEST"
+    ],
+    "all_geometries_valid": true,
+    "union_geometry_valid": true,
+    "union_geometry_type": "Polygon",
+    "depot_inside_service_area": false,
+    "depot_planning_areas": [
+      "QUEENSTOWN"
+    ],
+    "source_area_total_km2": 32.5498930199702,
+    "projected_area_total_km2": 32.54989302042925,
+    "distance_depot_to_service_area_m_straight_line_not_road": 2252.2457639902846,
+    "google_driving_access_verified": false
+  },
+  "verification_tools": {
+    "shapely": "2.2.0",
+    "projection": "EPSG:3414 (SVY21 metres)"
+  }
+}

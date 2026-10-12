@@ -4,13 +4,32 @@
   "scenario": {
     "country": "Singapore",
     "study_area": "Jurong",
-    "study_boundary": null,
-    "boundary_status": "to_be_defined_before_geographic_validation",
+    "study_boundary": {
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "source": "URA Master Plan 2025 Planning Area Boundary (No Sea)",
+      "dataset_id": "d_2cc750190544007400b2cfd5d7f53209",
+      "planning_areas": ["JURONG EAST", "JURONG WEST"],
+      "geojson_path": "Miscellaneous/geography/jurong-boundary-mp2025.geojson",
+      "geometry_rule": "union_of_features_covers_task_point",
+      "coordinate_order": "longitude_latitude"
+    },
+    "boundary_status": "defined_for_project_v1_not_implemented",
+    "task_road_scope": "public_motor_roads_excluding_expressway_mainlines_and_ramps_and_restricted_internal_roads",
+    "routes_may_leave_study_area": true,
     "task_data": "synthetic",
     "depot": {
       "type": "fictional_shared_depot",
-      "latitude": null,
-      "longitude": null
+      "depot_id": "depot-nus-iss",
+      "name": "NUS-ISS (simulated dispatch origin)",
+      "address": "25 Heng Mui Keng Terrace, Singapore 119615",
+      "depot_version": "nus-iss-v1",
+      "latitude": 1.292149,
+      "longitude": 103.776551,
+      "inside_task_service_area": false,
+      "allowed_outside_task_service_area": true,
+      "geojson_path": "Miscellaneous/geography/nus-iss-depot.geojson",
+      "coordinate_source": "SLA OneMap address search",
+      "driving_access_status": "to_be_verified_before_real_travel_matrix"
     }
   },
   "planning": {
@@ -19,6 +38,7 @@
     "optimizer": "genetic_algorithm",
     "baseline": "greedy",
     "task_counts_for_evaluation": [10, 15, 20],
+    "return_to_depot": null,
     "objectives": ["travel_time", "urgent_task_delay", "workload_balance"],
     "constraint_parameters_status": "to_be_defined"
   }

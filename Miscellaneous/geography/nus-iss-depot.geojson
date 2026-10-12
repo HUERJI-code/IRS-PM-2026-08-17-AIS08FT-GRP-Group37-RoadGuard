@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "depot_id": "depot-nus-iss",
+        "name": "NUS-ISS (simulated dispatch origin)",
+        "address": "25 Heng Mui Keng Terrace, Singapore 119615",
+        "is_simulated_dispatch_use": true,
+        "inside_task_service_area": false,
+        "coordinate_role": "building_address_reference_not_verified_vehicle_entrance",
+        "depot_version": "nus-iss-v1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.776551,
+          1.292149
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@ Road damage assessment and maintenance planning for **Jurong, Singapore**, with 
 
 This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The directories and project plan are ready; application features and evaluation results are not yet implemented in this repository.
 
-> 本轮确认：项目范围为新加坡 Jurong，默认四支工程队。当前是供检查的正式开发仓库骨架。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。当前是供检查的正式开发仓库骨架。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -16,8 +16,8 @@ This repository follows the [IRS-PM project submission template](https://github.
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
 | Group | Group 7; repository team label: Group7 |
-| Demonstration area | Jurong, Singapore; exact study boundary to be defined |
-| Repair crews | Four simulated crews, sharing one fictional depot |
+| Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
+| Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
 | Current phase | Repository setup and scope definition |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
@@ -33,7 +33,7 @@ RoadGuard is a planned web application that connects road damage observations to
 
 A group-built genetic algorithm (GA) will assign accepted tasks to four repair crews and determine their visit order. A greedy planner will provide a baseline using the same tasks, travel-time matrix and constraints. Evaluation will report travel time, urgent-task delay, workload balance, feasibility and computation time separately.
 
-The demonstration is limited to Jurong. Task locations, the maintenance department and the depot are simulated; they are not official maintenance records. RDD2022ES is the proposed image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
+Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES is the proposed image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
 
 The project does not yet claim measured cost savings, trained-model accuracy or operational readiness.
 
@@ -82,6 +82,8 @@ IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
   Video/
   Miscellaneous/
     PROJECT_SCOPE.md
+    JURONG_SCOPE_AND_DEPOT.md
+    geography/
     IMPLEMENTATION_PLAN.md
     SUBMISSION_CHECKLIST.md
     TEMPLATE_SOURCE.md
@@ -103,6 +105,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Project and agent collaboration rules (中文)](AGENTS.md)
 - [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
+- [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
