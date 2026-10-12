@@ -1,6 +1,6 @@
 {
   "project_name": "RoadGuard",
-  "stage": "scaffold",
+  "stage": "backend_foundation",
   "scenario": {
     "country": "Singapore",
     "study_area": "Jurong",

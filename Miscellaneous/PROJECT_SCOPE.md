@@ -9,7 +9,7 @@ Updated: 2026-10-12. The geographic baseline and user-selected dispatch origin a
 - Default repair crews: **four**, replacing the proposal's two-crew scenario.
 - Task service area: **Jurong East and Jurong West, Singapore**, using the frozen URA Master Plan 2025 polygons (approximately 32.55 km²).
 - Shared simulated dispatch origin: **NUS-ISS**, 25 Heng Mui Keng Terrace, Singapore 119615; latitude `1.292149`, longitude `103.776551`. This specified depot is allowed outside the task service area; travel from it to the first task must be counted.
-- This delivery: a course-template repository scaffold for review before implementation.
+- Current delivery: frozen initial data contracts and a runnable shared backend foundation; business workflows, model training and routing remain pending.
 - Repository: private GitHub repository under the project owner's account.
 - Course start date: 2026-08-17. Batch code: AIS08FT. Repository team label: Group7.
 - The previous prototype is abandoned; implementation starts from this scaffold.
@@ -19,6 +19,8 @@ Updated: 2026-10-12. The geographic baseline and user-selected dispatch origin a
 One fictional maintenance department coordinates four simulated crews from one shared simulated depot at the real NUS-ISS location. This does not describe an actual NUS-ISS maintenance operation. The system will accept single images, identify damage and basic severity, apply priority rules, maintain an accepted-task queue and calculate an ordered route for each crew. Uncertain detections require review.
 
 The planned stack follows the proposal: React frontend, Python backend, SQLite, YOLO/RDD2022ES, Google travel-time data, a group-built GA, a greedy baseline and GPT/RAG route explanations.
+
+The [dataset and label audit](DATASET_AND_LABEL_AUDIT.md) pins Juuso's RDD2022ES version 1 and verifies its eight source labels. Full archive-directory inspection and targeted content sampling are complete; full training-data validation and splits remain pending. Dataset severity qualifiers do not define project priorities or repair durations, and the publisher's license statements conflict as documented in the audit.
 
 Routing tasks are synthetic test data on eligible public motor roads inside the frozen study boundary, including polygon edges. Expressway mainline/ramp repair tasks and private or restricted internal-road tasks are excluded. Detailed road exclusions are in the geographic baseline. Routes may travel outside the task area, including the journey from NUS-ISS. The image dataset is not claimed to originate from Jurong.
 

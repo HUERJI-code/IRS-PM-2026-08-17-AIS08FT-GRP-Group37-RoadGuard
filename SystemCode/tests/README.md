@@ -1,6 +1,6 @@
-# Integration tests - planned
+# Shared backend and contract tests
 
-Add tests when the corresponding behavior exists. The first integration cases should cover:
+Run `python -m pytest SystemCode/tests -q` from the repository root after installing the backend CI dependencies. Current tests cover DTO validation and fixture consistency, configuration, health/error responses, SQLite persistence and shared input-revision transactions. Future end-to-end cases must cover:
 
 - Accepted inspection -> priority rule -> active task -> four-crew replan.
 - Uncertain inspection -> review -> confirm/correct/dismiss.
@@ -9,7 +9,7 @@ Add tests when the corresponding behavior exists. The first integration cases sh
 - Task membership in the JE/JW polygons, including edges; the specified NUS-ISS depot is permitted outside the task area, and origin-to-first-task travel is counted.
 - External-service failure and explicitly labelled demonstration fallback.
 
-There are no runnable application tests in this scaffold yet.
+These tests do not claim an implemented inspection-to-route workflow or model accuracy.
 
 ## CI integration
 

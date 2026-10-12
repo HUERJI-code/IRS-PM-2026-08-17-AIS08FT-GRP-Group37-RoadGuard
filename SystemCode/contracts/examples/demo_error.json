@@ -1,0 +1,8 @@
+{
+  "code": "validation_error",
+  "message": "Request validation failed.",
+  "details": {
+    "is_demo": true,
+    "error_count": 1
+  }
+}

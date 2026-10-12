@@ -1,12 +1,12 @@
 # RoadGuard
 
-**Status: repository scaffold for implementation review.**
+**Status: shared API contracts and backend foundation implemented.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The directories and project plan are ready; application features and evaluation results are not yet implemented in this repository.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend, SQLite infrastructure and initial data contracts are ready. Vision inference, business workflows, routing, frontend and evaluation results remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。当前是供检查的正式开发仓库骨架。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3、4 步提供统一接口格式和可运行的后端基础，尚未实现图片上传和调度流程。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -18,7 +18,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Repository setup and scope definition |
+| Current phase | Initial API contracts and shared backend foundation |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -58,7 +58,7 @@ See [Video/README.md](Video/README.md) for naming and recording requirements.
 
 ## SECTION 5 : USER GUIDE
 
-The application is not runnable yet in this repository. Installation and startup instructions will be added and tested alongside implementation; see the [installation and user guide outline](ProjectReport/INSTALLATION_AND_USER_GUIDE.md).
+Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md). The implemented endpoint is `GET /api/v1/health`; interactive documentation is at `/docs`. There is no frontend or image-processing workflow yet. The [initial API contract](Miscellaneous/API_CONTRACT.md) and [fixed demo examples](SystemCode/contracts/README.md) let B/C develop against the same data structures. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the current delivery boundary.
 
 Repository layout:
 
@@ -106,10 +106,12 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
 - [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
+- [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
+- [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)
 
-Development starts from this scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.
+Development started from this course scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.

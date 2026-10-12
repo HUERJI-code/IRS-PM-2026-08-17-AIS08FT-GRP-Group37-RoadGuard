@@ -1,0 +1,245 @@
+{
+  "audit_version": "rdd2022es-v1-audit-1",
+  "recorded_on": "2026-10-12",
+  "dataset": {
+    "id": 7353702,
+    "ref": "juusos/rdd2022es",
+    "title": "RDD2022ES",
+    "subtitle": "Severity Extended RDD2022",
+    "creatorName": "Juuso",
+    "currentVersionNumber": 1,
+    "lastUpdated": "2025-05-07T08:54:20.383Z",
+    "totalBytes": 2740407610
+  },
+  "sources": {
+    "dataset_page": "https://www.kaggle.com/datasets/juusos/rdd2022es",
+    "metadata_api": "https://www.kaggle.com/api/v1/datasets/view/juusos/rdd2022es",
+    "versioned_archive": "https://www.kaggle.com/api/v1/datasets/download/juusos/rdd2022es?datasetVersionNumber=1",
+    "metadata_response_sha256": "a0c9a9fa473d71e7a9227bd2b340a73b8cbdf6ea475a90906c4e12bc85bdcd36",
+    "original_rdd2022": "https://github.com/sekilab/RoadDamageDetector",
+    "yolo_format": "https://docs.ultralytics.com/datasets/detect/"
+  },
+  "license_status": {
+    "status": "conflicting_publisher_statements_unresolved",
+    "metadata_license": "CC BY-NC-SA 4.0",
+    "description_license": "CC BY-SA 4.0",
+    "note": "Preserve both statements. Earlier presentation captions reporting only CC BY-SA 4.0 are incomplete."
+  },
+  "archive_directory_audit": {
+    "archive_entries": 51200,
+    "image_count": 25600,
+    "annotation_file_count": 25599,
+    "metadata_file_count": 1,
+    "empty_annotation_files": 8317,
+    "images_without_annotation_file": [
+      "Czech_001003",
+      "xmirror_Czech_001003"
+    ],
+    "annotation_files_without_image": [
+      "India_001032"
+    ],
+    "original_image_count": 12800,
+    "mirror_image_count": 12800,
+    "country_image_counts": {
+      "Czech": 6728,
+      "India": 5066,
+      "Japan": 7980,
+      "United_States": 5826
+    },
+    "uncompressed_total_bytes": 2740407610,
+    "compressed_archive_bytes": 2611933018,
+    "directory_bytes": 5571603,
+    "directory_sha256": "1a22a0bf162468593eaab063c287643428e05265644753398cbaf3a50f1e455c",
+    "method": "HTTP byte-range reads of version 1 ZIP central directory, including ZIP64 entry sizes; no full archive download.",
+    "all_image_mirror_names_paired": true,
+    "matching_image_annotation_pairs": 25598,
+    "matched_empty_annotation_files": 8316,
+    "matched_nonempty_annotation_files": 17282,
+    "candidate_original_groups_after_quarantine": 12799,
+    "whole_archive_sha256": null
+  },
+  "sample_audit": {
+    "purposeful_sample_not_random": true,
+    "image_count": 18,
+    "paired_originals": 9,
+    "annotation_file_count": 19,
+    "annotation_rows_including_orphan": 30,
+    "class_box_counts_including_mirrors_and_orphan": {
+      "0": 4,
+      "1": 2,
+      "2": 10,
+      "3": 2,
+      "4": 4,
+      "5": 2,
+      "6": 2,
+      "7": 4
+    },
+    "empty_labels": [
+      "Czech_000000.txt",
+      "India_001032.txt",
+      "xmirror_Czech_000000.txt"
+    ],
+    "invalid_rows": [],
+    "out_of_image_boxes": [],
+    "dimensions": {
+      "Czech_000000.jpg": [
+        600,
+        600
+      ],
+      "Czech_000004.jpg": [
+        600,
+        600
+      ],
+      "India_000029.jpg": [
+        720,
+        720
+      ],
+      "India_000103.jpg": [
+        720,
+        720
+      ],
+      "Japan_000001.jpg": [
+        600,
+        600
+      ],
+      "Japan_000003.jpg": [
+        600,
+        600
+      ],
+      "Japan_000011.jpg": [
+        600,
+        600
+      ],
+      "Japan_000035.jpg": [
+        600,
+        600
+      ],
+      "United_States_000000.jpg": [
+        640,
+        640
+      ],
+      "xmirror_Czech_000000.jpg": [
+        600,
+        600
+      ],
+      "xmirror_Czech_000004.jpg": [
+        600,
+        600
+      ],
+      "xmirror_India_000029.jpg": [
+        720,
+        720
+      ],
+      "xmirror_India_000103.jpg": [
+        720,
+        720
+      ],
+      "xmirror_Japan_000001.jpg": [
+        600,
+        600
+      ],
+      "xmirror_Japan_000003.jpg": [
+        600,
+        600
+      ],
+      "xmirror_Japan_000011.jpg": [
+        600,
+        600
+      ],
+      "xmirror_Japan_000035.jpg": [
+        600,
+        600
+      ],
+      "xmirror_United_States_000000.jpg": [
+        640,
+        640
+      ]
+    },
+    "mirror_checks": [
+      {
+        "original": "Czech_000000.jpg",
+        "mirror": "xmirror_Czech_000000.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 0,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.453906
+      },
+      {
+        "original": "Czech_000004.jpg",
+        "mirror": "xmirror_Czech_000004.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 0,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.405973
+      },
+      {
+        "original": "India_000029.jpg",
+        "mirror": "xmirror_India_000029.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 1.3877787807814457e-17,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.136036
+      },
+      {
+        "original": "India_000103.jpg",
+        "mirror": "xmirror_India_000103.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 1.1102230246251565e-16,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.193112
+      },
+      {
+        "original": "Japan_000001.jpg",
+        "mirror": "xmirror_Japan_000001.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 3.33333333379926e-07,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.770223
+      },
+      {
+        "original": "Japan_000003.jpg",
+        "mirror": "xmirror_Japan_000003.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 0,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.700449
+      },
+      {
+        "original": "Japan_000011.jpg",
+        "mirror": "xmirror_Japan_000011.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 3.33333333379926e-07,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.844783
+      },
+      {
+        "original": "Japan_000035.jpg",
+        "mirror": "xmirror_Japan_000035.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 0,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.38018
+      },
+      {
+        "original": "United_States_000000.jpg",
+        "mirror": "xmirror_United_States_000000.jpg",
+        "same_box_count": true,
+        "max_box_component_error": 5.000000000005e-07,
+        "horizontal_mirror_pixel_mae_0_to_255": 0.602602
+      }
+    ],
+    "orphan_label_rows": [],
+    "verified_download_files": 38,
+    "verified_uncompressed_sample_bytes": 1925500,
+    "all_sample_crcs_match_archive": true,
+    "label_transform_tolerance": 1e-06,
+    "visually_inspected_originals": [
+      "Czech_000004.jpg",
+      "Japan_000003.jpg",
+      "India_000103.jpg",
+      "Japan_000035.jpg"
+    ],
+    "purpose": "Targeted format and eight-class coverage; not a random label-quality estimate or full class-frequency census."
+  },
+  "not_completed": [
+    "Full decoding of all images and parsing of all annotation contents",
+    "Full per-class box and image counts",
+    "Near-duplicate/adjacent-scene audit beyond known mirror naming",
+    "Training/validation/test split manifests",
+    "Quantitative severity thresholds and project priority/service-time rules",
+    "Training, model inference or accuracy evaluation",
+    "Resolution of publisher license inconsistency"
+  ]
+}

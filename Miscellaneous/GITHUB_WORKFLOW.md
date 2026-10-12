@@ -39,7 +39,7 @@ git push -u origin feature/b-greedy-planner
 | Frontend checks | 发现前端代码或 package.json 后，运行 npm ci、lint、test:ci、build；没有前端实现时显示 skipped |
 | CI | 汇总以上结果；必须通过仓库检查，且所有已存在模块的检查成功；失败、取消或意外跳过都不能得到通过结论 |
 
-目前业务模块尚未实现。Python/前端检查跳过只代表“没有对应代码”，不代表业务测试通过。检查脚本无法证明所有逻辑正确，提交者或 agent 仍须按改动完成自检；本项目不把人工审核设为 PR 门槛。Markdown 检查仅验证本地文件目标，不检查远程网页或标题锚点。
+当前已加入后端基础和公共 schema，Python tests 必须执行；前端尚未实现，因此 Frontend checks 仍显示 skipped。跳过只代表没有对应模块，不代表测试通过。检查脚本无法证明所有逻辑正确，提交者或 agent 仍须按改动完成自检；本项目不把人工审核设为 PR 门槛。Markdown 检查仅验证本地文件目标，不检查远程网页或标题锚点。
 
 ## 3. A/B/C 后续如何接入真实测试
 
