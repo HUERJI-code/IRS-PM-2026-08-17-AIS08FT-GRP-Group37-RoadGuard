@@ -1,0 +1,237 @@
+{
+  "dataset_ref": "juusos/rdd2022es",
+  "dataset_version": 1,
+  "recorded_on": "2026-10-12",
+  "file_paths_relative_to_archive": true,
+  "hash_scope": "Original extracted bytes before newline conversion or image processing",
+  "files": [
+    {
+      "name": "combined_annotatedv2/Czech_000000.jpg",
+      "size": 55131,
+      "crc32": "5662e64b",
+      "sha256": "62fbb8ae2ef07e945d7c71b42fe01e5e3965ef74097e470f3b83cf9e086a1cbb"
+    },
+    {
+      "name": "combined_annotatedv2/Czech_000000.txt",
+      "size": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Czech_000000.jpg",
+      "size": 106577,
+      "crc32": "1e774846",
+      "sha256": "3f4427ca49ada4fe9f9c419cd76ff88026aa16779f8c211f833528067c681705"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Czech_000000.txt",
+      "size": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "combined_annotatedv2/Czech_000004.jpg",
+      "size": 74972,
+      "crc32": "0dc795a5",
+      "sha256": "987826d24348ab52547b68df8506dde1c185c4f745a32ac30185a3b4b081550d"
+    },
+    {
+      "name": "combined_annotatedv2/Czech_000004.txt",
+      "size": 38,
+      "crc32": "85c3fa78",
+      "sha256": "5e93633c71a8244390cb47a182d715576be8cebc02dd24d25bbb01526a9a0604"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Czech_000004.jpg",
+      "size": 144027,
+      "crc32": "0f85bee5",
+      "sha256": "ee9bac0191cd9f6cd70bb871042829da6d4ac0bde132c81bcd5de3bbab43d4e3"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Czech_000004.txt",
+      "size": 39,
+      "crc32": "32859d9c",
+      "sha256": "0a801e8e9aaa712e7ec9f9a7e96f5466da5eb5f61d327f4b223e1507adf74d70"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000001.jpg",
+      "size": 101811,
+      "crc32": "64b050c7",
+      "sha256": "85e4490e13453f7c7bc8f517fd87c7990cf4b1dc058c381a4c2cc46e756e0157"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000001.txt",
+      "size": 105,
+      "crc32": "fc622543",
+      "sha256": "e10636f1925146fbf8bc33070cbf95f376ddd1b0a08471fee0759648f3ceaff9"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000001.jpg",
+      "size": 195853,
+      "crc32": "d71cf6d3",
+      "sha256": "71aa45f401671bfa578a37995f0f53b51fe26bf59c7fc5431b6ff1a92de164ee"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000001.txt",
+      "size": 78,
+      "crc32": "e9c44cc9",
+      "sha256": "e8f3c21ee12521236fc4d38b7af67af3b7192b0f8ea9a0bf58133a53e45ce77c"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000003.jpg",
+      "size": 90096,
+      "crc32": "c2d5228c",
+      "sha256": "a4cb6c396ef464aaf6618025ba01f1de3f4049617c6f435c4b5adf1ca6c6993b"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000003.txt",
+      "size": 76,
+      "crc32": "36604ce4",
+      "sha256": "064ef7202dd28c528973a00b263f64c5cc27eb50cd706b9ae7905829de0077b1"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000003.jpg",
+      "size": 174907,
+      "crc32": "3340c385",
+      "sha256": "144291f27c3da52a756c2fbc2d73a2f96d18b9fa45c5a3f898831809b0f3123b"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000003.txt",
+      "size": 78,
+      "crc32": "5e939368",
+      "sha256": "217d983aab51f568e601cb3dfbeb8ba22c76be0c3a30a635b527571063cf4cd0"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000011.jpg",
+      "size": 95248,
+      "crc32": "7bf1fea1",
+      "sha256": "aaebecf451cecd4826597cfc3d5eb0b32c2793e9341e172e108a60446276f0cd"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000011.txt",
+      "size": 117,
+      "crc32": "68ea73db",
+      "sha256": "9a3b94756ac477fcb3803bf0f5838803f018e7227ed6457d96b1188a47630499"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000011.jpg",
+      "size": 185733,
+      "crc32": "3799c1e0",
+      "sha256": "69d8c3a1167fa1e85842b67b21dd68bcbe78e292d3d0a478985bba773ead381f"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000011.txt",
+      "size": 78,
+      "crc32": "48fb40fe",
+      "sha256": "e6a1262c01d978521f4fb1dca91c6d1f2323d466104ed1c3dd3f397bd288f59a"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000035.jpg",
+      "size": 48593,
+      "crc32": "9113acc9",
+      "sha256": "ed0f246abc1eb633fdf0bad2e5dcdebef36e85e844873c3df40d0895013b6f51"
+    },
+    {
+      "name": "combined_annotatedv2/Japan_000035.txt",
+      "size": 76,
+      "crc32": "c8304004",
+      "sha256": "577be7de4963dc80d68aaf7573d589ca4a84d3b7186035358f506ffc96a8ab5f"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000035.jpg",
+      "size": 93687,
+      "crc32": "7b54e65e",
+      "sha256": "19c7c483d05fc48c364efb08e26d088c27cae32b336e75094dd6622a861ec8e5"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_Japan_000035.txt",
+      "size": 78,
+      "crc32": "9019a5ad",
+      "sha256": "0dbf0ce133575677e46053e0c271eae94b18c6e763bc330e7d8739bdbf640e8d"
+    },
+    {
+      "name": "combined_annotatedv2/India_000029.jpg",
+      "size": 46551,
+      "crc32": "c3a6059f",
+      "sha256": "4db6e3f5ca93201fdd24277bbcb1bdb5bb2983eaadf15cacdc0eba761f51967e"
+    },
+    {
+      "name": "combined_annotatedv2/India_000029.txt",
+      "size": 76,
+      "crc32": "f358313a",
+      "sha256": "18ce51fce3d09e8627fd4776dba201b3238249e7aeb4a196591ce5e2a1ae975e"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_India_000029.jpg",
+      "size": 87762,
+      "crc32": "83d13519",
+      "sha256": "35095324e31a9be92b7001f9230425f37a0cd816086dcb62e6e8821fdc5bcb47"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_India_000029.txt",
+      "size": 78,
+      "crc32": "99f700e5",
+      "sha256": "99da2e8c0a519a7a7ce9b732cc4c0b5fa0adb9f4f890ecd1c59fceb9003a39c4"
+    },
+    {
+      "name": "combined_annotatedv2/India_000103.jpg",
+      "size": 65849,
+      "crc32": "d4119d73",
+      "sha256": "02cfee47e17991fcb3b2657da2c8ebfe4ab6151a68148a8b2b8e116b6095688c"
+    },
+    {
+      "name": "combined_annotatedv2/India_000103.txt",
+      "size": 38,
+      "crc32": "138c1162",
+      "sha256": "2731734c683c3d66bdd4f0255f673ad27cbff37eeabdbf38f6d4b5bfe0c11c38"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_India_000103.jpg",
+      "size": 92228,
+      "crc32": "d63edbb2",
+      "sha256": "785c3072e5f361637e448ef0992576f81ac5aa8e71f47b27fa02c138f34a7450"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_India_000103.txt",
+      "size": 39,
+      "crc32": "f1b4cab1",
+      "sha256": "3cb685ac2044ed841647bfcf3052aea67f4902b4b9179cce705f979b1fa0393d"
+    },
+    {
+      "name": "combined_annotatedv2/United_States_000000.jpg",
+      "size": 89962,
+      "crc32": "ea93a679",
+      "sha256": "fda86756cc2e2794cbd31c0715b306037b83fac0d894f51d532a21cc0087fe81"
+    },
+    {
+      "name": "combined_annotatedv2/United_States_000000.txt",
+      "size": 121,
+      "crc32": "76e6a79f",
+      "sha256": "33b2b541ed2fee7b0f8c510c1b6555d826aa29077372812183c7bd7662b5e09b"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_United_States_000000.jpg",
+      "size": 175131,
+      "crc32": "bacd68dd",
+      "sha256": "cb98ad7be9eb68a04a5ce38486c6328528b631938a1a3db23fe6cb6225bcf267"
+    },
+    {
+      "name": "combined_annotatedv2/xmirror_United_States_000000.txt",
+      "size": 117,
+      "crc32": "55bb05ce",
+      "sha256": "c432a4556e787188fe9586c271f138032dcfb75b4ec28d6bd9ec618a84bb3841"
+    },
+    {
+      "name": "combined_annotatedv2/classes.txt",
+      "size": 150,
+      "crc32": "2aa7de7c",
+      "sha256": "7fd4cb4a34018fd7d9a0adf2632bc81a612a0d487f223e0f3ec8802434c73800"
+    },
+    {
+      "name": "combined_annotatedv2/India_001032.txt",
+      "size": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -4,6 +4,8 @@ All application milestones below are pending.
 
 Step 1 geography is documented as of 2026-10-12: [Jurong East/West boundary and NUS-ISS simulated origin](JURONG_SCOPE_AND_DEPOT.md), with static GeoJSON and matching example configuration. Task contracts, business rules and routing constraints remain to be defined; this does not complete M0 or implement application behavior.
 
+A's preparation step 2, [dataset and label verification](DATASET_AND_LABEL_AUDIT.md), now records the source version, eight class IDs, full archive-directory counts and targeted sample checks. Full content validation, class-frequency statistics and split manifests remain pending. This preparation step is distinct from application step 2 in the table below; no startup code or training has been implemented.
+
 See [the three-person work allocation and interface draft](TEAM_WORK_ALLOCATION.md) for ownership: A (project owner) leads vision, rules, backend foundations and integration; B leads four-crew routing; C leads the frontend and assistant. These are planned responsibilities, not completed contributions.
 
 | Step | Deliverable | Acceptance evidence |

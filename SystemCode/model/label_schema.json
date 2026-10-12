@@ -1,0 +1,85 @@
+{
+  "schema_version": "rdd2022es-v1-labels-1",
+  "status": "source_ids_and_names_verified_no_runtime_integration",
+  "verified_on": "2026-10-12",
+  "dataset_ref": "juusos/rdd2022es",
+  "dataset_version": 1,
+  "source_url": "https://www.kaggle.com/datasets/juusos/rdd2022es",
+  "source_member": "combined_annotatedv2/classes.txt",
+  "source_member_sha256": "7fd4cb4a34018fd7d9a0adf2632bc81a612a0d487f223e0f3ec8802434c73800",
+  "class_count": 8,
+  "class_id_base": 0,
+  "annotation_format": "yolo_detection_normalized_xywh",
+  "business_rule_mapping_status": "not_defined",
+  "classes": [
+    {
+      "class_id": 0,
+      "source_name": "longitudinal crack",
+      "label_key": "longitudinal_crack",
+      "display_name_zh": "纵向裂缝",
+      "base_rdd2022_category_code": "D00",
+      "source_visual_qualifier": "unspecified"
+    },
+    {
+      "class_id": 1,
+      "source_name": "longitudinal crack wide",
+      "label_key": "longitudinal_crack_wide",
+      "display_name_zh": "宽纵向裂缝",
+      "base_rdd2022_category_code": "D00",
+      "source_visual_qualifier": "wide"
+    },
+    {
+      "class_id": 2,
+      "source_name": "transverse crack",
+      "label_key": "transverse_crack",
+      "display_name_zh": "横向裂缝",
+      "base_rdd2022_category_code": "D10",
+      "source_visual_qualifier": "unspecified"
+    },
+    {
+      "class_id": 3,
+      "source_name": "transverse crack wide",
+      "label_key": "transverse_crack_wide",
+      "display_name_zh": "宽横向裂缝",
+      "base_rdd2022_category_code": "D10",
+      "source_visual_qualifier": "wide"
+    },
+    {
+      "class_id": 4,
+      "source_name": "alligator crack",
+      "label_key": "alligator_crack",
+      "display_name_zh": "龟裂（网状裂缝）",
+      "base_rdd2022_category_code": "D20",
+      "source_visual_qualifier": "unspecified"
+    },
+    {
+      "class_id": 5,
+      "source_name": "alligator crack sunken",
+      "label_key": "alligator_crack_sunken",
+      "display_name_zh": "下陷龟裂",
+      "base_rdd2022_category_code": "D20",
+      "source_visual_qualifier": "sunken"
+    },
+    {
+      "class_id": 6,
+      "source_name": "pothole",
+      "label_key": "pothole",
+      "display_name_zh": "坑洞",
+      "base_rdd2022_category_code": "D40",
+      "source_visual_qualifier": "unspecified"
+    },
+    {
+      "class_id": 7,
+      "source_name": "pothole deep",
+      "label_key": "pothole_deep",
+      "display_name_zh": "深坑洞",
+      "base_rdd2022_category_code": "D40",
+      "source_visual_qualifier": "deep"
+    }
+  ],
+  "interpretation_notes": [
+    "Base RDD2022 category codes express the damage family; they are not interchangeable with these eight class IDs.",
+    "An unqualified label is not proof of minor damage; wide/sunken/deep are dataset visual categories, not measured engineering thresholds.",
+    "Priority, business severity, service time and deadlines belong to future project rules, not this source label schema."
+  ]
+}

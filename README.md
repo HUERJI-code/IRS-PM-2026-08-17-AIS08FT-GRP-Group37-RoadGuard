@@ -106,6 +106,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
 - [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
+- [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)

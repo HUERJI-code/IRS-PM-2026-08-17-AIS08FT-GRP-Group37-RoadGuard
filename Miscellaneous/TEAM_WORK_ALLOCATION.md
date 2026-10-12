@@ -88,7 +88,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 ## 6. 统一数据接口草案
 
-共同约定：ID 为字符串；坐标使用 `latitude` / `longitude`；置信度为 0 至 1；行程和维修时长单位为分钟；API 时间戳使用带时区的 ISO 8601，建议统一 UTC，前端按新加坡时间显示。模型标签表由 A 在读取真实数据集后冻结，不凭空编造类别编号。
+共同约定：ID 为字符串；坐标使用 `latitude` / `longitude`；置信度为 0 至 1；行程和维修时长单位为分钟；API 时间戳使用带时区的 ISO 8601，建议统一 UTC，前端按新加坡时间显示。RDD2022ES 第 1 版八类 ID 已由发布说明和包内 `classes.txt` 核验，统一读取[标签字典](../SystemCode/model/label_schema.json)；标签到项目优先级、维修时长的规则仍待 A 定义。
 
 | 数据对象 | 提供者 → 使用者 | 最少需要的字段 | 关键约定 |
 | --- | --- | --- | --- |
@@ -218,6 +218,7 @@ Jurong 边界与 NUS-ISS 起点已于 2026-10-12 记录为本项目的地理基�
 
 - [当前项目范围](PROJECT_SCOPE.md)
 - [Jurong 具体范围与 NUS-ISS 模拟起点](JURONG_SCOPE_AND_DEPOT.md)
+- [数据集与八类标签核对](DATASET_AND_LABEL_AUDIT.md)
 - [总体开发计划](IMPLEMENTATION_PLAN.md)
 - [课程提交清单](SUBMISSION_CHECKLIST.md)
 - [课程技术映射](../ProjectReport/COURSE_MAPPING.md)
