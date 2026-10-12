@@ -13,4 +13,4 @@ This directory is reserved for the new RoadGuard implementation. Its name follow
 
 `config/project.example.json` records the agreed scenario. It is a specification for future implementation and is not loaded by a running service yet.
 
-Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. Jurong coverage requires an explicit study boundary before geographic validation can be implemented.
+Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the JE/JW task boundary and the shared NUS-ISS origin outside it. Geographic validation remains unimplemented. Configuration file paths are relative to the repository root; the return-to-depot policy remains undecided.

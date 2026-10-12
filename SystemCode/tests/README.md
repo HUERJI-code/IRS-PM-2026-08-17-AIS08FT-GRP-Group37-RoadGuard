@@ -6,7 +6,7 @@ Add tests when the corresponding behavior exists. The first integration cases sh
 - Uncertain inspection -> review -> confirm/correct/dismiss.
 - Each assigned task occurs once; infeasible tasks are visible.
 - GA and greedy obey the same constraints.
-- Study-area validation after the Jurong boundary is agreed.
+- Task membership in the JE/JW polygons, including edges; the specified NUS-ISS depot is permitted outside the task area, and origin-to-first-task travel is counted.
 - External-service failure and explicitly labelled demonstration fallback.
 
 There are no runnable application tests in this scaffold yet.

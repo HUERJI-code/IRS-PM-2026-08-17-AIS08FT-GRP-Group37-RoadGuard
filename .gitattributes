@@ -1,6 +1,7 @@
 * text=auto
 *.md text eol=lf
 *.json text eol=lf
+*.geojson text eol=lf
 *.py text eol=lf
 *.js text eol=lf
 *.jsx text eol=lf
