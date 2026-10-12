@@ -1,4 +1,4 @@
-"""Task output vocabulary; label-to-business-rule mapping remains unimplemented."""
+"""Persisted-task output vocabulary; demo rule candidates have a separate schema."""
 
 from typing import Annotated, Literal
 

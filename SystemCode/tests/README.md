@@ -11,6 +11,8 @@ Run `python -m pytest SystemCode/tests -q` from the repository root after instal
 
 These tests do not claim an implemented inspection-to-route workflow or model accuracy.
 
+`test_vision.py`, `test_rules.py` and `test_demo_api.py` cover the explicit step 5 simulation, eight-class demo rules, threshold/selection boundaries and HTTP previews that do not mutate the task queue or input revision.
+
 ## CI integration
 
 RoadGuard CI runs Python application tests here once Python implementation is added. Group tests by module, use pytest discovery names, and declare the required test dependencies in `SystemCode/backend/requirements-ci.txt`. Frontend tests live with the frontend and run through its `test:ci` script. See [the shared CI guide](../../Miscellaneous/GITHUB_WORKFLOW.md) for exact commands and requirements.

@@ -1,8 +1,10 @@
-# A 第一版公共 DTO 契约
+# A 公共数据与演示 API 契约
 
 版本：`a-dto-v1`；日期：2026-10-12；维护人：A。此文件是已落实的 A 公共 DTO 契约唯一维护位置。分工表第 6、7 节保留成员职责与未来接口设计，涉及已落实的字段定义应链接本文件；B/C 后续对象由对应负责人提出，不从本文件推定其已冻结。可执行来源为 [schemas](../SystemCode/backend/roadguard/schemas/)，固定样例为 [contracts](../SystemCode/contracts/README.md)。变更必须同时更新 DTO、样例、必要测试与调用方影响说明。
 
 本次冻结数据表示和最低一致性验证，不等于完成 M0：置信度阈值、标签与业务规则映射、多检测选取策略、维修时长、期限和调度参数仍待确认。严禁把样例升级为批准规则。公共导入为 `from roadguard.schemas import Detection, Inspection, Task, ErrorResponse, HealthResponse, PlanningRevision`；另提供结构化 `DecisionTrace`。
+
+第 5 步增量契约为 `a-demo-v1`，保留上述 DTO 字段兼容性，新增 `RuleCandidate`、`RuleAssessment` 和 `/demo` 演示接口。实际演示策略见[规则说明](DEMO_DETECTION_AND_RULES.md)；已实现演示映射不表示正式阈值、工时和优先级获得批准。
 
 ## 通用表示
 
@@ -33,7 +35,25 @@ Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须�
 
 ## 路由实现状态与错误
 
-当前实际业务路由只有 `GET /api/v1/health`，200 返回 HealthResponse。巡检上传/查询/审核、任务查询/修改、队伍、规划与助手路径仍是分工表第 7 节的未来接口；本次没有为这些路径注册返回样例的伪业务处理器，也没有冻结其请求体或分页格式。OpenAPI 仅展示已注册路由，DTO 文件存在不表示其 API 已存在。
+当前实现 `GET /api/v1/health`（200 返回 HealthResponse）以及下列明确的演示接口。巡检上传/查询/审核、任务查询/修改、队伍、规划与助手路径仍是分工表第 7 节的未来接口；没有为这些路径注册返回样例的处理器，也没有冻结其请求体或分页格式。OpenAPI 仅展示已注册路由，DTO 文件存在不表示其业务 API 已存在。
+
+### a-demo-v1：检测与规则预览
+
+公共类型从 `roadguard.schemas` 导入，定义在 [assessment.py](../SystemCode/backend/roadguard/schemas/assessment.py)；HTTP 包装类型在 [demo.py](../SystemCode/backend/roadguard/api/demo.py)。
+
+| 对象 | 字段与约束 |
+| --- | --- |
+| RuleCandidate | `detection_id`、中央 `damage_label`、`severity` low/medium/high、`priority` P1/P2/P3、正数或 null 的 `service_minutes`、非空 `repair_recommendation`、`rule_version`、`is_demo: true`。没有 task_id、位置或创建时间，不是 Task |
+| RuleAssessment | `status` no_detection/pending_review/ready_for_task、`detections`、nullable `selected_detection_id`、nullable `candidate`、非空 `decision_trace`、`rule_version`、`is_demo: true` |
+| DemoAssessmentRequest | 仅 `scenario_id` 非空字符串，最多 64 字符；拒绝额外字段；不接受图片、阈值覆盖或修改业务参数的请求字段 |
+| DemoAssessmentResponse | `is_demo: true`、`scenario_id`、`model_version`、`image_width`、`image_height`、实际 `confidence_threshold` 和嵌套 `assessment: RuleAssessment` |
+| DemoScenarioCatalogue | `is_demo: true`、`model_version`、`image_width`、`image_height`、`scenarios` 列表，每项 `scenario_id` 与 `description` |
+
+RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无检测；另外两个状态必须有检测。只有 ready_for_task 可有候选，候选必须关联选中的检测、标签和同一规则版本；其他状态的 candidate/selected_detection_id 均为 null。所有 trace 显式标为演示且匹配 assessment 的规则版本。输入真实检测与演示规则混合时，检测保留真实来源标记，assessment/candidate 仍必须标为演示。
+
+`GET /api/v1/demo/scenarios` 返回 DemoScenarioCatalogue；`POST /api/v1/demo/assessments` 接收 DemoAssessmentRequest，200 返回 DemoAssessmentResponse。调用示例 `{"scenario_id":"high_confidence"}`。预览调用只执行服务，不存储巡检/任务、不递增 input_revision，重复请求不会产生队列记录。候选中不含期限，不能计算逾期指标；进入 Task 前仍需第 6 步补充位置验证、审核事实、存储和幂等性。
+
+### 统一错误
 
 统一错误的可执行来源为 [errors.py](../SystemCode/backend/roadguard/errors.py) 及 [health.py](../SystemCode/backend/roadguard/api/health.py)；使用 `code` 判断，不匹配 message 文本。当前错误码如下，变更须与实现同步：
 
@@ -46,6 +66,9 @@ Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须�
 | `database_unavailable` | 503 | health 的数据库检查失败 |
 | `internal_error` | 500 | 未处理异常的安全公共说明，无原始异常文字 |
 | `http_error` | 对应 HTTP 状态 | 其他 HTTPException 的通用安全说明 |
+| `demo_scenario_not_found` | 404 | 未知的固定演示案例，不回显传入值 |
+| `demo_unavailable` | 503 | 演示服务未就绪，不用成功样例替代错误 |
+| `invalid_detections` | 422 | 规则服务收到非法检测快照；属于内部服务入口校验，HTTP 演示请求不能自行传入检测 |
 
 错误样例使用 `validation_error` / 422，details 中的 is_demo 标记属于固定样例附加 metadata，不要求真实响应添加。未来业务错误由对应服务明确抛出并记录，不能从固定样例推定已有业务逻辑。
 

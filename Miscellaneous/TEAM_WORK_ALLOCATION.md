@@ -120,7 +120,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 ## 7. HTTP 接口责任表
 
-统一前缀 `/api/v1`。当前仅 `GET /api/v1/health` 已实现；下表其余路径都是后续对接设计，请勿当作已可调用的 API。A 维护[接口契约与统一错误结构](API_CONTRACT.md)，负责人实现自身业务逻辑。
+统一前缀 `/api/v1`。当前已实现 health，以及明确的 `/demo/scenarios` 和 `/demo/assessments` 演示接口，详见[第 5 步指南](DEMO_DETECTION_AND_RULES.md)。下表除 health 外仍是后续持久化业务设计。A 维护[接口契约与统一错误结构](API_CONTRACT.md)，负责人实现自身业务逻辑。
 
 | 接口 | 负责人 | 调用方 | 输入 | 输出 / 行为 |
 | --- | --- | --- | --- | --- |
@@ -149,8 +149,8 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 | 服务约定 | 提供者 | 使用者 | 对接内容 |
 | --- | --- | --- | --- |
-| VisionService | A | A 的巡检模块 | 图片 → Detection 列表与模型来源信息 |
-| RuleService | A | A 的任务/审核模块；C 可只读查询规则说明 | 确认后的损坏标签 → 严重度、优先级、维修时长、建议与规则记录 |
+| VisionService | A | A 的巡检模块 | 当前 DemoDetector 接收案例 ID 并返回合成 Detection；真实图片适配待实现 |
+| RuleService | A | A 的任务/审核模块；C 可只读查询规则说明 | 已实现演示检测快照 → 分流/候选及规则记录；持久化审核流程待第 6 步接入 |
 | TaskQueryService | A | B、C 的助手服务 | 当前有效任务、任务详情与输入版本 |
 | 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 已有 SQLite 同事务读写入口，见[后端接入说明](../SystemCode/backend/README.md)；业务变更模块负责在同一事务递增，当前未实现任务/队伍变更 |
 | PlanningService | B | A、C 的确认流程 | 基于当前任务和队伍，生成并保存两种算法的方案 |

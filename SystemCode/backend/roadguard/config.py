@@ -13,6 +13,7 @@ from typing import Any
 REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CONFIG_PATH = Path("SystemCode/config/project.example.json")
 DEFAULT_DB_PATH = Path("SystemCode/backend/data/roadguard.sqlite3")
+DEFAULT_DEMO_RULES_PATH = Path("SystemCode/config/demo_rules.example.json")
 
 
 class ConfigurationError(ValueError):
@@ -59,6 +60,7 @@ class Settings:
     database_path: Path
     project: Mapping[str, Any]
     database_busy_timeout_ms: int = 5000
+    demo_rules_path: Path = DEFAULT_DEMO_RULES_PATH
 
     def __post_init__(self) -> None:
         if not isinstance(self.project, Mapping):
@@ -72,6 +74,7 @@ class Settings:
             raise ConfigurationError("Database busy timeout must be a positive integer.")
         object.__setattr__(self, "config_path", _resolve_path(self.config_path))
         object.__setattr__(self, "database_path", _resolve_path(self.database_path))
+        object.__setattr__(self, "demo_rules_path", _resolve_path(self.demo_rules_path))
         object.__setattr__(self, "project", _freeze(self.project))
 
 
@@ -80,6 +83,7 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
     environment = os.environ if environ is None else environ
     config_path = _resolve_path(environment.get("ROADGUARD_CONFIG_PATH", DEFAULT_CONFIG_PATH))
     database_path = _resolve_path(environment.get("ROADGUARD_DB_PATH", DEFAULT_DB_PATH))
+    demo_rules_path = _resolve_path(environment.get("ROADGUARD_DEMO_RULES_PATH", DEFAULT_DEMO_RULES_PATH))
     try:
         project = json.loads(
             config_path.read_text(encoding="utf-8"),
@@ -88,4 +92,7 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
         )
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ConfigurationError("Project configuration could not be read as UTF-8 JSON.") from exc
-    return Settings(config_path=config_path, database_path=database_path, project=project)
+    return Settings(
+        config_path=config_path, database_path=database_path, project=project,
+        demo_rules_path=demo_rules_path,
+    )
