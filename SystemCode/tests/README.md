@@ -1,17 +1,19 @@
 # Shared backend and contract tests
 
-Run `python -m pytest SystemCode/tests -q` from the repository root after installing the backend CI dependencies. Current tests cover DTO validation and fixture consistency, configuration, health/error responses, SQLite persistence and shared input-revision transactions. Future end-to-end cases must cover:
+Run `python -m pytest SystemCode/tests -q` from the repository root after installing the backend CI dependencies. Tests cover contracts, backend foundations, simulated rules, uploaded images, geographic validation and persisted inspection/review/task behavior. Remaining whole-system cases must cover:
 
 - Accepted inspection -> priority rule -> active task -> four-crew replan.
-- Uncertain inspection -> review -> confirm/correct/dismiss.
+- The implemented review/task flow connected to B's planner and C's frontend.
 - Each assigned task occurs once; infeasible tasks are visible.
 - GA and greedy obey the same constraints.
-- Task membership in the JE/JW polygons, including edges; the specified NUS-ISS depot is permitted outside the task area, and origin-to-first-task travel is counted.
-- External-service failure and explicitly labelled demonstration fallback.
+- Travel from the specified NUS-ISS depot outside the task area; origin-to-first-task travel must be counted.
+- External-service failures and explicit demo-mode selection, without silent fallback.
 
 These tests do not claim an implemented inspection-to-route workflow or model accuracy.
 
 `test_vision.py`, `test_rules.py` and `test_demo_api.py` cover the explicit step 5 simulation, eight-class demo rules, threshold/selection boundaries and HTTP previews that do not mutate the task queue or input revision.
+
+Step 6 adds `test_images.py`, `test_geography.py`, `test_workflow.py` and `test_workflow_api.py`. They exercise real decoding and EXIF normalization, bounded multipart uploads, polygon edges/holes/union, declared road scope, audit preservation, task state, idempotency and concurrent writes, optimistic versions, transactional rollback, frozen policies, schema migration and restart persistence. Inputs are generated locally; no external API or model weights are required. The real symlink test may skip on Windows accounts without permission; the Linux CI run exercises it.
 
 ## CI integration
 

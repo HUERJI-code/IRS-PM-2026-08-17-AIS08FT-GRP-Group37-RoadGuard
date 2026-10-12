@@ -1,6 +1,6 @@
 # RoadGuard 三人分工与接口对接表
 
-编制日期：2026-10-11；更新：2026-10-12。状态：公共后端与首批 DTO 已实现，业务模块按以下分工推进。
+编制日期：2026-10-11；更新：2026-10-12。状态：A 的第 3～6 步已实现，包含模拟上传/审核/任务持久化；真实模型与 B/C 模块按以下分工推进。
 
 所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
 
@@ -70,15 +70,15 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 ## 5. 代码与共享文件归属
 
-下列是未来实现时的目录建议，本次不会创建这些业务模块。公共目录由 A 维护，其余模块由负责人维护；需要改动他人接口时先同步接口样例和文档。
+下列目录沿用当前 `roadguard` 后端包。公共目录由 A 维护，其余模块由负责人维护；未实现模块仍是归属建议。需要改动他人接口时同步接口样例和文档。
 
 | 路径 / 内容 | 主负责人 | 对接规则 |
 | --- | --- | --- |
 | `SystemCode/model/` | A | 模型输出遵守统一 Detection 格式 |
-| `SystemCode/backend/app/main.py`、配置、数据库连接、公共异常 | A | B、C 提供各自路由，由 A 统一注册 |
-| `SystemCode/backend/app/vision/`、`rules/`、`inspections/`、`tasks/` | A | 对外输出审核结果与任务，不要求 B、C 理解模型内部 |
-| `SystemCode/backend/app/crews/`、`routing/` | B | 通过 A 的任务查询服务获取输入；拥有队伍和方案业务逻辑 |
-| `SystemCode/backend/app/assistant/` | C | 通过 A、B 的服务读取事实；确认后调用领域服务，不直接改其数据库表 |
+| `SystemCode/backend/roadguard/main.py`、配置、数据库连接、公共异常 | A | B、C 提供各自路由，由 A 统一注册 |
+| `SystemCode/backend/roadguard/vision/`、`rules/`、`inspections/` | A | inspections 中统一维护巡检与关联任务事务；对外输出审核结果与任务，不要求 B/C 理解模型内部 |
+| `SystemCode/backend/roadguard/crews/`、`routing/`（待实现） | B | 通过 A 的任务查询服务获取输入；拥有队伍和方案业务逻辑 |
+| `SystemCode/backend/roadguard/assistant/`（待实现） | C | 通过 A、B 的服务读取事实；确认后调用领域服务，不直接改其数据库表 |
 | `SystemCode/frontend/` | C | 所有业务结论以 API 返回值为准 |
 | `SystemCode/backend/knowledge/` | A 提供内容，C 维护检索 | A 审核业务规则，C 负责索引、检索和引用 |
 | 数据库表与初始化 / 迁移入口 | A 统筹；B、C 提供所属模块表定义 | 公共入口单人维护，避免多人同时改数据库初始化逻辑 |
@@ -94,7 +94,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 | 数据对象 | 提供者 → 使用者 | 最少需要的字段 | 关键约定 |
 | --- | --- | --- | --- |
-| **Detection / Inspection / Task** | A → B/C | 见[首批接口契约](API_CONTRACT.md) | 已冻结数据格式；规则映射和在线业务接口待后续实现 |
+| **Detection / Inspection / Task** | A → B/C | 见[接口契约](API_CONTRACT.md) | 原 DTO 及 a-workflow-v1 记录契约已实现；在线巡检/审核/任务仍采用演示规则 |
 | **Crew** | B → A/C | `crew_id`、`name`、`available`、出发点坐标、`shift_minutes` | 默认四个固定 ID；停用或没有任务的队伍仍保留；能力差异首版不扩展 |
 | **PlanningInput** | A/B → B | `input_revision`、`planning_start_at`、`tasks`、`crews`、班次/返基地设置、目标权重、`random_seed` | 一个规划批次使用一致输入；任务或队伍配置变化时通过共用方法更新输入版本 |
 | **TravelMatrix** | B 内部，摘要供 A/C | `node_ids`、`duration_minutes`、`provider`、`generated_at` | 第 i 行第 j 列表示 i→j；不假设对称；不可达用空值并显式处理；同一轮 GA/Greedy 共用矩阵 |
@@ -120,17 +120,17 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 ## 7. HTTP 接口责任表
 
-统一前缀 `/api/v1`。当前已实现 health，以及明确的 `/demo/scenarios` 和 `/demo/assessments` 演示接口，详见[第 5 步指南](DEMO_DETECTION_AND_RULES.md)。下表除 health 外仍是后续持久化业务设计。A 维护[接口契约与统一错误结构](API_CONTRACT.md)，负责人实现自身业务逻辑。
+统一前缀 `/api/v1`。health、`/demo` 预览以及巡检/审核/任务接口已实现，详见[第 5 步指南](DEMO_DETECTION_AND_RULES.md)和[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)。下表 crews/route-plans/assistant 仍待 B/C 实现。A 维护[接口契约与统一错误结构](API_CONTRACT.md)。
 
 | 接口 | 负责人 | 调用方 | 输入 | 输出 / 行为 |
 | --- | --- | --- | --- | --- |
 | `GET /health` | A | C、启动检查 | 无 | 服务可用状态，不伪报模型/API 已就绪 |
-| `POST /inspections` | A | C | 图片文件、经纬度 | Inspection；可返回关联任务、重算状态和方案 ID |
+| `POST /inspections` | A | C | 图片、demo 案例、坐标、道路声明、幂等 key | InspectionMutation；关联任务与 input_revision，不返回虚构规划结果 |
 | `GET /inspections?status=...` | A | C | 状态筛选 | 巡检/审核列表 |
 | `GET /inspections/{id}` | A | C | 巡检 ID | 完整检测、原图/标注图、审核与规则记录 |
-| `POST /inspections/{id}/review` | A | C | `confirm` / `correct` / `dismiss`；纠正时提供标签与选定检测 | 更新 Inspection；按规则创建/更新/取消对应任务；防重复创建 |
+| `POST /inspections/{id}/review` | A | C | `confirm` / `correct` / `dismiss`、请求 ID、预期记录版本；确认/纠正选定检测 | 仅审核 pending_review；确认/纠正创建唯一任务，驳回不创建；保留原始检测和审核历史 |
 | `GET /tasks?status=...` | A | C | 状态筛选 | 任务列表及当前输入版本 |
-| `PATCH /tasks/{id}` | A | C | 允许的状态或位置修正 | 更新后的 Task 和重算结果；不接受自由填写优先级 |
+| `PATCH /tasks/{id}` | A | C | 请求 ID、预期版本；完成/取消、标签或完整位置修正 | TaskMutation 与 input_revision；不接受自由优先级，不假报已重算 |
 | `GET /crews` | B | C、A | 无 | 四支工程队信息 |
 | `PATCH /crews/{id}` | B | C、助手确认流程 | 可用状态；其他配置由已约定规则控制 | 更新 Crew，递增输入版本并触发重算 |
 | `POST /route-plans/recalculate` | B | A、C | 以当前已保存业务数据重算；携带预期输入版本 | 同一输入下 GA/Greedy 的方案 ID 与重算状态 |
@@ -150,9 +150,9 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | 服务约定 | 提供者 | 使用者 | 对接内容 |
 | --- | --- | --- | --- |
 | VisionService | A | A 的巡检模块 | 当前 DemoDetector 接收案例 ID 并返回合成 Detection；真实图片适配待实现 |
-| RuleService | A | A 的任务/审核模块；C 可只读查询规则说明 | 已实现演示检测快照 → 分流/候选及规则记录；持久化审核流程待第 6 步接入 |
-| TaskQueryService | A | B、C 的助手服务 | 当前有效任务、任务详情与输入版本 |
-| 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 已有 SQLite 同事务读写入口，见[后端接入说明](../SystemCode/backend/README.md)；业务变更模块负责在同一事务递增，当前未实现任务/队伍变更 |
+| RuleService | A | A 的任务/审核模块；C 可只读使用规则记录 | 已接入持久化流程；原检测保留，审核使用明确的人工复核映射及巡检冻结规则 |
+| TaskQueryService（后续独立对接） | A | B、C 的助手服务 | 当前 WorkflowService 已提供任务详情/分页/输入版本；第 7 步补充规划快照对接与固定实验数据 |
+| 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 任务创建/修改同事务递增已实现；B 接入队伍变更时遵循同一规则，见[后端说明](../SystemCode/backend/README.md) |
 | PlanningService | B | A、C 的确认流程 | 基于当前任务和队伍，生成并保存两种算法的方案 |
 | CrewService | B | C 的确认流程、B 的 API | 检查队伍变更，更新可用状态并请求重算 |
 | RouteQueryService | B | C 的助手服务 | 方案 ID → 保存的方案事实与指标 |

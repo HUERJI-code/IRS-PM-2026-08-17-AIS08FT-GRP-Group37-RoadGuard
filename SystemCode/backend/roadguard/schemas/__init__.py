@@ -5,8 +5,14 @@ from .assessment import RuleAssessment, RuleCandidate
 from .inspection import DecisionTrace, Inspection
 from .responses import ErrorResponse, HealthResponse, PlanningRevision
 from .task import Task
+from .workflow import (
+    InspectionList, InspectionMutation, InspectionRecord, ReviewRequest,
+    TaskList, TaskMutation, TaskPatch, TaskRecord, UploadMetadata,
+)
 
 __all__ = [
     "DecisionTrace", "Detection", "ErrorResponse", "HealthResponse", "Inspection",
     "PlanningRevision", "RuleAssessment", "RuleCandidate", "Task",
+    "InspectionList", "InspectionMutation", "InspectionRecord", "ReviewRequest",
+    "TaskList", "TaskMutation", "TaskPatch", "TaskRecord", "UploadMetadata",
 ]

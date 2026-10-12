@@ -4,7 +4,7 @@
 
 RoadGuard 首版将维修任务限定在 **Jurong East 与 Jurong West 两个规划区**，四支工程队从 **NUS-ISS** 统一出发。NUS-ISS 位于任务区域之外，因此系统须分别处理任务范围、基地位置和行驶路径：任务在区域内，指定基地允许在区域外，路线可以跨越区域边界。
 
-本轮完成范围设计、静态地理资料和示例配置。应用尚未实现。NUS-ISS 是用户指定的真实地点，但调度用途、工程队、维修部门与任务均为课程模拟，不代表学校实际承担道路维修或认可该模拟。
+本文件保留第 1 步的范围设计和静态资料核验记录。后续[第 6 步](INSPECTION_REVIEW_TASK_WORKFLOW.md)已实现任务点的多边形校验与巡检/任务保存；道路类型仍由调用者声明，未接入道路网络核验。NUS-ISS 是用户指定的真实地点，但调度用途、工程队、维修部门与任务均为课程模拟，不代表学校实际承担道路维修或认可该模拟。
 
 ## 1. 首版范围决定
 
@@ -126,7 +126,7 @@ B 生成行程矩阵时必须覆盖基地与任务之间的方向性行程，并
 
 [project.example.json](../SystemCode/config/project.example.json) 已表达本次设计。`geojson_path` 均相对**仓库根目录**，不是相对配置文件所在目录；未来由 A 的统一配置加载器解析，前端地图文件的提供方式由 A／C 在接口阶段约定。
 
-配置目前是规格样例，未被运行中的服务读取。`study_boundary` 描述冻结范围；`allowed_outside_task_service_area` 只适用于当前指定基地；`routes_may_leave_study_area` 表示路径规则；`return_to_depot: null` 保留待定业务决定。字段不是已上线 API 契约。
+配置现由共享后端在启动时读取，第 6 步校验冻结范围版本与路径。`study_boundary` 描述冻结范围；`allowed_outside_task_service_area` 只适用于当前指定基地；`routes_may_leave_study_area` 是未来路径规则；`return_to_depot: null` 保留待定业务决定。读取这些字段不表示规划器已实现。
 
 ## 7. 本轮核验记录
 

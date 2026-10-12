@@ -61,6 +61,7 @@ class Settings:
     project: Mapping[str, Any]
     database_busy_timeout_ms: int = 5000
     demo_rules_path: Path = DEFAULT_DEMO_RULES_PATH
+    upload_path: Path | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.project, Mapping):
@@ -74,6 +75,10 @@ class Settings:
             raise ConfigurationError("Database busy timeout must be a positive integer.")
         object.__setattr__(self, "config_path", _resolve_path(self.config_path))
         object.__setattr__(self, "database_path", _resolve_path(self.database_path))
+        # A DB override also isolates uploads unless an explicit storage override is given.
+        object.__setattr__(self, "upload_path", _resolve_path(
+            self.upload_path if self.upload_path is not None else self.database_path.parent / "uploads"
+        ))
         object.__setattr__(self, "demo_rules_path", _resolve_path(self.demo_rules_path))
         object.__setattr__(self, "project", _freeze(self.project))
 
@@ -95,4 +100,5 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
     return Settings(
         config_path=config_path, database_path=database_path, project=project,
         demo_rules_path=demo_rules_path,
+        upload_path=environment.get("ROADGUARD_UPLOAD_PATH"),
     )

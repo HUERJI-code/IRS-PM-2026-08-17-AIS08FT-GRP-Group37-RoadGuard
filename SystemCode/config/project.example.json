@@ -1,6 +1,6 @@
 {
   "project_name": "RoadGuard",
-  "stage": "demo_detection_rules",
+  "stage": "demo_inspection_task_workflow",
   "scenario": {
     "country": "Singapore",
     "study_area": "Jurong",
@@ -13,7 +13,7 @@
       "geometry_rule": "union_of_features_covers_task_point",
       "coordinate_order": "longitude_latitude"
     },
-    "boundary_status": "defined_for_project_v1_not_implemented",
+    "boundary_status": "polygon_covers_implemented_road_type_user_declared",
     "task_road_scope": "public_motor_roads_excluding_expressway_mainlines_and_ramps_and_restricted_internal_roads",
     "routes_may_leave_study_area": true,
     "task_data": "synthetic",

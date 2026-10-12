@@ -71,10 +71,14 @@ class DemoDetector:
     image_width: ClassVar[int] = 640
     image_height: ClassVar[int] = 480
 
-    def detect(self, scenario_id: str) -> list[Detection]:
+    def detect(self, scenario_id: str, *, image_width: int | None = None, image_height: int | None = None) -> list[Detection]:
         """Return fresh validated DTOs from a named case, not an uploaded image."""
         if not isinstance(scenario_id, str) or scenario_id not in _SCENARIO_FIXTURES:
             raise DemoScenarioNotFound()
+        width = self.image_width if image_width is None else image_width
+        height = self.image_height if image_height is None else image_height
+        if type(width) is not int or type(height) is not int or width <= 0 or height <= 0:
+            raise ValueError("Image dimensions must be positive integers.")
         fixture = _SCENARIO_FIXTURES[scenario_id]
         return [
             Detection(
@@ -82,9 +86,10 @@ class DemoDetector:
                 class_id=class_id,
                 label=LABELS_BY_ID[class_id],
                 confidence=confidence,
-                bbox_xyxy=box,
-                image_width=self.image_width,
-                image_height=self.image_height,
+                bbox_xyxy=(box[0] * width / self.image_width, box[1] * height / self.image_height,
+                           box[2] * width / self.image_width, box[3] * height / self.image_height),
+                image_width=width,
+                image_height=height,
                 model_version=self.model_version,
                 is_demo=self.is_demo,
             )

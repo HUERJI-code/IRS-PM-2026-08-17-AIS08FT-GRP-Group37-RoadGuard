@@ -1,10 +1,10 @@
 # RoadGuard 共用后端基础
 
-A 维护唯一的 FastAPI 应用入口、配置、SQLite 连接、错误和路由注册。当前实现健康检查，以及明确的模拟检测/演示规则预览。真实视觉、图片上传、审核/任务 CRUD、工程队、调度和助手服务仍待实现。公共 DTO 的冻结格式见 [API 契约](../../Miscellaneous/API_CONTRACT.md)；后续模块遵守该契约，DTO 已定义不代表对应持久化业务功能已经可用。
+A 维护唯一的 FastAPI 应用入口、配置、SQLite 连接、错误和路由注册。当前实现健康检查、stateless 模拟预览，以及图片上传、范围检查、巡检审核和任务持久化。真实视觉、工程队、调度、助手与前端仍待实现。公共格式见 [API 契约](../../Miscellaneous/API_CONTRACT.md)；新 HTTP 记录使用 a-workflow-v1，不能直接用旧 strict DTO 解析额外字段。
 
 ## 环境与启动
 
-CI 使用 Python 3.11。后端采用同一套依赖清单：`requirements.txt` 固定 FastAPI、Pydantic、Uvicorn 的运行版本；`requirements-ci.txt` 引用它，并添加 HTTPX 和 pytest。SQLite 使用 Python 标准库，无外部数据库服务。
+CI 使用 Python 3.11。`requirements.txt` 固定 FastAPI、Pydantic、Uvicorn，以及图片解码所需 Pillow、multipart 解析所需 python-multipart；`requirements-ci.txt` 引用它并添加 HTTPX 和 pytest。SQLite 使用标准库。已有环境也应重新安装依赖清单以取得新增包。
 
 以下命令在仓库根目录执行，首次运行创建并激活本地虚拟环境：
 
@@ -15,7 +15,7 @@ python -m pip install -r SystemCode/backend/requirements-ci.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
-本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，真实 OpenAPI `/openapi.json`。当前 OpenAPI 声明健康、案例目录和规则预览三个接口。`roadguard.main.create_app(settings=None)` 创建可隔离测试的应用；模块导入不读取场景/规则配置、不创建数据库。FastAPI lifespan 在启动时读取并校验配置，再初始化基础表。配置错误、目录权限错误或不兼容数据库会使启动失败，应修复原因后重启，不能静默重建已有数据库。
+本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，OpenAPI `/openapi.json`。当前还声明巡检上传/查询/图片/审核和任务查询/修改。`roadguard.main.create_app(settings=None)` 创建可隔离应用；工厂不初始化数据库。lifespan 验证配置、演示规则与冻结地理资料后，执行数据库迁移。配置、目录权限或数据库结构错误使启动失败，不静默重建已有业务数据。此步面向本地开发，未新增身份认证或公开部署。
 
 健康响应：
 
@@ -31,6 +31,8 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 ## 配置入口
 
+第 6 步的请求格式、审核、任务更新及失败处理见[巡检/审核/任务指南](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。上传必须显式选择 demo 模式和案例；接受后会创建真实保存的**演示任务**，不表示已经执行图像识别或路线规划。道路类别为调用者声明。
+
 默认读取 `SystemCode/config/project.example.json` 与演示策略 `SystemCode/config/demo_rules.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持以下环境变量：
 
 | 变量 | 用途 |
@@ -38,6 +40,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 | `ROADGUARD_CONFIG_PATH` | 指向本地 UTF-8 JSON 项目配置 |
 | `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
 | `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
+| `ROADGUARD_UPLOAD_PATH` | 图片保存目录，默认在数据库文件旁的 uploads 子目录；必须与数据库一起保存/备份 |
 
 默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
 
@@ -45,7 +48,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 `roadguard.database.Database` 是各模块共用入口。每次操作获取独立连接并在退出时关闭；连接开启外键和 5000 毫秒 busy timeout。`connect()` 是只读事务，提供一致的查询快照；`transaction(expected_revision=None)` 使用 `BEGIN IMMEDIATE` 串行化写入，成功提交，异常回滚。不要在上下文内自行提交、回滚或关闭连接。
 
-`initialize()` 是 lifespan 调用的幂等基础初始化/迁移入口，当前仅建立 `infra_metadata` 单例行，记录 `schema_version=1` 和初始 `input_revision=0`。重复初始化保留版本。未知 schema 版本拒绝启动，不清空已有数据。未来业务表由各模块负责人提供增量，A 在同一入口整合迁移；当前不预建业务表。
+`initialize()` 是唯一迁移入口：基础 schema v1 原地迁移至 v2，保留 input_revision，新增 inspections、tasks、operation_keys 及索引；新数据库初始 revision=0。v2 重新启动校验已有结构；未知版本或缺失业务表拒绝启动，不清空/重建记录。B/C 后续业务表仍由负责人提供增量，A 在同一迁移入口整合。
 
 供 A/B 共用的函数是 `read_revision(connection)`、`assert_revision(connection, expected_revision)` 和 `increment_revision(connection, expected_revision=None)`。输入变更与版本递增必须处于**同一个领域事务**，每次实际输入变更递增一次。不要使用独立计数器或事后第二次连接更新版本。例如，B 实现工程队状态服务时采用：
 
@@ -88,4 +91,4 @@ B/C 提供各自 `APIRouter` 后由 A 在 `roadguard.api.create_api_router()` �
 python -m pytest SystemCode/tests -q
 ```
 
-基础测试覆盖配置路径/不可变性/错误、lifespan 延迟初始化、实际响应与 OpenAPI、数据库异常 503、统一安全错误、幂等初始化、持久化、事务回滚、过期输入拒绝和并发写入。新增 vision/rules/demo API 测试覆盖固定检测、八类演示映射、阈值、确定性、配置覆盖及预览不写库。测试使用独立临时数据库，不写默认运行数据库。完整上传/审核/任务流程、训练和道路/助手调用尚未实现，不能据此声称完整业务端到端通过。
+基础测试覆盖配置、实际响应/OpenAPI、迁移、持久化、回滚和并发。vision/rules/demo API 验证固定案例、演示映射和预览不写库。第 6 步加入 geography/images/workflow/API 测试，覆盖图片/坐标、审核、任务状态、幂等、资源版本和历史规则快照。测试使用临时数据库和图片；它们不代表真实模型、道路网络核验、四队规划或完整系统已完成。

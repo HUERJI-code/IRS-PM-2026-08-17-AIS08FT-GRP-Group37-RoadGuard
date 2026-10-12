@@ -93,6 +93,9 @@ def test_health_and_implemented_openapi(settings):
         openapi = client.get("/openapi.json").json()
         assert set(openapi["paths"]) == {
             "/api/v1/health", "/api/v1/demo/scenarios", "/api/v1/demo/assessments",
+            "/api/v1/inspections", "/api/v1/inspections/{inspection_id}",
+            "/api/v1/inspections/{inspection_id}/image", "/api/v1/inspections/{inspection_id}/review",
+            "/api/v1/tasks", "/api/v1/tasks/{task_id}",
         }
         health_schema = openapi["paths"]["/api/v1/health"]["get"]
         assert health_schema["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/HealthResponse")
@@ -189,7 +192,9 @@ def test_database_initialization_is_idempotent_and_revision_persists(database):
         assert read_revision(connection) == 1
         assert connection.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert connection.execute("PRAGMA busy_timeout").fetchone()[0] == 5000
-        assert {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")} == {"infra_metadata"}
+        assert {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")} == {
+            "infra_metadata", "inspections", "tasks", "operation_keys",
+        }
         with pytest.raises(sqlite3.OperationalError):
             connection.execute("UPDATE infra_metadata SET input_revision = 2")
     with pytest.raises(sqlite3.ProgrammingError):

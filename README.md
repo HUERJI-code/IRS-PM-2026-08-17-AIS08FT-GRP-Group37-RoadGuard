@@ -1,12 +1,12 @@
 # RoadGuard
 
-**Status: shared backend and demo detection/rule assessment implemented.**
+**Status: demo inspection, review and task workflow implemented.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend, SQLite infrastructure and initial data contracts are ready. Named synthetic scenarios now run through an explicit demo detector and configurable rules. Real image inference, persisted business workflows, routing, frontend and evaluation results remain pending.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Real image inference, routing, frontend and evaluation results remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～5 步已提供公共契约、后端基础和模拟检测/规则预览。规则参数为演示假设，候选尚未写入任务队列。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～6 步已实现公共基础、模拟检测、图片上传、巡检审核与任务管理。所有检测/规则仍明确标记演示；道路类型声明不能替代道路核验。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -18,7 +18,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Demo detection and rule assessment; task workflow pending |
+| Current phase | Persisted demo inspection/review/task workflow; real inference and planning pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -58,7 +58,7 @@ See [Video/README.md](Video/README.md) for naming and recording requirements.
 
 ## SECTION 5 : USER GUIDE
 
-Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md), then open `/docs`. Alongside health, `GET /api/v1/demo/scenarios` and `POST /api/v1/demo/assessments` run seven synthetic detector/rule cases; see the [step 5 demo guide](Miscellaneous/DEMO_DETECTION_AND_RULES.md). There is no frontend or image-upload workflow yet. The [API contract](Miscellaneous/API_CONTRACT.md) and [fixed DTO examples](SystemCode/contracts/README.md) let B/C develop against the same structures. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the delivery boundary.
+Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md), then open `/docs`. The [step 6 workflow guide](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md) covers image uploads, review and task management. The separate [step 5 demo endpoints](Miscellaneous/DEMO_DETECTION_AND_RULES.md) still provide stateless previews. There is no frontend yet. Use the [API contract](Miscellaneous/API_CONTRACT.md) for the new record/request schemas and the [fixed DTO examples](SystemCode/contracts/README.md) for the original snapshots. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the delivery boundary.
 
 Repository layout:
 
@@ -109,6 +109,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
 - [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
 - [Run demo detection and business rules (中文)](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
+- [Upload, review and manage persisted tasks (中文)](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)

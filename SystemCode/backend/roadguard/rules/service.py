@@ -6,6 +6,7 @@ from pydantic import ValidationError
 
 from roadguard.errors import AppError
 from roadguard.schemas import DecisionTrace, Detection, RuleAssessment, RuleCandidate
+from roadguard.schemas.common import LABEL_KEYS
 
 from .policy import RulePolicy
 
@@ -36,6 +37,26 @@ class RuleService:
             -minutes if minutes is not None else 0,
             -detection.confidence,
             detection.detection_id,
+        )
+
+    def reviewed_candidate(self, detection: Detection, damage_label: str | None = None) -> RuleCandidate:
+        """Map an explicitly reviewed selection without changing detector confidence.
+
+        The workflow service must record/validate the review decision before calling.
+        This is not a second automatic confidence gate or a task persistence method.
+        """
+        try:
+            snapshot = Detection.model_validate(detection.model_dump(warnings=False))
+            label = snapshot.label if damage_label is None else damage_label
+            if label not in LABEL_KEYS:
+                raise ValueError("invalid corrected label")
+        except (AttributeError, TypeError, ValueError):
+            raise AppError("invalid_detections", "Reviewed detection input is invalid.", 422) from None
+        rule = self.policy.rules[label]
+        return RuleCandidate(
+            detection_id=snapshot.detection_id, damage_label=label, severity=rule.severity,
+            priority=rule.priority, service_minutes=rule.service_minutes,
+            repair_recommendation=rule.recommendation, rule_version=self.policy.rule_version, is_demo=True,
         )
 
     def evaluate(self, detections: Sequence[Detection]) -> RuleAssessment:
