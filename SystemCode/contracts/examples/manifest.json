@@ -1,0 +1,15 @@
+{
+  "contract_version": "a-dto-v1",
+  "is_demo": true,
+  "description": "All entries are fixed synthetic contract examples, not persisted API results. No threshold, severity, priority or service-time mapping is approved. The image path is illustrative and no image-serving endpoint exists. Revision 1 is a fixture snapshot, not a runtime database requirement.",
+  "examples": {
+    "demo_inspection_accepted.json": "Inspection",
+    "demo_inspection_pending_review.json": "Inspection",
+    "demo_inspection_no_detection.json": "Inspection",
+    "demo_inspection_rejected.json": "Inspection",
+    "demo_task.json": "Task",
+    "demo_error.json": "ErrorResponse",
+    "demo_planning_revision.json": "PlanningRevision",
+    "demo_health.json": "HealthResponse"
+  }
+}

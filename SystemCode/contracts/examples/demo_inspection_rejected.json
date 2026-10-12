@@ -1,0 +1,37 @@
+{
+  "inspection_id": "demo-inspection-rejected",
+  "image_url": "/demo-assets/synthetic-road.svg",
+  "annotated_image_url": null,
+  "latitude": 1.3405,
+  "longitude": 103.706,
+  "detections": [
+    {
+      "detection_id": "demo-detection-rejected",
+      "class_id": 6,
+      "label": "pothole",
+      "confidence": 0.88,
+      "bbox_xyxy": [
+        120,
+        90,
+        340,
+        260
+      ],
+      "image_width": 640,
+      "image_height": 480,
+      "model_version": "demo-fixture-v1",
+      "is_demo": true
+    }
+  ],
+  "selected_detection_id": "demo-detection-rejected",
+  "status": "rejected",
+  "task_id": null,
+  "decision_trace": [
+    {
+      "code": "demo_rejected",
+      "message": "Fixed simulation only. Confidence gating and business mappings are not approved or implemented.",
+      "rule_version": null,
+      "is_demo": true
+    }
+  ],
+  "is_demo": true
+}

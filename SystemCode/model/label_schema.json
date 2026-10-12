@@ -1,6 +1,6 @@
 {
   "schema_version": "rdd2022es-v1-labels-1",
-  "status": "source_ids_and_names_verified_no_runtime_integration",
+  "status": "source_ids_and_names_verified_shared_dto_validation",
   "verified_on": "2026-10-12",
   "dataset_ref": "juusos/rdd2022es",
   "dataset_version": 1,

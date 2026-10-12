@@ -5,6 +5,7 @@
 - [Project scope / presentation feedback](PROJECT_SCOPE.md)
 - [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](JURONG_SCOPE_AND_DEPOT.md)
 - [Dataset source and eight-class label audit (中文)](DATASET_AND_LABEL_AUDIT.md)
+- [Frozen initial API contracts and demo examples (中文)](API_CONTRACT.md)
 - [Implementation plan](IMPLEMENTATION_PLAN.md)
 - [Three-person responsibilities and interface contracts (中文)](TEAM_WORK_ALLOCATION.md)
 - [Submission checklist](SUBMISSION_CHECKLIST.md)

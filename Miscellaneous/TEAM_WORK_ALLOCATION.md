@@ -1,12 +1,12 @@
 # RoadGuard 三人分工与接口对接表
 
-编制日期：2026-10-11。状态：分工与接口设计草案，尚未开始业务实现。
+编制日期：2026-10-11；更新：2026-10-12。状态：公共后端与首批 DTO 已实现，业务模块按以下分工推进。
 
 所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
 
 项目范围：新加坡 Jurong East 与 Jurong West；一个模拟维修部门；四支工程队；共用 NUS-ISS 模拟起点（位于任务区域外）；单张照片输入；RDD2022ES / YOLO；规则与人工审核；GA 与 Greedy；React 网页；GPT + RAG 路线助手。地理资料和对接要求见[范围与基地文档](JURONG_SCOPE_AND_DEPOT.md)。
 
-本表将 A 指定为项目发起人（你），B、C 的姓名待填。按照你的要求，A 承担较多工作，包括后端基础、业务数据与系统联调，让 B 集中做路线优化，让 C 集中做界面和助手。下文的接口、字段、目录归属和验收条件都是开发约定草案，不表示相关功能已经存在。
+本表将 A 指定为项目发起人（你），B、C 的姓名待填。按照你的要求，A 承担较多工作，包括后端基础、业务数据与系统联调，让 B 集中做路线优化，让 C 集中做界面和助手。除明确注明已实现或已冻结的内容外，下文的接口与验收条件都是待开发约定。
 
 ## 1. 三人职责总表
 
@@ -86,15 +86,15 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | `SystemCode/experiments/`、模块测试 | 各自负责，A 汇总 | A：视觉/规则；B：调度；C：助手/前端 |
 | `ProjectReport/`、`Video/` | A 汇总；三人共同提供 | 不把全部报告与录屏工作压给 C |
 
-## 6. 统一数据接口草案
+## 6. 统一数据接口：首批冻结与后续草案
+
+2026-10-12：A 的首批 `Detection`、`Inspection`、`Task`、`DecisionTrace`、`ErrorResponse`、`HealthResponse` 和 `PlanningRevision` 已落地。字段、约束、版本和样例的唯一维护入口为[接口契约](API_CONTRACT.md)及其链接的公共 schema；本表不再重复维护这些对象的字段。B/C 从该文档取固定样例开始开发。以下其余对象继续作为草案，不能声称整个 M0 已冻结。
 
 共同约定：ID 为字符串；坐标使用 `latitude` / `longitude`；置信度为 0 至 1；行程和维修时长单位为分钟；API 时间戳使用带时区的 ISO 8601，建议统一 UTC，前端按新加坡时间显示。RDD2022ES 第 1 版八类 ID 已由发布说明和包内 `classes.txt` 核验，统一读取[标签字典](../SystemCode/model/label_schema.json)；标签到项目优先级、维修时长的规则仍待 A 定义。
 
 | 数据对象 | 提供者 → 使用者 | 最少需要的字段 | 关键约定 |
 | --- | --- | --- | --- |
-| **Detection** | A → A/C | `class_id`、`label`、`confidence`、`bbox_xyxy`、`image_width`、`image_height`、`model_version`、`is_demo` | 框使用原图像素坐标，顺序为左、上、右、下；返回所有有效检测；基础严重度由统一规则映射 |
-| **Inspection** | A → C | `inspection_id`、`image_url`、`annotated_image_url`、`latitude`、`longitude`、`detections`、`selected_detection_id`、`status`、`task_id`、`decision_trace` | `status` 建议为 `no_detection` / `pending_review` / `accepted` / `rejected`；没有任务时 `task_id` 为空 |
-| **Task** | A → B/C | `task_id`、`inspection_id`、坐标、`damage_label`、`severity`、`priority`、`service_minutes`、`created_at`、`due_at`、`status`、`rule_version` | 优先级 P1/P2/P3；状态建议为 `active` / `completed` / `cancelled`；仅 `active` 参与重算；期限未定义时 `due_at` 可空并明确不计入逾期 |
+| **Detection / Inspection / Task** | A → B/C | 见[首批接口契约](API_CONTRACT.md) | 已冻结数据格式；规则映射和在线业务接口待后续实现 |
 | **Crew** | B → A/C | `crew_id`、`name`、`available`、出发点坐标、`shift_minutes` | 默认四个固定 ID；停用或没有任务的队伍仍保留；能力差异首版不扩展 |
 | **PlanningInput** | A/B → B | `input_revision`、`planning_start_at`、`tasks`、`crews`、班次/返基地设置、目标权重、`random_seed` | 一个规划批次使用一致输入；任务或队伍配置变化时通过共用方法更新输入版本 |
 | **TravelMatrix** | B 内部，摘要供 A/C | `node_ids`、`duration_minutes`、`provider`、`generated_at` | 第 i 行第 j 列表示 i→j；不假设对称；不可达用空值并显式处理；同一轮 GA/Greedy 共用矩阵 |
@@ -103,7 +103,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | **Explanation** | C → 前端 | `plan_id`、`answer`、`sources`、`supported` | 优先引用对应方案事实和 A 的知识文档；无依据时说明信息不足 |
 | **ChangeRequest** | C → 前端/B | `request_id`、`based_on_plan_id`、`input_revision`、`type`、结构化参数、`status`、确认后 `result_plan_id` | 首批类型为 `crew_availability`；状态至少区分 `pending` / `confirmed` / `cancelled` / `failed`；不能只凭自然语言直接修改业务数据 |
 
-检测接口须为每个 Detection 增加稳定的 `detection_id`，用于 Inspection 中的选中对象和审核修正定位。`selected_detection_id` 为空时说明没有选定任务候选。
+稳定检测 ID、选中对象、模拟来源和 UTC 时间规则已由公共 schema 校验。业务优先级与时长不能根据演示样例反推为正式规则。
 
 ### 路线指标统一定义
 
@@ -120,7 +120,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 ## 7. HTTP 接口责任表
 
-建议统一前缀 `/api/v1`。以下列的是对接设计，不是已经实现的 API。A 维护接口契约与统一错误结构；负责人实现自身业务逻辑。
+统一前缀 `/api/v1`。当前仅 `GET /api/v1/health` 已实现；下表其余路径都是后续对接设计，请勿当作已可调用的 API。A 维护[接口契约与统一错误结构](API_CONTRACT.md)，负责人实现自身业务逻辑。
 
 | 接口 | 负责人 | 调用方 | 输入 | 输出 / 行为 |
 | --- | --- | --- | --- | --- |
@@ -152,7 +152,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | VisionService | A | A 的巡检模块 | 图片 → Detection 列表与模型来源信息 |
 | RuleService | A | A 的任务/审核模块；C 可只读查询规则说明 | 确认后的损坏标签 → 严重度、优先级、维修时长、建议与规则记录 |
 | TaskQueryService | A | B、C 的助手服务 | 当前有效任务、任务详情与输入版本 |
-| PlanningRevisionService | A | A、B | 任务/队伍变化时更新共同输入版本；查询当前版本 |
+| 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 已有 SQLite 同事务读写入口，见[后端接入说明](../SystemCode/backend/README.md)；业务变更模块负责在同一事务递增，当前未实现任务/队伍变更 |
 | PlanningService | B | A、C 的确认流程 | 基于当前任务和队伍，生成并保存两种算法的方案 |
 | CrewService | B | C 的确认流程、B 的 API | 检查队伍变更，更新可用状态并请求重算 |
 | RouteQueryService | B | C 的助手服务 | 方案 ID → 保存的方案事实与指标 |
@@ -172,7 +172,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | API 或模型不可用 | 检测模式与错误明确；已接受任务不丢失 | 行程数据来源明确；重算失败标记旧方案过期 | 给出可理解的失败/模拟提示 | 错误可见；不能把旧方案标成最新或把模拟结果称为真实结果 |
 | 重复点击审核或确认 | 审核不会重复建任务 | 队伍更新/重算有确定结果 | 请求确认只执行一次 | 无重复任务、重复业务修改或不一致状态 |
 
-统一错误响应至少包含 `code`、`message`、可选 `details`。输入错误、对象不存在、旧版本冲突和服务不可用应有可区分的反馈；详细错误码在接口冻结时确定。
+统一错误结构和基础错误码已在[接口契约](API_CONTRACT.md)中定义。新增业务错误码在同一 PR 中更新契约，不让前端匹配自然语言消息。
 
 ## 9. 交付次序：先约定接口，再并行开发
 
@@ -212,7 +212,7 @@ Jurong 边界与 NUS-ISS 起点已于 2026-10-12 记录为本项目的地理基�
 | 助手调整范围 | 首批仅调整队伍可用状态；自然语言解释基于事实；新任务走标准巡检流程 | C 提案，A/B 复核 |
 | 实际路径与示意图 | 有道路几何时画真实路径；只有点间矩阵时标明示意连线 | B/C |
 
-本表不要求现在决定成员姓名以外的所有实现细节。完成 M0 时再冻结这些选项，随后开始编码。
+未确定的业务选项在对应业务实现前冻结；已授权的公共后端和数据结构基础可先行。首批格式落地不使本表的业务假设自动生效。
 
 ## 12. 与现有项目资料的关系
 
@@ -223,4 +223,4 @@ Jurong 边界与 NUS-ISS 起点已于 2026-10-12 记录为本项目的地理基�
 - [课程提交清单](SUBMISSION_CHECKLIST.md)
 - [课程技术映射](../ProjectReport/COURSE_MAPPING.md)
 
-规则/流程、进化优化、视觉及自然语言认知能力分别需要有实际功能和证据。此次只新增分工与接口设计文档，不修改业务配置，也不把计划写成已完成贡献。
+规则/流程、进化优化、视觉及自然语言认知能力分别需要有实际功能和证据。当前公共契约和后端基础不代表上述业务能力或评估已经完成。

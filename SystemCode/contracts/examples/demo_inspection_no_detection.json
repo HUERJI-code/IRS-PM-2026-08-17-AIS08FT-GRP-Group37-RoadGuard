@@ -1,0 +1,20 @@
+{
+  "inspection_id": "demo-inspection-empty",
+  "image_url": "/demo-assets/synthetic-road.svg",
+  "annotated_image_url": null,
+  "latitude": 1.3405,
+  "longitude": 103.706,
+  "detections": [],
+  "selected_detection_id": null,
+  "status": "no_detection",
+  "task_id": null,
+  "decision_trace": [
+    {
+      "code": "demo_no_detection",
+      "message": "Fixed simulation only. Confidence gating and business mappings are not approved or implemented.",
+      "rule_version": null,
+      "is_demo": true
+    }
+  ],
+  "is_demo": true
+}

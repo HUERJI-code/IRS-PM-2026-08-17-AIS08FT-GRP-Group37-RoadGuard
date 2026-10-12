@@ -1,0 +1,15 @@
+{
+  "task_id": "demo-task-01",
+  "inspection_id": "demo-inspection-accepted",
+  "latitude": 1.3405,
+  "longitude": 103.706,
+  "damage_label": "pothole",
+  "severity": "medium",
+  "priority": "P2",
+  "service_minutes": 45,
+  "created_at": "2026-10-12T02:00:00Z",
+  "due_at": null,
+  "status": "active",
+  "rule_version": "demo-unconfirmed-v1",
+  "is_demo": true
+}
