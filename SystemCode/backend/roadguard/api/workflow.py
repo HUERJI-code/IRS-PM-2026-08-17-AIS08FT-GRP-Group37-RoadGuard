@@ -15,6 +15,7 @@ from roadguard.errors import AppError
 from roadguard.images import MAX_UPLOAD_BYTES
 from roadguard.inspections import WorkflowService
 from roadguard.schemas import ErrorResponse
+from roadguard.schemas.task_query import TaskSnapshot
 from roadguard.schemas.workflow import (
     InspectionList, InspectionMutation, InspectionRecord, ReviewRequest,
     TaskList, TaskMutation, TaskPatch, TaskRecord, UploadMetadata,
@@ -147,6 +148,17 @@ def review_inspection(request: Request, inspection_id: ResourceID, payload: Revi
 def list_tasks(request: Request, status: TaskStatus = "active", limit: PageLimit = 50,
                offset: PageOffset = 0) -> TaskList:
     return _service(request).list_tasks(status=None if status == "all" else status, limit=limit, offset=offset)
+
+
+@router.get("/tasks/snapshot", response_model=TaskSnapshot, responses=ERRORS, tags=["Tasks"],
+            summary="Read every active task and the shared revision in one snapshot")
+def get_task_snapshot(
+    request: Request, expected_revision: Annotated[int | None, Query(ge=0)] = None,
+) -> TaskSnapshot:
+    service = getattr(request.app.state, "task_query_service", None)
+    if service is None:
+        raise AppError("task_query_unavailable", "The task query service is unavailable.", 503)
+    return service.snapshot(expected_revision)
 
 
 @router.get("/tasks/{task_id}", response_model=TaskRecord, responses=ERRORS, tags=["Tasks"])

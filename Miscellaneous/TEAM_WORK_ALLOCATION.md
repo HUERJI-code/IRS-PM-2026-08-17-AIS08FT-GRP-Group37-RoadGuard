@@ -1,6 +1,6 @@
 # RoadGuard 三人分工与接口对接表
 
-编制日期：2026-10-11；更新：2026-10-12。状态：A 的第 3～6 步已实现，包含模拟上传/审核/任务持久化；真实模型与 B/C 模块按以下分工推进。
+编制日期：2026-10-11；更新：2026-10-12。状态：A 的第 3～7 步已完成，包含模拟上传/审核/任务持久化、同版本任务快照、固定输入与知识交付；真实模型与 B/C 模块按以下分工推进。
 
 所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
 
@@ -151,12 +151,12 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 | --- | --- | --- | --- |
 | VisionService | A | A 的巡检模块 | 当前 DemoDetector 接收案例 ID 并返回合成 Detection；真实图片适配待实现 |
 | RuleService | A | A 的任务/审核模块；C 可只读使用规则记录 | 已接入持久化流程；原检测保留，审核使用明确的人工复核映射及巡检冻结规则 |
-| TaskQueryService（后续独立对接） | A | B、C 的助手服务 | 当前 WorkflowService 已提供任务详情/分页/输入版本；第 7 步补充规划快照对接与固定实验数据 |
+| TaskQueryService（已实现） | A | B、C 的助手服务 | snapshot(expected_revision=None, *, connection=None) 在同一事务返回全部活动 Task 及 input_revision；支持共用连接读取未来队伍数据；见[第 7 步交接](BC_HANDOFF.md) |
 | 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 任务创建/修改同事务递增已实现；B 接入队伍变更时遵循同一规则，见[后端说明](../SystemCode/backend/README.md) |
 | PlanningService | B | A、C 的确认流程 | 基于当前任务和队伍，生成并保存两种算法的方案 |
 | CrewService | B | C 的确认流程、B 的 API | 检查队伍变更，更新可用状态并请求重算 |
 | RouteQueryService | B | C 的助手服务 | 方案 ID → 保存的方案事实与指标 |
-| KnowledgeRetrievalService | C | C 的助手服务 | 问题与上下文 → A 审核过的相关知识片段及来源 |
+| KnowledgeRetrievalService（待 C 实现） | C | C 的助手服务 | 问题与上下文 → A 交付的版本化知识片段及来源；[知识包](../SystemCode/backend/knowledge/README.md)已按仓库事实核对，不代表工程专家审批 |
 
 具体函数签名由负责人在接口冻结时补充。A 的巡检处理和 C 的助手都调用 B 的规划服务，不各自实现一套调度算法。
 

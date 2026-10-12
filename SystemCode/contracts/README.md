@@ -1,5 +1,7 @@
 # 固定契约样例
 
+第 7 步新增 [planning/](planning/README.md)：使用 a-task-query-v1 的 10/15/20 任务、空队列和未知工时样例，按中央来源可复现。它们与下述原始 a-dto-v1 样例分开维护；在线查询入口、实际 HTTP 响应导出和 C 的知识包见 [B/C 交接说明](../../Miscellaneous/BC_HANDOFF.md)。
+
 本目录由 A 维护，供 B/C 在业务服务尚未实现时联调。第一版 A DTO 的唯一说明位置是 [API_CONTRACT.md](../../Miscellaneous/API_CONTRACT.md)，可执行定义在 `backend/roadguard/schemas/`；此处不再维护一套字段说明。
 
 `examples/manifest.json` 列出每份样例对应的 DTO，且对整个样例集声明 `is_demo: true`。各文件直接包含 DTO JSON，便于调用 Pydantic `model_validate_json` 或作为前端固定响应。巡检与任务自身继续携带 `is_demo`，错误样例在 `details` 中标明来源。Health/PlanningRevision 的固定字段结构不增加演示字段，其演示性质由文件名与 manifest 明确标识；它们不是运行中的数据库状态。

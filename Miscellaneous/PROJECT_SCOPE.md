@@ -9,7 +9,7 @@ Updated: 2026-10-12. The geographic baseline and user-selected dispatch origin a
 - Default repair crews: **four**, replacing the proposal's two-crew scenario.
 - Task service area: **Jurong East and Jurong West, Singapore**, using the frozen URA Master Plan 2025 polygons (approximately 32.55 km²).
 - Shared simulated dispatch origin: **NUS-ISS**, 25 Heng Mui Keng Terrace, Singapore 119615; latitude `1.292149`, longitude `103.776551`. This specified depot is allowed outside the task service area; travel from it to the first task must be counted.
-- Current delivery: initial contracts, shared backend, stateless demo previews, and persisted image inspection/review/task workflows. Polygon validation is implemented; road type is explicitly user-declared. Rule parameters remain demo assumptions; real model inference, routing and frontend remain pending.
+- Current delivery: initial contracts, shared backend, stateless demo previews, persisted inspection/review/task workflows, and the [B/C handoff](BC_HANDOFF.md) with consistent task snapshots, fixed synthetic inputs and versioned source-checked knowledge. Polygon validation is implemented; road type is explicitly user-declared. Rule parameters remain demo assumptions; real model inference, routing, frontend and knowledge retrieval/generation remain pending.
 - Repository: private GitHub repository under the project owner's account.
 - Course start date: 2026-08-17. Batch code: AIS08FT. Repository team label: Group7.
 - The previous prototype is abandoned; implementation starts from this scaffold.

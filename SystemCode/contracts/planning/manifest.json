@@ -1,0 +1,94 @@
+{
+  "configured_context": {
+    "constraint_parameters_status": "to_be_defined",
+    "crew_ids": [
+      "crew-01",
+      "crew-02",
+      "crew-03",
+      "crew-04"
+    ],
+    "default_crew_count": 4,
+    "depot_allowed_outside_task_service_area": true,
+    "depot_id": "depot-nus-iss",
+    "depot_latitude": 1.292149,
+    "depot_longitude": 103.776551,
+    "depot_name": "NUS-ISS (simulated dispatch origin)",
+    "driving_access_status": "to_be_verified_before_real_travel_matrix",
+    "return_to_depot": null,
+    "shift_minutes": null
+  },
+  "contract_version": "a-task-query-v1",
+  "coordinate_construction": {
+    "grid_step_degrees": 0.002,
+    "is_field_site_data": false,
+    "limitations": "Synthetic points may lie off roads or on excluded roads. Not road-validated experiment inputs.",
+    "method": "longitude-first grid inside frozen polygon union; twenty evenly spaced integer ranks",
+    "polygon_containment_checked": true,
+    "road_declaration_for_containment_check": "public_motor_road",
+    "road_permission_verified": false
+  },
+  "depot_version": "nus-iss-v1",
+  "due_at_policy": "All deadlines are null; no lateness metric is defined.",
+  "fixture_version": "planning-synthetic-v1",
+  "generator": "SystemCode/contracts/planning/generate.py",
+  "input_revision": 0,
+  "is_demo": true,
+  "label_schema_version": "rdd2022es-v1-labels-1",
+  "prefix_relationship": "tasks_10.json is the first ten tasks of tasks_15.json, which is the first fifteen of tasks_20.json.",
+  "revision_meaning": "Fixed fixture marker only; never a live database revision or mutation count.",
+  "rule_version": "demo-rules-v1",
+  "scope_version": "jurong-je-jw-mp2025-v1",
+  "snapshots": {
+    "tasks_10.json": {
+      "sha256": "b2a158b6896263de5c6c6cf4fc33081cd190bb021094cac76c3531286ab51d1c",
+      "total": 10
+    },
+    "tasks_15.json": {
+      "sha256": "5efbc0f293f1b47705879cacd6590426be657b6bb693eeaea089ba1f4e16bc59",
+      "total": 15
+    },
+    "tasks_20.json": {
+      "sha256": "f81ab01a829976144d9d2b3a6dd316ec1d3bfbdef9d3a5906cde54b288b53282",
+      "total": 20
+    },
+    "tasks_empty.json": {
+      "sha256": "9154390c22ad660a833cfc30391210547e803e75a6a018f6141d3065c3b0703e",
+      "total": 0
+    },
+    "tasks_unknown_service.json": {
+      "sha256": "7ca1fef5f3b454a1299e2f09ff9cd90e883c065a3735c88d44c7d9ca4f928630",
+      "total": 1
+    }
+  },
+  "source": "synthetic_fixture",
+  "source_files": [
+    {
+      "path": "SystemCode/config/project.example.json",
+      "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e"
+    },
+    {
+      "path": "SystemCode/config/demo_rules.example.json",
+      "sha256": "3560b31bf8542a9d769de57dd8eb43392c1f4de9b5f1c756c40d3b17d2f103b6"
+    },
+    {
+      "path": "SystemCode/model/label_schema.json",
+      "sha256": "8b6e9932904e70ebc7e406e93a1c4ac4958f10f91f16a93b309f5a0487af33e7"
+    },
+    {
+      "path": "Miscellaneous/geography/jurong-boundary-mp2025.geojson",
+      "sha256": "f5bd23ee8dd54102199d36fdfee2633955ed69ff258f360c0ec8015520f86270"
+    },
+    {
+      "path": "Miscellaneous/geography/nus-iss-depot.geojson",
+      "sha256": "20dc4ddcfdd3c72434a1f84e17f99824fc052eeb887fe57e67b1e3269c0bf182"
+    }
+  ],
+  "unknown_service_edge": {
+    "file": "tasks_unknown_service.json",
+    "meaning": "Explicit missing-duration contract edge; other rule fields derive from demo-rules-v1. Not the output of its current duration mapping.",
+    "override": {
+      "service_minutes": null
+    }
+  },
+  "usage": "Offline development fixtures only. Never seed app databases, replace failed live queries, or claim field experiments."
+}

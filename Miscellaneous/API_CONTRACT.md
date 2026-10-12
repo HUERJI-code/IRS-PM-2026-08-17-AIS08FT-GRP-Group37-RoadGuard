@@ -8,6 +8,8 @@
 
 第 6 步增量为 `a-workflow-v1`，实现上传、巡检、审核和任务接口，详情见[完整流程与请求样例](INSPECTION_REVIEW_TASK_WORKFLOW.md)。使用新增记录/请求模型，原固定 DTO 样例继续保持兼容。所有在线业务记录仍明确标记演示；道路类型由调用者声明，不代表道路资格核验。
 
+第 7 步增量为 `a-task-query-v1`，提供 B/C 使用的一致活动任务快照；完整使用方式、固定输入、知识包及 HTTP 示例见 [B/C 交接说明](BC_HANDOFF.md)。没有改变原 Task 或 TaskRecord 的字段，也没有冻结 B 的完整 PlanningInput。
+
 ## 通用表示
 
 - JSON 字段使用 `snake_case`；ID 与版本用非空字符串，前后空白被去除，纯空白无效。未知字段拒绝，防止调用方静默拼错字段。
@@ -72,6 +74,18 @@ RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无
 
 Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP 调用方须采用相应 Record 类型。原检测标签/置信度保留；人工纠正由 review_history 和 Task.history 表达。review_history 中操作员身份未经认证，不能被当作身份凭据。候选变成任务时才通过事务更新规划版本，单独 `/demo` 调用仍不写库。
 
+### a-task-query-v1：同版本活动任务快照
+
+`GET /api/v1/tasks/snapshot` 返回 `TaskSnapshot`；可选查询参数 expected_revision 为非负整数，不匹配返回 409 stale_input_revision。此固定路径先于 `/tasks/{task_id}` 注册，不会被解释为任务 ID。
+
+可执行定义为 [schemas/task_query.py](../SystemCode/backend/roadguard/schemas/task_query.py)，公共导入为 `from roadguard.schemas import TaskSnapshot`。字段：contract_version 固定 a-task-query-v1；source 为 persisted_workflow 或 synthetic_fixture；input_revision 非负整数；tasks 为原 Task 精确字段列表；total 等于列表长度；is_demo 必须 true。任务均为 active 且 is_demo=true，task_id/inspection_id 不重复。当前不接受真实模型任务，不暗示生产规则已经确认。
+
+在线服务使用 persisted_workflow，读取全部任务、校验存储一致性后返回 active 投影；排序为 created_at、task_id，不截断或分页。损坏的持久化任务导致整次查询 503，不静默返回部分数据。空列表仍为有效 200。查询不改变数据库或 input_revision，未知 service_minutes/due_at 保持 null。
+
+内部服务 `from roadguard.tasks import TaskQueryService`，签名 `snapshot(expected_revision=None, *, connection=None)`。默认自行管理只读事务；提供 connection 时要求同一数据库已存在的事务，服务不提交/回滚/关闭它。任务与版本来自同一读取快照。B 将来应在同连接读取队伍，并在保存计算结果的写事务中再次核对版本；HTTP 任务快照不保证其他 HTTP 查询的队伍同版本。
+
+固定文件的 source=synthetic_fixture、版本号仅为离线样例上下文，不是在线数据库状态。知识包另有自身文档版本；规则说明必须匹配任务保存的 rule_version。
+
 ### 统一错误
 
 统一错误的可执行来源为 [errors.py](../SystemCode/backend/roadguard/errors.py) 及 [health.py](../SystemCode/backend/roadguard/api/health.py)；使用 `code` 判断，不匹配 message 文本。当前错误码如下，变更须与实现同步：
@@ -81,7 +95,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 | `validation_error` | 422 | FastAPI 请求校验失败，details 仅 error_count，不回显原始输入 |
 | `not_found` | 404 | 路径、巡检或任务不存在 |
 | `method_not_allowed` | 405 | 已有路径不支持该方法，保留 Allow header |
-| `stale_input_revision` | 409 | 共享数据库修订服务拒绝旧预期版本；无规划 HTTP handler |
+| `stale_input_revision` | 409 | 共享数据库或任务快照拒绝旧预期版本；details 含 expected_revision/current_revision；仍无规划 HTTP handler |
 | `database_unavailable` | 503 | 数据库不可用、基础状态无效或持久化记录无法解析 |
 | `internal_error` | 500 | 未处理异常的安全公共说明，无原始异常文字 |
 | `http_error` | 对应 HTTP 状态 | 其他 HTTPException 的通用安全说明 |
@@ -103,6 +117,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 | `invalid_state` | 409 | 该巡检不能再审核，或该任务已终止 |
 | `invalid_detection_selection` | 422 | 选择的检测不属于此巡检 |
 | `workflow_unavailable` | 503 | 巡检业务服务未就绪 |
+| `task_query_unavailable` | 503 | 任务快照服务未就绪，不能返回空队列冒充成功 |
 
 错误样例使用 `validation_error` / 422，details 中的 is_demo 标记属于固定样例附加 metadata，不要求真实响应添加。未来业务错误由对应服务明确抛出并记录，不能从固定样例推定已有业务逻辑。
 

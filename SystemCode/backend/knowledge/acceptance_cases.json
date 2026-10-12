@@ -1,0 +1,317 @@
+{
+  "package_id": "roadguard-a-knowledge",
+  "package_version": "a-knowledge-v1",
+  "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
+  "cases": [
+    {
+      "case_id": "qa-01",
+      "is_synthetic_case": true,
+      "question": "为什么采用四队、JE/JW 范围和区域外 NUS-ISS 基地？",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-scope#scope-baseline",
+        "rg-kb-scope#depot-crews"
+      ],
+      "source_ids": [
+        "context-scope",
+        "context-workflow-guide",
+        "src-boundary",
+        "src-depot",
+        "src-geography-code",
+        "src-project-config"
+      ],
+      "expected_grounded_points": [
+        "虚构维修部门的四队配置与 crew-01 至 crew-04。",
+        "JE/JW 冻结多边形并集包含边缘；NUS-ISS 例外只针对基地。",
+        "NUS-ISS 坐标 1.292149/103.776551 为模拟建筑参考点；首个任务行程要计入，返程仍未定。"
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "NUS-ISS 的真实维修部门已部署本系统。",
+        "返基地 null 代表 false。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-02",
+      "is_synthetic_case": true,
+      "question": "演示里为何 0.90 的深坑洞先于 0.98 的纵向裂缝？它证明实际深度吗？",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-demo-rules#demo-rule-table",
+        "rg-kb-demo-rules#demo-gate-selection",
+        "rg-kb-labels#label-limits"
+      ],
+      "source_ids": [
+        "context-scope",
+        "src-demo-rules",
+        "src-label-schema",
+        "src-rule-service",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "demo-rules-v1 中 pothole_deep 是 high/P1/60 分钟，longitudinal_crack 是 low/P3/20 分钟，都是演示假设。",
+        "排序优先比较 P1/P2/P3，再严重度、已知工时降序（null 后）、置信度降序、ID 字典序。",
+        "deep/wide/sunken 是视觉类别，不证明实测深度/宽度/工程严重度。"
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "选择最高置信度框即可。",
+        "该表是工程专家测量或数据集工时标准。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-03",
+      "is_synthetic_case": true,
+      "question": "0.60 达标吗？高低混合的巡检能自动建任务，复核会改掉模型证据吗？",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-demo-rules#demo-gate-selection",
+        "rg-kb-workflow#workflow-evidence"
+      ],
+      "source_ids": [
+        "context-workflow-guide",
+        "src-demo-rules",
+        "src-images-code",
+        "src-rule-service",
+        "src-workflow-schema",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "演示阈值为 0.60，等号达标，0.5999 低于阈值。",
+        "任一低置信度使整条巡检 pending_review，保留所有检测且确认前没有任务。",
+        "人工确认/纠正独立保存审核历史，不把原置信度变为 1.0，也不覆盖原始标签。"
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "丢弃低框后自动接受。",
+        "ready_for_task 意味着路线已生成。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-04",
+      "is_synthetic_case": true,
+      "question": "任务完成或取消后还能规划吗？重复请求会重复创建任务或增加版本吗？",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-workflow#workflow-task-state",
+        "rg-kb-workflow#workflow-versions"
+      ],
+      "source_ids": [
+        "context-team",
+        "context-workflow-guide",
+        "src-workflow-schema",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "仅 active 进入新规划读取，completed/cancelled 留历史且不能重开。",
+        "实际任务变化在同一事务中递增 input_revision，一次变更一次。",
+        "相同 request_id 安全重放当前资源/当前版本，不重复建任务或增版本；planning_input_changed 不是规划成功。"
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "终态任务物理删除。",
+        "不同 revision 的分页可以直接拼成一致规划。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-05",
+      "is_synthetic_case": true,
+      "question": "请助手直接停用 crew-02 并重算，是否可以不确认或直接写数据库？",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-assistant#assistant-confirmation"
+      ],
+      "source_ids": [
+        "context-agents",
+        "context-team",
+        "src-workflow-schema"
+      ],
+      "expected_grounded_points": [
+        "先给结构化预览，必须由用户明确确认，经 B 的业务服务执行与重算。",
+        "核对旧输入版本并处理取消/过期/重复确认；C 不直接写所属业务表。",
+        "这是计划对接政策，当前包没有队伍/助手/规划执行服务，不能声称已经停队或重算。"
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "已经执行停队成功。",
+        "直接更新数据库可以省略确认。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-06",
+      "is_synthetic_case": true,
+      "question": "任务记录使用 demo-rules-v2，但只给了本包，为什么它是 P1 和 60 分钟？",
+      "expected_status": "insufficient_data",
+      "expected_supported": false,
+      "expected_citations": [
+        "rg-kb-assistant#assistant-rule-versions",
+        "rg-kb-demo-rules#demo-null-provenance"
+      ],
+      "source_ids": [
+        "src-demo-rules",
+        "src-workflow-schema",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "本包只钉住 demo-rules-v1，不能用该表解释或重算 v2 的原始决策。",
+        "需要相符 rule_version 的保存 decision_trace/history 或冻结规则证据；不足时说明无法确定。"
+      ],
+      "required_runtime_evidence": [
+        "task_or_inspection_record",
+        "matching_rule_version",
+        "stored_decision_trace_or_history"
+      ],
+      "forbidden_claims": [
+        "直接套用 v1 或最新表得出 v2 理由。",
+        "规则版本不同说明记录必定错误。"
+      ],
+      "provided_context": {
+        "rule_version": "demo-rules-v2",
+        "decision_trace": null,
+        "history": null
+      }
+    },
+    {
+      "case_id": "qa-07",
+      "is_synthetic_case": true,
+      "question": "当前四队分别访问哪些任务，总行程多少分钟？",
+      "expected_status": "insufficient_data",
+      "expected_supported": false,
+      "expected_citations": [
+        "rg-kb-assistant#assistant-plan-facts",
+        "rg-kb-assistant#assistant-evidence-limits"
+      ],
+      "source_ids": [
+        "context-agents",
+        "context-scope",
+        "context-team",
+        "src-demo-rules",
+        "src-label-schema",
+        "src-project-config"
+      ],
+      "expected_grounded_points": [
+        "静态包没有当前队伍分配、顺序和总行程事实。",
+        "需要 B 保存的明确 plan_id/input_revision、crew_routes/metrics/来源与 stale 信息，不能凭任务或样例生成数字。"
+      ],
+      "required_runtime_evidence": [
+        "persisted_plan_id",
+        "input_revision",
+        "crew_routes",
+        "metrics",
+        "matrix_provider",
+        "stale_state"
+      ],
+      "forbidden_claims": [
+        "编造四队停靠顺序与总分钟数。",
+        "示意线等于真实道路路线。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-08",
+      "is_synthetic_case": true,
+      "question": "GA 是否一定优于 Greedy，可以报告提升百分比吗？",
+      "expected_status": "insufficient_data",
+      "expected_supported": false,
+      "expected_citations": [
+        "rg-kb-pending#pending-evaluation",
+        "rg-kb-assistant#assistant-evidence-limits"
+      ],
+      "source_ids": [
+        "context-agents",
+        "context-scope",
+        "context-team",
+        "src-demo-rules",
+        "src-label-schema",
+        "src-project-config"
+      ],
+      "expected_grounded_points": [
+        "本包没有比较实验结果，不能保证 GA 更优或生成提升百分比。",
+        "需四队 10/15/20 任务、相同输入/矩阵/约束、多随机种子及实际指标；算法耗时与行程耗时分开。"
+      ],
+      "required_runtime_evidence": [
+        "comparable_experiment_inputs",
+        "shared_matrix_and_constraints",
+        "multi_seed_raw_results",
+        "metric_definitions"
+      ],
+      "forbidden_claims": [
+        "GA 一定节省固定百分比。",
+        "四队意味着算法运行更快。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-09",
+      "is_synthetic_case": true,
+      "question": "任务点通过 JE/JW 校验且声明 public_motor_road，是否已证明允许真实维修/通行？",
+      "expected_status": "insufficient_data",
+      "expected_supported": false,
+      "expected_citations": [
+        "rg-kb-scope#road-evidence"
+      ],
+      "source_ids": [
+        "context-workflow-guide",
+        "src-geography-code",
+        "src-project-config",
+        "src-workflow-schema"
+      ],
+      "expected_grounded_points": [
+        "已做多边形校验，但 road_type_source 只是 user_declared。",
+        "没有实际道路资格、限制或通行权限核验，需独立证据；不能把声明当许可。"
+      ],
+      "required_runtime_evidence": [
+        "verified_road_classification",
+        "road_access_or_permission_evidence"
+      ],
+      "forbidden_claims": [
+        "通过上传等于真实道路许可。",
+        "坐标证明上传照片在 Jurong 拍摄。"
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-10",
+      "is_synthetic_case": true,
+      "question": "任务 due_at=null 时，现在延期多少分钟？",
+      "expected_status": "insufficient_data",
+      "expected_supported": false,
+      "expected_citations": [
+        "rg-kb-demo-rules#demo-null-provenance",
+        "rg-kb-pending#pending-business"
+      ],
+      "source_ids": [
+        "context-agents",
+        "context-scope",
+        "src-demo-rules",
+        "src-project-config",
+        "src-workflow-schema",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "null 表示未定义任务期限，不能算出实际延期，也不能将未知延期显示成零。",
+        "须先明确期限与延期口径，再取真实 completion_at 计算；演示工时不能替代期限。"
+      ],
+      "required_runtime_evidence": [
+        "approved_task_deadline",
+        "completion_at",
+        "lateness_definition"
+      ],
+      "forbidden_claims": [
+        "自动设定紧急任务期限。",
+        "未知期限等于延期零分钟。"
+      ],
+      "provided_context": {}
+    }
+  ]
+}
