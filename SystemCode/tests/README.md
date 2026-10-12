@@ -15,6 +15,8 @@ These tests do not claim an implemented inspection-to-route workflow or model ac
 
 Step 6 adds `test_images.py`, `test_geography.py`, `test_workflow.py` and `test_workflow_api.py`. They exercise real decoding and EXIF normalization, bounded multipart uploads, polygon edges/holes/union, declared road scope, audit preservation, task state, idempotency and concurrent writes, optimistic versions, transactional rollback, frozen policies, schema migration and restart persistence. Inputs are generated locally; no external API or model weights are required. The real symlink test may skip on Windows accounts without permission; the Linux CI run exercises it.
 
+Step 7 adds `test_task_query.py` and `test_task_query_api.py` for complete shared-revision snapshots (including 125 tasks), nullable fields, corruption failures, caller-owned connections and concurrent updates. `test_planning_fixtures.py` checks deterministic inputs against central sources; `test_knowledge_handoff.py` checks knowledge citations/versions and source integrity. `test_handoff_demo.py` runs the shipped HTTP consumer example against isolated handlers; it creates real persisted demo records, not fake success responses.
+
 ## CI integration
 
 RoadGuard CI runs Python application tests here once Python implementation is added. Group tests by module, use pytest discovery names, and declare the required test dependencies in `SystemCode/backend/requirements-ci.txt`. Frontend tests live with the frontend and run through its `test:ci` script. See [the shared CI guide](../../Miscellaneous/GITHUB_WORKFLOW.md) for exact commands and requirements.

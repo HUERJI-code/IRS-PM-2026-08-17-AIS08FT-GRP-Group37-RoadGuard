@@ -29,6 +29,12 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 在 `/docs` 中先调用 `GET /api/v1/demo/scenarios`，再向 `POST /api/v1/demo/assessments` 发送 `{"scenario_id":"high_confidence"}`。默认得到 P2、45 分钟的演示候选；`low_confidence` 得到 pending_review，`no_detection` 不产生候选。完整七个案例、阈值边界与八类演示映射见[模拟检测与规则指南](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md)。这些接口不接收图片、不创建数据库记录，也不更新 input_revision。
 
+## 第 7 步：任务和知识对接
+
+`GET /api/v1/tasks/snapshot` 一次返回全部活动 Task 及同一事务的 input_revision，支持 expected_revision 查询参数；`/tasks` 保留页面分页/TaskRecord 历史用途。B 的内部入口是 `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`，应用通过 `request.app.state.task_query_service` 提供实例。传入同数据库已有事务的连接可与 B 未来的队伍查询共用快照；服务不结束调用者事务。
+
+完整契约、计算/保存时的版本检查、固定 10/15/20 任务、C 知识资料和实际 HTTP 消费示例见 [B/C 交接说明](../../Miscellaneous/BC_HANDOFF.md)。知识来源按仓库事实核对，不是工程专家审批；没有实现路线、检索/生成或前端。没有新增依赖或数据库迁移。
+
 ## 配置入口
 
 第 6 步的请求格式、审核、任务更新及失败处理见[巡检/审核/任务指南](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。上传必须显式选择 demo 模式和案例；接受后会创建真实保存的**演示任务**，不表示已经执行图像识别或路线规划。道路类别为调用者声明。

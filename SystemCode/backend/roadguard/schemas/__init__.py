@@ -5,6 +5,7 @@ from .assessment import RuleAssessment, RuleCandidate
 from .inspection import DecisionTrace, Inspection
 from .responses import ErrorResponse, HealthResponse, PlanningRevision
 from .task import Task
+from .task_query import TaskSnapshot
 from .workflow import (
     InspectionList, InspectionMutation, InspectionRecord, ReviewRequest,
     TaskList, TaskMutation, TaskPatch, TaskRecord, UploadMetadata,
@@ -15,4 +16,5 @@ __all__ = [
     "PlanningRevision", "RuleAssessment", "RuleCandidate", "Task",
     "InspectionList", "InspectionMutation", "InspectionRecord", "ReviewRequest",
     "TaskList", "TaskMutation", "TaskPatch", "TaskRecord", "UploadMetadata",
+    "TaskSnapshot",
 ]

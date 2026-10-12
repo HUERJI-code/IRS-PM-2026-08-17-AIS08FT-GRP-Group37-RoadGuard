@@ -15,6 +15,7 @@ from roadguard.vision import DemoDetector
 from roadguard.geography import JurongScope
 from roadguard.images import ImageStore
 from roadguard.inspections import WorkflowService
+from roadguard.tasks import TaskQueryService
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -38,6 +39,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         application.state.workflow_service = WorkflowService(
             database, rule_service, application.state.demo_detector, scope, images,
         )
+        application.state.task_query_service = TaskQueryService(database)
         try:
             yield
         finally:
@@ -46,10 +48,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             application.state.rule_service = None
             application.state.demo_detector = None
             application.state.workflow_service = None
+            application.state.task_query_service = None
 
     application = FastAPI(
         title="RoadGuard API",
-        version="0.3.0",
+        version="0.4.0",
         description=(
             "Persisted image inspections, review and task management using explicit synthetic detection. "
             "Road type is user-declared. No real image inference or route planning is performed. "

@@ -1,0 +1,355 @@
+{
+  "package_id": "roadguard-a-knowledge",
+  "package_version": "a-knowledge-v1",
+  "language": "zh-CN",
+  "owner": "A",
+  "review_basis": "repository_consistency_review",
+  "review": {
+    "performed_by": "coding_agent_on_behalf_of_A",
+    "human_or_expert_approval": false,
+    "reviewed_on": "2026-10-12",
+    "note": "Repository source/config consistency check only; not engineering approval, road permission or experiment validation."
+  },
+  "hash_algorithm": "sha256_raw_file_bytes",
+  "versions": {
+    "scope_version": "jurong-je-jw-mp2025-v1",
+    "depot_version": "nus-iss-v1",
+    "label_schema_version": "rdd2022es-v1-labels-1",
+    "rule_version": "demo-rules-v1",
+    "workflow_contract_version": "a-workflow-v1"
+  },
+  "classification_vocabulary": [
+    "confirmed_project_fact",
+    "demo_assumption",
+    "pending_decision"
+  ],
+  "sources": [
+    {
+      "source_id": "src-label-schema",
+      "path": "SystemCode/model/label_schema.json",
+      "version": "rdd2022es-v1-labels-1",
+      "sha256": "8b6e9932904e70ebc7e406e93a1c4ac4958f10f91f16a93b309f5a0487af33e7"
+    },
+    {
+      "source_id": "src-demo-rules",
+      "path": "SystemCode/config/demo_rules.example.json",
+      "version": "demo-rules-v1",
+      "sha256": "3560b31bf8542a9d769de57dd8eb43392c1f4de9b5f1c756c40d3b17d2f103b6"
+    },
+    {
+      "source_id": "src-project-config",
+      "path": "SystemCode/config/project.example.json",
+      "version": "jurong-je-jw-mp2025-v1",
+      "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e"
+    },
+    {
+      "source_id": "src-boundary",
+      "path": "Miscellaneous/geography/jurong-boundary-mp2025.geojson",
+      "version": "jurong-je-jw-mp2025-v1",
+      "sha256": "f5bd23ee8dd54102199d36fdfee2633955ed69ff258f360c0ec8015520f86270"
+    },
+    {
+      "source_id": "src-depot",
+      "path": "Miscellaneous/geography/nus-iss-depot.geojson",
+      "version": "nus-iss-v1",
+      "sha256": "20dc4ddcfdd3c72434a1f84e17f99824fc052eeb887fe57e67b1e3269c0bf182"
+    },
+    {
+      "source_id": "src-rule-service",
+      "path": "SystemCode/backend/roadguard/rules/service.py",
+      "version": "demo-rule-service-v1",
+      "sha256": "90bf92734c1a72a17135ee8549b362e68047a95ef249940020024548b693b87a"
+    },
+    {
+      "source_id": "src-workflow-schema",
+      "path": "SystemCode/backend/roadguard/schemas/workflow.py",
+      "version": "a-workflow-v1",
+      "sha256": "55bcfb9142267f11c583cbd30b8b17bb7395d9099dc7ee5ced56ce84441225d2"
+    },
+    {
+      "source_id": "src-workflow-service",
+      "path": "SystemCode/backend/roadguard/inspections/service.py",
+      "version": "a-workflow-v1",
+      "sha256": "db94baaba880af45fb809e139c77b9c3ce2cb2434ad518bccae5174962d96ac3"
+    },
+    {
+      "source_id": "src-geography-code",
+      "path": "SystemCode/backend/roadguard/geography.py",
+      "version": "jurong-je-jw-mp2025-v1",
+      "sha256": "13c47f4a341aed631e9e5e3d29f48104879b6d1990a2301b0181e6b9b609444e"
+    },
+    {
+      "source_id": "src-images-code",
+      "path": "SystemCode/backend/roadguard/images.py",
+      "version": "image-normalization-v1",
+      "sha256": "94014ff335effd59ef11ee50061ecd5498031f2d51454c6d5f66e7887ed10a75"
+    }
+  ],
+  "context_sources": [
+    {
+      "source_id": "context-agents",
+      "path": "AGENTS.md",
+      "integrity": "unhashed_mutable_context"
+    },
+    {
+      "source_id": "context-scope",
+      "path": "Miscellaneous/PROJECT_SCOPE.md",
+      "integrity": "unhashed_mutable_context"
+    },
+    {
+      "source_id": "context-team",
+      "path": "Miscellaneous/TEAM_WORK_ALLOCATION.md",
+      "integrity": "unhashed_mutable_context"
+    },
+    {
+      "source_id": "context-workflow-guide",
+      "path": "Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md",
+      "integrity": "unhashed_mutable_context"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "rg-kb-scope",
+      "path": "01_scope.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "c30cf4dc794b5749b757f9095d82f9ef1f5c3b5c4b60ac503cc75fe3f462ee8a",
+      "sections": [
+        {
+          "section_id": "scope-baseline",
+          "citation_id": "rg-kb-scope#scope-baseline",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-project-config",
+            "src-boundary",
+            "src-geography-code",
+            "context-workflow-guide"
+          ]
+        },
+        {
+          "section_id": "depot-crews",
+          "citation_id": "rg-kb-scope#depot-crews",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-project-config",
+            "src-depot",
+            "context-scope"
+          ]
+        },
+        {
+          "section_id": "road-evidence",
+          "citation_id": "rg-kb-scope#road-evidence",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-project-config",
+            "src-geography-code",
+            "src-workflow-schema",
+            "context-workflow-guide"
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "rg-kb-labels",
+      "path": "02_labels.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "b4faf49a14826dc8f81fef7f36c6ee1bbf8d1ccaa6703e95b84f11c764c818ab",
+      "sections": [
+        {
+          "section_id": "label-table",
+          "citation_id": "rg-kb-labels#label-table",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-label-schema"
+          ]
+        },
+        {
+          "section_id": "label-limits",
+          "citation_id": "rg-kb-labels#label-limits",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-label-schema",
+            "src-demo-rules",
+            "context-scope"
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "rg-kb-demo-rules",
+      "path": "03_demo_rules.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "4a330cc62af5bf43780c0d08e9999491c5f79dbf0e8000bbf8ed24e84205bcdb",
+      "sections": [
+        {
+          "section_id": "demo-rule-table",
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "classification": "demo_assumption",
+          "source_ids": [
+            "src-demo-rules",
+            "src-label-schema"
+          ]
+        },
+        {
+          "section_id": "demo-gate-selection",
+          "citation_id": "rg-kb-demo-rules#demo-gate-selection",
+          "classification": "demo_assumption",
+          "source_ids": [
+            "src-demo-rules",
+            "src-rule-service",
+            "src-workflow-service"
+          ]
+        },
+        {
+          "section_id": "demo-null-provenance",
+          "citation_id": "rg-kb-demo-rules#demo-null-provenance",
+          "classification": "demo_assumption",
+          "source_ids": [
+            "src-demo-rules",
+            "src-workflow-service",
+            "src-workflow-schema"
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "rg-kb-workflow",
+      "path": "04_workflow.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "01aff4a855ea72b9623ca957df7a8eb2304949df653d63fbebe90e42e7006df6",
+      "sections": [
+        {
+          "section_id": "workflow-evidence",
+          "citation_id": "rg-kb-workflow#workflow-evidence",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-workflow-service",
+            "src-workflow-schema",
+            "src-images-code",
+            "context-workflow-guide"
+          ]
+        },
+        {
+          "section_id": "workflow-task-state",
+          "citation_id": "rg-kb-workflow#workflow-task-state",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-workflow-service",
+            "src-workflow-schema",
+            "context-workflow-guide",
+            "context-team"
+          ]
+        },
+        {
+          "section_id": "workflow-versions",
+          "citation_id": "rg-kb-workflow#workflow-versions",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-workflow-service",
+            "src-workflow-schema",
+            "context-workflow-guide"
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "rg-kb-assistant",
+      "path": "05_assistant_boundaries.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "9b7df8a9e280c46ed9f669e22393992ff4e18e7a204dda150ad02264e442c396",
+      "sections": [
+        {
+          "section_id": "assistant-plan-facts",
+          "citation_id": "rg-kb-assistant#assistant-plan-facts",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "context-agents",
+            "context-team",
+            "src-project-config"
+          ]
+        },
+        {
+          "section_id": "assistant-confirmation",
+          "citation_id": "rg-kb-assistant#assistant-confirmation",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "context-agents",
+            "context-team",
+            "src-workflow-schema"
+          ]
+        },
+        {
+          "section_id": "assistant-rule-versions",
+          "citation_id": "rg-kb-assistant#assistant-rule-versions",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-demo-rules",
+            "src-workflow-service",
+            "src-workflow-schema"
+          ]
+        },
+        {
+          "section_id": "assistant-evidence-limits",
+          "citation_id": "rg-kb-assistant#assistant-evidence-limits",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "context-agents",
+            "context-scope",
+            "src-label-schema",
+            "src-demo-rules"
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "rg-kb-pending",
+      "path": "06_pending_decisions.md",
+      "document_version": "1",
+      "owner": "A",
+      "review_basis": "repository_consistency_review",
+      "sha256": "49e57e2649ae11e3fb9d36cef23b4a9f772c13353b930ee9b9c256cf50206cea",
+      "sections": [
+        {
+          "section_id": "pending-business",
+          "citation_id": "rg-kb-pending#pending-business",
+          "classification": "pending_decision",
+          "source_ids": [
+            "src-project-config",
+            "src-demo-rules",
+            "context-agents",
+            "context-scope"
+          ]
+        },
+        {
+          "section_id": "pending-evaluation",
+          "citation_id": "rg-kb-pending#pending-evaluation",
+          "classification": "pending_decision",
+          "source_ids": [
+            "src-project-config",
+            "context-agents",
+            "context-team",
+            "context-scope"
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_cases": {
+    "path": "acceptance_cases.json",
+    "sha256": "ffadcd965de857d7969ae40b7f897b1141fe52e34dc5a07e47bf8c3040070fc8",
+    "case_count": 10
+  },
+  "ingestion_guide": {
+    "path": "README.md",
+    "sha256": "ba2586e7fbbbae80542baf90fdc0d2a8377a68e8906df9941e24f08c30f52556"
+  }
+}

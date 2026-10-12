@@ -8,6 +8,8 @@ For the implemented step 5 workflow, use the [demo detection and rule guide](../
 
 Step 6 is implemented: follow the [inspection/review/task guide](../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md) for multipart upload, explicit demo selection, review, task modification, retries and persistence. Use a local development server; this step adds no authentication or public deployment. Back up the database and upload directory together. Road type is caller-declared, and stored image coordinates do not establish a real capture location. Four-crew routes, frontend and assistant instructions remain pending.
 
+Step 7 provides a [B/C handoff guide](../Miscellaneous/BC_HANDOFF.md): `GET /api/v1/tasks/snapshot`, the internal shared-transaction query service, fixed 10/15/20-task inputs, versioned knowledge, and a runnable HTTP example with response export. The example creates demo records and should run against its documented isolated development database. Source-checked knowledge does not imply a working GPT/RAG service or expert approval.
+
 The final application guide must consolidate and verify the following as remaining components are implemented:
 
 1. Supported operating system and tested Python/Node versions.

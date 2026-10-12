@@ -1,0 +1,24 @@
+{
+  "contract_version": "a-task-query-v1",
+  "input_revision": 0,
+  "is_demo": true,
+  "source": "synthetic_fixture",
+  "tasks": [
+    {
+      "created_at": "2026-10-12T02:00:00Z",
+      "damage_label": "longitudinal_crack",
+      "due_at": null,
+      "inspection_id": "fixture-unknown-inspection-001",
+      "is_demo": true,
+      "latitude": 1.332,
+      "longitude": 103.676,
+      "priority": "P3",
+      "rule_version": "demo-rules-v1",
+      "service_minutes": null,
+      "severity": "low",
+      "status": "active",
+      "task_id": "fixture-unknown-service-001"
+    }
+  ],
+  "total": 1
+}

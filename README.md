@@ -1,12 +1,12 @@
 # RoadGuard
 
-**Status: demo inspection, review and task workflow implemented.**
+**Status: demo workflow and A's task/knowledge handoff for B/C delivered.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
 This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Real image inference, routing, frontend and evaluation results remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～6 步已实现公共基础、模拟检测、图片上传、巡检审核与任务管理。所有检测/规则仍明确标记演示；道路类型声明不能替代道路核验。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。所有检测/规则仍明确标记演示；道路类型声明及合成任务点不能替代道路核验。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -110,6 +110,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
 - [Run demo detection and business rules (中文)](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
 - [Upload, review and manage persisted tasks (中文)](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
+- [B/C task snapshots, fixed inputs and knowledge handoff (中文)](Miscellaneous/BC_HANDOFF.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)

@@ -95,7 +95,7 @@ def test_health_and_implemented_openapi(settings):
             "/api/v1/health", "/api/v1/demo/scenarios", "/api/v1/demo/assessments",
             "/api/v1/inspections", "/api/v1/inspections/{inspection_id}",
             "/api/v1/inspections/{inspection_id}/image", "/api/v1/inspections/{inspection_id}/review",
-            "/api/v1/tasks", "/api/v1/tasks/{task_id}",
+            "/api/v1/tasks", "/api/v1/tasks/{task_id}", "/api/v1/tasks/snapshot",
         }
         health_schema = openapi["paths"]["/api/v1/health"]["get"]
         assert health_schema["responses"]["200"]["content"]["application/json"]["schema"]["$ref"].endswith("/HealthResponse")
