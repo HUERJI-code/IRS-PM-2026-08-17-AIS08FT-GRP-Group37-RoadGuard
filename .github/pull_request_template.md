@@ -1,24 +1,28 @@
-## 问题与结果
+## Problem and result
 
-本次解决什么问题，完成后有什么行为变化？关联任务：
+Describe the problem, the resulting behavior, and the related task.
 
-## 负责人和影响
+## Ownership and impact
 
-- 负责人：A / B / C
-- 涉及模块：
-- 接口、数据字段、配置或依赖变化：无 / 列出变化和需要对接的人
+- Owner: A / B / C
+- Affected modules:
+- API, data, configuration, or dependency changes and affected consumers:
 
-## 验证
+## Validation
 
-- 实际运行的命令与结果：
-- 页面变化的截图（适用时）：
-- 尚未验证的内容与原因：
+- Commands actually run and their results:
+- Screenshots for visible UI changes, if applicable:
+- Unverified behavior and known limitations:
 
-## 合并前
+## Readiness
 
-- [ ] 已遵守 AGENTS.md，并更新相关接口、样例与说明。
-- [ ] 已查看本次最新提交的 RoadGuard CI，所有适用检查通过。
-- [ ] 模拟数据、未实现部分和已知限制已明确标注。
-- [ ] 已完成改动自检、跨模块影响说明，且分支已同步最新 main、无冲突。
+- [ ] Followed AGENTS.md and updated the relevant contracts, examples, and documentation.
+- [ ] Completed self-review and the applicable local checks.
+- [ ] Clearly identified demo data, unfinished features, and known limitations.
+- [ ] Included the current main branch and resolved conflicts.
 
-PR 无需人工审核或批准。当前私有仓库套餐不强制执行分支保护，合并执行方须主动检查以上条件；仅创建 PR 不会自动合并。
+Write the title, description, summaries, comments, and merge message in English.
+Keep unfinished work in draft. Ready same-repository PRs merge automatically after
+the latest required CI checks pass and the branch is current and conflict-free.
+Changes under .github/ require an agent to review and merge them after successful
+CI; no human approval or additional confirmation is required by project policy.

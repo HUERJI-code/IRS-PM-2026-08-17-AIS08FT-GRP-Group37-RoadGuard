@@ -3,6 +3,7 @@ name: RoadGuard CI
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   push:
     branches: [main]
   workflow_dispatch:
@@ -31,6 +32,8 @@ jobs:
           python-version: '3.11'
       - name: Test the CI guardrails
         run: python -m unittest discover -s .github/scripts -p 'test_*.py' -v
+      - name: Validate English pull request text
+        run: python .github/scripts/pr_language.py
       - name: Validate repository and detect application code
         id: inspect
         run: python .github/scripts/check_repository.py
