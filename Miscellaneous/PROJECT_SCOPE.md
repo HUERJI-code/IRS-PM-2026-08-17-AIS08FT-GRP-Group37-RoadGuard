@@ -6,6 +6,8 @@ Updated: 2026-10-12. The geographic baseline and user-selected dispatch origin a
 
 ## Confirmed changes
 
+- Typical capture scenario (2026-10-13): one main damage type and one main subject per photo. This is not a guarantee that every input contains damage or exactly one object. The [single-main-damage experiment](SINGLE_DAMAGE_OPTIMIZATION.md) retains raw detections and review; The [released model integration](MODEL_RELEASE_AND_BACKEND.md) now provides a default local manifest and persisted primary suggestion; model-quality acceptance remains pending.
+
 - Default repair crews: **four**, replacing the proposal's two-crew scenario.
 - Task service area: **Jurong East and Jurong West, Singapore**, using the frozen URA Master Plan 2025 polygons (approximately 32.55 km²).
 - Shared simulated dispatch origin: **NUS-ISS**, 25 Heng Mui Keng Terrace, Singapore 119615; latitude `1.292149`, longitude `103.776551`. This specified depot is allowed outside the task service area; travel from it to the first task must be counted.

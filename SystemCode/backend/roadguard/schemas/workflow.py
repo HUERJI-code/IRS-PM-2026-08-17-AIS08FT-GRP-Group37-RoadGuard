@@ -1,4 +1,4 @@
-"""a-workflow-v2 detector modes; business tasks remain explicitly demo."""
+"""a-workflow-v3 adds a persisted primary suggestion; business tasks remain demo."""
 
 from typing import Annotated, Literal, Self
 
@@ -8,6 +8,7 @@ from .assessment import DemoOnly
 from .common import ContractModel, LABEL_KEYS, Latitude, Longitude, NonEmptyString, NonNegativeInt, PositiveInt, UTCTimestamp
 from .inspection import Inspection
 from .task import Task
+from .primary import PrimarySuggestion
 
 
 RequestId = Annotated[str, StringConstraints(strict=True, pattern=r"^[A-Za-z0-9_-]{1,64}$")]
@@ -126,6 +127,7 @@ class InspectionRecord(Inspection):
     model_version: NonEmptyString
     model_weights_sha256: Annotated[str, StringConstraints(strict=True, pattern=r"^[0-9a-f]{64}$")] | None = None
     model_manifest_version: Literal["roadguard-model-v1"] | None = None
+    primary_suggestion: PrimarySuggestion | None = None
     image_width: PositiveInt
     image_height: PositiveInt
     scope_version: NonEmptyString
@@ -153,6 +155,18 @@ class InspectionRecord(Inspection):
                (self.image_width, self.image_height, self.model_version) or item.is_demo != (self.mode == "demo")
                for item in self.detections):
             raise ValueError("detections must match original image and detector mode provenance")
+        if self.primary_suggestion is not None:
+            suggestion = self.primary_suggestion
+            ids = {item.detection_id for item in self.detections}
+            if (self.mode != "real" or not set(suggestion.competing_detection_ids).issubset(ids)
+                    or (suggestion.detection_id is not None and suggestion.detection_id not in ids)):
+                raise ValueError("primary suggestion must reference this real inspection's evidence")
+            if suggestion.detection_id is not None:
+                item = next(d for d in self.detections if d.detection_id == suggestion.detection_id)
+                if item.confidence < suggestion.threshold:
+                    raise ValueError("primary suggestion is below its inference filter")
+            elif any(item.confidence >= suggestion.threshold for item in self.detections):
+                raise ValueError("primary suggestion cannot omit eligible evidence")
         return self
 
 

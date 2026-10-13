@@ -41,7 +41,7 @@ Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须�
 
 ## 路由实现状态与错误
 
-当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v2 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
+当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v3 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
 
 ### a-demo-v1：检测与规则预览
 
@@ -59,7 +59,7 @@ RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无
 
 `GET /api/v1/demo/scenarios` 返回 DemoScenarioCatalogue；`POST /api/v1/demo/assessments` 接收 DemoAssessmentRequest，200 返回 DemoAssessmentResponse。调用示例 `{"scenario_id":"high_confidence"}`。预览调用只执行服务，不存储巡检/任务、不递增 input_revision，重复请求不会产生队列记录。候选中不含期限，不能计算逾期指标；持久化任务通过第 6 步接口创建，由业务服务执行位置验证、审核分流、存储和幂等性检查。
 
-### a-workflow-v2：持久化业务接口（保留原 demo 请求）
+### a-workflow-v3：持久化业务接口（保留原请求）
 
 可执行类型位于 [schemas/workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py)，路由位于 [api/workflow.py](../SystemCode/backend/roadguard/api/workflow.py)。字段和操作说明以[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)及 schema 为准。
 
@@ -75,6 +75,8 @@ RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无
 | InspectionList / TaskList | items、total、limit、offset；TaskList 额外返回同一快照的 input_revision |
 
 Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP 调用方须采用相应 Record 类型。原检测标签/置信度保留；人工纠正由 review_history 和 Task.history 表达。review_history 中操作员身份未经认证，不能被当作身份凭据。候选变成任务时才通过事务更新规划版本，单独 `/demo` 调用仍不写库。
+
+2026-10-13 发布增量 `a-workflow-v3`：InspectionRecord 新增可空 `primary_suggestion`，可执行定义为 [schemas/primary.py](../SystemCode/backend/roadguard/schemas/primary.py)。字段为 policy_version、strategy、threshold、nullable detection_id、nullable ranking_score、ambiguous 和 competing_detection_ids；它只提供展示/审核建议，原始 detections 全部保留，不能代替 selected_detection_id 或自动建任务。历史记录缺字段时读取为 null，严格 v2 客户端须接受新字段。默认模型配置、安装、完整响应样例与调用方影响见[发布接入指南](MODEL_RELEASE_AND_BACKEND.md)。SQLite v2 和 a-task-query-v1 不变。
 
 ### a-task-query-v1：同版本活动任务快照
 

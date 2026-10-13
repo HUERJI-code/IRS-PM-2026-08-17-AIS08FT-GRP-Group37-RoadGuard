@@ -1,0 +1,190 @@
+{
+  "schema_version": "roadguard-model-release-acceptance-v1",
+  "recorded_date": "2026-10-13",
+  "model": {
+    "schema_version": "roadguard-model-v1",
+    "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+    "status": "experimental",
+    "weights_path": "Dataset/models/roadguard-yolo11s-single-v1.pt",
+    "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+    "weights_bytes": 19218837,
+    "source_class_names": [
+      "longitudinal crack",
+      "longitudinal crack wide",
+      "transverse crack",
+      "transverse crack wide",
+      "alligator crack",
+      "alligator crack sunken",
+      "pothole",
+      "pothole deep"
+    ],
+    "source_dataset": {
+      "ref": "juusos/rdd2022es",
+      "version": 1,
+      "manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341"
+    },
+    "inference": {
+      "conf": 0.2,
+      "iou": 0.7,
+      "imgsz": 832
+    },
+    "primary_policy": {
+      "policy_version": "single-damage-v1",
+      "strategy": "area_quarter",
+      "threshold": 0.2
+    },
+    "evaluation_path": "SystemCode/experiments/vision/single_damage_summary.json",
+    "release": {
+      "repository": "HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard",
+      "tag": "vision-single-v1",
+      "asset": "roadguard-yolo11s-single-v1.pt",
+      "url": "https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1"
+    },
+    "limitations": [
+      "Experimental: requires human review; not both 70 percent typed precision and recall.",
+      "Single-subject image-type metrics are not multi-object localization metrics.",
+      "Known obvious potholes and the AI-generated example still fail.",
+      "Source images do not establish Jurong or Singapore generalization."
+    ]
+  },
+  "manifest_sha256": "08513e088c63610a1d5b8cb756fbee4d4a15eab095fde383e4b90e8446ac5303",
+  "weight_sha256_verified": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+  "weight_bytes": 19218837,
+  "training_performed": false,
+  "raw_dataset_uploaded": false,
+  "training_checkpoints_uploaded": false,
+  "default_backend_recipe": "standard832-conf020-area-quarter",
+  "api_contract": "a-workflow-v3",
+  "api_version": "0.6.0",
+  "knowledge_package": "a-knowledge-v3",
+  "tests": {
+    "full_regression_passed": 835,
+    "full_regression_skipped": 1,
+    "skip_reason": "Windows symlink permission",
+    "focused_initial_passed": 81,
+    "real_http_images": 7,
+    "real_cpu_fp32_verified": true,
+    "review_creates_one_demo_task": true,
+    "restart_without_model_verified": true,
+    "disabled_model_status": 503
+  },
+  "http_evidence": {
+    "path": "Dataset/model-release-v1/http-acceptance/results.json",
+    "sha256": "df9c054c3f27d2d44c7890c111f0296fbf0113f03d6e687dc05fec1052877b21"
+  },
+  "known_photo_checks": [
+    {
+      "sample": "01-cracked-asphalt.jpg",
+      "raw_detections": 4,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-f2356756244345caabbc8723c6c10f26-1",
+        "ranking_score": 0.2795138046971152,
+        "ambiguous": true,
+        "competing_detection_ids": [
+          "real-f2356756244345caabbc8723c6c10f26-1",
+          "real-f2356756244345caabbc8723c6c10f26-0"
+        ]
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "02-worn-pavement.jpg",
+      "raw_detections": 1,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-c4640de5693942cc88054caa9ac1088c-0",
+        "ranking_score": 0.5321903046565215,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "03-damaged-surface.jpg",
+      "raw_detections": 4,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-b570e7167a974a3c8011967c0cb8d770-0",
+        "ranking_score": 0.3470318995049143,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "04-pothole-hump.jpg",
+      "raw_detections": 4,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-0baf3816771a4b048067c5aadb3e6676-0",
+        "ranking_score": 0.32767150926032496,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "06-jurong-street.jpg",
+      "raw_detections": 0,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": null,
+        "ranking_score": null,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "no_detection",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "input.png",
+      "raw_detections": 5,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-5f14103adeed4f129187a7d4454011a3-0",
+        "ranking_score": 0.34212234591579804,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    },
+    {
+      "sample": "05-pothole-asphalt.jpg",
+      "raw_detections": 1,
+      "primary_suggestion": {
+        "policy_version": "single-damage-v1",
+        "strategy": "area_quarter",
+        "threshold": 0.2,
+        "detection_id": "real-466f3549b8e34b05864e5d8e6329af5e-0",
+        "ranking_score": 0.21350948671714662,
+        "ambiguous": false,
+        "competing_detection_ids": []
+      },
+      "status": "pending_review",
+      "matches_experimental_runner": true
+    }
+  ],
+  "quality_limitations": [
+    "Experimental model; every nonempty real result requires review.",
+    "Both 70 percent eight-type image P/R targets remain unmet.",
+    "Known obvious pothole and AI image still fail; API tests do not establish recognition quality."
+  ]
+}

@@ -1,12 +1,12 @@
 # Step 8: local real vision and reviewed demo tasks
 
-Owner: A. Contract: **a-workflow-v2**. The task snapshot stays **a-task-query-v1**.
+Owner: A. Contract: **a-workflow-v3**. The task snapshot stays **a-task-query-v1**.
 
 The existing image upload endpoint now accepts an explicitly selected detector mode. `mode:"real"` means inference on the uploaded image pixels using a trusted, locally trained eight-class RDD2022ES checkpoint. It does not mean the repair rules, road qualification, simulated department or tasks are production validated.
 
 ## Enable the local detector
 
-The default is disabled. The base backend and its tests do not require Ultralytics. Install the optional [vision requirements](../SystemCode/model/requirements-vision.txt) in the backend environment using the model setup instructions, then configure the artifact produced by the training/evaluation workflow:
+The default manifest is now `SystemCode/model/releases/roadguard-single-v1.json`. Follow [released model installation](MODEL_RELEASE_AND_BACKEND.md) to obtain and verify its weight from the private repository Release. The base backend and CI do not require Ultralytics; real uploads require the optional runtime and local weight. Set `ROADGUARD_VISION_MANIFEST_PATH=disabled` to disable real inference. An explicit trusted local manifest can still override the default:
 
 ```powershell
 $env:ROADGUARD_VISION_MANIFEST_PATH = "Dataset/runs/<run-id>/model_manifest.json"
@@ -42,7 +42,7 @@ The manifest shape is:
 }
 ```
 
-Training/evaluation metadata may accompany these fields. The loader checks the actual checkpoint names and ID order against all eight source names from [label_schema.json](../SystemCode/model/label_schema.json), in addition to the manifest names and weights SHA-256. A COCO checkpoint cannot be relabelled as road damage by changing the manifest. It must be a detection model. The runtime bounds `imgsz` to 32–1280, `conf`/`iou` to finite numbers greater than zero and at most one, uses CPU inference and caps results at 100 detections. The manifest currently accepts exactly `conf`, `iou`, and `imgsz` as inference settings.
+Training/evaluation metadata may accompany these fields. The loader checks the actual checkpoint names and ID order against all eight source names from [label_schema.json](../SystemCode/model/label_schema.json), in addition to the manifest names and weights SHA-256. A COCO checkpoint cannot be relabelled as road damage by changing the manifest. It must be a detection model. The runtime bounds `imgsz` to 32–1280, `conf`/`iou` to finite numbers greater than zero and at most one, uses CPU inference and caps results at 100 detections. The manifest accepts exactly `conf`, `iou`, and `imgsz` as inference settings and explicitly uses CPU FP32. An optional top-level `primary_policy` contains exactly `policy_version:single-damage-v1`, a supported `strategy`, and `threshold` equal to inference `conf`; the release uses `area_quarter` and 0.20. Old manifests without this object return no primary suggestion.
 
 ## Upload and detector provenance
 
@@ -64,7 +64,7 @@ The same limits apply to both modes: one completely decoded JPEG/PNG, at most 8 
 
 Real `InspectionRecord` responses contain `mode:"real"`, `demo_scenario_id:null`, `model_version`, `model_weights_sha256` and `model_manifest_version:"roadguard-model-v1"`. Each real `Detection` has `is_demo:false` and matching image dimensions/model version. The inspection itself retains **`is_demo:true`**, because its business context and rule assumptions remain simulated. Those meanings are stated in `decision_trace`; clients should use `mode` and per-detection `is_demo` to display detector provenance.
 
-New responses use a-workflow-v2. Clients parsing a-workflow-v1 with `extra=forbid` must update their inspection record schema to accept these added provenance fields and the real mode. Existing persisted demo records load with default null checkpoint fields, retain their named scenario and preserve their original evidence/history. SQLite schema remains v2; there is no destructive migration or task-query contract change.
+New responses use a-workflow-v3 and add nullable `primary_suggestion`; its ID references the retained detections and is separate from `selected_detection_id`. See the [field definitions and migration](MODEL_RELEASE_AND_BACKEND.md). Strict v2 clients must accept this additional field. Old records default it to null and are not re-inferred. Clients parsing a-workflow-v1 with `extra=forbid` must update their inspection record schema to accept these added provenance fields and the real mode. Existing persisted demo records load with default null checkpoint fields, retain their named scenario and preserve their original evidence/history. SQLite schema remains v2; there is no destructive migration or task-query contract change.
 
 ## Review before task creation
 

@@ -1,0 +1,66 @@
+{
+  "inspection_id": "32024f41391b45e19b8d9a6ec9dcebf3",
+  "image_url": "/api/v1/inspections/32024f41391b45e19b8d9a6ec9dcebf3/image",
+  "annotated_image_url": null,
+  "latitude": 1.3405,
+  "longitude": 103.706,
+  "detections": [
+    {
+      "detection_id": "real-c4640de5693942cc88054caa9ac1088c-0",
+      "class_id": 4,
+      "label": "alligator_crack",
+      "confidence": 0.6036037802696228,
+      "bbox_xyxy": [
+        678.1834716796875,
+        365.3304138183594,
+        2748.0,
+        2018.901611328125
+      ],
+      "image_width": 2748,
+      "image_height": 2061,
+      "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+      "is_demo": false
+    }
+  ],
+  "selected_detection_id": null,
+  "status": "pending_review",
+  "task_id": null,
+  "decision_trace": [
+    {
+      "code": "demo_business_assumptions",
+      "message": "Detection uses real image pixels. Inspection and any reviewed task remain demo business objects: severity, priority, service time and road eligibility are unvalidated assumptions.",
+      "rule_version": "demo-rules-v1",
+      "is_demo": true
+    },
+    {
+      "code": "real_uncalibrated_review_required",
+      "message": "Every nonempty real detection requires human review; no calibrated acceptance threshold exists. The demo confidence threshold is not applied.",
+      "rule_version": "demo-rules-v1",
+      "is_demo": true
+    }
+  ],
+  "is_demo": true,
+  "created_at": "2026-10-13T11:39:54.310410Z",
+  "updated_at": "2026-10-13T11:39:54.310410Z",
+  "record_version": 1,
+  "mode": "real",
+  "demo_scenario_id": null,
+  "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+  "model_weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+  "model_manifest_version": "roadguard-model-v1",
+  "primary_suggestion": {
+    "policy_version": "single-damage-v1",
+    "strategy": "area_quarter",
+    "threshold": 0.2,
+    "detection_id": "real-c4640de5693942cc88054caa9ac1088c-0",
+    "ranking_score": 0.5321903046565215,
+    "ambiguous": false,
+    "competing_detection_ids": []
+  },
+  "image_width": 2748,
+  "image_height": 2061,
+  "scope_version": "jurong-je-jw-mp2025-v1",
+  "road_type": "public_motor_road",
+  "road_type_source": "user_declared",
+  "review_history": []
+}

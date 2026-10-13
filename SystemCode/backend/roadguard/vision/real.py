@@ -20,6 +20,7 @@ from roadguard.errors import AppError
 from roadguard.images import PreparedImage
 from roadguard.schemas import Detection
 from roadguard.schemas.common import LABELS_BY_ID
+from roadguard.vision.primary import POLICY_VERSION, PrimaryPolicy
 
 
 MANIFEST_VERSION = "roadguard-model-v1"
@@ -65,6 +66,7 @@ class LocalVisionDetector:
         self.weights_sha256 = None
         self.manifest_version = MANIFEST_VERSION
         self._inference = None
+        self.primary_policy = None
 
     def _load(self):
         if self._model is not None:
@@ -115,6 +117,13 @@ class LocalVisionDetector:
                     or not 0 < inference[key] <= 1 for key in ("conf", "iou"))
                     or type(inference["imgsz"]) is not int or not 32 <= inference["imgsz"] <= 1280):
                 raise ValueError("unbounded inference settings")
+            primary_policy = None
+            if "primary_policy" in manifest:
+                policy = manifest["primary_policy"]
+                if (not isinstance(policy, dict) or set(policy) != {"policy_version", "strategy", "threshold"}
+                        or policy["policy_version"] != POLICY_VERSION or policy["threshold"] != inference["conf"]):
+                    raise ValueError("invalid or inconsistent primary suggestion policy")
+                primary_policy = PrimaryPolicy(policy["strategy"], policy["threshold"])
             loader = self._model_loader
             if loader is None:
                 os.environ["YOLO_OFFLINE"] = "true"
@@ -139,6 +148,7 @@ class LocalVisionDetector:
             self.model_version = manifest["model_version"].strip()
             self.weights_sha256 = sha
             self._inference = dict(inference)
+            self.primary_policy = primary_policy
             self._model = model
         except Exception:
             self._load_failed = True
@@ -153,7 +163,7 @@ class LocalVisionDetector:
                     if pixels.size != (image.width, image.height):
                         raise ValueError("inconsistent prepared image")
                     results = self._model.predict(source=pixels, **self._inference,
-                                                  device="cpu", max_det=MAX_DETECTIONS,
+                                                  device="cpu", max_det=MAX_DETECTIONS, quantize=None,
                                                   verbose=False, save=False, stream=False)
                 if len(results) != 1 or tuple(results[0].orig_shape) != (image.height, image.width):
                     raise ValueError("wrong inference image dimensions")

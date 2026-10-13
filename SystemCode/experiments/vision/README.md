@@ -1,5 +1,9 @@
 # Experimental vision evidence
 
+## Single-main-damage experiment
+
+[Summary](single_damage_summary.json) preserves all 80 calibration operating points, selected and baseline confirmation counts, eight-class support/confusion, hashes and seven known-photo checks. The [supervisor record](../../../Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md) explains the distinct image-type metric and standalone runner. Area-weighted ranking at confidence 0.20 achieved confirmation type P/R 61.63%/61.99% on 377 zero/single-annotation images. This is reused validation, not an independent test; known potholes still fail. No training, server default or API contract change occurred. The experimental main suggestion retains all raw detections and requires review.
+
 ## Completed eight-method inference follow-up
 
 The new comparison used the same 1,921 validation originals and 2,623 ground-truth boxes, no new training, and eight preregistered methods. At their fixed selected thresholds, baseline832 achieved P/R **50.52%/52.00%**; the selected original-plus-flip832 recipe achieved **53.02%/53.26%** at confidence 0.30. No candidate reached both 70% targets on the fixed grid. The result adds 33 TP and removes 98 FP, but macro Recall slightly decreased and several rare-type recalls regressed. This is continued validation selection, not an independent test or evidence of Jurong generalization.
