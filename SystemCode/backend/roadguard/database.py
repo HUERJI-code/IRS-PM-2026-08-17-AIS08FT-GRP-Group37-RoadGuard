@@ -39,6 +39,17 @@ class DatabaseStateError(RuntimeError):
     """The infrastructure database is missing or incompatible."""
 
 
+def _schema_version(connection: sqlite3.Connection) -> int:
+    columns = connection.execute("PRAGMA table_info(infra_metadata)").fetchall()
+    if tuple(row[1] for row in columns) != ("singleton_id", "schema_version", "input_revision"):
+        raise DatabaseStateError("Infrastructure metadata schema is incompatible.")
+    row = connection.execute("SELECT schema_version, input_revision FROM infra_metadata WHERE singleton_id=1").fetchone()
+    if (row is None or row[0] not in {1, SCHEMA_VERSION} or type(row[1]) is not int or row[1] < 0
+            or connection.execute("SELECT COUNT(*) FROM infra_metadata").fetchone()[0] != 1):
+        raise DatabaseStateError("Infrastructure schema is incompatible.")
+    return row[0]
+
+
 def _validate_revision(value: int) -> None:
     if type(value) is not int or value < 0:
         raise ValueError("Input revision must be a non-negative integer.")
@@ -140,8 +151,22 @@ class Database:
 
     def initialize(self) -> None:
         """Idempotent infrastructure migration entrypoint, called by lifespan."""
+        if self.path.exists():
+            # A restart only validates the current schema. BEGIN IMMEDIATE plus
+            # COMMIT would needlessly compete with database viewers, even when
+            # no rows changed. Release this snapshot before any migration.
+            with self.connect() as connection:
+                metadata_exists = connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='infra_metadata'"
+                ).fetchone()
+                if metadata_exists and _schema_version(connection) == SCHEMA_VERSION:
+                    _validate_workflow_schema(connection)
+                    read_revision(connection)
+                    return
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self._write_transaction(create=True) as connection:
+            # Recheck under the write lock: another initializer may have migrated
+            # the database since the read-only preflight completed.
             tables = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
             workflow_tables = {"inspections", "tasks", "operation_keys"}
             if "infra_metadata" not in tables:
@@ -156,14 +181,7 @@ class Database:
                     "input_revision INTEGER NOT NULL CHECK (input_revision >= 0))"
                 )
                 connection.execute("INSERT INTO infra_metadata VALUES (1,1,0)")
-            columns = connection.execute("PRAGMA table_info(infra_metadata)").fetchall()
-            if tuple(row[1] for row in columns) != ("singleton_id", "schema_version", "input_revision"):
-                raise DatabaseStateError("Infrastructure metadata schema is incompatible.")
-            row = connection.execute("SELECT schema_version, input_revision FROM infra_metadata WHERE singleton_id=1").fetchone()
-            if (row is None or row[0] not in {1, SCHEMA_VERSION} or type(row[1]) is not int or row[1] < 0
-                    or connection.execute("SELECT COUNT(*) FROM infra_metadata").fetchone()[0] != 1):
-                raise DatabaseStateError("Infrastructure schema is incompatible.")
-            if row[0] == SCHEMA_VERSION:
+            if _schema_version(connection) == SCHEMA_VERSION:
                 _validate_workflow_schema(connection)
                 read_revision(connection)
                 return

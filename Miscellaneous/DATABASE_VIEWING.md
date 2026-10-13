@@ -67,3 +67,17 @@ LIMIT 20;
 ```
 
 手动查看用 SELECT；修改任务、完成、取消等通过 API 操作，使规则快照、修改历史和 input_revision 一起更新。直接改表格只改一部分字段会破坏这些一致性约定。运行数据库与上传图片均被 Git 忽略，不上传 GitHub。
+
+## 遇到 database is locked
+
+数据库查看工具如果保留未结束的查询事务，即使只运行 SELECT，也可能持有读取锁。在 SQLite 默认的回滚日志模式下，这会阻塞其他连接的写提交；另一个未结束的写事务也会阻塞写入。[SQLite 事务说明](https://www.sqlite.org/lang_transaction.html)、[锁机制说明](https://www.sqlite.org/lockingv3.html)。
+
+处理方法：
+
+1. 在 PyCharm Database 窗口右键 RoadGuard 数据源，选择 **Disconnect**（断开连接），保留 IDE 和项目打开。若提示未提交修改，先确认内容，不要盲目提交或丢弃。
+2. 停止启动失败的后端运行实例，再用原来的 Run 配置启动；看到 `Application startup complete` 后再访问 Swagger。`Uvicorn running` 单独出现并不代表应用启动完成，尤其是 `--reload` 模式。
+3. 数据库查看完成后结束查询并断开连接，避免长时间保留事务；不要同时重复启动后端。
+
+后端已将当前 schema 的启动校验改为只读事务；新建和迁移数据库仍通过写事务完成。这个修复避免正常重启争抢不必要的写锁，但不绕过外部独占锁，也不解除外部事务对上传保存或任务修改的阻塞。
+
+不要通过删除 `roadguard.sqlite3` 或其 `-journal`、`-wal`、`-shm` 文件来解决锁问题；这些文件可能包含尚待恢复的数据。
