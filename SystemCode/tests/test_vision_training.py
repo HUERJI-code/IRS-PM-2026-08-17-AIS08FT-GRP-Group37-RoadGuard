@@ -382,3 +382,87 @@ def test_yaml_rejects_relative_global_path_duplicate_keys_and_image_lists(yaml_c
     changed["train"] = "images.txt"
     with pytest.raises(ValueError, match="existing image directory"):
         save(changed)
+
+
+@pytest.mark.parametrize("epochs,patience,imgsz,batch", [(30, 10, 640, 16), (60, 60, 960, 32), (40, 20, 832, 64), (1, 1, 32, 1)])
+def test_config_accepts_bounded_high_resolution_and_existing_training_recipes(yaml_config, epochs, patience, imgsz, batch):
+    _, _, value, save = yaml_config
+    changed = copy.deepcopy(value)
+    changed["train"].update(epochs=epochs, patience=patience, imgsz=imgsz, batch=batch)
+    changed["inference"]["imgsz"] = imgsz
+    assert save(changed_config=changed) == changed
+
+
+@pytest.mark.parametrize("field,item", [("epochs", 61), ("epochs", 0), ("patience", 61), ("patience", 0),
+                                      ("imgsz", 992), ("imgsz", 31), ("imgsz", 641), ("imgsz", 959),
+                                      ("batch", 65), ("epochs", True), ("patience", True), ("batch", True),
+                                      ("imgsz", True), ("workers", False), ("seed", True),
+                                      ("epochs", 30.0), ("imgsz", 960.0), ("fliplr", False)])
+def test_config_rejects_excessive_rounded_or_boolean_integer_training_values(yaml_config, field, item):
+    _, _, value, save = yaml_config
+    changed = copy.deepcopy(value)
+    changed["train"][field] = item
+    if field == "imgsz":
+        changed["inference"]["imgsz"] = item
+    with pytest.raises(ValueError):
+        save(changed_config=changed)
+
+
+@pytest.mark.parametrize("field,item", [("conf", True), ("iou", False), ("imgsz", 640.0), ("conf", "0.25"), ("conf", float("inf"))])
+def test_config_rejects_wrong_inference_parameter_types(yaml_config, field, item):
+    _, _, value, save = yaml_config
+    changed = copy.deepcopy(value)
+    changed["inference"][field] = item
+    with pytest.raises(ValueError):
+        save(changed_config=changed)
+
+
+@pytest.mark.parametrize("field", ["resume", "model", "classes", "single_cls", "fraction"])
+def test_high_resolution_recipe_preserves_runner_owned_overrides(yaml_config, field):
+    _, _, value, save = yaml_config
+    changed = copy.deepcopy(value)
+    changed["train"].update(epochs=60, patience=60, imgsz=960)
+    changed["inference"]["imgsz"] = 960
+    changed["train"][field] = False
+    with pytest.raises(ValueError, match="Runner-owned"):
+        save(changed_config=changed)
+
+
+def test_config_accepts_existing_best_checkpoint_for_a_separate_fine_tune_run(yaml_config):
+    root, _, value, save = yaml_config
+    parent = root / "Dataset/runs/parent-completed/weights/best.pt"
+    parent.parent.mkdir(parents=True)
+    parent.write_bytes(b"eight-class parent checkpoint")
+    changed = copy.deepcopy(value)
+    changed.update(model="Dataset/runs/parent-completed/weights/best.pt", run_name="new-finetune",
+                   model_version="yolo11s-rdd2022es-finetune-experimental")
+    changed["train"].update(epochs=60, patience=60, imgsz=960)
+    changed["inference"]["imgsz"] = 960
+    assert save(changed_config=changed) == changed
+    assert parent.read_bytes() == b"eight-class parent checkpoint"
+
+
+def test_new_run_fine_tune_initializes_parent_weights_without_resume_or_replacing_parent(config):
+    value, root = config
+    parent = root / "Dataset/runs/completed-parent/weights/best.pt"
+    parent.parent.mkdir(parents=True)
+    parent.write_bytes(b"trained eight-class parent")
+    value.update(model="Dataset/runs/completed-parent/weights/best.pt", run_name="new-finetune")
+    calls = []
+
+    class FakeModel:
+        def __init__(self, path):
+            calls.append(Path(path))
+        def add_callback(self, event, callback):
+            pass
+        def train(self, **arguments):
+            assert "resume" not in arguments
+            assert arguments["name"] == "new-finetune"
+
+    run = train.run_training(value, model_factory=FakeModel, runtime={"python": "fake", "packages": {}})
+    metadata = json.loads((run / "run_metadata.json").read_text())
+    assert calls == [parent]
+    assert metadata["resume_history"] == []
+    assert metadata["identity"]["pretrained_sha256"] == checkpointing.sha256_file(parent)
+    assert parent.read_bytes() == b"trained eight-class parent"
+    assert json.loads((run / "run_status.json").read_text())["status"] == "training_completed_pending_evaluation"

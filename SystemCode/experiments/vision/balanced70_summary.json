@@ -1,0 +1,6281 @@
+{
+  "schema_version": "roadguard-balanced70-supervisor-acceptance-v1",
+  "date": "2026-10-13",
+  "implementation_owner": "A; GPT-6.1-sol subagents developed tooling and independent reviews; root supervised training and acceptance",
+  "plan_sha256": "116de97a529dbc02f1de9961e41b71360bb333767138801669116ea2c12dd328",
+  "configuration": {
+    "dataset_root": "Dataset",
+    "data": "Dataset/prepared/data.yaml",
+    "manifest": "Dataset/prepared/manifest.jsonl",
+    "model": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt",
+    "run_name": "yolo11s-rdd2022es-balanced40-img832-seed42",
+    "model_version": "yolo11s-rdd2022es-v1-balanced40-img832-seed42-experimental",
+    "train": {
+      "epochs": 40,
+      "imgsz": 832,
+      "batch": 16,
+      "seed": 42,
+      "patience": 40,
+      "workers": 4,
+      "device": "0",
+      "cache": false,
+      "fliplr": 0.0,
+      "deterministic": true,
+      "amp": false,
+      "optimizer": "AdamW",
+      "lr0": 0.0002,
+      "lrf": 0.1,
+      "warmup_epochs": 1.0,
+      "close_mosaic": 10,
+      "nbs": 64,
+      "warmup_bias_lr": 0.0,
+      "cls": 0.75,
+      "cls_pw": 0.25,
+      "box": 7.5,
+      "dfl": 1.5,
+      "mosaic": 0.5,
+      "scale": 0.3,
+      "translate": 0.05,
+      "hsv_h": 0.015,
+      "hsv_s": 0.4,
+      "hsv_v": 0.3,
+      "degrees": 0.0,
+      "shear": 0.0,
+      "perspective": 0.0,
+      "flipud": 0.0,
+      "mixup": 0.0,
+      "cutmix": 0.0,
+      "copy_paste": 0.0,
+      "multi_scale": 0.0
+    },
+    "inference": {
+      "conf": 0.25,
+      "iou": 0.7,
+      "imgsz": 832
+    }
+  },
+  "config_file_sha256": "e73285b0b37ba1668da2ce12dc8a718d302df1de53cb700cbe2bcb17cde4a010",
+  "training_config_fingerprint": "0840d4e41a7babc51119b3da9a06414667e7ed93a009660039380078796f8695",
+  "training_runtime": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "torch": "2.10.0+cu128",
+      "torchvision": "0.25.0+cu128",
+      "ultralytics": "8.4.176",
+      "numpy": "2.5.2"
+    },
+    "git_commit": "bec6fb33d594544d00d06cbfb4ffeb74722cd138",
+    "git_dirty": false,
+    "source_file_sha256": {
+      "train.py": "e6058a393e4dd255967c02f4617063dab4912b7fb0f013f40076582d8e7d8f3a",
+      "checkpointing.py": "73cd919a2dd50310328120ca13b915c560f3243b9b08b3e6240a039a8a75d9f3",
+      "evaluate.py": "0211d014fcc196da273afce43fb91d496c567b26c30d5daf547e4f3ec33c109b",
+      "data_pipeline.py": "63f2c0d70c6f3579f899278886b1d93afd198782aa0e1bde8ebaa1a0cb78f8a6",
+      "requirements-vision.txt": "ecc2c217e1e35ccc4122401007162a0fe0bf8dd79bd7908b52a382b9012d505c"
+    }
+  },
+  "effective_training": {
+    "schema_version": "roadguard-effective-training-v1",
+    "config_sha256": "0840d4e41a7babc51119b3da9a06414667e7ed93a009660039380078796f8695",
+    "configured_batch": 16,
+    "actual_batch": 16,
+    "argument_batch": 16,
+    "nbs": 64,
+    "nominal_accumulate": 4,
+    "effective_nominal_batch": 64,
+    "current_accumulate": 4,
+    "epoch_1based": 40,
+    "epochs": 40,
+    "event": "train_end",
+    "train_args_subset": {
+      "epochs": 40,
+      "imgsz": 832,
+      "batch": 16,
+      "seed": 42,
+      "patience": 40,
+      "workers": 4,
+      "device": "0",
+      "cache": false,
+      "fliplr": 0.0,
+      "deterministic": true,
+      "amp": false,
+      "optimizer": "AdamW",
+      "lr0": 0.0002,
+      "lrf": 0.1,
+      "warmup_epochs": 1.0,
+      "close_mosaic": 10,
+      "nbs": 64,
+      "warmup_bias_lr": 0.0,
+      "cls": 0.75,
+      "cls_pw": 0.25,
+      "box": 7.5,
+      "dfl": 1.5,
+      "mosaic": 0.5,
+      "scale": 0.3,
+      "translate": 0.05,
+      "hsv_h": 0.015,
+      "hsv_s": 0.4,
+      "hsv_v": 0.3,
+      "degrees": 0.0,
+      "shear": 0.0,
+      "perspective": 0.0,
+      "flipud": 0.0,
+      "mixup": 0.0,
+      "cutmix": 0.0,
+      "copy_paste": 0.0,
+      "multi_scale": 0.0
+    },
+    "batch_matches_configuration": true,
+    "accumulation_note": "Nominal accumulation applies after warmup; warmup may use smaller accumulation."
+  },
+  "selection": {
+    "schema_version": "roadguard-balanced70-selection-v1",
+    "status": "complete",
+    "plan_sha256": "116de97a529dbc02f1de9961e41b71360bb333767138801669116ea2c12dd328",
+    "training_commit": "bec6fb33d594544d00d06cbfb4ffeb74722cd138",
+    "training_config_fingerprint": "0840d4e41a7babc51119b3da9a06414667e7ed93a009660039380078796f8695",
+    "config_file_sha256": "e73285b0b37ba1668da2ce12dc8a718d302df1de53cb700cbe2bcb17cde4a010",
+    "candidates": [
+      {
+        "variant": "parent_best640",
+        "export_path": "Dataset/balanced-metrics/balanced70-parent640/export.json",
+        "export_sha256": "d445b3acad70210a1b59c210da381a2f1fa0c07cccacee0d6e5c7a9808e439a3",
+        "report_path": "Dataset/balanced-metrics/balanced70-parent640/analyses/sweep/report.json",
+        "report_sha256": "471d4f9a455f94e28591c1fd3d128864fbf1cafb56f5b28302c6b44575554cd2",
+        "weights_path": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt",
+        "weights_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+        "imgsz": 640,
+        "selected_threshold": 0.25,
+        "selected_primary": {
+          "threshold": 0.25,
+          "iou": 0.5,
+          "mode": "eight_class",
+          "micro": {
+            "tp": 1343,
+            "fp": 1419,
+            "fn": 1280,
+            "instances": 2623,
+            "precision": 0.48624185372918177,
+            "recall": 0.5120091498284407,
+            "f1": 0.4987929433611885
+          },
+          "macro": {
+            "precision": 0.40708262225201086,
+            "recall": 0.4193337923816468,
+            "f1": 0.4092332577355845
+          },
+          "per_class": [
+            {
+              "class_id": 0,
+              "source_name": "longitudinal crack",
+              "tp": 574,
+              "fp": 537,
+              "fn": 367,
+              "instances": 941,
+              "precision": 0.5166516651665166,
+              "recall": 0.6099893730074389,
+              "f1": 0.5594541910331384
+            },
+            {
+              "class_id": 1,
+              "source_name": "longitudinal crack wide",
+              "tp": 68,
+              "fp": 130,
+              "fn": 80,
+              "instances": 148,
+              "precision": 0.3434343434343434,
+              "recall": 0.4594594594594595,
+              "f1": 0.3930635838150289
+            },
+            {
+              "class_id": 2,
+              "source_name": "transverse crack",
+              "tp": 278,
+              "fp": 286,
+              "fn": 263,
+              "instances": 541,
+              "precision": 0.4929078014184397,
+              "recall": 0.5138632162661737,
+              "f1": 0.5031674208144796
+            },
+            {
+              "class_id": 3,
+              "source_name": "transverse crack wide",
+              "tp": 7,
+              "fp": 22,
+              "fn": 39,
+              "instances": 46,
+              "precision": 0.2413793103448276,
+              "recall": 0.15217391304347827,
+              "f1": 0.18666666666666668
+            },
+            {
+              "class_id": 4,
+              "source_name": "alligator crack",
+              "tp": 271,
+              "fp": 205,
+              "fn": 255,
+              "instances": 526,
+              "precision": 0.569327731092437,
+              "recall": 0.5152091254752852,
+              "f1": 0.5409181636726547
+            },
+            {
+              "class_id": 5,
+              "source_name": "alligator crack sunken",
+              "tp": 27,
+              "fp": 46,
+              "fn": 50,
+              "instances": 77,
+              "precision": 0.3698630136986301,
+              "recall": 0.35064935064935066,
+              "f1": 0.36
+            },
+            {
+              "class_id": 6,
+              "source_name": "pothole",
+              "tp": 99,
+              "fp": 155,
+              "fn": 200,
+              "instances": 299,
+              "precision": 0.38976377952755903,
+              "recall": 0.3311036789297659,
+              "f1": 0.35804701627486435
+            },
+            {
+              "class_id": 7,
+              "source_name": "pothole deep",
+              "tp": 19,
+              "fp": 38,
+              "fn": 26,
+              "instances": 45,
+              "precision": 0.3333333333333333,
+              "recall": 0.4222222222222222,
+              "f1": 0.37254901960784315
+            }
+          ],
+          "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+          "target_met_micro": false
+        },
+        "selected_diagnostics": {
+          "primary_iou_0_5": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1343,
+                "fp": 1419,
+                "fn": 1280,
+                "instances": 2623,
+                "precision": 0.48624185372918177,
+                "recall": 0.5120091498284407,
+                "f1": 0.4987929433611885
+              },
+              "macro": {
+                "precision": 0.40708262225201086,
+                "recall": 0.4193337923816468,
+                "f1": 0.4092332577355845
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 574,
+                  "fp": 537,
+                  "fn": 367,
+                  "instances": 941,
+                  "precision": 0.5166516651665166,
+                  "recall": 0.6099893730074389,
+                  "f1": 0.5594541910331384
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 68,
+                  "fp": 130,
+                  "fn": 80,
+                  "instances": 148,
+                  "precision": 0.3434343434343434,
+                  "recall": 0.4594594594594595,
+                  "f1": 0.3930635838150289
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 278,
+                  "fp": 286,
+                  "fn": 263,
+                  "instances": 541,
+                  "precision": 0.4929078014184397,
+                  "recall": 0.5138632162661737,
+                  "f1": 0.5031674208144796
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 7,
+                  "fp": 22,
+                  "fn": 39,
+                  "instances": 46,
+                  "precision": 0.2413793103448276,
+                  "recall": 0.15217391304347827,
+                  "f1": 0.18666666666666668
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 271,
+                  "fp": 205,
+                  "fn": 255,
+                  "instances": 526,
+                  "precision": 0.569327731092437,
+                  "recall": 0.5152091254752852,
+                  "f1": 0.5409181636726547
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 27,
+                  "fp": 46,
+                  "fn": 50,
+                  "instances": 77,
+                  "precision": 0.3698630136986301,
+                  "recall": 0.35064935064935066,
+                  "f1": 0.36
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 99,
+                  "fp": 155,
+                  "fn": 200,
+                  "instances": 299,
+                  "precision": 0.38976377952755903,
+                  "recall": 0.3311036789297659,
+                  "f1": 0.35804701627486435
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 19,
+                  "fp": 38,
+                  "fn": 26,
+                  "instances": 45,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.4222222222222222,
+                  "f1": 0.37254901960784315
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1495,
+                "fp": 1267,
+                "fn": 1128,
+                "instances": 2623,
+                "precision": 0.5412744388124547,
+                "recall": 0.5699580632863134,
+                "f1": 0.5552460538532962
+              },
+              "macro": {
+                "precision": 0.5412744388124547,
+                "recall": 0.5699580632863134,
+                "f1": 0.5552460538532962
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1495,
+                  "fp": 1267,
+                  "fn": 1128,
+                  "instances": 2623,
+                  "precision": 0.5412744388124547,
+                  "recall": 0.5699580632863134,
+                  "f1": 0.5552460538532962
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    560,
+                    25,
+                    5,
+                    0,
+                    13,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    42,
+                    60,
+                    0,
+                    0,
+                    8,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    4,
+                    0,
+                    276,
+                    10,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    7,
+                    7,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    4,
+                    2,
+                    0,
+                    0,
+                    261,
+                    31,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    19,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    1,
+                    0,
+                    2,
+                    0,
+                    96,
+                    12
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    13,
+                    18
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1297,
+              "wrong_eight_type_among_localized": 198
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1460,
+                "fp": 1302,
+                "fn": 1163,
+                "instances": 2623,
+                "precision": 0.5286024619840695,
+                "recall": 0.5566145634769348,
+                "f1": 0.542246982358403
+              },
+              "macro": {
+                "precision": 0.520984852558013,
+                "recall": 0.5246034985584517,
+                "f1": 0.520984121006099
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 689,
+                  "fp": 620,
+                  "fn": 400,
+                  "instances": 1089,
+                  "precision": 0.5263559969442322,
+                  "recall": 0.6326905417814509,
+                  "f1": 0.5746455379482902
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 300,
+                  "fp": 293,
+                  "fn": 287,
+                  "instances": 587,
+                  "precision": 0.5059021922428331,
+                  "recall": 0.5110732538330494,
+                  "f1": 0.5084745762711864
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 332,
+                  "fp": 217,
+                  "fn": 271,
+                  "instances": 603,
+                  "precision": 0.604735883424408,
+                  "recall": 0.5505804311774462,
+                  "f1": 0.5763888888888888
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 139,
+                  "fp": 172,
+                  "fn": 205,
+                  "instances": 344,
+                  "precision": 0.44694533762057875,
+                  "recall": 0.40406976744186046,
+                  "f1": 0.42442748091603055
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          },
+          "secondary_iou_0_3_diagnostic": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1483,
+                "fp": 1279,
+                "fn": 1140,
+                "instances": 2623,
+                "precision": 0.5369297610427227,
+                "recall": 0.565383149065955,
+                "f1": 0.5507892293407614
+              },
+              "macro": {
+                "precision": 0.4501592046335897,
+                "recall": 0.45933052315945333,
+                "f1": 0.4502625892179528
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 626,
+                  "fp": 485,
+                  "fn": 315,
+                  "instances": 941,
+                  "precision": 0.5634563456345635,
+                  "recall": 0.665249734325186,
+                  "f1": 0.6101364522417154
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 71,
+                  "fp": 127,
+                  "fn": 77,
+                  "instances": 148,
+                  "precision": 0.35858585858585856,
+                  "recall": 0.4797297297297297,
+                  "f1": 0.41040462427745666
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 309,
+                  "fp": 255,
+                  "fn": 232,
+                  "instances": 541,
+                  "precision": 0.5478723404255319,
+                  "recall": 0.5711645101663586,
+                  "f1": 0.5592760180995475
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 9,
+                  "fp": 20,
+                  "fn": 37,
+                  "instances": 46,
+                  "precision": 0.3103448275862069,
+                  "recall": 0.1956521739130435,
+                  "f1": 0.24
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 312,
+                  "fp": 164,
+                  "fn": 214,
+                  "instances": 526,
+                  "precision": 0.6554621848739496,
+                  "recall": 0.5931558935361216,
+                  "f1": 0.6227544910179641
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 30,
+                  "fp": 43,
+                  "fn": 47,
+                  "instances": 77,
+                  "precision": 0.410958904109589,
+                  "recall": 0.38961038961038963,
+                  "f1": 0.4
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 107,
+                  "fp": 147,
+                  "fn": 192,
+                  "instances": 299,
+                  "precision": 0.421259842519685,
+                  "recall": 0.35785953177257523,
+                  "f1": 0.38698010849909587
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 19,
+                  "fp": 38,
+                  "fn": 26,
+                  "instances": 45,
+                  "precision": 0.3333333333333333,
+                  "recall": 0.4222222222222222,
+                  "f1": 0.37254901960784315
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1667,
+                "fp": 1095,
+                "fn": 956,
+                "instances": 2623,
+                "precision": 0.6035481535119479,
+                "recall": 0.6355318337781166,
+                "f1": 0.6191272051996286
+              },
+              "macro": {
+                "precision": 0.6035481535119479,
+                "recall": 0.6355318337781166,
+                "f1": 0.6191272051996286
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1667,
+                  "fp": 1095,
+                  "fn": 956,
+                  "instances": 2623,
+                  "precision": 0.6035481535119479,
+                  "recall": 0.6355318337781166,
+                  "f1": 0.6191272051996286
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    606,
+                    29,
+                    7,
+                    0,
+                    19,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    44,
+                    64,
+                    0,
+                    0,
+                    12,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    7,
+                    0,
+                    307,
+                    14,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    8,
+                    9,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    7,
+                    3,
+                    2,
+                    0,
+                    297,
+                    32,
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    19,
+                    22,
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    0,
+                    1,
+                    0,
+                    2,
+                    0,
+                    102,
+                    14
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    17,
+                    18
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1425,
+              "wrong_eight_type_among_localized": 242
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1615,
+                "fp": 1147,
+                "fn": 1008,
+                "instances": 2623,
+                "precision": 0.5847212165097755,
+                "recall": 0.6157072054898971,
+                "f1": 0.5998142989786444
+              },
+              "macro": {
+                "precision": 0.578866711202473,
+                "recall": 0.582124261550285,
+                "f1": 0.5785133173078635
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 748,
+                  "fp": 561,
+                  "fn": 341,
+                  "instances": 1089,
+                  "precision": 0.5714285714285714,
+                  "recall": 0.6868686868686869,
+                  "f1": 0.6238532110091743
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 338,
+                  "fp": 255,
+                  "fn": 249,
+                  "instances": 587,
+                  "precision": 0.5699831365935919,
+                  "recall": 0.575809199318569,
+                  "f1": 0.5728813559322034
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 378,
+                  "fp": 171,
+                  "fn": 225,
+                  "instances": 603,
+                  "precision": 0.6885245901639344,
+                  "recall": 0.6268656716417911,
+                  "f1": 0.65625
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 151,
+                  "fp": 160,
+                  "fn": 193,
+                  "instances": 344,
+                  "precision": 0.4855305466237942,
+                  "recall": 0.438953488372093,
+                  "f1": 0.46106870229007635
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          }
+        },
+        "any_threshold_meets_micro_target": false,
+        "selected_all_eight_classes_meet_target": false,
+        "primary_target_met_recomputed": false
+      },
+      {
+        "variant": "parent_best832",
+        "export_path": "Dataset/balanced-metrics/balanced70-parent832/export.json",
+        "export_sha256": "cf0bd1e97823534068a50192e623777082ef29b54157f24cff3e2005a1dd7904",
+        "report_path": "Dataset/balanced-metrics/balanced70-parent832/analyses/sweep/report.json",
+        "report_sha256": "ee2fb146cb4541be5f926ffe0d8a9ffcdb201836ac4105c577eb898f9e648159",
+        "weights_path": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt",
+        "weights_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+        "imgsz": 832,
+        "selected_threshold": 0.25,
+        "selected_primary": {
+          "threshold": 0.25,
+          "iou": 0.5,
+          "mode": "eight_class",
+          "micro": {
+            "tp": 1241,
+            "fp": 1222,
+            "fn": 1382,
+            "instances": 2623,
+            "precision": 0.5038570848558668,
+            "recall": 0.4731223789553946,
+            "f1": 0.4880062917813606
+          },
+          "macro": {
+            "precision": 0.40048216958154237,
+            "recall": 0.36744009091685964,
+            "f1": 0.3767007049827324
+          },
+          "per_class": [
+            {
+              "class_id": 0,
+              "source_name": "longitudinal crack",
+              "tp": 554,
+              "fp": 439,
+              "fn": 387,
+              "instances": 941,
+              "precision": 0.5579053373615307,
+              "recall": 0.5887353878852285,
+              "f1": 0.5729058945191313
+            },
+            {
+              "class_id": 1,
+              "source_name": "longitudinal crack wide",
+              "tp": 57,
+              "fp": 96,
+              "fn": 91,
+              "instances": 148,
+              "precision": 0.37254901960784315,
+              "recall": 0.38513513513513514,
+              "f1": 0.3787375415282392
+            },
+            {
+              "class_id": 2,
+              "source_name": "transverse crack",
+              "tp": 241,
+              "fp": 243,
+              "fn": 300,
+              "instances": 541,
+              "precision": 0.49793388429752067,
+              "recall": 0.4454713493530499,
+              "f1": 0.47024390243902436
+            },
+            {
+              "class_id": 3,
+              "source_name": "transverse crack wide",
+              "tp": 2,
+              "fp": 9,
+              "fn": 44,
+              "instances": 46,
+              "precision": 0.18181818181818182,
+              "recall": 0.043478260869565216,
+              "f1": 0.07017543859649122
+            },
+            {
+              "class_id": 4,
+              "source_name": "alligator crack",
+              "tp": 263,
+              "fp": 204,
+              "fn": 263,
+              "instances": 526,
+              "precision": 0.563169164882227,
+              "recall": 0.5,
+              "f1": 0.5297079556898288
+            },
+            {
+              "class_id": 5,
+              "source_name": "alligator crack sunken",
+              "tp": 25,
+              "fp": 41,
+              "fn": 52,
+              "instances": 77,
+              "precision": 0.3787878787878788,
+              "recall": 0.3246753246753247,
+              "f1": 0.34965034965034963
+            },
+            {
+              "class_id": 6,
+              "source_name": "pothole",
+              "tp": 82,
+              "fp": 150,
+              "fn": 217,
+              "instances": 299,
+              "precision": 0.35344827586206895,
+              "recall": 0.27424749163879597,
+              "f1": 0.3088512241054614
+            },
+            {
+              "class_id": 7,
+              "source_name": "pothole deep",
+              "tp": 17,
+              "fp": 40,
+              "fn": 28,
+              "instances": 45,
+              "precision": 0.2982456140350877,
+              "recall": 0.37777777777777777,
+              "f1": 0.3333333333333333
+            }
+          ],
+          "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+          "target_met_micro": false
+        },
+        "selected_diagnostics": {
+          "primary_iou_0_5": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1241,
+                "fp": 1222,
+                "fn": 1382,
+                "instances": 2623,
+                "precision": 0.5038570848558668,
+                "recall": 0.4731223789553946,
+                "f1": 0.4880062917813606
+              },
+              "macro": {
+                "precision": 0.40048216958154237,
+                "recall": 0.36744009091685964,
+                "f1": 0.3767007049827324
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 554,
+                  "fp": 439,
+                  "fn": 387,
+                  "instances": 941,
+                  "precision": 0.5579053373615307,
+                  "recall": 0.5887353878852285,
+                  "f1": 0.5729058945191313
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 57,
+                  "fp": 96,
+                  "fn": 91,
+                  "instances": 148,
+                  "precision": 0.37254901960784315,
+                  "recall": 0.38513513513513514,
+                  "f1": 0.3787375415282392
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 241,
+                  "fp": 243,
+                  "fn": 300,
+                  "instances": 541,
+                  "precision": 0.49793388429752067,
+                  "recall": 0.4454713493530499,
+                  "f1": 0.47024390243902436
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 2,
+                  "fp": 9,
+                  "fn": 44,
+                  "instances": 46,
+                  "precision": 0.18181818181818182,
+                  "recall": 0.043478260869565216,
+                  "f1": 0.07017543859649122
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 263,
+                  "fp": 204,
+                  "fn": 263,
+                  "instances": 526,
+                  "precision": 0.563169164882227,
+                  "recall": 0.5,
+                  "f1": 0.5297079556898288
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 25,
+                  "fp": 41,
+                  "fn": 52,
+                  "instances": 77,
+                  "precision": 0.3787878787878788,
+                  "recall": 0.3246753246753247,
+                  "f1": 0.34965034965034963
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 82,
+                  "fp": 150,
+                  "fn": 217,
+                  "instances": 299,
+                  "precision": 0.35344827586206895,
+                  "recall": 0.27424749163879597,
+                  "f1": 0.3088512241054614
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 17,
+                  "fp": 40,
+                  "fn": 28,
+                  "instances": 45,
+                  "precision": 0.2982456140350877,
+                  "recall": 0.37777777777777777,
+                  "f1": 0.3333333333333333
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1390,
+                "fp": 1073,
+                "fn": 1233,
+                "instances": 2623,
+                "precision": 0.5643524157531465,
+                "recall": 0.5299275638581776,
+                "f1": 0.5465985057019268
+              },
+              "macro": {
+                "precision": 0.5643524157531465,
+                "recall": 0.5299275638581776,
+                "f1": 0.5465985057019268
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1390,
+                  "fp": 1073,
+                  "fn": 1233,
+                  "instances": 2623,
+                  "precision": 0.5643524157531465,
+                  "recall": 0.5299275638581776,
+                  "f1": 0.5465985057019268
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    542,
+                    35,
+                    5,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    24,
+                    50,
+                    0,
+                    0,
+                    8,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    4,
+                    0,
+                    240,
+                    11,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    2,
+                    0,
+                    0,
+                    257,
+                    29,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    14,
+                    19,
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    80,
+                    12
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    18,
+                    17
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1206,
+              "wrong_eight_type_among_localized": 184
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1357,
+                "fp": 1106,
+                "fn": 1266,
+                "instances": 2623,
+                "precision": 0.5509541209906618,
+                "recall": 0.5173465497521922,
+                "f1": 0.5336217066456941
+              },
+              "macro": {
+                "precision": 0.5318464719807268,
+                "recall": 0.48411059554867136,
+                "f1": 0.505725263764688
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 654,
+                  "fp": 492,
+                  "fn": 435,
+                  "instances": 1089,
+                  "precision": 0.5706806282722513,
+                  "recall": 0.6005509641873278,
+                  "f1": 0.5852348993288591
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 254,
+                  "fp": 241,
+                  "fn": 333,
+                  "instances": 587,
+                  "precision": 0.5131313131313131,
+                  "recall": 0.43270868824531517,
+                  "f1": 0.46950092421441775
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 322,
+                  "fp": 211,
+                  "fn": 281,
+                  "instances": 603,
+                  "precision": 0.6041275797373359,
+                  "recall": 0.5339966832504146,
+                  "f1": 0.5669014084507042
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 127,
+                  "fp": 162,
+                  "fn": 217,
+                  "instances": 344,
+                  "precision": 0.43944636678200694,
+                  "recall": 0.3691860465116279,
+                  "f1": 0.40126382306477093
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          },
+          "secondary_iou_0_3_diagnostic": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1367,
+                "fp": 1096,
+                "fn": 1256,
+                "instances": 2623,
+                "precision": 0.5550142103126269,
+                "recall": 0.5211589782691575,
+                "f1": 0.5375540699960676
+              },
+              "macro": {
+                "precision": 0.4474409083335845,
+                "recall": 0.40200583596027456,
+                "f1": 0.4146377885450562
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 588,
+                  "fp": 405,
+                  "fn": 353,
+                  "instances": 941,
+                  "precision": 0.5921450151057401,
+                  "recall": 0.6248671625929861,
+                  "f1": 0.6080661840744571
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 59,
+                  "fp": 94,
+                  "fn": 89,
+                  "instances": 148,
+                  "precision": 0.38562091503267976,
+                  "recall": 0.39864864864864863,
+                  "f1": 0.3920265780730897
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 281,
+                  "fp": 203,
+                  "fn": 260,
+                  "instances": 541,
+                  "precision": 0.5805785123966942,
+                  "recall": 0.5194085027726433,
+                  "f1": 0.5482926829268293
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 3,
+                  "fp": 8,
+                  "fn": 43,
+                  "instances": 46,
+                  "precision": 0.2727272727272727,
+                  "recall": 0.06521739130434782,
+                  "f1": 0.10526315789473684
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 299,
+                  "fp": 168,
+                  "fn": 227,
+                  "instances": 526,
+                  "precision": 0.6402569593147751,
+                  "recall": 0.5684410646387833,
+                  "f1": 0.6022155085599195
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 27,
+                  "fp": 39,
+                  "fn": 50,
+                  "instances": 77,
+                  "precision": 0.4090909090909091,
+                  "recall": 0.35064935064935066,
+                  "f1": 0.3776223776223776
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 93,
+                  "fp": 139,
+                  "fn": 206,
+                  "instances": 299,
+                  "precision": 0.40086206896551724,
+                  "recall": 0.3110367892976589,
+                  "f1": 0.3502824858757062
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 17,
+                  "fp": 40,
+                  "fn": 28,
+                  "instances": 45,
+                  "precision": 0.2982456140350877,
+                  "recall": 0.37777777777777777,
+                  "f1": 0.3333333333333333
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1546,
+                "fp": 917,
+                "fn": 1077,
+                "instances": 2623,
+                "precision": 0.6276898091758019,
+                "recall": 0.5894014487228364,
+                "f1": 0.6079433739677547
+              },
+              "macro": {
+                "precision": 0.6276898091758019,
+                "recall": 0.5894014487228364,
+                "f1": 0.6079433739677547
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1546,
+                  "fp": 917,
+                  "fn": 1077,
+                  "instances": 2623,
+                  "precision": 0.6276898091758019,
+                  "recall": 0.5894014487228364,
+                  "f1": 0.6079433739677547
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    576,
+                    39,
+                    6,
+                    0,
+                    12,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    28,
+                    52,
+                    0,
+                    0,
+                    9,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    280,
+                    15,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    2,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    2,
+                    1,
+                    0,
+                    290,
+                    31,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    14,
+                    21,
+                    0,
+                    0
+                  ],
+                  [
+                    2,
+                    0,
+                    0,
+                    1,
+                    2,
+                    0,
+                    90,
+                    15
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    27,
+                    16
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1327,
+              "wrong_eight_type_among_localized": 219
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1505,
+                "fp": 958,
+                "fn": 1118,
+                "instances": 2623,
+                "precision": 0.611043442955745,
+                "recall": 0.5737704918032787,
+                "f1": 0.5918206842312229
+              },
+              "macro": {
+                "precision": 0.6001620782876982,
+                "recall": 0.5443930411060774,
+                "f1": 0.5696765184491704
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 698,
+                  "fp": 448,
+                  "fn": 391,
+                  "instances": 1089,
+                  "precision": 0.6090750436300174,
+                  "recall": 0.6409550045913682,
+                  "f1": 0.6246085011185682
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 299,
+                  "fp": 196,
+                  "fn": 288,
+                  "instances": 587,
+                  "precision": 0.604040404040404,
+                  "recall": 0.5093696763202725,
+                  "f1": 0.5526802218114603
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 360,
+                  "fp": 173,
+                  "fn": 243,
+                  "instances": 603,
+                  "precision": 0.6754221388367729,
+                  "recall": 0.5970149253731343,
+                  "f1": 0.6338028169014085
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 148,
+                  "fp": 141,
+                  "fn": 196,
+                  "instances": 344,
+                  "precision": 0.5121107266435986,
+                  "recall": 0.43023255813953487,
+                  "f1": 0.4676145339652449
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          }
+        },
+        "any_threshold_meets_micro_target": false,
+        "selected_all_eight_classes_meet_target": false,
+        "primary_target_met_recomputed": false
+      },
+      {
+        "variant": "new_best832",
+        "export_path": "Dataset/balanced-metrics/balanced70-new-best832/export.json",
+        "export_sha256": "2bccfb7eed899e4f8c7045928f02a2168e143d714ff99ce3a4a33366b2b3bd6b",
+        "report_path": "Dataset/balanced-metrics/balanced70-new-best832/analyses/sweep/report.json",
+        "report_sha256": "fe861a5fad7c98efae8151b1466da67ae5dfa05bd611bf5f4df561898f79e4b2",
+        "weights_path": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+        "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+        "imgsz": 832,
+        "selected_threshold": 0.25,
+        "selected_primary": {
+          "threshold": 0.25,
+          "iou": 0.5,
+          "mode": "eight_class",
+          "micro": {
+            "tp": 1364,
+            "fp": 1336,
+            "fn": 1259,
+            "instances": 2623,
+            "precision": 0.5051851851851852,
+            "recall": 0.5200152497140679,
+            "f1": 0.5124929551005072
+          },
+          "macro": {
+            "precision": 0.4202267670082442,
+            "recall": 0.4351807028280528,
+            "f1": 0.4261723594422031
+          },
+          "per_class": [
+            {
+              "class_id": 0,
+              "source_name": "longitudinal crack",
+              "tp": 572,
+              "fp": 420,
+              "fn": 369,
+              "instances": 941,
+              "precision": 0.5766129032258065,
+              "recall": 0.6078639744952179,
+              "f1": 0.5918261769270564
+            },
+            {
+              "class_id": 1,
+              "source_name": "longitudinal crack wide",
+              "tp": 67,
+              "fp": 109,
+              "fn": 81,
+              "instances": 148,
+              "precision": 0.3806818181818182,
+              "recall": 0.4527027027027027,
+              "f1": 0.41358024691358025
+            },
+            {
+              "class_id": 2,
+              "source_name": "transverse crack",
+              "tp": 268,
+              "fp": 265,
+              "fn": 273,
+              "instances": 541,
+              "precision": 0.5028142589118199,
+              "recall": 0.4953789279112754,
+              "f1": 0.49906890130353815
+            },
+            {
+              "class_id": 3,
+              "source_name": "transverse crack wide",
+              "tp": 14,
+              "fp": 24,
+              "fn": 32,
+              "instances": 46,
+              "precision": 0.3684210526315789,
+              "recall": 0.30434782608695654,
+              "f1": 0.3333333333333333
+            },
+            {
+              "class_id": 4,
+              "source_name": "alligator crack",
+              "tp": 286,
+              "fp": 208,
+              "fn": 240,
+              "instances": 526,
+              "precision": 0.5789473684210527,
+              "recall": 0.5437262357414449,
+              "f1": 0.5607843137254902
+            },
+            {
+              "class_id": 5,
+              "source_name": "alligator crack sunken",
+              "tp": 24,
+              "fp": 74,
+              "fn": 53,
+              "instances": 77,
+              "precision": 0.24489795918367346,
+              "recall": 0.3116883116883117,
+              "f1": 0.2742857142857143
+            },
+            {
+              "class_id": 6,
+              "source_name": "pothole",
+              "tp": 116,
+              "fp": 204,
+              "fn": 183,
+              "instances": 299,
+              "precision": 0.3625,
+              "recall": 0.3879598662207358,
+              "f1": 0.37479806138933763
+            },
+            {
+              "class_id": 7,
+              "source_name": "pothole deep",
+              "tp": 17,
+              "fp": 32,
+              "fn": 28,
+              "instances": 45,
+              "precision": 0.3469387755102041,
+              "recall": 0.37777777777777777,
+              "f1": 0.3617021276595745
+            }
+          ],
+          "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+          "target_met_micro": false
+        },
+        "selected_diagnostics": {
+          "primary_iou_0_5": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1364,
+                "fp": 1336,
+                "fn": 1259,
+                "instances": 2623,
+                "precision": 0.5051851851851852,
+                "recall": 0.5200152497140679,
+                "f1": 0.5124929551005072
+              },
+              "macro": {
+                "precision": 0.4202267670082442,
+                "recall": 0.4351807028280528,
+                "f1": 0.4261723594422031
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 572,
+                  "fp": 420,
+                  "fn": 369,
+                  "instances": 941,
+                  "precision": 0.5766129032258065,
+                  "recall": 0.6078639744952179,
+                  "f1": 0.5918261769270564
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 67,
+                  "fp": 109,
+                  "fn": 81,
+                  "instances": 148,
+                  "precision": 0.3806818181818182,
+                  "recall": 0.4527027027027027,
+                  "f1": 0.41358024691358025
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 268,
+                  "fp": 265,
+                  "fn": 273,
+                  "instances": 541,
+                  "precision": 0.5028142589118199,
+                  "recall": 0.4953789279112754,
+                  "f1": 0.49906890130353815
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 14,
+                  "fp": 24,
+                  "fn": 32,
+                  "instances": 46,
+                  "precision": 0.3684210526315789,
+                  "recall": 0.30434782608695654,
+                  "f1": 0.3333333333333333
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 286,
+                  "fp": 208,
+                  "fn": 240,
+                  "instances": 526,
+                  "precision": 0.5789473684210527,
+                  "recall": 0.5437262357414449,
+                  "f1": 0.5607843137254902
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 24,
+                  "fp": 74,
+                  "fn": 53,
+                  "instances": 77,
+                  "precision": 0.24489795918367346,
+                  "recall": 0.3116883116883117,
+                  "f1": 0.2742857142857143
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 116,
+                  "fp": 204,
+                  "fn": 183,
+                  "instances": 299,
+                  "precision": 0.3625,
+                  "recall": 0.3879598662207358,
+                  "f1": 0.37479806138933763
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 17,
+                  "fp": 32,
+                  "fn": 28,
+                  "instances": 45,
+                  "precision": 0.3469387755102041,
+                  "recall": 0.37777777777777777,
+                  "f1": 0.3617021276595745
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1503,
+                "fp": 1197,
+                "fn": 1120,
+                "instances": 2623,
+                "precision": 0.5566666666666666,
+                "recall": 0.5730080060998857,
+                "f1": 0.5647191433402217
+              },
+              "macro": {
+                "precision": 0.5566666666666666,
+                "recall": 0.5730080060998857,
+                "f1": 0.5647191433402217
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1503,
+                  "fp": 1197,
+                  "fn": 1120,
+                  "instances": 2623,
+                  "precision": 0.5566666666666666,
+                  "recall": 0.5730080060998857,
+                  "f1": 0.5647191433402217
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    558,
+                    28,
+                    3,
+                    0,
+                    11,
+                    0,
+                    0,
+                    1
+                  ],
+                  [
+                    28,
+                    59,
+                    0,
+                    0,
+                    7,
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    265,
+                    9,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    8,
+                    13,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    10,
+                    3,
+                    0,
+                    0,
+                    271,
+                    29,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    19,
+                    20,
+                    0,
+                    0
+                  ],
+                  [
+                    1,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    114,
+                    16
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    9,
+                    13
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1313,
+              "wrong_eight_type_among_localized": 190
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.5,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1469,
+                "fp": 1231,
+                "fn": 1154,
+                "instances": 2623,
+                "precision": 0.544074074074074,
+                "recall": 0.5600457491422036,
+                "f1": 0.5519443922600038
+              },
+              "macro": {
+                "precision": 0.5223222764200055,
+                "recall": 0.534186547652153,
+                "f1": 0.5279022065356382
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 679,
+                  "fp": 489,
+                  "fn": 410,
+                  "instances": 1089,
+                  "precision": 0.5813356164383562,
+                  "recall": 0.6235078053259872,
+                  "f1": 0.6016836508639787
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 295,
+                  "fp": 276,
+                  "fn": 292,
+                  "instances": 587,
+                  "precision": 0.5166374781085814,
+                  "recall": 0.5025553662691652,
+                  "f1": 0.5094991364421416
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 343,
+                  "fp": 249,
+                  "fn": 260,
+                  "instances": 603,
+                  "precision": 0.5793918918918919,
+                  "recall": 0.5688225538971807,
+                  "f1": 0.5740585774058578
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 152,
+                  "fp": 217,
+                  "fn": 192,
+                  "instances": 344,
+                  "precision": 0.41192411924119243,
+                  "recall": 0.4418604651162791,
+                  "f1": 0.426367461430575
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          },
+          "secondary_iou_0_3_diagnostic": {
+            "eight_class": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1498,
+                "fp": 1202,
+                "fn": 1125,
+                "instances": 2623,
+                "precision": 0.5548148148148148,
+                "recall": 0.571101791841403,
+                "f1": 0.5628405034754838
+              },
+              "macro": {
+                "precision": 0.4623380388391963,
+                "recall": 0.47796795997179414,
+                "f1": 0.4684463923099499
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 610,
+                  "fp": 382,
+                  "fn": 331,
+                  "instances": 941,
+                  "precision": 0.6149193548387096,
+                  "recall": 0.6482465462274176,
+                  "f1": 0.6311433005690636
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 74,
+                  "fp": 102,
+                  "fn": 74,
+                  "instances": 148,
+                  "precision": 0.42045454545454547,
+                  "recall": 0.5,
+                  "f1": 0.4567901234567901
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 305,
+                  "fp": 228,
+                  "fn": 236,
+                  "instances": 541,
+                  "precision": 0.5722326454033771,
+                  "recall": 0.5637707948243993,
+                  "f1": 0.5679702048417132
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 16,
+                  "fp": 22,
+                  "fn": 30,
+                  "instances": 46,
+                  "precision": 0.42105263157894735,
+                  "recall": 0.34782608695652173,
+                  "f1": 0.38095238095238093
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 323,
+                  "fp": 171,
+                  "fn": 203,
+                  "instances": 526,
+                  "precision": 0.6538461538461539,
+                  "recall": 0.6140684410646388,
+                  "f1": 0.6333333333333333
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 27,
+                  "fp": 71,
+                  "fn": 50,
+                  "instances": 77,
+                  "precision": 0.2755102040816326,
+                  "recall": 0.35064935064935066,
+                  "f1": 0.30857142857142855
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 126,
+                  "fp": 194,
+                  "fn": 173,
+                  "instances": 299,
+                  "precision": 0.39375,
+                  "recall": 0.4214046822742475,
+                  "f1": 0.407108239095315
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 17,
+                  "fp": 32,
+                  "fn": 28,
+                  "instances": 45,
+                  "precision": 0.3469387755102041,
+                  "recall": 0.37777777777777777,
+                  "f1": 0.3617021276595745
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1668,
+                "fp": 1032,
+                "fn": 955,
+                "instances": 2623,
+                "precision": 0.6177777777777778,
+                "recall": 0.6359130766298132,
+                "f1": 0.6267142588765734
+              },
+              "macro": {
+                "precision": 0.6177777777777778,
+                "recall": 0.6359130766298132,
+                "f1": 0.6267142588765734
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1668,
+                  "fp": 1032,
+                  "fn": 955,
+                  "instances": 2623,
+                  "precision": 0.6177777777777778,
+                  "recall": 0.6359130766298132,
+                  "f1": 0.6267142588765734
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    594,
+                    31,
+                    4,
+                    0,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    29,
+                    66,
+                    0,
+                    0,
+                    9,
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    6,
+                    0,
+                    302,
+                    10,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    10,
+                    15,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    14,
+                    4,
+                    3,
+                    0,
+                    305,
+                    32,
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    22,
+                    21,
+                    0,
+                    0
+                  ],
+                  [
+                    2,
+                    0,
+                    0,
+                    1,
+                    2,
+                    0,
+                    124,
+                    20
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    12,
+                    13
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1440,
+              "wrong_eight_type_among_localized": 228
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.25,
+              "iou": 0.3,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1617,
+                "fp": 1083,
+                "fn": 1006,
+                "instances": 2623,
+                "precision": 0.5988888888888889,
+                "recall": 0.6164696911932901,
+                "f1": 0.6075521322562465
+              },
+              "macro": {
+                "precision": 0.5800251011831883,
+                "recall": 0.5926314133576535,
+                "f1": 0.585943653340051
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 726,
+                  "fp": 442,
+                  "fn": 363,
+                  "instances": 1089,
+                  "precision": 0.6215753424657534,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.6433318564466105
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 337,
+                  "fp": 234,
+                  "fn": 250,
+                  "instances": 587,
+                  "precision": 0.5901926444833625,
+                  "recall": 0.5741056218057922,
+                  "f1": 0.5820379965457686
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 385,
+                  "fp": 207,
+                  "fn": 218,
+                  "instances": 603,
+                  "precision": 0.6503378378378378,
+                  "recall": 0.6384742951907131,
+                  "f1": 0.6443514644351465
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 169,
+                  "fp": 200,
+                  "fn": 175,
+                  "instances": 344,
+                  "precision": 0.45799457994579945,
+                  "recall": 0.49127906976744184,
+                  "f1": 0.4740532959326788
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          }
+        },
+        "any_threshold_meets_micro_target": false,
+        "selected_all_eight_classes_meet_target": false,
+        "primary_target_met_recomputed": false
+      },
+      {
+        "variant": "new_last832",
+        "export_path": "Dataset/balanced-metrics/balanced70-new-last832/export.json",
+        "export_sha256": "e5b9f087bca52e1e14294d8f67821055dfde4766c93117a83e31a16fcfe87d64",
+        "report_path": "Dataset/balanced-metrics/balanced70-new-last832/analyses/sweep/report.json",
+        "report_sha256": "bd52cc1288b8b133c5f3c78ce727527bfe45b144cefe1f1846d7cf588590af58",
+        "weights_path": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/last.pt",
+        "weights_sha256": "ef1c9834941cfae4641e8d216be0e2f82ecaf18c0a926ada4b6fa9d029dbb637",
+        "imgsz": 832,
+        "selected_threshold": 0.35,
+        "selected_primary": {
+          "threshold": 0.35,
+          "iou": 0.5,
+          "mode": "eight_class",
+          "micro": {
+            "tp": 1318,
+            "fp": 1254,
+            "fn": 1305,
+            "instances": 2623,
+            "precision": 0.5124416796267496,
+            "recall": 0.5024780785360274,
+            "f1": 0.5074109720885467
+          },
+          "macro": {
+            "precision": 0.4465494212779365,
+            "recall": 0.4023785368056062,
+            "f1": 0.42004735111508995
+          },
+          "per_class": [
+            {
+              "class_id": 0,
+              "source_name": "longitudinal crack",
+              "tp": 559,
+              "fp": 410,
+              "fn": 382,
+              "instances": 941,
+              "precision": 0.5768833849329206,
+              "recall": 0.594048884165781,
+              "f1": 0.5853403141361256
+            },
+            {
+              "class_id": 1,
+              "source_name": "longitudinal crack wide",
+              "tp": 60,
+              "fp": 104,
+              "fn": 88,
+              "instances": 148,
+              "precision": 0.36585365853658536,
+              "recall": 0.40540540540540543,
+              "f1": 0.38461538461538464
+            },
+            {
+              "class_id": 2,
+              "source_name": "transverse crack",
+              "tp": 270,
+              "fp": 248,
+              "fn": 271,
+              "instances": 541,
+              "precision": 0.5212355212355212,
+              "recall": 0.49907578558225507,
+              "f1": 0.509915014164306
+            },
+            {
+              "class_id": 3,
+              "source_name": "transverse crack wide",
+              "tp": 11,
+              "fp": 20,
+              "fn": 35,
+              "instances": 46,
+              "precision": 0.3548387096774194,
+              "recall": 0.2391304347826087,
+              "f1": 0.2857142857142857
+            },
+            {
+              "class_id": 4,
+              "source_name": "alligator crack",
+              "tp": 279,
+              "fp": 230,
+              "fn": 247,
+              "instances": 526,
+              "precision": 0.5481335952848723,
+              "recall": 0.5304182509505704,
+              "f1": 0.5391304347826087
+            },
+            {
+              "class_id": 5,
+              "source_name": "alligator crack sunken",
+              "tp": 23,
+              "fp": 39,
+              "fn": 54,
+              "instances": 77,
+              "precision": 0.3709677419354839,
+              "recall": 0.2987012987012987,
+              "f1": 0.33093525179856115
+            },
+            {
+              "class_id": 6,
+              "source_name": "pothole",
+              "tp": 102,
+              "fp": 188,
+              "fn": 197,
+              "instances": 299,
+              "precision": 0.35172413793103446,
+              "recall": 0.3411371237458194,
+              "f1": 0.3463497453310696
+            },
+            {
+              "class_id": 7,
+              "source_name": "pothole deep",
+              "tp": 14,
+              "fp": 15,
+              "fn": 31,
+              "instances": 45,
+              "precision": 0.4827586206896552,
+              "recall": 0.3111111111111111,
+              "f1": 0.3783783783783784
+            }
+          ],
+          "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+          "target_met_micro": false
+        },
+        "selected_diagnostics": {
+          "primary_iou_0_5": {
+            "eight_class": {
+              "threshold": 0.35,
+              "iou": 0.5,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1318,
+                "fp": 1254,
+                "fn": 1305,
+                "instances": 2623,
+                "precision": 0.5124416796267496,
+                "recall": 0.5024780785360274,
+                "f1": 0.5074109720885467
+              },
+              "macro": {
+                "precision": 0.4465494212779365,
+                "recall": 0.4023785368056062,
+                "f1": 0.42004735111508995
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 559,
+                  "fp": 410,
+                  "fn": 382,
+                  "instances": 941,
+                  "precision": 0.5768833849329206,
+                  "recall": 0.594048884165781,
+                  "f1": 0.5853403141361256
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 60,
+                  "fp": 104,
+                  "fn": 88,
+                  "instances": 148,
+                  "precision": 0.36585365853658536,
+                  "recall": 0.40540540540540543,
+                  "f1": 0.38461538461538464
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 270,
+                  "fp": 248,
+                  "fn": 271,
+                  "instances": 541,
+                  "precision": 0.5212355212355212,
+                  "recall": 0.49907578558225507,
+                  "f1": 0.509915014164306
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 11,
+                  "fp": 20,
+                  "fn": 35,
+                  "instances": 46,
+                  "precision": 0.3548387096774194,
+                  "recall": 0.2391304347826087,
+                  "f1": 0.2857142857142857
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 279,
+                  "fp": 230,
+                  "fn": 247,
+                  "instances": 526,
+                  "precision": 0.5481335952848723,
+                  "recall": 0.5304182509505704,
+                  "f1": 0.5391304347826087
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 23,
+                  "fp": 39,
+                  "fn": 54,
+                  "instances": 77,
+                  "precision": 0.3709677419354839,
+                  "recall": 0.2987012987012987,
+                  "f1": 0.33093525179856115
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 102,
+                  "fp": 188,
+                  "fn": 197,
+                  "instances": 299,
+                  "precision": 0.35172413793103446,
+                  "recall": 0.3411371237458194,
+                  "f1": 0.3463497453310696
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 14,
+                  "fp": 15,
+                  "fn": 31,
+                  "instances": 45,
+                  "precision": 0.4827586206896552,
+                  "recall": 0.3111111111111111,
+                  "f1": 0.3783783783783784
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.35,
+              "iou": 0.5,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1492,
+                "fp": 1080,
+                "fn": 1131,
+                "instances": 2623,
+                "precision": 0.5800933125972006,
+                "recall": 0.5688143347312238,
+                "f1": 0.5743984600577479
+              },
+              "macro": {
+                "precision": 0.5800933125972006,
+                "recall": 0.5688143347312238,
+                "f1": 0.5743984600577479
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1492,
+                  "fp": 1080,
+                  "fn": 1131,
+                  "instances": 2623,
+                  "precision": 0.5800933125972006,
+                  "recall": 0.5688143347312238,
+                  "f1": 0.5743984600577479
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    553,
+                    28,
+                    3,
+                    0,
+                    12,
+                    0,
+                    0,
+                    1
+                  ],
+                  [
+                    31,
+                    55,
+                    1,
+                    0,
+                    9,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    268,
+                    12,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    7,
+                    11,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    10,
+                    3,
+                    1,
+                    0,
+                    274,
+                    23,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    15,
+                    23,
+                    0,
+                    0
+                  ],
+                  [
+                    2,
+                    0,
+                    1,
+                    0,
+                    1,
+                    0,
+                    100,
+                    21
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    7,
+                    12
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1296,
+              "wrong_eight_type_among_localized": 196
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.35,
+              "iou": 0.5,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1444,
+                "fp": 1128,
+                "fn": 1179,
+                "instances": 2623,
+                "precision": 0.5614307931570762,
+                "recall": 0.5505146778497904,
+                "f1": 0.5559191530317613
+              },
+              "macro": {
+                "precision": 0.5403670754275675,
+                "recall": 0.5217750289644677,
+                "f1": 0.5306082532278784
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 670,
+                  "fp": 463,
+                  "fn": 419,
+                  "instances": 1089,
+                  "precision": 0.5913503971756399,
+                  "recall": 0.6152433425160698,
+                  "f1": 0.603060306030603
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 298,
+                  "fp": 251,
+                  "fn": 289,
+                  "instances": 587,
+                  "precision": 0.5428051001821493,
+                  "recall": 0.5076660988074957,
+                  "f1": 0.5246478873239436
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 336,
+                  "fp": 235,
+                  "fn": 267,
+                  "instances": 603,
+                  "precision": 0.5884413309982487,
+                  "recall": 0.5572139303482587,
+                  "f1": 0.5724020442930153
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 140,
+                  "fp": 179,
+                  "fn": 204,
+                  "instances": 344,
+                  "precision": 0.438871473354232,
+                  "recall": 0.4069767441860465,
+                  "f1": 0.42232277526395173
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          },
+          "secondary_iou_0_3_diagnostic": {
+            "eight_class": {
+              "threshold": 0.35,
+              "iou": 0.3,
+              "mode": "eight_class",
+              "micro": {
+                "tp": 1476,
+                "fp": 1096,
+                "fn": 1147,
+                "instances": 2623,
+                "precision": 0.5738724727838258,
+                "recall": 0.5627144491040793,
+                "f1": 0.5682386910490856
+              },
+              "macro": {
+                "precision": 0.4998235383427776,
+                "recall": 0.4506690621193674,
+                "f1": 0.47038047660731136
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 607,
+                  "fp": 362,
+                  "fn": 334,
+                  "instances": 941,
+                  "precision": 0.6264189886480909,
+                  "recall": 0.6450584484590861,
+                  "f1": 0.6356020942408377
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "longitudinal crack wide",
+                  "tp": 66,
+                  "fp": 98,
+                  "fn": 82,
+                  "instances": 148,
+                  "precision": 0.4024390243902439,
+                  "recall": 0.44594594594594594,
+                  "f1": 0.4230769230769231
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "transverse crack",
+                  "tp": 307,
+                  "fp": 211,
+                  "fn": 234,
+                  "instances": 541,
+                  "precision": 0.5926640926640927,
+                  "recall": 0.5674676524953789,
+                  "f1": 0.5797922568460812
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "transverse crack wide",
+                  "tp": 14,
+                  "fp": 17,
+                  "fn": 32,
+                  "instances": 46,
+                  "precision": 0.45161290322580644,
+                  "recall": 0.30434782608695654,
+                  "f1": 0.36363636363636365
+                },
+                {
+                  "class_id": 4,
+                  "source_name": "alligator crack",
+                  "tp": 329,
+                  "fp": 180,
+                  "fn": 197,
+                  "instances": 526,
+                  "precision": 0.6463654223968566,
+                  "recall": 0.6254752851711026,
+                  "f1": 0.6357487922705314
+                },
+                {
+                  "class_id": 5,
+                  "source_name": "alligator crack sunken",
+                  "tp": 25,
+                  "fp": 37,
+                  "fn": 52,
+                  "instances": 77,
+                  "precision": 0.4032258064516129,
+                  "recall": 0.3246753246753247,
+                  "f1": 0.3597122302158273
+                },
+                {
+                  "class_id": 6,
+                  "source_name": "pothole",
+                  "tp": 114,
+                  "fp": 176,
+                  "fn": 185,
+                  "instances": 299,
+                  "precision": 0.3931034482758621,
+                  "recall": 0.38127090301003347,
+                  "f1": 0.3870967741935484
+                },
+                {
+                  "class_id": 7,
+                  "source_name": "pothole deep",
+                  "tp": 14,
+                  "fp": 15,
+                  "fn": 31,
+                  "instances": 45,
+                  "precision": 0.4827586206896552,
+                  "recall": 0.3111111111111111,
+                  "f1": 0.3783783783783784
+                }
+              ],
+              "macro_definition": "Unweighted 8 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            },
+            "class_agnostic": {
+              "threshold": 0.35,
+              "iou": 0.3,
+              "mode": "class_agnostic",
+              "micro": {
+                "tp": 1690,
+                "fp": 882,
+                "fn": 933,
+                "instances": 2623,
+                "precision": 0.6570762052877138,
+                "recall": 0.6443004193671369,
+                "f1": 0.6506256015399422
+              },
+              "macro": {
+                "precision": 0.6570762052877138,
+                "recall": 0.6443004193671369,
+                "f1": 0.6506256015399422
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "damage_any_class_diagnostic",
+                  "tp": 1690,
+                  "fp": 882,
+                  "fn": 933,
+                  "instances": 2623,
+                  "precision": 0.6570762052877138,
+                  "recall": 0.6443004193671369,
+                  "f1": 0.6506256015399422
+                }
+              ],
+              "macro_definition": "Unweighted 1 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false,
+              "localization_matched_subtype_matrix": {
+                "rows": "predicted_source_class",
+                "columns": "truth_source_class",
+                "source_names": [
+                  "longitudinal crack",
+                  "longitudinal crack wide",
+                  "transverse crack",
+                  "transverse crack wide",
+                  "alligator crack",
+                  "alligator crack sunken",
+                  "pothole",
+                  "pothole deep"
+                ],
+                "counts": [
+                  [
+                    596,
+                    32,
+                    4,
+                    0,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    38,
+                    62,
+                    1,
+                    0,
+                    10,
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    7,
+                    0,
+                    304,
+                    14,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    8,
+                    13,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  [
+                    15,
+                    4,
+                    2,
+                    0,
+                    323,
+                    27,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    18,
+                    24,
+                    1,
+                    0
+                  ],
+                  [
+                    5,
+                    0,
+                    1,
+                    2,
+                    3,
+                    0,
+                    111,
+                    25
+                  ],
+                  [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    10,
+                    11
+                  ]
+                ]
+              },
+              "correct_eight_type_among_localized": 1444,
+              "wrong_eight_type_among_localized": 246
+            },
+            "four_family_diagnostic": {
+              "threshold": 0.35,
+              "iou": 0.3,
+              "mode": "four_family_diagnostic",
+              "micro": {
+                "tp": 1622,
+                "fp": 950,
+                "fn": 1001,
+                "instances": 2623,
+                "precision": 0.6306376360808709,
+                "recall": 0.6183759054517728,
+                "f1": 0.624446583253128
+              },
+              "macro": {
+                "precision": 0.6114348088911921,
+                "recall": 0.5898710256333853,
+                "f1": 0.6001278097710566
+              },
+              "per_class": [
+                {
+                  "class_id": 0,
+                  "source_name": "longitudinal crack",
+                  "tp": 732,
+                  "fp": 401,
+                  "fn": 357,
+                  "instances": 1089,
+                  "precision": 0.646072374227714,
+                  "recall": 0.6721763085399449,
+                  "f1": 0.6588658865886589
+                },
+                {
+                  "class_id": 1,
+                  "source_name": "transverse crack",
+                  "tp": 339,
+                  "fp": 210,
+                  "fn": 248,
+                  "instances": 587,
+                  "precision": 0.6174863387978142,
+                  "recall": 0.5775127768313458,
+                  "f1": 0.596830985915493
+                },
+                {
+                  "class_id": 2,
+                  "source_name": "alligator crack",
+                  "tp": 394,
+                  "fp": 177,
+                  "fn": 209,
+                  "instances": 603,
+                  "precision": 0.6900175131348512,
+                  "recall": 0.6533996683250415,
+                  "f1": 0.6712095400340715
+                },
+                {
+                  "class_id": 3,
+                  "source_name": "pothole",
+                  "tp": 157,
+                  "fp": 162,
+                  "fn": 187,
+                  "instances": 344,
+                  "precision": 0.49216300940438873,
+                  "recall": 0.4563953488372093,
+                  "f1": 0.473604826546003
+                }
+              ],
+              "macro_definition": "Unweighted 4 classes; undefined class metrics contribute zero, per_class retains null.",
+              "target_met_micro": false
+            }
+          }
+        },
+        "any_threshold_meets_micro_target": false,
+        "selected_all_eight_classes_meet_target": false,
+        "primary_target_met_recomputed": false
+      }
+    ],
+    "selected_variant": "new_best832",
+    "primary_target_met": false,
+    "all_eight_classes_target_met": false,
+    "selection_score": [
+      0.5051851851851852,
+      0.4261723594422031,
+      0.5200152497140679
+    ],
+    "test_used": false,
+    "validation_tuned_not_unseen_test": true,
+    "backend_environment_changed": false
+  },
+  "new_best_native_validation": {
+    "images": 1921,
+    "aggregate": {
+      "precision": 0.41777257416140035,
+      "recall": 0.45188710257596443,
+      "f1_macro_present_classes": 0.4335410578187691,
+      "map50": 0.40157155564059205,
+      "map50_95": 0.20274029276761407
+    },
+    "per_class": [
+      {
+        "class_id": 0,
+        "source_name": "longitudinal crack",
+        "instances": 941,
+        "evaluated": true,
+        "precision": 0.5801409193911079,
+        "recall": 0.6269925611052072,
+        "f1": 0.6026575299715924,
+        "map50": 0.6221306258162116,
+        "map50_95": 0.3447618825611688
+      },
+      {
+        "class_id": 1,
+        "source_name": "longitudinal crack wide",
+        "instances": 148,
+        "evaluated": true,
+        "precision": 0.36081904753478267,
+        "recall": 0.4594594594594595,
+        "f1": 0.40420838320019986,
+        "map50": 0.3835540752695078,
+        "map50_95": 0.2058894771922523
+      },
+      {
+        "class_id": 2,
+        "source_name": "transverse crack",
+        "instances": 541,
+        "evaluated": true,
+        "precision": 0.492958554299323,
+        "recall": 0.532347504621072,
+        "f1": 0.5118964312747333,
+        "map50": 0.49382023709514794,
+        "map50_95": 0.22144606035803854
+      },
+      {
+        "class_id": 3,
+        "source_name": "transverse crack wide",
+        "instances": 46,
+        "evaluated": true,
+        "precision": 0.3618047188013599,
+        "recall": 0.34782608695652173,
+        "f1": 0.35467772414045584,
+        "map50": 0.2587594309293752,
+        "map50_95": 0.11491851519828067
+      },
+      {
+        "class_id": 4,
+        "source_name": "alligator crack",
+        "instances": 526,
+        "evaluated": true,
+        "precision": 0.5617089018926366,
+        "recall": 0.5677007711732788,
+        "f1": 0.5646889421687015,
+        "map50": 0.5350736352386088,
+        "map50_95": 0.27460934095067413
+      },
+      {
+        "class_id": 5,
+        "source_name": "alligator crack sunken",
+        "instances": 77,
+        "evaluated": true,
+        "precision": 0.297059083119457,
+        "recall": 0.3116883116883117,
+        "f1": 0.3041979148622708,
+        "map50": 0.2917030584562491,
+        "map50_95": 0.16204509325376898
+      },
+      {
+        "class_id": 6,
+        "source_name": "pothole",
+        "instances": 299,
+        "evaluated": true,
+        "precision": 0.3413986712821687,
+        "recall": 0.391304347826087,
+        "f1": 0.3646519283552286,
+        "map50": 0.3266238052562691,
+        "map50_95": 0.15374290606110397
+      },
+      {
+        "class_id": 7,
+        "source_name": "pothole deep",
+        "instances": 45,
+        "evaluated": true,
+        "precision": 0.3462906969703672,
+        "recall": 0.37777777777777777,
+        "f1": 0.3613496085769705,
+        "map50": 0.300907577063367,
+        "map50_95": 0.1445090665656253
+      }
+    ],
+    "confusion_matrix": {
+      "rows": "predicted",
+      "columns": "actual",
+      "labels": [
+        "longitudinal crack",
+        "longitudinal crack wide",
+        "transverse crack",
+        "transverse crack wide",
+        "alligator crack",
+        "alligator crack sunken",
+        "pothole",
+        "pothole deep",
+        "background"
+      ],
+      "counts": [
+        [
+          521.0,
+          52.0,
+          57.0,
+          1.0,
+          33.0,
+          0.0,
+          9.0,
+          0.0,
+          16130.0
+        ],
+        [
+          161.0,
+          51.0,
+          19.0,
+          4.0,
+          33.0,
+          3.0,
+          0.0,
+          0.0,
+          3724.0
+        ],
+        [
+          125.0,
+          5.0,
+          351.0,
+          22.0,
+          6.0,
+          0.0,
+          9.0,
+          1.0,
+          15817.0
+        ],
+        [
+          11.0,
+          7.0,
+          84.0,
+          13.0,
+          3.0,
+          0.0,
+          5.0,
+          3.0,
+          2197.0
+        ],
+        [
+          73.0,
+          16.0,
+          6.0,
+          3.0,
+          291.0,
+          33.0,
+          1.0,
+          1.0,
+          11358.0
+        ],
+        [
+          6.0,
+          6.0,
+          0.0,
+          0.0,
+          110.0,
+          26.0,
+          2.0,
+          5.0,
+          2279.0
+        ],
+        [
+          14.0,
+          3.0,
+          5.0,
+          1.0,
+          28.0,
+          8.0,
+          193.0,
+          23.0,
+          13180.0
+        ],
+        [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          8.0,
+          4.0,
+          44.0,
+          10.0,
+          1313.0
+        ],
+        [
+          28.0,
+          7.0,
+          18.0,
+          1.0,
+          14.0,
+          3.0,
+          36.0,
+          2.0,
+          0.0
+        ]
+      ]
+    },
+    "confusion_examples": [
+      {
+        "predicted": "longitudinal crack",
+        "actual": "background",
+        "count": 16130
+      },
+      {
+        "predicted": "transverse crack",
+        "actual": "background",
+        "count": 15817
+      },
+      {
+        "predicted": "pothole",
+        "actual": "background",
+        "count": 13180
+      },
+      {
+        "predicted": "alligator crack",
+        "actual": "background",
+        "count": 11358
+      },
+      {
+        "predicted": "longitudinal crack wide",
+        "actual": "background",
+        "count": 3724
+      },
+      {
+        "predicted": "alligator crack sunken",
+        "actual": "background",
+        "count": 2279
+      },
+      {
+        "predicted": "transverse crack wide",
+        "actual": "background",
+        "count": 2197
+      },
+      {
+        "predicted": "pothole deep",
+        "actual": "background",
+        "count": 1313
+      },
+      {
+        "predicted": "longitudinal crack wide",
+        "actual": "longitudinal crack",
+        "count": 161
+      },
+      {
+        "predicted": "transverse crack",
+        "actual": "longitudinal crack",
+        "count": 125
+      },
+      {
+        "predicted": "alligator crack sunken",
+        "actual": "alligator crack",
+        "count": 110
+      },
+      {
+        "predicted": "transverse crack wide",
+        "actual": "transverse crack",
+        "count": 84
+      },
+      {
+        "predicted": "alligator crack",
+        "actual": "longitudinal crack",
+        "count": 73
+      },
+      {
+        "predicted": "longitudinal crack",
+        "actual": "transverse crack",
+        "count": 57
+      },
+      {
+        "predicted": "longitudinal crack",
+        "actual": "longitudinal crack wide",
+        "count": 52
+      },
+      {
+        "predicted": "pothole deep",
+        "actual": "pothole",
+        "count": 44
+      },
+      {
+        "predicted": "background",
+        "actual": "pothole",
+        "count": 36
+      },
+      {
+        "predicted": "longitudinal crack",
+        "actual": "alligator crack",
+        "count": 33
+      },
+      {
+        "predicted": "longitudinal crack wide",
+        "actual": "alligator crack",
+        "count": 33
+      },
+      {
+        "predicted": "alligator crack",
+        "actual": "alligator crack sunken",
+        "count": 33
+      }
+    ],
+    "precision_recall_operating_point": "Ultralytics max mean F1 on this split; descriptive only, not deployed threshold tuning",
+    "numerical_validation_passed": true,
+    "accuracy_acceptance": "not_defined_not_claimed",
+    "limitations": [
+      "Classes without ground truth have null metrics, not invented zeros.",
+      "Dataset labels are visual categories, not engineering severity measurements.",
+      "This evaluation does not calibrate the project's automatic acceptance gate."
+    ],
+    "schema_version": "roadguard-evaluation-v1",
+    "split": "val",
+    "split_role": "validation",
+    "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+    "dataset_manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+    "model_version": "yolo11s-rdd2022es-v1-balanced40-img832-seed42-experimental",
+    "status": "experimental",
+    "model_state_validation": {
+      "checked": true,
+      "finite_tensors": 499
+    },
+    "evaluation_conf": 0.001,
+    "evaluation_iou": 0.7,
+    "example_artifacts": [
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch0_labels.jpg",
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch0_pred.jpg",
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch1_labels.jpg",
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch1_pred.jpg",
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch2_labels.jpg",
+      "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val/val_batch2_pred.jpg"
+    ]
+  },
+  "integrity": {
+    "schema_version": "roadguard-balanced70-integrity-v1",
+    "status": "passed",
+    "checked_at": "2026-10-13T06:44:20.825977+00:00",
+    "train_val_files_sha256_verified": 39674,
+    "images": {
+      "train": 17916,
+      "val": 1921
+    },
+    "class_counts": {
+      "train": [
+        9112,
+        1640,
+        5228,
+        486,
+        4886,
+        622,
+        2954,
+        386
+      ],
+      "val": [
+        941,
+        148,
+        541,
+        46,
+        526,
+        77,
+        299,
+        45
+      ]
+    },
+    "groups_disjoint_across_train_val_test": true,
+    "test_metadata_read_for_group_isolation": true,
+    "test_images_and_labels_opened": false,
+    "test_candidate_evaluations_exist": false,
+    "source_commit": "bec6fb33d594544d00d06cbfb4ffeb74722cd138",
+    "source_commit_clean": true,
+    "runtime_and_frozen_source_hashes_match": true,
+    "training_seconds_logged": 4762.9,
+    "expected_class_weights": [
+      0.644141040990975,
+      0.9889479545819433,
+      0.740117211423918,
+      1.3403719515107817,
+      0.7527417994665633,
+      1.260192244078385,
+      0.8536537959059795,
+      1.419834002041454
+    ],
+    "checkpoints": {
+      "resume-latest.pt": {
+        "completed_epochs": 40,
+        "optimizer_state_entries": 255,
+        "live_and_ema_tensors_finite": true,
+        "class_weights": [
+          0.6441411375999451,
+          0.9889479875564575,
+          0.7401172518730164,
+          1.3403719663619995,
+          0.7527418732643127,
+          1.2601922750473022,
+          0.8536537885665894,
+          1.419834017753601
+        ],
+        "sha256": "e4b1eb2d0df214a19a1a04208c32e61f7979c25a7b8a161a22ad74f05bd7f761",
+        "bytes": 170926905
+      },
+      "resume-previous.pt": {
+        "completed_epochs": 39,
+        "optimizer_state_entries": 255,
+        "live_and_ema_tensors_finite": true,
+        "class_weights": [
+          0.6441411375999451,
+          0.9889479875564575,
+          0.7401172518730164,
+          1.3403719663619995,
+          0.7527418732643127,
+          1.2601922750473022,
+          0.8536537885665894,
+          1.419834017753601
+        ],
+        "sha256": "d40d479b5b0a81904fbf1ed4e85dbff9e92a513d04a4818e1d35d1297fcd8048",
+        "bytes": 170926777
+      },
+      "best.pt": {
+        "finite_tensors": 499,
+        "sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+        "bytes": 19218837
+      },
+      "last.pt": {
+        "finite_tensors": 499,
+        "sha256": "ef1c9834941cfae4641e8d216be0e2f82ecaf18c0a926ada4b6fa9d029dbb637",
+        "bytes": 19218837
+      }
+    },
+    "evaluation_val_sha256": "8a3019774ffd784bedfb39b6e9a4a17f9b30f14e339aa4e287f8003198096bd7",
+    "plan_sha256": "116de97a529dbc02f1de9961e41b71360bb333767138801669116ea2c12dd328",
+    "audit_script_sha256": "5afeea63ff43c84c7dbeca9508cd07770a6f61ac6a6189c4e911431a0b150d81"
+  },
+  "selected_model_http_acceptance": {
+    "status": "passed",
+    "completed_at": "2026-10-13T06:45:32.466777+00:00",
+    "transport": "loopback HTTP to isolated Uvicorn subprocesses",
+    "default_port_8000_used": false,
+    "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+    "model_version": "yolo11s-rdd2022es-v1-balanced70-new_best832-experimental",
+    "inference": {
+      "conf": 0.25,
+      "iou": 0.7,
+      "imgsz": 832
+    },
+    "manifest_sha256": "60a17703520e65414d09290816e059b3e936ef44ea6ab6afb68486a9eec61e9a",
+    "validation_candidates_attempted": [
+      {
+        "sample_id": "Czech_000006",
+        "image_sha256": "9f4dda8098647d5c856d4652ee1bf15f25de8c6cb202aef4b16a8b412c15f55f",
+        "detections": 1
+      }
+    ],
+    "response_cases": 11,
+    "selected_detection": {
+      "detection_id": "real-6f92360a9b8247429d26f761a8071f76-0",
+      "class_id": 0,
+      "label": "longitudinal_crack",
+      "confidence": 0.37799641489982605,
+      "bbox_xyxy": [
+        142.44625854492188,
+        415.3770446777344,
+        163.43617248535156,
+        463.45806884765625
+      ],
+      "image_width": 600,
+      "image_height": 600,
+      "model_version": "yolo11s-rdd2022es-v1-balanced70-new_best832-experimental",
+      "is_demo": false
+    },
+    "input_revisions": [
+      0,
+      1,
+      2
+    ],
+    "limitations": "Synthetic Jurong coordinate and automated review exercise business plumbing only; no geographic provenance or expert approval."
+  },
+  "selected_error_diagnostics": {
+    "images": 1921,
+    "confidence": 0.25,
+    "primary_match_iou": 0.5,
+    "micro": {
+      "tp": 1364,
+      "fp": 1336,
+      "fn": 1259,
+      "instances": 2623,
+      "precision": 0.5051851851851852,
+      "recall": 0.5200152497140679
+    },
+    "per_class": [
+      {
+        "class_id": 0,
+        "source_name": "longitudinal crack",
+        "tp": 572,
+        "fp": 420,
+        "fn": 369,
+        "instances": 941,
+        "precision": 0.5766129032258065,
+        "recall": 0.6078639744952179,
+        "error_categories": {
+          "fp": {
+            "background": 211,
+            "duplicate": 37,
+            "localization": 117,
+            "confusion": 55
+          },
+          "fn": {
+            "missed": 268,
+            "localization": 71,
+            "confusion": 30
+          }
+        },
+        "fn_size": {
+          "instances": 369,
+          "area_fraction_bins": {
+            "lt1pct": 149,
+            "1to5pct": 187,
+            "5to20pct": 33
+          },
+          "median_area_fraction": 0.013175000000000004,
+          "median_original_short_side_pixels": 54.999999999999886,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 1,
+        "source_name": "longitudinal crack wide",
+        "tp": 67,
+        "fp": 109,
+        "fn": 81,
+        "instances": 148,
+        "precision": 0.3806818181818182,
+        "recall": 0.4527027027027027,
+        "error_categories": {
+          "fp": {
+            "confusion": 52,
+            "background": 33,
+            "localization": 19,
+            "duplicate": 5
+          },
+          "fn": {
+            "missed": 45,
+            "confusion": 26,
+            "localization": 10
+          }
+        },
+        "fn_size": {
+          "instances": 81,
+          "area_fraction_bins": {
+            "lt1pct": 25,
+            "1to5pct": 40,
+            "5to20pct": 16
+          },
+          "median_area_fraction": 0.02025000000000001,
+          "median_original_short_side_pixels": 60.0,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 2,
+        "source_name": "transverse crack",
+        "tp": 268,
+        "fp": 265,
+        "fn": 273,
+        "instances": 541,
+        "precision": 0.5028142589118199,
+        "recall": 0.4953789279112754,
+        "error_categories": {
+          "fp": {
+            "background": 150,
+            "localization": 81,
+            "confusion": 19,
+            "duplicate": 15
+          },
+          "fn": {
+            "missed": 210,
+            "localization": 54,
+            "confusion": 9
+          }
+        },
+        "fn_size": {
+          "instances": 273,
+          "area_fraction_bins": {
+            "lt1pct": 145,
+            "1to5pct": 115,
+            "ge20pct": 1,
+            "5to20pct": 12
+          },
+          "median_area_fraction": 0.009047065863905244,
+          "median_original_short_side_pixels": 27.302978038787842,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 3,
+        "source_name": "transverse crack wide",
+        "tp": 14,
+        "fp": 24,
+        "fn": 32,
+        "instances": 46,
+        "precision": 0.3684210526315789,
+        "recall": 0.30434782608695654,
+        "error_categories": {
+          "fp": {
+            "background": 7,
+            "confusion": 11,
+            "duplicate": 2,
+            "localization": 4
+          },
+          "fn": {
+            "confusion": 8,
+            "missed": 22,
+            "localization": 2
+          }
+        },
+        "fn_size": {
+          "instances": 32,
+          "area_fraction_bins": {
+            "lt1pct": 8,
+            "5to20pct": 7,
+            "1to5pct": 17
+          },
+          "median_area_fraction": 0.023268116944500004,
+          "median_original_short_side_pixels": 39.499840000000006,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 4,
+        "source_name": "alligator crack",
+        "tp": 286,
+        "fp": 208,
+        "fn": 240,
+        "instances": 526,
+        "precision": 0.5789473684210527,
+        "recall": 0.5437262357414449,
+        "error_categories": {
+          "fp": {
+            "background": 47,
+            "localization": 82,
+            "confusion": 51,
+            "duplicate": 28
+          },
+          "fn": {
+            "missed": 156,
+            "confusion": 24,
+            "localization": 60
+          }
+        },
+        "fn_size": {
+          "instances": 240,
+          "area_fraction_bins": {
+            "5to20pct": 93,
+            "1to5pct": 111,
+            "lt1pct": 17,
+            "ge20pct": 19
+          },
+          "median_area_fraction": 0.04455241926516098,
+          "median_original_short_side_pixels": 108.49999999999997,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 5,
+        "source_name": "alligator crack sunken",
+        "tp": 24,
+        "fp": 74,
+        "fn": 53,
+        "instances": 77,
+        "precision": 0.24489795918367346,
+        "recall": 0.3116883116883117,
+        "error_categories": {
+          "fp": {
+            "confusion": 43,
+            "background": 14,
+            "localization": 10,
+            "duplicate": 7
+          },
+          "fn": {
+            "missed": 20,
+            "confusion": 26,
+            "localization": 7
+          }
+        },
+        "fn_size": {
+          "instances": 53,
+          "area_fraction_bins": {
+            "5to20pct": 28,
+            "lt1pct": 3,
+            "ge20pct": 7,
+            "1to5pct": 15
+          },
+          "median_area_fraction": 0.06874988999999998,
+          "median_original_short_side_pixels": 124.9998,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 6,
+        "source_name": "pothole",
+        "tp": 116,
+        "fp": 204,
+        "fn": 183,
+        "instances": 299,
+        "precision": 0.3625,
+        "recall": 0.3879598662207358,
+        "error_categories": {
+          "fp": {
+            "localization": 22,
+            "background": 152,
+            "confusion": 20,
+            "duplicate": 10
+          },
+          "fn": {
+            "localization": 15,
+            "missed": 161,
+            "confusion": 7
+          }
+        },
+        "fn_size": {
+          "instances": 183,
+          "area_fraction_bins": {
+            "lt1pct": 143,
+            "1to5pct": 33,
+            "5to20pct": 7
+          },
+          "median_area_fraction": 0.004250000000000003,
+          "median_original_short_side_pixels": 29.000159999999937,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 7,
+        "source_name": "pothole deep",
+        "tp": 17,
+        "fp": 32,
+        "fn": 28,
+        "instances": 45,
+        "precision": 0.3469387755102041,
+        "recall": 0.37777777777777777,
+        "error_categories": {
+          "fp": {
+            "confusion": 13,
+            "background": 14,
+            "localization": 5
+          },
+          "fn": {
+            "missed": 14,
+            "confusion": 13,
+            "localization": 1
+          }
+        },
+        "fn_size": {
+          "instances": 28,
+          "area_fraction_bins": {
+            "lt1pct": 20,
+            "1to5pct": 7,
+            "5to20pct": 1
+          },
+          "median_area_fraction": 0.005331940555499992,
+          "median_original_short_side_pixels": 39.999960000000044,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      }
+    ],
+    "per_country": {
+      "Czech": {
+        "images": 504,
+        "micro": {
+          "tp": 104,
+          "fp": 136,
+          "fn": 199,
+          "instances": 303,
+          "precision": 0.43333333333333335,
+          "recall": 0.3432343234323432
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 69,
+            "fp": 65,
+            "fn": 86,
+            "instances": 155,
+            "precision": 0.5149253731343284,
+            "recall": 0.44516129032258067
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 1,
+            "fp": 4,
+            "fn": 5,
+            "instances": 6,
+            "precision": 0.2,
+            "recall": 0.16666666666666666
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 18,
+            "fp": 18,
+            "fn": 54,
+            "instances": 72,
+            "precision": 0.5,
+            "recall": 0.25
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 0,
+            "fp": 2,
+            "fn": 1,
+            "instances": 1,
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 9,
+            "fp": 11,
+            "fn": 16,
+            "instances": 25,
+            "precision": 0.45,
+            "recall": 0.36
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 0,
+            "fp": 5,
+            "fn": 3,
+            "instances": 3,
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 7,
+            "fp": 29,
+            "fn": 31,
+            "instances": 38,
+            "precision": 0.19444444444444445,
+            "recall": 0.18421052631578946
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 0,
+            "fp": 2,
+            "fn": 3,
+            "instances": 3,
+            "precision": 0.0,
+            "recall": 0.0
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            69,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            18,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            9,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            7,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "India": {
+        "images": 380,
+        "micro": {
+          "tp": 135,
+          "fp": 180,
+          "fn": 226,
+          "instances": 361,
+          "precision": 0.42857142857142855,
+          "recall": 0.3739612188365651
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 23,
+            "fp": 26,
+            "fn": 34,
+            "instances": 57,
+            "precision": 0.46938775510204084,
+            "recall": 0.40350877192982454
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 1,
+            "fp": 4,
+            "fn": 5,
+            "instances": 6,
+            "precision": 0.2,
+            "recall": 0.16666666666666666
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 0,
+            "fp": 0,
+            "fn": 8,
+            "instances": 8,
+            "precision": null,
+            "recall": 0.0
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "instances": 1,
+            "precision": null,
+            "recall": 0.0
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 46,
+            "fp": 47,
+            "fn": 63,
+            "instances": 109,
+            "precision": 0.4946236559139785,
+            "recall": 0.42201834862385323
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 3,
+            "fp": 6,
+            "fn": 11,
+            "instances": 14,
+            "precision": 0.3333333333333333,
+            "recall": 0.21428571428571427
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 48,
+            "fp": 73,
+            "fn": 86,
+            "instances": 134,
+            "precision": 0.39669421487603307,
+            "recall": 0.3582089552238806
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 14,
+            "fp": 24,
+            "fn": 18,
+            "instances": 32,
+            "precision": 0.3684210526315789,
+            "recall": 0.4375
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            20,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            2,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            44,
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            47,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            8,
+            11
+          ]
+        ]
+      },
+      "Japan": {
+        "images": 599,
+        "micro": {
+          "tp": 447,
+          "fp": 473,
+          "fn": 475,
+          "instances": 922,
+          "precision": 0.48586956521739133,
+          "recall": 0.4848156182212581
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 75,
+            "fp": 71,
+            "fn": 94,
+            "instances": 169,
+            "precision": 0.5136986301369864,
+            "recall": 0.4437869822485207
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 25,
+            "fp": 36,
+            "fn": 41,
+            "instances": 66,
+            "precision": 0.4098360655737705,
+            "recall": 0.3787878787878788
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 64,
+            "fp": 66,
+            "fn": 101,
+            "instances": 165,
+            "precision": 0.49230769230769234,
+            "recall": 0.3878787878787879
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 10,
+            "fp": 13,
+            "fn": 15,
+            "instances": 25,
+            "precision": 0.43478260869565216,
+            "recall": 0.4
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 201,
+            "fp": 133,
+            "fn": 129,
+            "instances": 330,
+            "precision": 0.6017964071856288,
+            "recall": 0.6090909090909091
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 13,
+            "fp": 50,
+            "fn": 33,
+            "instances": 46,
+            "precision": 0.20634920634920634,
+            "recall": 0.2826086956521739
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 57,
+            "fp": 98,
+            "fn": 57,
+            "instances": 114,
+            "precision": 0.36774193548387096,
+            "recall": 0.5
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 2,
+            "fp": 6,
+            "fn": 5,
+            "instances": 7,
+            "precision": 0.25,
+            "recall": 0.2857142857142857
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            71,
+            11,
+            1,
+            0,
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            13,
+            22,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            62,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            10,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            3,
+            2,
+            0,
+            0,
+            194,
+            17,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            13,
+            9,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            56,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            2
+          ]
+        ]
+      },
+      "United_States": {
+        "images": 438,
+        "micro": {
+          "tp": 678,
+          "fp": 547,
+          "fn": 359,
+          "instances": 1037,
+          "precision": 0.553469387755102,
+          "recall": 0.6538090646094503
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 405,
+            "fp": 258,
+            "fn": 155,
+            "instances": 560,
+            "precision": 0.6108597285067874,
+            "recall": 0.7232142857142857
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 40,
+            "fp": 65,
+            "fn": 30,
+            "instances": 70,
+            "precision": 0.38095238095238093,
+            "recall": 0.5714285714285714
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 186,
+            "fp": 181,
+            "fn": 110,
+            "instances": 296,
+            "precision": 0.5068119891008175,
+            "recall": 0.6283783783783784
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 4,
+            "fp": 9,
+            "fn": 15,
+            "instances": 19,
+            "precision": 0.3076923076923077,
+            "recall": 0.21052631578947367
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 30,
+            "fp": 17,
+            "fn": 32,
+            "instances": 62,
+            "precision": 0.6382978723404256,
+            "recall": 0.4838709677419355
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 8,
+            "fp": 13,
+            "fn": 6,
+            "instances": 14,
+            "precision": 0.38095238095238093,
+            "recall": 0.5714285714285714
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 4,
+            "fp": 4,
+            "fn": 9,
+            "instances": 13,
+            "precision": 0.5,
+            "recall": 0.3076923076923077
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 1,
+            "fp": 0,
+            "fn": 2,
+            "instances": 3,
+            "precision": 1.0,
+            "recall": 0.3333333333333333
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            398,
+            14,
+            1,
+            0,
+            7,
+            0,
+            0,
+            0
+          ],
+          [
+            12,
+            35,
+            0,
+            0,
+            5,
+            1,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            185,
+            7,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            3,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            1,
+            0,
+            0,
+            24,
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "mutually_exclusive_error_counts": {
+      "fp": {
+        "localization": 340,
+        "background": 628,
+        "duplicate": 104,
+        "confusion": 264
+      },
+      "fn": {
+        "localization": 220,
+        "missed": 896,
+        "confusion": 143
+      }
+    },
+    "class_agnostic_subtype_confusion": {
+      "rows": "predicted_source_class",
+      "columns": "truth_source_class",
+      "source_names": [
+        "longitudinal crack",
+        "longitudinal crack wide",
+        "transverse crack",
+        "transverse crack wide",
+        "alligator crack",
+        "alligator crack sunken",
+        "pothole",
+        "pothole deep"
+      ],
+      "counts": [
+        [
+          558,
+          28,
+          3,
+          0,
+          11,
+          0,
+          0,
+          1
+        ],
+        [
+          28,
+          59,
+          0,
+          0,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          265,
+          9,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          8,
+          13,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          3,
+          0,
+          0,
+          271,
+          29,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          19,
+          20,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          114,
+          16
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9,
+          13
+        ]
+      ],
+      "wrong_subtype_same_family": 146,
+      "wrong_family": 44
+    },
+    "gt_size": {
+      "all": {
+        "instances": 2623,
+        "area_fraction_bins": {
+          "lt1pct": 934,
+          "5to20pct": 506,
+          "1to5pct": 1075,
+          "ge20pct": 108
+        },
+        "median_area_fraction": 0.01643333333333332,
+        "median_original_short_side_pixels": 53.523712158203125,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "primary_tp": {
+        "instances": 1364,
+        "area_fraction_bins": {
+          "lt1pct": 424,
+          "5to20pct": 309,
+          "1to5pct": 550,
+          "ge20pct": 81
+        },
+        "median_area_fraction": 0.018811035156250006,
+        "median_original_short_side_pixels": 59.46027376380921,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "primary_fn": {
+        "instances": 1259,
+        "area_fraction_bins": {
+          "lt1pct": 510,
+          "5to20pct": 197,
+          "1to5pct": 525,
+          "ge20pct": 27
+        },
+        "median_area_fraction": 0.01397499999999999,
+        "median_original_short_side_pixels": 48.000000000000114,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "fn_by_category": {
+        "localization": {
+          "instances": 220,
+          "area_fraction_bins": {
+            "lt1pct": 77,
+            "1to5pct": 89,
+            "5to20pct": 48,
+            "ge20pct": 6
+          },
+          "median_area_fraction": 0.020636957890625002,
+          "median_original_short_side_pixels": 59.99989999999997,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        },
+        "missed": {
+          "instances": 896,
+          "area_fraction_bins": {
+            "lt1pct": 402,
+            "5to20pct": 103,
+            "1to5pct": 376,
+            "ge20pct": 15
+          },
+          "median_area_fraction": 0.011783110632330729,
+          "median_original_short_side_pixels": 42.99968000000001,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        },
+        "confusion": {
+          "instances": 143,
+          "area_fraction_bins": {
+            "5to20pct": 46,
+            "lt1pct": 31,
+            "1to5pct": 60,
+            "ge20pct": 6
+          },
+          "median_area_fraction": 0.0314941875,
+          "median_original_short_side_pixels": 81.99999999999997,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      }
+    }
+  },
+  "parent_error_diagnostics": {
+    "images": 1921,
+    "confidence": 0.25,
+    "primary_match_iou": 0.5,
+    "micro": {
+      "tp": 1343,
+      "fp": 1419,
+      "fn": 1280,
+      "instances": 2623,
+      "precision": 0.48624185372918177,
+      "recall": 0.5120091498284407
+    },
+    "per_class": [
+      {
+        "class_id": 0,
+        "source_name": "longitudinal crack",
+        "tp": 574,
+        "fp": 537,
+        "fn": 367,
+        "instances": 941,
+        "precision": 0.5166516651665166,
+        "recall": 0.6099893730074389,
+        "error_categories": {
+          "fp": {
+            "background": 284,
+            "localization": 152,
+            "confusion": 53,
+            "duplicate": 48
+          },
+          "fn": {
+            "missed": 243,
+            "localization": 88,
+            "confusion": 36
+          }
+        },
+        "fn_size": {
+          "instances": 367,
+          "area_fraction_bins": {
+            "lt1pct": 142,
+            "1to5pct": 187,
+            "5to20pct": 38
+          },
+          "median_area_fraction": 0.013333333333333346,
+          "median_original_short_side_pixels": 55.000080000000025,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 1,
+        "source_name": "longitudinal crack wide",
+        "tp": 68,
+        "fp": 130,
+        "fn": 80,
+        "instances": 148,
+        "precision": 0.3434343434343434,
+        "recall": 0.4594594594594595,
+        "error_categories": {
+          "fp": {
+            "background": 46,
+            "confusion": 67,
+            "localization": 14,
+            "duplicate": 3
+          },
+          "fn": {
+            "missed": 52,
+            "confusion": 22,
+            "localization": 6
+          }
+        },
+        "fn_size": {
+          "instances": 80,
+          "area_fraction_bins": {
+            "lt1pct": 25,
+            "1to5pct": 37,
+            "5to20pct": 18
+          },
+          "median_area_fraction": 0.02225097656250001,
+          "median_original_short_side_pixels": 59.000060000000005,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 2,
+        "source_name": "transverse crack",
+        "tp": 278,
+        "fp": 286,
+        "fn": 263,
+        "instances": 541,
+        "precision": 0.4929078014184397,
+        "recall": 0.5138632162661737,
+        "error_categories": {
+          "fp": {
+            "background": 168,
+            "localization": 83,
+            "confusion": 17,
+            "duplicate": 18
+          },
+          "fn": {
+            "missed": 198,
+            "localization": 54,
+            "confusion": 11
+          }
+        },
+        "fn_size": {
+          "instances": 263,
+          "area_fraction_bins": {
+            "lt1pct": 132,
+            "1to5pct": 117,
+            "ge20pct": 1,
+            "5to20pct": 13
+          },
+          "median_area_fraction": 0.009638650000000004,
+          "median_original_short_side_pixels": 28.0,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 3,
+        "source_name": "transverse crack wide",
+        "tp": 7,
+        "fp": 22,
+        "fn": 39,
+        "instances": 46,
+        "precision": 0.2413793103448276,
+        "recall": 0.15217391304347827,
+        "error_categories": {
+          "fp": {
+            "confusion": 12,
+            "background": 7,
+            "localization": 2,
+            "duplicate": 1
+          },
+          "fn": {
+            "confusion": 11,
+            "missed": 25,
+            "localization": 3
+          }
+        },
+        "fn_size": {
+          "instances": 39,
+          "area_fraction_bins": {
+            "lt1pct": 9,
+            "5to20pct": 11,
+            "1to5pct": 19
+          },
+          "median_area_fraction": 0.024609375,
+          "median_original_short_side_pixels": 40.99979999999999,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 4,
+        "source_name": "alligator crack",
+        "tp": 271,
+        "fp": 205,
+        "fn": 255,
+        "instances": 526,
+        "precision": 0.569327731092437,
+        "recall": 0.5152091254752852,
+        "error_categories": {
+          "fp": {
+            "background": 56,
+            "localization": 77,
+            "confusion": 47,
+            "duplicate": 25
+          },
+          "fn": {
+            "missed": 163,
+            "confusion": 33,
+            "localization": 59
+          }
+        },
+        "fn_size": {
+          "instances": 255,
+          "area_fraction_bins": {
+            "5to20pct": 108,
+            "1to5pct": 108,
+            "lt1pct": 18,
+            "ge20pct": 21
+          },
+          "median_area_fraction": 0.05112215111100002,
+          "median_original_short_side_pixels": 109.9998,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 5,
+        "source_name": "alligator crack sunken",
+        "tp": 27,
+        "fp": 46,
+        "fn": 50,
+        "instances": 77,
+        "precision": 0.3698630136986301,
+        "recall": 0.35064935064935066,
+        "error_categories": {
+          "fp": {
+            "confusion": 28,
+            "localization": 10,
+            "background": 6,
+            "duplicate": 2
+          },
+          "fn": {
+            "missed": 19,
+            "confusion": 25,
+            "localization": 6
+          }
+        },
+        "fn_size": {
+          "instances": 50,
+          "area_fraction_bins": {
+            "5to20pct": 27,
+            "lt1pct": 3,
+            "1to5pct": 14,
+            "ge20pct": 6
+          },
+          "median_area_fraction": 0.06836669343749999,
+          "median_original_short_side_pixels": 124.99979999999996,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 6,
+        "source_name": "pothole",
+        "tp": 99,
+        "fp": 155,
+        "fn": 200,
+        "instances": 299,
+        "precision": 0.38976377952755903,
+        "recall": 0.3311036789297659,
+        "error_categories": {
+          "fp": {
+            "background": 106,
+            "confusion": 25,
+            "duplicate": 6,
+            "localization": 18
+          },
+          "fn": {
+            "missed": 179,
+            "localization": 11,
+            "confusion": 10
+          }
+        },
+        "fn_size": {
+          "instances": 200,
+          "area_fraction_bins": {
+            "lt1pct": 160,
+            "1to5pct": 35,
+            "5to20pct": 5
+          },
+          "median_area_fraction": 0.003782192824111104,
+          "median_original_short_side_pixels": 29.000159999999966,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      },
+      {
+        "class_id": 7,
+        "source_name": "pothole deep",
+        "tp": 19,
+        "fp": 38,
+        "fn": 26,
+        "instances": 45,
+        "precision": 0.3333333333333333,
+        "recall": 0.4222222222222222,
+        "error_categories": {
+          "fp": {
+            "background": 17,
+            "localization": 2,
+            "confusion": 17,
+            "duplicate": 2
+          },
+          "fn": {
+            "missed": 15,
+            "confusion": 11
+          }
+        },
+        "fn_size": {
+          "instances": 26,
+          "area_fraction_bins": {
+            "lt1pct": 20,
+            "1to5pct": 6
+          },
+          "median_area_fraction": 0.005013866944500007,
+          "median_original_short_side_pixels": 34.00002000000006,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      }
+    ],
+    "per_country": {
+      "Czech": {
+        "images": 504,
+        "micro": {
+          "tp": 103,
+          "fp": 138,
+          "fn": 200,
+          "instances": 303,
+          "precision": 0.42738589211618255,
+          "recall": 0.33993399339933994
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 68,
+            "fp": 73,
+            "fn": 87,
+            "instances": 155,
+            "precision": 0.48226950354609927,
+            "recall": 0.43870967741935485
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 1,
+            "fp": 3,
+            "fn": 5,
+            "instances": 6,
+            "precision": 0.25,
+            "recall": 0.16666666666666666
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 19,
+            "fp": 17,
+            "fn": 53,
+            "instances": 72,
+            "precision": 0.5277777777777778,
+            "recall": 0.2638888888888889
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 0,
+            "fp": 2,
+            "fn": 1,
+            "instances": 1,
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 7,
+            "fp": 14,
+            "fn": 18,
+            "instances": 25,
+            "precision": 0.3333333333333333,
+            "recall": 0.28
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 1,
+            "fp": 4,
+            "fn": 2,
+            "instances": 3,
+            "precision": 0.2,
+            "recall": 0.3333333333333333
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 7,
+            "fp": 24,
+            "fn": 31,
+            "instances": 38,
+            "precision": 0.22580645161290322,
+            "recall": 0.18421052631578946
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 0,
+            "fp": 1,
+            "fn": 3,
+            "instances": 3,
+            "precision": 0.0,
+            "recall": 0.0
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            67,
+            1,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            19,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            6,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            3,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            7,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "India": {
+        "images": 380,
+        "micro": {
+          "tp": 133,
+          "fp": 189,
+          "fn": 228,
+          "instances": 361,
+          "precision": 0.41304347826086957,
+          "recall": 0.3684210526315789
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 21,
+            "fp": 28,
+            "fn": 36,
+            "instances": 57,
+            "precision": 0.42857142857142855,
+            "recall": 0.3684210526315789
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 0,
+            "fp": 6,
+            "fn": 6,
+            "instances": 6,
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 0,
+            "fp": 0,
+            "fn": 8,
+            "instances": 8,
+            "precision": null,
+            "recall": 0.0
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "instances": 1,
+            "precision": null,
+            "recall": 0.0
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 49,
+            "fp": 54,
+            "fn": 60,
+            "instances": 109,
+            "precision": 0.47572815533980584,
+            "recall": 0.44954128440366975
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 5,
+            "fp": 5,
+            "fn": 9,
+            "instances": 14,
+            "precision": 0.5,
+            "recall": 0.35714285714285715
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 40,
+            "fp": 61,
+            "fn": 94,
+            "instances": 134,
+            "precision": 0.39603960396039606,
+            "recall": 0.29850746268656714
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 18,
+            "fp": 35,
+            "fn": 14,
+            "instances": 32,
+            "precision": 0.33962264150943394,
+            "recall": 0.5625
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            21,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            46,
+            5,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            3,
+            5,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            37,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            13,
+            17
+          ]
+        ]
+      },
+      "Japan": {
+        "images": 599,
+        "micro": {
+          "tp": 429,
+          "fp": 411,
+          "fn": 493,
+          "instances": 922,
+          "precision": 0.5107142857142857,
+          "recall": 0.46529284164859
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 75,
+            "fp": 88,
+            "fn": 94,
+            "instances": 169,
+            "precision": 0.4601226993865031,
+            "recall": 0.4437869822485207
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 26,
+            "fp": 42,
+            "fn": 40,
+            "instances": 66,
+            "precision": 0.38235294117647056,
+            "recall": 0.3939393939393939
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 66,
+            "fp": 61,
+            "fn": 99,
+            "instances": 165,
+            "precision": 0.5196850393700787,
+            "recall": 0.4
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 4,
+            "fp": 7,
+            "fn": 21,
+            "instances": 25,
+            "precision": 0.36363636363636365,
+            "recall": 0.16
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 193,
+            "fp": 120,
+            "fn": 137,
+            "instances": 330,
+            "precision": 0.6166134185303515,
+            "recall": 0.5848484848484848
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 13,
+            "fp": 25,
+            "fn": 33,
+            "instances": 46,
+            "precision": 0.34210526315789475,
+            "recall": 0.2826086956521739
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 51,
+            "fp": 66,
+            "fn": 63,
+            "instances": 114,
+            "precision": 0.4358974358974359,
+            "recall": 0.4473684210526316
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 1,
+            "fp": 2,
+            "fn": 6,
+            "instances": 7,
+            "precision": 0.3333333333333333,
+            "recall": 0.14285714285714285
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            72,
+            10,
+            1,
+            0,
+            5,
+            0,
+            0,
+            0
+          ],
+          [
+            13,
+            22,
+            0,
+            0,
+            3,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            65,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            4,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0,
+            0,
+            190,
+            23,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            8,
+            6,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            51,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ]
+      },
+      "United_States": {
+        "images": 438,
+        "micro": {
+          "tp": 678,
+          "fp": 681,
+          "fn": 359,
+          "instances": 1037,
+          "precision": 0.4988962472406181,
+          "recall": 0.6538090646094503
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 410,
+            "fp": 348,
+            "fn": 150,
+            "instances": 560,
+            "precision": 0.5408970976253298,
+            "recall": 0.7321428571428571
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 41,
+            "fp": 79,
+            "fn": 29,
+            "instances": 70,
+            "precision": 0.3416666666666667,
+            "recall": 0.5857142857142857
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 193,
+            "fp": 208,
+            "fn": 103,
+            "instances": 296,
+            "precision": 0.48129675810473815,
+            "recall": 0.652027027027027
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 3,
+            "fp": 13,
+            "fn": 16,
+            "instances": 19,
+            "precision": 0.1875,
+            "recall": 0.15789473684210525
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 22,
+            "fp": 17,
+            "fn": 40,
+            "instances": 62,
+            "precision": 0.5641025641025641,
+            "recall": 0.3548387096774194
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 8,
+            "fp": 12,
+            "fn": 6,
+            "instances": 14,
+            "precision": 0.4,
+            "recall": 0.5714285714285714
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 1,
+            "fp": 4,
+            "fn": 12,
+            "instances": 13,
+            "precision": 0.2,
+            "recall": 0.07692307692307693
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 0,
+            "fp": 0,
+            "fn": 3,
+            "instances": 3,
+            "precision": null,
+            "recall": 0.0
+          }
+        ],
+        "class_agnostic_source_type_matrix": [
+          [
+            400,
+            13,
+            2,
+            0,
+            8,
+            0,
+            0,
+            0
+          ],
+          [
+            25,
+            37,
+            0,
+            0,
+            5,
+            2,
+            0,
+            0
+          ],
+          [
+            3,
+            0,
+            192,
+            7,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            4,
+            3,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            1,
+            0,
+            0,
+            19,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            7,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "mutually_exclusive_error_counts": {
+      "fp": {
+        "background": 690,
+        "localization": 358,
+        "confusion": 266,
+        "duplicate": 105
+      },
+      "fn": {
+        "missed": 894,
+        "localization": 227,
+        "confusion": 159
+      }
+    },
+    "class_agnostic_subtype_confusion": {
+      "rows": "predicted_source_class",
+      "columns": "truth_source_class",
+      "source_names": [
+        "longitudinal crack",
+        "longitudinal crack wide",
+        "transverse crack",
+        "transverse crack wide",
+        "alligator crack",
+        "alligator crack sunken",
+        "pothole",
+        "pothole deep"
+      ],
+      "counts": [
+        [
+          560,
+          25,
+          5,
+          0,
+          13,
+          0,
+          0,
+          0
+        ],
+        [
+          42,
+          60,
+          0,
+          0,
+          8,
+          2,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          276,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          7,
+          7,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          0,
+          0,
+          261,
+          31,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          16,
+          19,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          2,
+          0,
+          96,
+          12
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          13,
+          18
+        ]
+      ],
+      "wrong_subtype_same_family": 156,
+      "wrong_family": 42
+    },
+    "gt_size": {
+      "all": {
+        "instances": 2623,
+        "area_fraction_bins": {
+          "lt1pct": 934,
+          "5to20pct": 506,
+          "1to5pct": 1075,
+          "ge20pct": 108
+        },
+        "median_area_fraction": 0.01643333333333332,
+        "median_original_short_side_pixels": 53.523712158203125,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "primary_tp": {
+        "instances": 1343,
+        "area_fraction_bins": {
+          "lt1pct": 425,
+          "5to20pct": 286,
+          "1to5pct": 552,
+          "ge20pct": 80
+        },
+        "median_area_fraction": 0.018620605468750034,
+        "median_original_short_side_pixels": 59.00031999999999,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "primary_fn": {
+        "instances": 1280,
+        "area_fraction_bins": {
+          "lt1pct": 509,
+          "5to20pct": 220,
+          "1to5pct": 523,
+          "ge20pct": 28
+        },
+        "median_area_fraction": 0.014172421296333334,
+        "median_original_short_side_pixels": 49.00025999999994,
+        "contrast": "not_measured_no_frozen_contrast_metadata"
+      },
+      "fn_by_category": {
+        "missed": {
+          "instances": 894,
+          "area_fraction_bins": {
+            "lt1pct": 414,
+            "5to20pct": 106,
+            "1to5pct": 361,
+            "ge20pct": 13
+          },
+          "median_area_fraction": 0.011372273888888881,
+          "median_original_short_side_pixels": 41.99975999999998,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        },
+        "localization": {
+          "instances": 227,
+          "area_fraction_bins": {
+            "lt1pct": 62,
+            "1to5pct": 94,
+            "5to20pct": 66,
+            "ge20pct": 5
+          },
+          "median_area_fraction": 0.02342222222222226,
+          "median_original_short_side_pixels": 67.0,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        },
+        "confusion": {
+          "instances": 159,
+          "area_fraction_bins": {
+            "lt1pct": 33,
+            "5to20pct": 48,
+            "1to5pct": 68,
+            "ge20pct": 10
+          },
+          "median_area_fraction": 0.028630441821,
+          "median_original_short_side_pixels": 77.00032,
+          "contrast": "not_measured_no_frozen_contrast_metadata"
+        }
+      }
+    }
+  },
+  "error_definitions": {
+    "scope": "Separate mutually exclusive FP and FN partitions at source eight-type IoU=.5. A confusion/localization event can contribute one FP and one FN; do not sum these as unique physical events.",
+    "fp_priority_order": [
+      "duplicate: same-class IoU>=.5 to already TP-matched GT",
+      "confusion: otherwise different-class IoU>=.5 to any GT",
+      "localization: otherwise same-class .1<=IoU<.5 to any GT",
+      "background: otherwise"
+    ],
+    "fn_priority_order": [
+      "confusion: any different-class prediction IoU>=.5",
+      "localization: otherwise same-class prediction .1<=IoU<.5",
+      "missed: otherwise"
+    ],
+    "matching": "Confidence-descending one-to-one same-class greedy TP, highest IoU then stable GT index; equal confidence keeps exported prediction order.",
+    "diagnostic_links": "Links may reuse objects and are explanatory, not additional TP assignments. Each FP or FN is assigned exactly one category by the stated priority."
+  },
+  "exploratory_fixed_cases": [
+    {
+      "sample_id": "India_001650",
+      "included": true,
+      "artifact": "illustrative/India_001650.jpg",
+      "role": "fixed exploratory example, not representative acceptance sample",
+      "parent_counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      },
+      "selected_counts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2
+      }
+    },
+    {
+      "sample_id": "Japan_003097",
+      "included": true,
+      "artifact": "illustrative/Japan_003097.jpg",
+      "role": "fixed exploratory example, not representative acceptance sample",
+      "parent_counts": {
+        "tp": 0,
+        "fp": 1,
+        "fn": 1
+      },
+      "selected_counts": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    {
+      "sample_id": "Japan_005511",
+      "included": true,
+      "artifact": "illustrative/Japan_005511.jpg",
+      "role": "fixed exploratory example, not representative acceptance sample",
+      "parent_counts": {
+        "tp": 3,
+        "fp": 5,
+        "fn": 3
+      },
+      "selected_counts": {
+        "tp": 2,
+        "fp": 4,
+        "fn": 4
+      }
+    }
+  ],
+  "parent_data_findings": {
+    "evidence": "summary.json, computed only from completed s30 parent640/832 validation exports and frozen manifest metadata",
+    "threshold": 0.25,
+    "primary_iou": 0.5,
+    "largest_recall_loss_parent640": {
+      "fn_total": 1280,
+      "missed": 894,
+      "localization": 227,
+      "type_confusion": 159,
+      "interpretation": "Operational misses are 69.8% of FN, larger than localization (17.7%) and type-confusion (12.4%) diagnostics. Missed means no same-class localization or high-IoU wrong-class link at this operating point, not proof the image contains no low-confidence candidate."
+    },
+    "largest_precision_loss_parent640": {
+      "fp_total": 1419,
+      "background": 690,
+      "localization": 358,
+      "type_confusion": 266,
+      "duplicate": 105,
+      "interpretation": "Background accounts for 48.6% of FP. These can include road texture/other scene features or possible annotation incompleteness; no annotation defect is confirmed."
+    },
+    "relaxed_diagnostics_parent640": {
+      "typed_iou_0_5_tp": 1343,
+      "typed_iou_0_3_tp": 1483,
+      "class_agnostic_iou_0_5_tp": 1495,
+      "class_agnostic_iou_0_3_tp": 1667,
+      "four_family_iou_0_5_tp": 1460,
+      "class_agnostic_matched_wrong_source_type": 198,
+      "wrong_subtype_same_family": 156,
+      "wrong_family": 42,
+      "interpretation": "Most localized wrong-type pairs (156/198) are subtype disagreements. Even ignoring class at IoU0.3 yields recall1667/2623=63.6% at confidence0.25; box/type relaxation alone does not reach70% at this point. These matchings use different greedy assignments, so increments are diagnostic and must not be added as disjoint causal contributions."
+    },
+    "rare_class_support": {
+      "original_train_instances_by_class_0_to_7": [
+        4556,
+        820,
+        2614,
+        243,
+        2443,
+        311,
+        1477,
+        193
+      ],
+      "validation_instances_by_class_0_to_7": [
+        941,
+        148,
+        541,
+        46,
+        526,
+        77,
+        299,
+        45
+      ],
+      "train_original_images": 8958,
+      "train_mirror_images": 8958,
+      "interpretation": "Transverse-wide, sunken-alligator and deep-pothole have243/311/193 original training boxes versus4556 longitudinal boxes. Their original supporting group counts are230/288/157, not twice as many independent samples because mirrors double effective counts. This is substantial imbalance and a plausible limitation, but the current observational evidence does not prove training data is sufficient or insufficient for70%."
+    },
+    "size_association_parent640": {
+      "image_relative_area_bin_recall": {
+        "lt1pct": 0.455,
+        "1to5pct": 0.5135,
+        "5to20pct": 0.5652,
+        "ge20pct": 0.7407
+      },
+      "primary_tp_median_original_short_side_pixels": 59.00032,
+      "primary_fn_median_original_short_side_pixels": 49.00026,
+      "missed_category_median_original_short_side_pixels": 41.99976,
+      "interpretation": "Smaller annotated objects are associated with more misses; this is image-space geometry and not an engineering size measurement. No contrast metadata was available and no contrast claim was made."
+    },
+    "country_precision_recall_parent640": {
+      "Czech": [
+        0.4274,
+        0.3399
+      ],
+      "India": [
+        0.413,
+        0.3684
+      ],
+      "Japan": [
+        0.5107,
+        0.4653
+      ],
+      "United_States": [
+        0.4989,
+        0.6538
+      ]
+    },
+    "resolution_only_parent832": {
+      "typed_iou_0_5_tp": 1241,
+      "fn": 1382,
+      "interpretation": "Increasing inference resolution of the same640-trained parent to832 did not improve recall: all four country recall values fell, and TP fell1343->1241. This does not predict the result of the new832 fine-tune."
+    },
+    "visual_review": {
+      "contact_sheet": "parent640-high-confidence-review/contact-sheet-01.jpg",
+      "eligible_unique_images_confidence_ge_0_75": 6,
+      "selection": "Class/category round-robin among high-confidence FP background/confusion; directed examples, not a random sample",
+      "observations": "Existing comparisons visibly include wide predicted boxes covering road/shadow texture and ordinary-versus-wide/sunken label disagreements. Exact source-type correctness and missing annotations were not independently verified; no labels were changed."
+    },
+    "claim_scope": "Validation-tuned parent diagnostics only; no test images/labels, GPU, new inference or training output reads. Tracked source remains frozen."
+  },
+  "recovery_smoke": {
+    "train_images": 64,
+    "val_images": 32,
+    "stopped_after_epoch": 1,
+    "initial_exit_code": 75,
+    "resumed_completed_epochs": 2,
+    "resume_verified": {
+      "start_epoch": 1,
+      "optimizer_state_entries": 255,
+      "identity": {
+        "config_sha256": "020ca9963d57c77e69f0784a36dcc6bdb5871c0c61eadaa9074f8936a6413a56",
+        "manifest_sha256": "16f94523de19a2826e8fb71d6a0f6984c907a173ab96f17a8cda0d463480324e",
+        "data_yaml_sha256": "8eabd367a5ea93f14e11795bee4018b4183d224f397584f2405dd767ed2cefcc",
+        "pretrained_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+        "runtime": {
+          "python": "3.12.14",
+          "packages": {
+            "torch": "2.10.0+cu128",
+            "torchvision": "0.25.0+cu128",
+            "ultralytics": "8.4.176",
+            "numpy": "2.5.2"
+          }
+        }
+      }
+    },
+    "quality_evidence": false
+  },
+  "local_checks": {
+    "application_pytest": {
+      "passed": 761,
+      "skipped": 1,
+      "warnings": 1
+    },
+    "ci_guardrails": {
+      "passed": 44
+    }
+  },
+  "cleanup": {
+    "dry_run": false,
+    "files": [
+      {
+        "path": "Dataset/prepared/labels/train.cache",
+        "bytes": 4344707
+      },
+      {
+        "path": "Dataset/prepared/labels/val.cache",
+        "bytes": 452896
+      }
+    ],
+    "bytes": 4797603,
+    "scope": "prepared/labels/{train,val,test}.cache and prepared/images/{train,val,test}/*.npy only"
+  },
+  "plot_visual_review": {
+    "status": "passed",
+    "reviewer": "root agent",
+    "images_sha256": {
+      "balanced70_pr_curves.png": "fa33de39f84d57be87de27bc29425859fdc76021827c8d2bb76ce50a1e463bb6",
+      "balanced70_per_class.png": "f22d55b8424472b20f84aeed9872218867052d561a261fa4c2c15fdeb54a9766"
+    },
+    "notes": "Viewed both figures: readable axes/legends/captions; same-threshold candidate points and separate IoU diagnostic panel; both-70 target visibly unmet."
+  },
+  "local_evidence_sha256": {
+    "Dataset/balanced70/plan.json": "116de97a529dbc02f1de9961e41b71360bb333767138801669116ea2c12dd328",
+    "Dataset/balanced70/s40-config.json": "e73285b0b37ba1668da2ce12dc8a718d302df1de53cb700cbe2bcb17cde4a010",
+    "Dataset/balanced70/selection.json": "70ae27bce450a390ce2d741e16545b022c98dd6e30f5f7d95d931ebf45738c32",
+    "Dataset/balanced70/selected_model_manifest.json": "60a17703520e65414d09290816e059b3e936ef44ea6ab6afb68486a9eec61e9a",
+    "Dataset/balanced70/integrity.json": "27ecae0467974040be72a02cf9d40a81f2b08cac6b2e21d4a3ec59e265574020",
+    "Dataset/balanced70/http-acceptance/summary.json": "4198f003817132253aee66fa798328f4590291e94a22029272a35253d54922a5",
+    "Dataset/balanced70/selected-errors/report.json": "bc7d22ab8e04bfb6a6176e86cebc95312a39f3ed3cad5b848ed478ad7cf8fbb3",
+    "Dataset/balanced70/data-diagnostics/summary.json": "123ddc5b5b66114ba483e5b278711cd220fafde4bcfd229a0075b3cdd7cf84f3",
+    "Dataset/balanced70/data-diagnostics/findings.json": "07eca0472d0e6ae23af3dbb938997a51bbd8225e48fc0c22f50b908839abb146",
+    "Dataset/balanced70/pretrain-pytest.log": "8aa294906a225770960b1c343ac2505d85c92e18aad57b6edcdea13cf1893e72",
+    "Dataset/balanced70/ci-guardrails.log": "2e71433424abaf81515d29bac6f1eb4363a70000b1d7a8a1ab7288279128a5a5",
+    "Dataset/balanced70/s40-training.log": "9c8985843fd7289ddffafb2b5a9950976558f6163ff4ea55ad712b4834078b36",
+    "Dataset/balanced70/s40-evaluation.log": "d3d3271beba98b82dc7149ebef14d8dacf0dd0292059f1b294b060738e35d3f6",
+    "Dataset/balanced70/recovery-smoke-first.log": "0330374c1a811dc8d5735033cb0df83731fcf353eb0b75928ce6ea68957da371",
+    "Dataset/balanced70/recovery-smoke-resumed.log": "5b746287f3a56290f95cf389538a2666b5c26f6062e031221f110e0eee1aee2e",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/results.csv": "54ffa073aa8cda991be9d236a67af1d4ad4519d10a3582d7292f00cf1305259d",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/run_metadata.json": "d741422aa1e8f6702b1aaf74fa7cad7df5203d4a77ece5ba60a0c289c0853852",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/effective_training.json": "4c4df838861e91eea734030d2a3acd9684ac27f20dcbebb0c31e02ae48a03efb",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/recovery.json": "1814111db0f396810a7b1b77101381742a550e6a770c6fcb209654539df36f42",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/evaluation-val.json": "8a3019774ffd784bedfb39b6e9a4a17f9b30f14e339aa4e287f8003198096bd7",
+    "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/cleanup-applied.json": "9938820027062ff2501f735e880f73e73f1cccd6662b70cf29fb132c8a4f0748",
+    "Dataset/runs/balanced70-recovery-smoke/resume_verified.json": "4639840364fc66373279f61881746d2cc572c546bf2f85e946df16f17b1402f7",
+    "Dataset/runs/balanced70-recovery-smoke/recovery.json": "a521e31309f53859da15ef1229eba2f592efe6544ac69759cf9cc08926440558",
+    "Dataset/runs/balanced70-recovery-smoke/results.csv": "4f92cd0327e5639cc74ff325b02c75910a61b1720ced2af1a9b943cd6624c3d2",
+    "Dataset/balanced70/plot-review.json": "ca2db91aaf37941136ff0b657200856382b1d3ebdac8b25f5bfc34da3824f22d",
+    "Dataset/balanced70/balanced70_pr_curves.png": "fa33de39f84d57be87de27bc29425859fdc76021827c8d2bb76ce50a1e463bb6",
+    "Dataset/balanced70/balanced70_per_class.png": "f22d55b8424472b20f84aeed9872218867052d561a261fa4c2c15fdeb54a9766",
+    "Dataset/balanced-metrics/balanced70-parent640/analyses/sweep/report.json": "471d4f9a455f94e28591c1fd3d128864fbf1cafb56f5b28302c6b44575554cd2",
+    "Dataset/balanced-metrics/balanced70-parent640/export.json": "d445b3acad70210a1b59c210da381a2f1fa0c07cccacee0d6e5c7a9808e439a3",
+    "Dataset/balanced-metrics/balanced70-parent832/analyses/sweep/report.json": "ee2fb146cb4541be5f926ffe0d8a9ffcdb201836ac4105c577eb898f9e648159",
+    "Dataset/balanced-metrics/balanced70-parent832/export.json": "cf0bd1e97823534068a50192e623777082ef29b54157f24cff3e2005a1dd7904",
+    "Dataset/balanced-metrics/balanced70-new-best832/analyses/sweep/report.json": "fe861a5fad7c98efae8151b1466da67ae5dfa05bd611bf5f4df561898f79e4b2",
+    "Dataset/balanced-metrics/balanced70-new-best832/export.json": "2bccfb7eed899e4f8c7045928f02a2168e143d714ff99ce3a4a33366b2b3bd6b",
+    "Dataset/balanced-metrics/balanced70-new-last832/analyses/sweep/report.json": "bd52cc1288b8b133c5f3c78ce727527bfe45b144cefe1f1846d7cf588590af58",
+    "Dataset/balanced-metrics/balanced70-new-last832/export.json": "e5b9f087bca52e1e14294d8f67821055dfde4766c93117a83e31a16fcfe87d64"
+  },
+  "supervisor_helper_sha256": {
+    "roadguard_balanced70_select.py": "4b1e552dd415114b46d75a5835b9da686fdb7b41280140d8e815b513786baed4",
+    "roadguard_balanced70_integrity.py": "5afeea63ff43c84c7dbeca9508cd07770a6f61ac6a6189c4e911431a0b150d81",
+    "roadguard_balanced70_http_acceptance.py": "3bff57576508a8a256575544df29767c4b27235d08dd060c233a09f0e7ad952f",
+    "roadguard_balanced70_selected_errors.py": "2ed240185cde2c64f6f6e996b605d5fc4cbed97a11ad5f8dbc660b448a8e824c",
+    "roadguard_balanced70_plot.py": "d2045e8d0e3ffd7b914e017e5c1b1d2e70cfa4377e52982a10188d2b0dfee6a4",
+    "roadguard_balanced70_publish_evidence.py": "467f050d7fecc04ed0ee5826efa5d804fcc268d2faeea0e525f6a90adf623b3a"
+  },
+  "limitations": [
+    "One seed and one 40-epoch fine-tuning trial; no estimate of training variance or causal parameter attribution.",
+    "All quality figures are validation-tuned; validation already participated in training and selection. No unseen test or Singapore generalization claim.",
+    "Primary target requires both correct-eight-type precision and recall at the same global threshold and IoU .5. Secondary .3/family/agnostic metrics do not satisfy it.",
+    "Overall target does not imply all eight classes satisfy it; rare-class support and macro scores remain visible.",
+    "HTTP acceptance proves integration only; real detections require review and business rules remain demo.",
+    "Selected manifest is local opt-in; no running backend or PyCharm configuration changed.",
+    "Dataset, weights, source images, prediction exports, databases and detailed logs remain ignored and are not published."
+  ]
+}

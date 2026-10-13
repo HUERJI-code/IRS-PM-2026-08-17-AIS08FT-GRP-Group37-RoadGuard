@@ -99,15 +99,18 @@ def load_config(path: Path, root: Path = REPO_ROOT) -> dict:
     if not isinstance(name, str) or not name or name in {".", ".."} or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_" for c in name):
         raise ValueError("run_name must contain only letters, digits, hyphens and underscores")
     train = config["train"]
-    if not isinstance(train, dict) or train.get("cache") is not False or train.get("fliplr") != 0:
+    if (not isinstance(train, dict) or train.get("cache") is not False
+            or type(train.get("fliplr")) not in {int, float} or train["fliplr"] != 0):
         raise ValueError("Training requires cache=false and fliplr=0 (source mirrors already exist)")
-    if train.get("deterministic") is not True or not isinstance(train.get("seed"), int):
+    if train.get("deterministic") is not True or type(train.get("seed")) is not int:
         raise ValueError("Reproducible training requires deterministic=true and an integer seed")
     if not isinstance(config["model_version"], str) or not config["model_version"].strip() or "demo" in config["model_version"].lower():
         raise ValueError("model_version must identify this real experimental model")
-    for key, low, high in (("epochs", 1, 30), ("batch", 1, 64), ("imgsz", 32, 640), ("workers", 0, 4), ("patience", 1, 30)):
-        if not isinstance(train.get(key), int) or not low <= train[key] <= high:
+    for key, low, high in (("epochs", 1, 60), ("batch", 1, 64), ("imgsz", 32, 960), ("workers", 0, 4), ("patience", 1, 60)):
+        if type(train.get(key)) is not int or not low <= train[key] <= high:
             raise ValueError(f"{key} must be an integer in [{low}, {high}]")
+    if train["imgsz"] % 32:
+        raise ValueError("imgsz must be a multiple of 32; implicit stride rounding would change the frozen configuration")
     forbidden = {"data", "model", "project", "name", "save_dir", "resume", "save", "save_period", "exist_ok", "fraction", "single_cls", "classes"}
     if forbidden.intersection(train):
         raise ValueError("Runner-owned training arguments cannot be overridden")
@@ -120,7 +123,9 @@ def load_config(path: Path, root: Path = REPO_ROOT) -> dict:
             raise ValueError(f"{key} must be an existing local file under dataset_root")
     validate_dataset_yaml(local_path(config["data"], root), dataset_root)
     inference = config["inference"]
-    if set(inference) != {"conf", "iou", "imgsz"} or not 0 < inference["conf"] < 1 or not 0 < inference["iou"] < 1 or inference["imgsz"] != train["imgsz"]:
+    if (not isinstance(inference, dict) or set(inference) != {"conf", "iou", "imgsz"}
+            or any(type(inference[key]) not in {int, float} or not 0 < inference[key] < 1 for key in ("conf", "iou"))
+            or type(inference["imgsz"]) is not int or inference["imgsz"] != train["imgsz"]):
         raise ValueError("inference requires conf/iou in (0,1) and imgsz matching training")
     return config
 

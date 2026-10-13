@@ -8,6 +8,8 @@ A's preparation step 2, [dataset and label verification](DATASET_AND_LABEL_AUDIT
 
 The authorized [30-epoch n/s follow-up](VISION_30_EPOCH_COMPARISON.md) is complete: validation error analysis, both independent training runs, CPU comparison and selected-model HTTP acceptance. YOLO11s wins the preregistered validation ranking; business accuracy and confidence calibration remain pending.
 
+The [balanced Precision/Recall follow-up](BALANCED_VISION_OPTIMIZATION.md) completed 40 additional fine-tuning epochs, four-candidate threshold comparison, checkpoint/data verification and selected-model HTTP acceptance. Correct-eight-type Precision/Recall improved modestly to 50.5% / 52.0% at confidence 0.25 and IoU 0.5. The simultaneous 70% accuracy target remains open; this completed experiment does not close model-quality acceptance or establish every damage type improved.
+
 ## A's agreed work sequence
 
 This sequence is the project owner's personal task list. Its step numbers differ from the whole-project milestones below.

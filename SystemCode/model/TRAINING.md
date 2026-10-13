@@ -13,7 +13,13 @@
 
 配置校验将解析后的 `dataset_root` 限制在仓库 `Dataset/` 子树内。数据 YAML 本身和其中的 `path`、`train`、`val`、可选 `test` 路径同样必须留在该存储范围；现有 preparation／smoke 的绝对 `path` 和相对 image 目录直接支持。`path` 也可省略，此时使用 YAML 所在目录。相对 `path` 因依赖 Ultralytics 全局 datasets 设置而拒绝。为保持普通 CI 无额外解析依赖，仅接受生成器使用的逐行顶层键、JSON 标量／数组与普通本地目录字符串；拒绝复杂 YAML、重复／未知键、download 指令和间接 image-list 文件，并核验八类名称。路径解析检查能拒绝指向范围外的 symlink／junction；它不重新执行全量图像内容审计。
 
-`training.example.json` 是初始正式运行上限：30 epoch、640 像素、batch 16、seed 42、patience 10。`cache=false` 避免图像解码缓存，`fliplr=0` 避免重复镜像增强，AdamW 固定优化器。初始 `workers=0` 保守适配 Windows；经过 smoke 可改为 2 或 4。`amp=false` 避免库的自动 AMP 检查引入辅助权重下载。修改参数必须用新的运行名；恢复时配置哈希须完全一致。
+`training.example.json` 保持初始示例：30 epoch、640 像素、batch 16、seed 42、patience 10。经后续优化授权，入口允许每个新运行最多 60 epoch、patience 1～60、imgsz 32～960 且必须为 32 的整数倍，batch 1～64、workers 0～4。整数参数与 seed 拒绝布尔值；禁止用隐式 stride 四舍五入改变冻结尺寸。上限是允许范围，不是每次运行的预算；实际运行仍须按本次授权配置。已冻结的 30 epoch n/s 比较协议保持不变。
+
+`cache=false` 避免图像解码缓存，`fliplr=0` 避免重复镜像增强，AdamW 固定优化器。初始 `workers=0` 保守适配 Windows；经过 smoke 可改为 2 或 4。`amp=false` 避免库的自动 AMP 检查引入辅助权重下载。修改参数必须用新的运行名；恢复时配置哈希须完全一致。
+
+在已有模型基础上进行高分辨率微调时，新配置的 `model` 可指向 `Dataset/runs/<父运行>/weights/best.pt`，使用全新的 `run_name` 和 `model_version`，然后只传 `--config` 运行。它是从父模型权重初始化的新实验，重新创建优化器、调度器和 epoch 计数；`identity.pretrained_sha256` 此时记录该父检查点的 SHA256（字段沿用历史命名），父权重必须保持不变，恢复新实验仍校验此哈希。不能通过 `--resume` 将已完成运行改为更长训练；resume 仅恢复同一新运行中断的、配置完全相同的完整检查点。父运行的 best / last / recovery、数据划分和旧模型清单保留。
+
+保持现有八类和模型架构；微调后的 `evaluate.py --split val` 会通过实际加载器核对八个源名称、模型有限参数和报告，再导出新的实验清单。成功开始训练本身不能替代这一步。高分辨率是否同时改善 precision / recall 必须据实际验证记录判断，不能按配置承诺结果。
 
 先用 `make_smoke.py` 从已通过全量审计的冻结划分创建 64 张训练图和 32 张验证图的恢复测试子集，不读取测试集。生成配置为 2 epoch、320 像素、batch 8、workers 0，保留八类字典；不要将它的指标写成全量模型指标。正式运行配置另存于 `Dataset/`。已存在的 smoke 数据/配置不覆盖。
 

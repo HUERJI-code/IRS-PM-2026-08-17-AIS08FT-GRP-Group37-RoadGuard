@@ -1,0 +1,148 @@
+{
+  "schema_version": "roadguard-balanced70-plan-v1",
+  "date": "2026-10-13",
+  "owner": "A",
+  "budget": {
+    "new_training_runs": 1,
+    "additional_epochs": 40,
+    "additional_runs_automatic": false
+  },
+  "user_target": {
+    "precision": 0.7,
+    "recall": 0.7,
+    "both_required_at_same_operating_point": true,
+    "class_count": 8,
+    "priority": "balanced detection and damage type; localization secondary"
+  },
+  "selection": {
+    "split": "val",
+    "primary_match_iou": 0.5,
+    "secondary_match_iou": 0.3,
+    "thresholds": [
+      0.001,
+      0.005,
+      0.01,
+      0.02,
+      0.03,
+      0.05,
+      0.075,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "global_threshold_per_candidate": true,
+    "ranking": [
+      "min_micro_precision_recall_desc",
+      "macro_f1_desc",
+      "micro_recall_desc"
+    ],
+    "candidate_checkpoints": [
+      "parent_best640",
+      "parent_best832",
+      "new_best832",
+      "new_last832"
+    ],
+    "deterministic_exact_tie": "earlier candidate in the listed order; threshold tie keeps first grid value",
+    "test_used_for_selection": false,
+    "relaxed_iou_can_satisfy_primary_target": false,
+    "rare_class_requirement": "Report every class support/P/R/F1 and macro means; global target does not imply every class reached70%.",
+    "claim_scope": "Validation-tuned results; the existing validation set has already been used for model selection. No unseen held-out generalization claim."
+  },
+  "frozen_config": {
+    "dataset_root": "Dataset",
+    "data": "Dataset/prepared/data.yaml",
+    "manifest": "Dataset/prepared/manifest.jsonl",
+    "model": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt",
+    "run_name": "yolo11s-rdd2022es-balanced40-img832-seed42",
+    "model_version": "yolo11s-rdd2022es-v1-balanced40-img832-seed42-experimental",
+    "train": {
+      "epochs": 40,
+      "imgsz": 832,
+      "batch": 16,
+      "seed": 42,
+      "patience": 40,
+      "workers": 4,
+      "device": "0",
+      "cache": false,
+      "fliplr": 0.0,
+      "deterministic": true,
+      "amp": false,
+      "optimizer": "AdamW",
+      "lr0": 0.0002,
+      "lrf": 0.1,
+      "warmup_epochs": 1.0,
+      "close_mosaic": 10,
+      "nbs": 64,
+      "warmup_bias_lr": 0.0,
+      "cls": 0.75,
+      "cls_pw": 0.25,
+      "box": 7.5,
+      "dfl": 1.5,
+      "mosaic": 0.5,
+      "scale": 0.3,
+      "translate": 0.05,
+      "hsv_h": 0.015,
+      "hsv_s": 0.4,
+      "hsv_v": 0.3,
+      "degrees": 0.0,
+      "shear": 0.0,
+      "perspective": 0.0,
+      "flipud": 0.0,
+      "mixup": 0.0,
+      "cutmix": 0.0,
+      "copy_paste": 0.0,
+      "multi_scale": 0.0
+    },
+    "inference": {
+      "conf": 0.25,
+      "iou": 0.7,
+      "imgsz": 832
+    }
+  },
+  "config_path": "Dataset/balanced70/s40-config.json",
+  "config_sha256": "e73285b0b37ba1668da2ce12dc8a718d302df1de53cb700cbe2bcb17cde4a010",
+  "inputs_sha256": {
+    "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+    "Dataset/prepared/data.yaml": "8212940a9fedfac57a885726314c5176c9c90813fb8b94f6e355d1029fa6791d",
+    "Dataset/prepared/manifest.jsonl": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+    "Dataset/prepared/audit.json": "25fe0b4944e3341ad18b129f224ad456274fe06b30012e6cd7f23e7a85eca6ac",
+    "Dataset/prepared/split_summary.json": "75cb83e70d3b7ec61cba6f714f0e778b4c89c7a483e9e389ba325ea5659237bb"
+  },
+  "initialization": "New fine-tuning run from prior s30 best; fresh optimizer/epoch count, not resume/extension of completed run.",
+  "checkpoint_retention": [
+    "best.pt",
+    "last.pt",
+    "resume-latest.pt",
+    "resume-previous.pt"
+  ],
+  "cleanup": "Only after numerical and integration acceptance; existing allowlisted regenerable caches. Preserve datasets, checkpoints and experiment evidence.",
+  "sources": [
+    "https://docs.ultralytics.com/guides/yolo-performance-metrics",
+    "https://docs.ultralytics.com/guides/model-training-tips",
+    "https://docs.ultralytics.com/guides/custom-trainer"
+  ],
+  "runtime_authority": "Installed Ultralytics8.4.176 source; no package upgrades.",
+  "limitations": [
+    "Forty new epochs and higher resolution do not guarantee reaching70%.",
+    "Most original images are600-720px; resizing creates no new image detail.",
+    "cls_pw weights both positive and negative class BCE terms; benefits must be measured.",
+    "Fine-tuning changes several parameters together; this trial cannot isolate their individual effects.",
+    "best.pt remains librarymAP50-95-selected; explicitlast.pt evaluation broadens final candidates but does not optimize everyepoch forP/R.",
+    "No annotation edits, family-label replacement or automatic task acceptance."
+  ]
+}
