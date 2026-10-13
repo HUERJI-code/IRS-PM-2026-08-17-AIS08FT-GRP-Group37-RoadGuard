@@ -1,0 +1,137 @@
+{
+  "schema_version": "roadguard-compare30-plan-v1",
+  "policy": {
+    "selection_split": "val",
+    "ranking": [
+      "map50_95_desc",
+      "map50_desc",
+      "matched_cpu_backend_median_ms_asc_on_exact_tie"
+    ],
+    "test_used_for_selection": false,
+    "seed": 42,
+    "epochs": 30,
+    "initialization": "independent_official_COCO_pretrained_not_baseline10_resume",
+    "limitation": "One seed; no estimate of training variance or statistical superiority."
+  },
+  "baseline_config_path": "Dataset/baseline10-config.json",
+  "baseline_config_sha256": "bffb24a8653365e454adf21cf7d42ea5dbe1d7a5cfdd3152af30261df8176a33",
+  "source_class_names": [
+    "longitudinal crack",
+    "longitudinal crack wide",
+    "transverse crack",
+    "transverse crack wide",
+    "alligator crack",
+    "alligator crack sunken",
+    "pothole",
+    "pothole deep"
+  ],
+  "inputs": {
+    "data": {
+      "path": "Dataset/prepared/data.yaml",
+      "sha256": "8212940a9fedfac57a885726314c5176c9c90813fb8b94f6e355d1029fa6791d"
+    },
+    "manifest": {
+      "path": "Dataset/prepared/manifest.jsonl",
+      "sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341"
+    },
+    "audit.json": {
+      "path": "Dataset/prepared/audit.json",
+      "sha256": "25fe0b4944e3341ad18b129f224ad456274fe06b30012e6cd7f23e7a85eca6ac"
+    },
+    "split_summary.json": {
+      "path": "Dataset/prepared/split_summary.json",
+      "sha256": "75cb83e70d3b7ec61cba6f714f0e778b4c89c7a483e9e389ba325ea5659237bb"
+    }
+  },
+  "candidates": {
+    "n": {
+      "config": {
+        "dataset_root": "Dataset",
+        "data": "Dataset/prepared/data.yaml",
+        "manifest": "Dataset/prepared/manifest.jsonl",
+        "model": "Dataset/pretrained/yolo11n.pt",
+        "run_name": "yolo11n-rdd2022es-compare30-seed42",
+        "model_version": "yolo11n-rdd2022es-v1-compare30-seed42-experimental",
+        "train": {
+          "epochs": 30,
+          "imgsz": 640,
+          "batch": 32,
+          "seed": 42,
+          "patience": 30,
+          "workers": 4,
+          "device": "0",
+          "cache": false,
+          "fliplr": 0.0,
+          "deterministic": true,
+          "amp": false,
+          "optimizer": "AdamW",
+          "lr0": 0.001,
+          "lrf": 0.01,
+          "warmup_epochs": 1.0,
+          "close_mosaic": 2
+        },
+        "inference": {
+          "conf": 0.25,
+          "iou": 0.7,
+          "imgsz": 640
+        }
+      },
+      "config_path": "Dataset/compare30/n-config.json",
+      "config_sha256": "b9138b1dd9d93fcfe89c91f3c36120b1d5311a437f945a80a9efe661e09588c5",
+      "pretrained": {
+        "source_url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+        "architecture": "YOLO11n",
+        "pretraining": "COCO",
+        "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "size_bytes": 5613764,
+        "provenance_path": "Dataset/pretrained/download.json",
+        "provenance_sha256": "8da542274f38723313e235e4360a3d76dbe44e102dc3d5f93ce85a0e610504a4"
+      }
+    },
+    "s": {
+      "config": {
+        "dataset_root": "Dataset",
+        "data": "Dataset/prepared/data.yaml",
+        "manifest": "Dataset/prepared/manifest.jsonl",
+        "model": "Dataset/pretrained/yolo11s.pt",
+        "run_name": "yolo11s-rdd2022es-compare30-seed42",
+        "model_version": "yolo11s-rdd2022es-v1-compare30-seed42-experimental",
+        "train": {
+          "epochs": 30,
+          "imgsz": 640,
+          "batch": 32,
+          "seed": 42,
+          "patience": 30,
+          "workers": 4,
+          "device": "0",
+          "cache": false,
+          "fliplr": 0.0,
+          "deterministic": true,
+          "amp": false,
+          "optimizer": "AdamW",
+          "lr0": 0.001,
+          "lrf": 0.01,
+          "warmup_epochs": 1.0,
+          "close_mosaic": 2
+        },
+        "inference": {
+          "conf": 0.25,
+          "iou": 0.7,
+          "imgsz": 640
+        }
+      },
+      "config_path": "Dataset/compare30/s-config.json",
+      "config_sha256": "e275aed4c7a7b48ce40bd9a3a2cc8a749e8043ece69d76ad4c2f3b654488036c",
+      "pretrained": {
+        "source_url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11s.pt",
+        "architecture": "YOLO11s",
+        "pretraining": "COCO",
+        "sha256": "85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5",
+        "size_bytes": 19313732,
+        "provenance_path": "Dataset/pretrained/download-yolo11s.json",
+        "provenance_sha256": "6a98f7b7a420c69c36659a05f2aac81264df8ee1bfa6e651ed6101e8b4f366aa"
+      }
+    }
+  },
+  "plan_sha256": "21fb06f5b8158aff73a7c5cbbe61965d6a83b181074b07399e1e5298d4513cb3"
+}
