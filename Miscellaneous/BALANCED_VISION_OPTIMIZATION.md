@@ -114,13 +114,13 @@ Precision、Recall 和定位 IoU 是不同维度；F1 可概括二者的平衡�
 
 选中点的1,259个FN按明确优先顺序互斥归类：missed **896（71.2%）**、localization220、confusion143；1,336个FP分为background628、localization340、confusion264、duplicate104。FP与FN是两个单独分区，同一个错类/偏移对象可能各产生一个FP和FN，不能把两边相加当成独立物理缺陷数。Missed是该操作点未建立诊断匹配，不等于图像没有更低confidence候选。Background也不能直接证明漏标。
 
-不分类IoU0.5匹配中的错八类配对有190个：同family亚类146、不同family44，说明普通/宽、普通/下陷、普通/深等亚类混淆仍存在。40张定向分层对照与完整逐图证据保存于 [selected-errors](../Dataset/balanced70/selected-errors/report.json)，并非随机质量估计。
+不分类IoU0.5匹配中的错八类配对有190个：同family亚类146、不同family44，说明普通/宽、普通/下陷、普通/深等亚类混淆仍存在。40张定向分层对照与完整逐图证据保存于 `Dataset/balanced70/selected-errors/report.json`，并非随机质量估计。
 
 冻结train有8,958张原图和8,958张镜像，有效框数被镜像翻倍。八类原始训练框数依次为 **4556、820、2614、243、2443、311、1477、193**；验证框数见上表。宽横裂、下陷龟裂、深坑的原始支持group数只有230、288、157，存在明显不平衡，不能把镜像当作新增独立场景。现有观察只能提示稀有支持与类别歧义可能限制效果，不能证明训练数据数量足够或不足。
 
 选中点的GT面积小于图像1%时Recall为424/934=45.4%，面积≥20%时为81/108=75.0%；FN框原图短边中位数48像素，TP约59.5像素，missed分区约43像素。它们是图像空间几何，不是工程损坏尺寸；没有冻结contrast字段，本轮未测量contrast，未据此下结论。按国家的P/R分别为Czech43.33%/34.32%、India42.86%/37.40%、Japan48.59%/48.48%、United States55.35%/65.38%，同样不代表Jurong影像表现。
 
-三张运行前确定的验证原图保留GT/父模型/选中模型对照：`India_001650`的2个FN仍未检出；`Japan_003097`从0TP/1FP/1FN变为1TP/0FP/0FN；`Japan_005511`从3TP/5FP/3FN变为2TP/4FP/4FN。这些 [探索案例](../Dataset/balanced70/selected-errors/illustrative/)同时展示改善、未改善和退步，不能用于代表整体准确率，也未确认标注错误或修改标签。
+三张运行前确定的验证原图保留GT/父模型/选中模型对照：`India_001650`的2个FN仍未检出；`Japan_003097`从0TP/1FP/1FN变为1TP/0FP/0FN；`Japan_005511`从3TP/5FP/3FN变为2TP/4FP/4FN。这些 本地探索案例（`Dataset/balanced70/selected-errors/illustrative/`）同时展示改善、未改善和退步，不能用于代表整体准确率，也未确认标注错误或修改标签。
 
 本轮多个训练参数同时改变，仅一个seed，没有消融、重复种子或置信区间。小增益不能归因于单个参数，不能声称统计显著或新场景泛化。下一步应先开展可复核的数据/标签审查与稀有亚类支持工作，尤其普通/宽、下陷和深坑的定义与一致性；保留八类，建立审核证据后再决定下一组有预算的实验，避免直接追加盲目epoch。
 
@@ -134,8 +134,8 @@ Precision、Recall 和定位 IoU 是不同维度；F1 可概括二者的平衡�
 - 真实Detection为`is_demo=false`并仍强制先人工审核；HTTP自动审核仅验业务连接，坐标是模拟Jurong坐标、任务业务规则仍为demo，不是专家或生产验收。
 - 主agent实际查看两张指标图、覆盖40张分层案例的四张contact sheet，以及三张固定案例的完整对照。该检查核对证据展示与探索错误，不构成专家标注确认；没有修正任何标签。
 
-本地推荐清单为 [selected_model_manifest.json](../Dataset/balanced70/selected_model_manifest.json)，权重SHA256 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`，confidence0.25、NMS IoU0.7、imgsz832，状态保持experimental。本轮只生成推荐并做隔离验收，**未修改现有PyCharm启动配置、环境变量或运行中的后端**。需要使用时按 [真实视觉API说明](REAL_VISION_API.md)显式配置 `ROADGUARD_VISION_MANIFEST_PATH`；不会自动激活。
+本地推荐清单为 `Dataset/balanced70/selected_model_manifest.json`，权重SHA256 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`，confidence0.25、NMS IoU0.7、imgsz832，状态保持experimental。本轮只生成推荐并做隔离验收，**未修改现有PyCharm启动配置、环境变量或运行中的后端**。需要使用时按 [真实视觉API说明](REAL_VISION_API.md)显式配置 `ROADGUARD_VISION_MANIFEST_PATH`；不会自动激活。
 
 可分享的小型证据为 [summary](../SystemCode/experiments/vision/balanced70_summary.json)、[四候选操作点CSV](../SystemCode/experiments/vision/balanced70_operating_points.csv)、[40轮训练CSV](../SystemCode/experiments/vision/balanced70_training_results.csv)、[PR曲线](../SystemCode/experiments/vision/balanced70_pr_curves.png)、[逐类对比图](../SystemCode/experiments/vision/balanced70_per_class.png)。本地完整证据在 `Dataset/balanced70/selection.json`、`integrity.json`、`selected-errors/`、`http-acceptance/`、`data-diagnostics/`与实际run目录；它们保持Git忽略。
 
-数值、完整性、HTTP、错误与视觉检查完成后，已实际应用白名单清理：[cleanup-applied.json](../Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/cleanup-applied.json)记录仅删除 `prepared/labels/train.cache` **4,344,707字节**与 `val.cache` **452,896字节**，合计 **4,797,603字节（约4.80 MB / 4.58 MiB）**。原始数据、划分、预测、报告及全部旧/新best、last、resume-latest、resume-previous检查点保留；没有清除测试图片/标签或模型证据。
+数值、完整性、HTTP、错误与视觉检查完成后，已实际应用白名单清理：本地 `Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/cleanup-applied.json`记录仅删除 `prepared/labels/train.cache` **4,344,707字节**与 `val.cache` **452,896字节**，合计 **4,797,603字节（约4.80 MB / 4.58 MiB）**。原始数据、划分、预测、报告及全部旧/新best、last、resume-latest、resume-previous检查点保留；没有清除测试图片/标签或模型证据。
