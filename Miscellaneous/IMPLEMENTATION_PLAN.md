@@ -4,7 +4,7 @@ The shared backend, explicit demo detection/rules, persisted inspection/review/t
 
 Step 1 geography is documented as of 2026-10-12: [Jurong East/West boundary and NUS-ISS simulated origin](JURONG_SCOPE_AND_DEPOT.md), with static GeoJSON and matching example configuration. The geographic step alone did not freeze task contracts, business rules or routing constraints; subsequent A deliveries are listed below and still do not complete M0.
 
-A's preparation step 2, [dataset and label verification](DATASET_AND_LABEL_AUDIT.md), records the source version, eight class IDs, full archive-directory counts and targeted sample checks. Full content validation, class-frequency statistics and split manifests remain pending. Training has not started.
+A's preparation step 2, [dataset and label verification](DATASET_AND_LABEL_AUDIT.md), records the source version, eight class IDs, full archive-directory counts and targeted sample checks. Step 8 now provides full content validation, class-frequency statistics and grouped split manifests; actual bounded training and recovery evidence is tracked in [Step 8 acceptance](STEP8_VISION_ACCEPTANCE.md).
 
 ## A's agreed work sequence
 
@@ -13,13 +13,13 @@ This sequence is the project owner's personal task list. Its step numbers differ
 | Step | A's deliverable | Current status |
 | --- | --- | --- |
 | 1 | Confirm Jurong boundary and shared simulated depot | Documented: JE/JW and NUS-ISS |
-| 2 | Verify dataset version and labels | Source, directory and targeted sample audit complete; full training preparation pending |
+| 2 | Verify dataset version and labels | Source, directory and targeted sample audit complete; full preparation delivered in Step 8 |
 | 3 | Freeze initial Detection/Inspection/Task, errors and revision contracts with fixed samples | Implemented; see [API contract](API_CONTRACT.md) and [examples](../SystemCode/contracts/README.md) |
 | 4 | Shared backend entry, configuration, SQLite, errors, schemas and router registration | Implemented; [backend guide](../SystemCode/backend/README.md), health endpoint and automated tests |
 | 5 | Explicit demo detector and confidence/business rules | Implemented for named synthetic scenarios with configurable demo assumptions; see [demo guide](DEMO_DETECTION_AND_RULES.md). Production calibration remains pending |
 | 6 | Image upload, inspection/review and task CRUD workflow | Implemented in explicit demo mode: upload, polygon check, declared road type, persistence, review, task edits/status, idempotency and transactional revision; see [workflow guide](INSPECTION_REVIEW_TASK_WORKFLOW.md) |
 | 7 | Stable task query input for B and reviewed knowledge for C | Delivered: consistent TaskSnapshot service/API, reproducible 10/15/20-task inputs, versioned source-checked knowledge and actual HTTP consumer example; see [B/C handoff](BC_HANDOFF.md). Review is repository consistency checking, not expert approval |
-| 8 | Train/evaluate and integrate the real vision model | Pending; requires full data preparation and held-out split |
+| 8 | Train/evaluate and integrate the real vision model | Data/preparation, checkpointed training/evaluation and opt-in real workflow implemented; see [actual acceptance evidence](STEP8_VISION_ACCEPTANCE.md). Calibration and business accuracy acceptance remain pending |
 | 9 | Integrate A/B/C workflows and validate failure cases | Pending |
 | 10 | Complete reports, evaluation evidence and submission | Pending |
 
@@ -35,7 +35,7 @@ See [the three-person work allocation and interface draft](TEAM_WORK_ALLOCATION.
 | --- | --- | --- |
 | 1 | Confirm study boundary, depot, task model and routing constraints | Written scenario and consistent configuration |
 | 2 | Backend/frontend startup, database schema and four-crew configuration | Backend, infrastructure and A-owned inspection/task tables implemented; frontend and crew records pending |
-| 3 | Image upload, labelled demo detector, confidence gate and rules | Demo upload/review/acceptance workflow implemented with persistence; real inference remains pending |
+| 3 | Image upload, labelled demo detector, confidence gate and rules | Persisted demo workflow and opt-in real inference implemented; all real nonempty outputs require review |
 | 4 | Task queue, travel-time provider and greedy planner | Valid routes and explicit handling of unassigned tasks |
 | 5 | Group-built GA and automatic replanning | Valid four-crew routes, deterministic seeded checks and queue-change demonstration |
 | 6 | RDD2022ES training/evaluation and real detector integration | Held-out metrics and documented dataset splits |

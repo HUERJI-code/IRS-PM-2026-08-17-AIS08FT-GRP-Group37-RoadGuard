@@ -19,3 +19,5 @@ Step 7 adds `backend/roadguard/tasks/` for consistent active-task snapshots, `co
 `config/project.example.json` records the agreed scenario and is loaded by the backend at startup. Loading it does not create crew/task records or implement planning.
 
 Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the JE/JW task boundary and the shared NUS-ISS origin outside it. Task polygon validation is implemented; road eligibility is user-declared and must not be described as independently verified. Configuration file paths are relative to the repository root; the return-to-depot policy remains undecided.
+
+Step 8 adds the [model pipeline](model/README.md), recoverable local training, explicit split evaluation and the [real inspection API](../Miscellaneous/REAL_VISION_API.md). See [actual acceptance evidence](../Miscellaneous/STEP8_VISION_ACCEPTANCE.md); experimental detections are reviewed before applying demo business rules.

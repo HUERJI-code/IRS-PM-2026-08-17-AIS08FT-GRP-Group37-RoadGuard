@@ -1,6 +1,6 @@
 # 未定选项与后续证据
 
-document_id：`rg-kb-pending`；document_version：`1`；owner：`A`。
+document_id：`rg-kb-pending`；document_version：`2`；owner：`A`。
 
 <a id="pending-business"></a>
 ## 业务与场景待确认
@@ -20,6 +20,6 @@ classification：`pending_decision`。citation_id：`rg-kb-pending#pending-evalu
 
 主要比较场景为四队和 10/15/20 个任务；GA 与 Greedy 使用相同输入、行程矩阵和约束。编码、参数、停止条件、目标函数权重及多个随机种子仍需 B 交付，不预先宣称 GA 更优。报告算法运行时间、外部 API 等待、行程/维修时长时必须分开，不以更多队伍推断算法更快。
 
-完整数据内容验证、划分与真实模型训练/held-out 指标、B 的持久化路线事实、C 的检索/引用/确认流程及端到端联调仍需实际成果。本知识包的完整性测试和十道验收题不能当作这些能力已经完成的证据。
+完整数据内容验证、划分与真实模型训练/held-out 指标须引用第 8 步对应运行的实际记录。模型数值有效不等于达到业务准确率要求，实验模型不能被描述为已校准的自动接受系统。B 的持久化路线事实、C 的检索/引用/确认流程及端到端联调仍需实际成果。本知识包的完整性测试和验收题不能当作这些能力已经完成的证据。
 
 来源：[src-project-config](../../config/project.example.json)、[context-agents](../../../AGENTS.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。

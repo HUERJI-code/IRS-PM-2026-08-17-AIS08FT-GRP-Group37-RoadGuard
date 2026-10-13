@@ -1,12 +1,12 @@
 # RoadGuard
 
-**Status: demo workflow and A's task/knowledge handoff for B/C delivered.**
+**Status: persisted workflows, B/C handoff and Step 8 real-vision tooling delivered; experimental training evidence is tracked separately.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Real image inference, routing, frontend and evaluation results remain pending.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with mandatory review; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。所有检测/规则仍明确标记演示；道路类型声明及合成任务点不能替代道路核验。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测并强制复核，业务规则仍为演示；道路类型声明及合成任务点不能替代道路核验。
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -18,7 +18,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Persisted demo inspection/review/task workflow; real inference and planning pending |
+| Current phase | Persisted inspection/review/task workflow; opt-in real inference; planning pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -35,7 +35,7 @@ A group-built genetic algorithm (GA) will assign accepted tasks to four repair c
 
 Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES is the proposed image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
 
-The project does not yet claim measured cost savings, trained-model accuracy or operational readiness.
+Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
 
 ## SECTION 3 : CREDITS / PROJECT CONTRIBUTION
 

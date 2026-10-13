@@ -1,6 +1,6 @@
 # RoadGuard 共用后端基础
 
-A 维护唯一的 FastAPI 应用入口、配置、SQLite 连接、错误和路由注册。当前实现健康检查、stateless 模拟预览，以及图片上传、范围检查、巡检审核和任务持久化。真实视觉、工程队、调度、助手与前端仍待实现。公共格式见 [API 契约](../../Miscellaneous/API_CONTRACT.md)；新 HTTP 记录使用 a-workflow-v1，不能直接用旧 strict DTO 解析额外字段。
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real detections require review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v2, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
 ## 环境与启动
 
@@ -37,7 +37,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 ## 配置入口
 
-第 6 步的请求格式、审核、任务更新及失败处理见[巡检/审核/任务指南](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。上传必须显式选择 demo 模式和案例；接受后会创建真实保存的**演示任务**，不表示已经执行图像识别或路线规划。道路类别为调用者声明。
+The original demo upload/review/task behavior is documented in the [workflow guide](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). Uploads explicitly select demo mode with a named scenario, or real mode without a scenario. Real mode requires the optional locally configured detector; all nonempty real results wait for review. Accepted tasks remain persisted demo business objects. Road type is user-declared. The [Step 8 guide](../../Miscellaneous/REAL_VISION_API.md) describes this extension.
 
 默认读取 `SystemCode/config/project.example.json` 与演示策略 `SystemCode/config/demo_rules.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持以下环境变量：
 
@@ -47,6 +47,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 | `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
 | `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
 | `ROADGUARD_UPLOAD_PATH` | 图片保存目录，默认在数据库文件旁的 uploads 子目录；必须与数据库一起保存/备份 |
+| `ROADGUARD_VISION_MANIFEST_PATH` | Optional trusted local model manifest; unset disables real inference. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
 
 默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
 

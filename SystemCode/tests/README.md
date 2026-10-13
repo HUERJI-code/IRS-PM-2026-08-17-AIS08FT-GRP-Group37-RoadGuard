@@ -19,4 +19,6 @@ Step 7 adds `test_task_query.py` and `test_task_query_api.py` for complete share
 
 ## CI integration
 
+Step 8 adds dataset archive/content/group-split tests, resumable download tests, checkpoint/evaluation/cache-cleanup tests and real-detector adapter/workflow tests. Ordinary CI uses generated small files and injected models, requires no GPU or optional vision packages, and never downloads or trains. Actual GPU recovery, full-data evaluation and real HTTP evidence are recorded separately in the [Step 8 acceptance report](../../Miscellaneous/STEP8_VISION_ACCEPTANCE.md).
+
 RoadGuard CI runs Python application tests here once Python implementation is added. Group tests by module, use pytest discovery names, and declare the required test dependencies in `SystemCode/backend/requirements-ci.txt`. Frontend tests live with the frontend and run through its `test:ci` script. See [the shared CI guide](../../Miscellaneous/GITHUB_WORKFLOW.md) for exact commands and requirements.

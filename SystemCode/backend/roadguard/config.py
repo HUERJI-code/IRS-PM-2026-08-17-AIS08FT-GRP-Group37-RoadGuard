@@ -62,6 +62,7 @@ class Settings:
     database_busy_timeout_ms: int = 5000
     demo_rules_path: Path = DEFAULT_DEMO_RULES_PATH
     upload_path: Path | None = None
+    vision_manifest_path: Path | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.project, Mapping):
@@ -80,6 +81,8 @@ class Settings:
             self.upload_path if self.upload_path is not None else self.database_path.parent / "uploads"
         ))
         object.__setattr__(self, "demo_rules_path", _resolve_path(self.demo_rules_path))
+        if self.vision_manifest_path is not None:
+            object.__setattr__(self, "vision_manifest_path", _resolve_path(self.vision_manifest_path))
         object.__setattr__(self, "project", _freeze(self.project))
 
 
@@ -101,4 +104,5 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
         config_path=config_path, database_path=database_path, project=project,
         demo_rules_path=demo_rules_path,
         upload_path=environment.get("ROADGUARD_UPLOAD_PATH"),
+        vision_manifest_path=environment.get("ROADGUARD_VISION_MANIFEST_PATH"),
     )

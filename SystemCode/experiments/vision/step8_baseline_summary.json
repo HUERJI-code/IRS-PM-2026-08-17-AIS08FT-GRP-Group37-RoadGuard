@@ -1,0 +1,1040 @@
+{
+  "schema_version": "roadguard-step8-baseline-evidence-v1",
+  "date": "2026-10-13",
+  "status": "experimental_functional_acceptance_passed",
+  "source_dataset": {
+    "dataset_ref": "juusos/rdd2022es",
+    "version": 1,
+    "source_url": "https://www.kaggle.com/api/v1/datasets/download/juusos/rdd2022es?datasetVersionNumber=1",
+    "size_bytes": 2611933018,
+    "sha256": "3ceb9de3b7ca7083379e4fc62748bafcda0a82d1baf4627cf87891c9595fa775",
+    "content_validation_at_download": "pending_full_archive_and_annotation_audit"
+  },
+  "pretrained": {
+    "source_url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+    "architecture": "YOLO11n",
+    "pretraining": "COCO; not RoadGuard model",
+    "size_bytes": 5613764,
+    "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+  },
+  "configuration": {
+    "dataset_root": "Dataset",
+    "data": "Dataset/prepared/data.yaml",
+    "manifest": "Dataset/prepared/manifest.jsonl",
+    "model": "Dataset/pretrained/yolo11n.pt",
+    "run_name": "yolo11n-rdd2022es-baseline10-seed42",
+    "model_version": "yolo11n-rdd2022es-v1-baseline10-seed42-experimental",
+    "train": {
+      "epochs": 10,
+      "imgsz": 640,
+      "batch": 32,
+      "seed": 42,
+      "patience": 10,
+      "workers": 4,
+      "device": "0",
+      "cache": false,
+      "fliplr": 0.0,
+      "deterministic": true,
+      "amp": false,
+      "optimizer": "AdamW",
+      "lr0": 0.001,
+      "lrf": 0.01,
+      "warmup_epochs": 1.0,
+      "close_mosaic": 2
+    },
+    "inference": {
+      "conf": 0.25,
+      "iou": 0.7,
+      "imgsz": 640
+    }
+  },
+  "training_identity": {
+    "config_sha256": "bffb24a8653365e454adf21cf7d42ea5dbe1d7a5cfdd3152af30261df8176a33",
+    "manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+    "data_yaml_sha256": "8212940a9fedfac57a885726314c5176c9c90813fb8b94f6e355d1029fa6791d",
+    "pretrained_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+    "runtime": {
+      "python": "3.12.14",
+      "packages": {
+        "torch": "2.10.0+cu128",
+        "torchvision": "0.25.0+cu128",
+        "ultralytics": "8.4.176",
+        "numpy": "2.5.2"
+      }
+    }
+  },
+  "training_runtime": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "torch": "2.10.0+cu128",
+      "torchvision": "0.25.0+cu128",
+      "ultralytics": "8.4.176",
+      "numpy": "2.5.2"
+    },
+    "git_commit": "5157742d576d5dad20713fd3d40e8193e7218633",
+    "git_dirty": true,
+    "source_file_sha256": {
+      "train.py": "69f3f337bd391feec8539b3d0cc266dc75ca5f0f08fa9e7dc82b22ab103b7f0f",
+      "checkpointing.py": "73cd919a2dd50310328120ca13b915c560f3243b9b08b3e6240a039a8a75d9f3",
+      "evaluate.py": "0211d014fcc196da273afce43fb91d496c567b26c30d5daf547e4f3ec33c109b",
+      "data_pipeline.py": "63f2c0d70c6f3579f899278886b1d93afd198782aa0e1bde8ebaa1a0cb78f8a6",
+      "requirements-vision.txt": "e3372626edf3a5813805af19f829281aea442ec67634a87ba15777d69df085ca"
+    }
+  },
+  "post_training_source_change": "Dataset/YAML path validation tightened after the recorded run; no optimizer, model, data, config or evaluator change. Runtime source hashes identify the actual training implementation.",
+  "split_summary": {
+    "seed": 42,
+    "ratios": {
+      "train": 0.7,
+      "val": 0.15,
+      "test": 0.15
+    },
+    "status": "provisional_country_aware_group_split",
+    "fliplr": 0.0,
+    "evaluation_originals_only": true,
+    "splits": {
+      "train": {
+        "images": 17916,
+        "groups": 8939,
+        "originals": 8958,
+        "mirrors": 8958,
+        "empty_annotations": 5730,
+        "countries": {
+          "Czech": 4710,
+          "India": 3542,
+          "Japan": 5586,
+          "United_States": 4078
+        },
+        "class_boxes": [
+          9112,
+          1640,
+          5228,
+          486,
+          4886,
+          622,
+          2954,
+          386
+        ],
+        "class_images": [
+          6274,
+          1486,
+          3670,
+          460,
+          3986,
+          576,
+          1882,
+          314
+        ]
+      },
+      "val": {
+        "images": 1921,
+        "groups": 1917,
+        "originals": 1921,
+        "mirrors": 0,
+        "empty_annotations": 649,
+        "countries": {
+          "Czech": 504,
+          "India": 380,
+          "Japan": 599,
+          "United_States": 438
+        },
+        "class_boxes": [
+          941,
+          148,
+          541,
+          46,
+          526,
+          77,
+          299,
+          45
+        ],
+        "class_images": [
+          652,
+          132,
+          381,
+          43,
+          433,
+          65,
+          182,
+          36
+        ]
+      },
+      "test": {
+        "images": 1918,
+        "groups": 1915,
+        "originals": 1918,
+        "mirrors": 0,
+        "empty_annotations": 643,
+        "countries": {
+          "Czech": 504,
+          "India": 380,
+          "Japan": 598,
+          "United_States": 436
+        },
+        "class_boxes": [
+          908,
+          202,
+          573,
+          65,
+          488,
+          65,
+          336,
+          36
+        ],
+        "class_images": [
+          638,
+          176,
+          395,
+          61,
+          396,
+          60,
+          206,
+          28
+        ]
+      }
+    },
+    "group_count": 12771
+  },
+  "completed_epochs": 10,
+  "recorded_epoch_seconds": 496.855,
+  "checkpoint_files": [
+    {
+      "path": "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/weights/best.pt",
+      "bytes": 5507418,
+      "sha256": "6701105881507946244e27d4155fa9febc2ad0bd2657bf52ee519a824c1619de"
+    },
+    {
+      "path": "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/weights/last.pt",
+      "bytes": 5507418,
+      "sha256": "7f2da160099bd67bfa52fa3d528919efe86d5df13ace7d4c0432bc247d5185be"
+    },
+    {
+      "path": "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/weights/resume-latest.pt",
+      "bytes": 47907578,
+      "sha256": "fc8621740a6aa085d21931889caa27a3bf53fdebfe413e664dfff3223c627ad9"
+    },
+    {
+      "path": "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/weights/resume-previous.pt",
+      "bytes": 47907450,
+      "sha256": "35c81be27d01c6ac6804627ed39e4904b4a79898a5166c17ef4e6ed638988ba9"
+    }
+  ],
+  "evaluations": {
+    "val": {
+      "images": 1921,
+      "aggregate": {
+        "precision": 0.35040470767303866,
+        "recall": 0.42943816349522185,
+        "f1_macro_present_classes": 0.3760825027567985,
+        "map50": 0.34278991250794844,
+        "map50_95": 0.1693240672220516
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "source_name": "longitudinal crack",
+          "instances": 941,
+          "evaluated": true,
+          "precision": 0.4435729149033775,
+          "recall": 0.6633289827902784,
+          "f1": 0.5316365814337197,
+          "map50": 0.5493058153406178,
+          "map50_95": 0.2956017639944336
+        },
+        {
+          "class_id": 1,
+          "source_name": "longitudinal crack wide",
+          "instances": 148,
+          "evaluated": true,
+          "precision": 0.2671653884604279,
+          "recall": 0.5,
+          "f1": 0.3482500546545562,
+          "map50": 0.2963042018473464,
+          "map50_95": 0.16812247369275046
+        },
+        {
+          "class_id": 2,
+          "source_name": "transverse crack",
+          "instances": 541,
+          "evaluated": true,
+          "precision": 0.39112117704621946,
+          "recall": 0.5674676524953789,
+          "f1": 0.46307365439629516,
+          "map50": 0.4467483787161072,
+          "map50_95": 0.1989629048477695
+        },
+        {
+          "class_id": 3,
+          "source_name": "transverse crack wide",
+          "instances": 46,
+          "evaluated": true,
+          "precision": 0.28519682467891105,
+          "recall": 0.15625354594358956,
+          "f1": 0.2018936583294408,
+          "map50": 0.1767387391347155,
+          "map50_95": 0.06100797689732355
+        },
+        {
+          "class_id": 4,
+          "source_name": "alligator crack",
+          "instances": 526,
+          "evaluated": true,
+          "precision": 0.5145256345376017,
+          "recall": 0.5475285171102662,
+          "f1": 0.5305143005306896,
+          "map50": 0.5066148448948196,
+          "map50_95": 0.25879445153333036
+        },
+        {
+          "class_id": 5,
+          "source_name": "alligator crack sunken",
+          "instances": 77,
+          "evaluated": true,
+          "precision": 0.24996141199420147,
+          "recall": 0.37662337662337664,
+          "f1": 0.30049025358086107,
+          "map50": 0.23355185009400048,
+          "map50_95": 0.12554774479841965
+        },
+        {
+          "class_id": 6,
+          "source_name": "pothole",
+          "instances": 299,
+          "evaluated": true,
+          "precision": 0.36088056470838337,
+          "recall": 0.2909698996655518,
+          "f1": 0.3221762887146137,
+          "map50": 0.26736452408786543,
+          "map50_95": 0.12037507564651573
+        },
+        {
+          "class_id": 7,
+          "source_name": "pothole deep",
+          "instances": 45,
+          "evaluated": true,
+          "precision": 0.29081374505518687,
+          "recall": 0.3333333333333333,
+          "f1": 0.31062523041421186,
+          "map50": 0.26569094594811493,
+          "map50_95": 0.12618014636587005
+        }
+      ],
+      "confusion_matrix": {
+        "rows": "predicted",
+        "columns": "actual",
+        "labels": [
+          "longitudinal crack",
+          "longitudinal crack wide",
+          "transverse crack",
+          "transverse crack wide",
+          "alligator crack",
+          "alligator crack sunken",
+          "pothole",
+          "pothole deep",
+          "background"
+        ],
+        "counts": [
+          [
+            452.0,
+            49.0,
+            38.0,
+            3.0,
+            38.0,
+            1.0,
+            9.0,
+            1.0,
+            43827.0
+          ],
+          [
+            221.0,
+            45.0,
+            20.0,
+            3.0,
+            62.0,
+            4.0,
+            8.0,
+            0.0,
+            11703.0
+          ],
+          [
+            88.0,
+            4.0,
+            324.0,
+            15.0,
+            5.0,
+            0.0,
+            5.0,
+            0.0,
+            33033.0
+          ],
+          [
+            12.0,
+            5.0,
+            124.0,
+            17.0,
+            1.0,
+            0.0,
+            3.0,
+            4.0,
+            5502.0
+          ],
+          [
+            134.0,
+            32.0,
+            15.0,
+            5.0,
+            258.0,
+            34.0,
+            8.0,
+            3.0,
+            26917.0
+          ],
+          [
+            9.0,
+            7.0,
+            1.0,
+            0.0,
+            134.0,
+            33.0,
+            0.0,
+            4.0,
+            5770.0
+          ],
+          [
+            9.0,
+            3.0,
+            5.0,
+            2.0,
+            21.0,
+            5.0,
+            164.0,
+            15.0,
+            27452.0
+          ],
+          [
+            1.0,
+            2.0,
+            1.0,
+            0.0,
+            2.0,
+            0.0,
+            82.0,
+            17.0,
+            4670.0
+          ],
+          [
+            15.0,
+            1.0,
+            13.0,
+            1.0,
+            5.0,
+            0.0,
+            20.0,
+            1.0,
+            0.0
+          ]
+        ]
+      },
+      "confusion_examples": [
+        {
+          "predicted": "longitudinal crack",
+          "actual": "background",
+          "count": 43827
+        },
+        {
+          "predicted": "transverse crack",
+          "actual": "background",
+          "count": 33033
+        },
+        {
+          "predicted": "pothole",
+          "actual": "background",
+          "count": 27452
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "background",
+          "count": 26917
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "background",
+          "count": 11703
+        },
+        {
+          "predicted": "alligator crack sunken",
+          "actual": "background",
+          "count": 5770
+        },
+        {
+          "predicted": "transverse crack wide",
+          "actual": "background",
+          "count": 5502
+        },
+        {
+          "predicted": "pothole deep",
+          "actual": "background",
+          "count": 4670
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "longitudinal crack",
+          "count": 221
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "longitudinal crack",
+          "count": 134
+        },
+        {
+          "predicted": "alligator crack sunken",
+          "actual": "alligator crack",
+          "count": 134
+        },
+        {
+          "predicted": "transverse crack wide",
+          "actual": "transverse crack",
+          "count": 124
+        },
+        {
+          "predicted": "transverse crack",
+          "actual": "longitudinal crack",
+          "count": 88
+        },
+        {
+          "predicted": "pothole deep",
+          "actual": "pothole",
+          "count": 82
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "alligator crack",
+          "count": 62
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "longitudinal crack wide",
+          "count": 49
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "transverse crack",
+          "count": 38
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "alligator crack",
+          "count": 38
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "alligator crack sunken",
+          "count": 34
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "longitudinal crack wide",
+          "count": 32
+        }
+      ],
+      "precision_recall_operating_point": "Ultralytics max mean F1 on this split; descriptive only, not deployed threshold tuning",
+      "numerical_validation_passed": true,
+      "accuracy_acceptance": "not_defined_not_claimed",
+      "limitations": [
+        "Classes without ground truth have null metrics, not invented zeros.",
+        "Dataset labels are visual categories, not engineering severity measurements.",
+        "This evaluation does not calibrate the project's automatic acceptance gate."
+      ],
+      "schema_version": "roadguard-evaluation-v1",
+      "split": "val",
+      "split_role": "validation",
+      "weights_sha256": "6701105881507946244e27d4155fa9febc2ad0bd2657bf52ee519a824c1619de",
+      "dataset_manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+      "model_version": "yolo11n-rdd2022es-v1-baseline10-seed42-experimental",
+      "status": "experimental",
+      "model_state_validation": {
+        "checked": true,
+        "finite_tensors": 499
+      },
+      "evaluation_conf": 0.001,
+      "evaluation_iou": 0.7,
+      "example_artifacts": [
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch0_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch0_pred.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch1_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch1_pred.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch2_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val/val_batch2_pred.jpg"
+      ]
+    },
+    "test": {
+      "images": 1918,
+      "aggregate": {
+        "precision": 0.3915465002423725,
+        "recall": 0.4120667578993966,
+        "f1_macro_present_classes": 0.3856485396047234,
+        "map50": 0.36186797231293916,
+        "map50_95": 0.18375487300802149
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "source_name": "longitudinal crack",
+          "instances": 908,
+          "evaluated": true,
+          "precision": 0.42937993511242367,
+          "recall": 0.6134361233480177,
+          "f1": 0.5051651452848822,
+          "map50": 0.516705322433723,
+          "map50_95": 0.2706829210488749
+        },
+        {
+          "class_id": 1,
+          "source_name": "longitudinal crack wide",
+          "instances": 202,
+          "evaluated": true,
+          "precision": 0.36889342766601974,
+          "recall": 0.4900990099009901,
+          "f1": 0.42094504154233614,
+          "map50": 0.41292906405039503,
+          "map50_95": 0.23284193464245084
+        },
+        {
+          "class_id": 2,
+          "source_name": "transverse crack",
+          "instances": 573,
+          "evaluated": true,
+          "precision": 0.38818126057872004,
+          "recall": 0.581151832460733,
+          "f1": 0.465458679853528,
+          "map50": 0.46484177036451296,
+          "map50_95": 0.21728368265969636
+        },
+        {
+          "class_id": 3,
+          "source_name": "transverse crack wide",
+          "instances": 65,
+          "evaluated": true,
+          "precision": 0.43690591036836574,
+          "recall": 0.15384615384615385,
+          "f1": 0.2275617741334451,
+          "map50": 0.24000888126695802,
+          "map50_95": 0.09185115585703098
+        },
+        {
+          "class_id": 4,
+          "source_name": "alligator crack",
+          "instances": 488,
+          "evaluated": true,
+          "precision": 0.49941714960527095,
+          "recall": 0.5213251194634545,
+          "f1": 0.5101360315324341,
+          "map50": 0.4466673731111521,
+          "map50_95": 0.22778032663543515
+        },
+        {
+          "class_id": 5,
+          "source_name": "alligator crack sunken",
+          "instances": 65,
+          "evaluated": true,
+          "precision": 0.2789585949797978,
+          "recall": 0.3384615384615385,
+          "f1": 0.3058428130539818,
+          "map50": 0.29685727074587176,
+          "map50_95": 0.17434981804393668
+        },
+        {
+          "class_id": 6,
+          "source_name": "pothole",
+          "instances": 336,
+          "evaluated": true,
+          "precision": 0.40320570998658933,
+          "recall": 0.2648809523809524,
+          "f1": 0.3197235283464767,
+          "map50": 0.2645885096466478,
+          "map50_95": 0.11918971774669951
+        },
+        {
+          "class_id": 7,
+          "source_name": "pothole deep",
+          "instances": 36,
+          "evaluated": true,
+          "precision": 0.3274300136417926,
+          "recall": 0.3333333333333333,
+          "f1": 0.3303553030907029,
+          "map50": 0.2523455868842524,
+          "map50_95": 0.13605942743004765
+        }
+      ],
+      "confusion_matrix": {
+        "rows": "predicted",
+        "columns": "actual",
+        "labels": [
+          "longitudinal crack",
+          "longitudinal crack wide",
+          "transverse crack",
+          "transverse crack wide",
+          "alligator crack",
+          "alligator crack sunken",
+          "pothole",
+          "pothole deep",
+          "background"
+        ],
+        "counts": [
+          [
+            447.0,
+            71.0,
+            58.0,
+            6.0,
+            38.0,
+            1.0,
+            16.0,
+            1.0,
+            44546.0
+          ],
+          [
+            211.0,
+            64.0,
+            23.0,
+            3.0,
+            36.0,
+            3.0,
+            16.0,
+            0.0,
+            12234.0
+          ],
+          [
+            89.0,
+            5.0,
+            312.0,
+            32.0,
+            7.0,
+            0.0,
+            3.0,
+            1.0,
+            34414.0
+          ],
+          [
+            9.0,
+            3.0,
+            139.0,
+            18.0,
+            2.0,
+            0.0,
+            4.0,
+            1.0,
+            5842.0
+          ],
+          [
+            110.0,
+            45.0,
+            23.0,
+            2.0,
+            246.0,
+            23.0,
+            18.0,
+            6.0,
+            28569.0
+          ],
+          [
+            5.0,
+            7.0,
+            0.0,
+            0.0,
+            118.0,
+            27.0,
+            13.0,
+            1.0,
+            5447.0
+          ],
+          [
+            16.0,
+            6.0,
+            8.0,
+            3.0,
+            29.0,
+            6.0,
+            163.0,
+            14.0,
+            27003.0
+          ],
+          [
+            3.0,
+            0.0,
+            0.0,
+            0.0,
+            3.0,
+            4.0,
+            73.0,
+            11.0,
+            4349.0
+          ],
+          [
+            18.0,
+            1.0,
+            10.0,
+            1.0,
+            9.0,
+            1.0,
+            30.0,
+            1.0,
+            0.0
+          ]
+        ]
+      },
+      "confusion_examples": [
+        {
+          "predicted": "longitudinal crack",
+          "actual": "background",
+          "count": 44546
+        },
+        {
+          "predicted": "transverse crack",
+          "actual": "background",
+          "count": 34414
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "background",
+          "count": 28569
+        },
+        {
+          "predicted": "pothole",
+          "actual": "background",
+          "count": 27003
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "background",
+          "count": 12234
+        },
+        {
+          "predicted": "transverse crack wide",
+          "actual": "background",
+          "count": 5842
+        },
+        {
+          "predicted": "alligator crack sunken",
+          "actual": "background",
+          "count": 5447
+        },
+        {
+          "predicted": "pothole deep",
+          "actual": "background",
+          "count": 4349
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "longitudinal crack",
+          "count": 211
+        },
+        {
+          "predicted": "transverse crack wide",
+          "actual": "transverse crack",
+          "count": 139
+        },
+        {
+          "predicted": "alligator crack sunken",
+          "actual": "alligator crack",
+          "count": 118
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "longitudinal crack",
+          "count": 110
+        },
+        {
+          "predicted": "transverse crack",
+          "actual": "longitudinal crack",
+          "count": 89
+        },
+        {
+          "predicted": "pothole deep",
+          "actual": "pothole",
+          "count": 73
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "longitudinal crack wide",
+          "count": 71
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "transverse crack",
+          "count": 58
+        },
+        {
+          "predicted": "alligator crack",
+          "actual": "longitudinal crack wide",
+          "count": 45
+        },
+        {
+          "predicted": "longitudinal crack",
+          "actual": "alligator crack",
+          "count": 38
+        },
+        {
+          "predicted": "longitudinal crack wide",
+          "actual": "alligator crack",
+          "count": 36
+        },
+        {
+          "predicted": "transverse crack",
+          "actual": "transverse crack wide",
+          "count": 32
+        }
+      ],
+      "precision_recall_operating_point": "Ultralytics max mean F1 on this split; descriptive only, not deployed threshold tuning",
+      "numerical_validation_passed": true,
+      "accuracy_acceptance": "not_defined_not_claimed",
+      "limitations": [
+        "Classes without ground truth have null metrics, not invented zeros.",
+        "Dataset labels are visual categories, not engineering severity measurements.",
+        "This evaluation does not calibrate the project's automatic acceptance gate."
+      ],
+      "schema_version": "roadguard-evaluation-v1",
+      "split": "test",
+      "split_role": "held_out_test_no_threshold_tuning",
+      "weights_sha256": "6701105881507946244e27d4155fa9febc2ad0bd2657bf52ee519a824c1619de",
+      "dataset_manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+      "model_version": "yolo11n-rdd2022es-v1-baseline10-seed42-experimental",
+      "status": "experimental",
+      "model_state_validation": {
+        "checked": true,
+        "finite_tensors": 499
+      },
+      "evaluation_conf": 0.001,
+      "evaluation_iou": 0.7,
+      "example_artifacts": [
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch0_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch0_pred.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch1_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch1_pred.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch2_labels.jpg",
+        "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-test/val_batch2_pred.jpg"
+      ]
+    }
+  },
+  "recovery_smoke": {
+    "start_epoch": 1,
+    "optimizer_state_entries": 255,
+    "identity": {
+      "config_sha256": "90362dce6b0c82308d58d2809eb8b6346b7b2b144f04b8e1d47483e85668b509",
+      "manifest_sha256": "16f94523de19a2826e8fb71d6a0f6984c907a173ab96f17a8cda0d463480324e",
+      "data_yaml_sha256": "8eabd367a5ea93f14e11795bee4018b4183d224f397584f2405dd767ed2cefcc",
+      "pretrained_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "runtime": {
+        "python": "3.12.14",
+        "packages": {
+          "torch": "2.10.0+cu128",
+          "torchvision": "0.25.0+cu128",
+          "ultralytics": "8.4.176",
+          "numpy": "2.5.2"
+        }
+      }
+    }
+  },
+  "http_acceptance": {
+    "status": "passed",
+    "completed_at": "2026-10-13T02:56:21.769890+00:00",
+    "transport": "loopback HTTP to isolated Uvicorn subprocesses",
+    "default_port_8000_used": false,
+    "weights_sha256": "6701105881507946244e27d4155fa9febc2ad0bd2657bf52ee519a824c1619de",
+    "validation_candidates_attempted": [
+      {
+        "sample_id": "Czech_000006",
+        "image_sha256": "9f4dda8098647d5c856d4652ee1bf15f25de8c6cb202aef4b16a8b412c15f55f",
+        "detections": 1
+      }
+    ],
+    "response_cases": 11,
+    "selected_detection": {
+      "detection_id": "real-8c4ce8fa97e24c779cddcef619ea4805-0",
+      "class_id": 0,
+      "label": "longitudinal_crack",
+      "confidence": 0.34931614995002747,
+      "bbox_xyxy": [
+        119.71516418457031,
+        419.3857116699219,
+        161.9094696044922,
+        517.68359375
+      ],
+      "image_width": 600,
+      "image_height": 600,
+      "model_version": "yolo11n-rdd2022es-v1-baseline10-seed42-experimental",
+      "is_demo": false
+    },
+    "input_revisions": [
+      0,
+      1,
+      2
+    ],
+    "limitations": "Synthetic Jurong coordinate and automated review exercise business plumbing only; no geographic provenance or expert approval."
+  },
+  "post_training_integrity": {
+    "status": "passed",
+    "manifest_rows_checked": 25600,
+    "original_hashes_unchanged_after_training": true,
+    "prepared_files_verified_as_hardlinks": 43510,
+    "group_intersections": 0
+  },
+  "cleanup": {
+    "redundant_download_parts_bytes": 2611938166,
+    "regenerable_label_cache_bytes": 5252792,
+    "total_bytes": 2617190958,
+    "deleted_files": 159,
+    "preserved": [
+      "source ZIP and raw data",
+      "prepared split and manifests",
+      "best.pt and last.pt",
+      "resume-latest.pt and resume-previous.pt",
+      "logs, plots, evaluation and HTTP evidence"
+    ]
+  },
+  "limitations": [
+    "Initial 10-epoch transfer baseline, not production accuracy acceptance.",
+    "PR/P/R/F1 metrics use split-specific descriptive max-mean-F1 points; not calibrated deployed thresholds.",
+    "Evaluation confusion matrix uses conf=0.001; not deployed conf=0.25 false-positive counts.",
+    "Ultralytics native eight-class metrics completed; optional faster-coco-eval was unavailable, no separate COCO evaluator result claimed.",
+    "No Jurong capture provenance or fully proven temporal/scene-disjoint split.",
+    "All nonempty real predictions require review; task rules remain demo assumptions."
+  ],
+  "full_content_audit": {
+    "status": "passed_full_content_validation",
+    "images": 25600,
+    "annotations": 25599,
+    "full_decode_attempts": 25600,
+    "errors": [],
+    "known_exif_quarantine": {
+      "India_000430": {
+        "original_sha256": "01c4ef927c8193a209e1169f8bc937ad16764c1b2d756ba0a5c9d7332ea3fa9c",
+        "original_orientation": 8,
+        "mirror_sha256": "c4bfebccb2f4a6bda5a9891c18d6a2bcc43689395e2a634cd1c118ae15c6c167",
+        "mirror_orientation": 1
+      },
+      "India_004098": {
+        "original_sha256": "219984707789be5cab1418ae6804227487b08b1eae5b158cf88dc44b26e73c2a",
+        "original_orientation": 3,
+        "mirror_sha256": "b3f2acdf5013819d14f6b9f503a3dfa2ae155eddee6b36aa0424e8d48f9feb35",
+        "mirror_orientation": 1
+      }
+    },
+    "grouped_leakage_assertions": "passed",
+    "materialization": {
+      "hardlink": 43510
+    },
+    "limitations": [
+      "Perceptual grouping is conservative and may overgroup or miss visually related frames.",
+      "Filename groups and thumbnail hashes cannot establish scene independence or remove all adjacent-scene leakage.",
+      "Country-aware random split is provisional; no geographic or camera-sequence metadata is available."
+    ]
+  },
+  "verification": {
+    "python_tests_passed": 611,
+    "python_tests_skipped": 1,
+    "skip_reason": "Windows symlink creation permission unavailable; Linux CI covers the symlink path",
+    "ci_guardrail_tests_passed": 44,
+    "pip_check": "passed"
+  }
+}
