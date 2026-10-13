@@ -1,17 +1,17 @@
 # 巡检、审核与任务记录
 
-document_id：`rg-kb-workflow`；document_version：`3`；owner：`A`。
+document_id：`rg-kb-workflow`；document_version：`5`；owner：`A`。
 
 <a id="workflow-evidence"></a>
 ## 记录与人工复核
 
 classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-evidence`。
 
-当前 HTTP 巡检记录契约是 `a-workflow-v3`。上传显式选择 demo 模式/案例，或不含案例的 real 模式；图片统一解码、EXIF 归正并去 metadata 后保存为 RGB PNG。demo 检测是合成数据；real 使用明确配置且经哈希、八类标签核验的本地模型从图片像素推理，Detection.is_demo=false。业务规则仍属演示假设，故 Inspection/Task.is_demo=true。InspectionRecord 保存原始检测、模式、模型版本/权重哈希、位置、规则过程和 review_history；TaskRecord 保存任务与修改历史。严格解析旧记录的客户端须更新 schema；不可直接用 extra=forbid 的旧 a-dto-v1 DTO 接收完整记录。
+当前 HTTP 巡检记录契约是 `a-workflow-v5`。POST /inspections 的成功响应只含 inspection_id、status、detection、task_id；detection 只含 label、confidence、bbox_xyxy、image_width、image_height，无检测为 null。GET /inspections/{id} 返回下面的完整巡检详情，GET /tasks/{id} 返回任务详情；审核前从巡检详情取得 detection_id 和 record_version。上传重放由 HTTP 200 表示，新建为 201；其响应不再带 replayed/input_revision，规划版本通过任务快照取得。上传显式选择 demo 模式/案例，或不含案例的 real 模式；图片统一解码、EXIF 归正并去 metadata 后保存为 RGB PNG。demo 检测是合成数据；real 使用明确配置且经哈希、八类标签核验的本地模型从图片像素推理，Detection.is_demo=false。业务规则仍属演示假设，故 Inspection/Task.is_demo=true。InspectionRecord 保存原始检测、模式、模型版本/权重哈希、位置、规则过程和 review_history；TaskRecord 保存任务与修改历史。严格解析旧记录的客户端须更新 schema；不可直接用 extra=forbid 的旧 a-dto-v1 DTO 接收完整记录。
 
-启用主建议策略的 real 记录还保存 primary_suggestion：一个供展示/审核的检测 ID、策略版本、阈值、排名分数和竞争目标提示。全部原始 detections 仍保留；排名分数不是正确概率，建议不等于 selected_detection_id 或审核通过。旧记录缺少该字段时为 null，不重新推理；重启、重试和审核后仍保留初次上传的建议。
+启用主建议策略的 real 记录还保存 primary_suggestion：一个供展示/审核的检测 ID、策略版本、阈值、排名分数和竞争目标提示。数据库保留全部原始 detections；HTTP InspectionResponse 最多返回一个框：优先返回 accepted 的 selected_detection_id，否则返回主建议，旧记录无建议时返回最高置信度框。竞争 ID 可能指向内部保留证据。排名分数不是正确概率，不用于自动接受阈值。旧记录缺少该字段时为 null，不重新推理；重启、重试和审核后仍保留初次上传的建议。
 
-无检测保存为 no_detection、没有任务；不代表已证明路面安全。demo 模式任一低置信度保存为 pending_review，全部达标才按演示规则选一个候选自动建任务。real 模式尚无经过校准的接受阈值，所有非空结果一律保存为 pending_review，无论置信度多高。仅 pending_review 可发生新的 confirm/correct/dismiss：confirm 选本记录 detection_id，correct 另提供中央 damage_label，dismiss 不选检测。确认不把原置信度改成 1.0，纠正不覆盖原始模型标签，审核决定单独保留。actor_source=user_declared_unverified，不是认证工程人员签名。
+无检测保存为 no_detection、没有任务；不代表已证明路面安全。demo 模式任一低置信度保存为 pending_review，全部达标才按演示规则选一个候选自动建任务。real 模式采用用户确认的 single-primary-auto-v1：主框原始 confidence ≥ 配置 confidence_threshold（默认 0.60）自动创建一个任务并保存 accepted；低于阈值 pending_review。auto_acceptance 冻结 policy_version 和 confidence_threshold，Task.history.actor_source=system_confidence_policy，review_history 为空表示未进行人工审核。歧义只是提示，不覆盖该分流。阈值尚未校准成正确概率；旧巡检不补任务、不重新推理。仅 pending_review 可发生新的 confirm/correct/dismiss：confirm 选本记录 detection_id，correct 另提供中央 damage_label，dismiss 不选检测。确认不把原置信度改成 1.0，纠正不覆盖原始模型标签，审核决定单独保留。actor_source=user_declared_unverified，不是认证工程人员签名。
 
 来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[src-images-code](../roadguard/images.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。
 

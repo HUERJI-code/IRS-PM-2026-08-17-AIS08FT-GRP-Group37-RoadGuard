@@ -27,7 +27,7 @@ def create_task(client, key):
                            data={"metadata": json.dumps({"mode": "demo", "scenario_id": "high_confidence",
                                  "latitude": 1.34, "longitude": 103.72, "road_type": "public_motor_road"})})
     assert response.status_code == 201, response.text
-    return response.json()["task"]
+    return client.get(f'/api/v1/tasks/{response.json()["task_id"]}').json()
 
 
 def test_empty_snapshot_is_read_only_and_static_route_wins(client):

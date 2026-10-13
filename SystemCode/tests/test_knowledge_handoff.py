@@ -43,7 +43,7 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v3"
+    assert MANIFEST["package_version"] == "a-knowledge-v5"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
     assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"
@@ -58,7 +58,7 @@ def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["versions"]["depot_version"] == project["scenario"]["depot"]["depot_version"]
     assert MANIFEST["versions"]["label_schema_version"] == source_json("src-label-schema")["schema_version"]
     assert MANIFEST["versions"]["rule_version"] == source_json("src-demo-rules")["rule_version"]
-    assert MANIFEST["versions"]["workflow_contract_version"] == "a-workflow-v3"
+    assert MANIFEST["versions"]["workflow_contract_version"] == "a-workflow-v5"
 
 
 @pytest.mark.parametrize("source", MANIFEST["sources"], ids=lambda item: item["source_id"])
@@ -87,7 +87,8 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
     content = path.read_text(encoding="utf-8")
     assert digest(path) == document["sha256"]
     assert document["owner"] == "A"
-    assert document["document_version"] == ("3" if document["document_id"] == "rg-kb-workflow" else "2" if document["document_id"] in {"rg-kb-labels", "rg-kb-pending"} else "1")
+    versions = {"rg-kb-workflow": "5", "rg-kb-pending": "3", "rg-kb-labels": "2"}
+    assert document["document_version"] == versions.get(document["document_id"], "1")
     assert document["review_basis"] == "repository_consistency_review"
     assert f'document_id：`{document["document_id"]}`' in content
     assert f'document_version：`{document["document_version"]}`' in content

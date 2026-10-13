@@ -46,15 +46,17 @@ def test_upload_review_correction_task_completion_and_replay(client, png):
     response = upload(client, png)
     assert response.status_code == 201, response.text
     created = response.json()
-    inspection = created["inspection"]
-    identifier = inspection["inspection_id"]
-    assert inspection["status"] == "pending_review" and created["task"] is None
+    assert set(created) == {"inspection_id", "status", "detection", "task_id"}
+    identifier = created["inspection_id"]
+    inspection = client.get(f"/api/v1/inspections/{identifier}").json()
+    assert inspection["status"] == created["status"] == "pending_review" and created["task_id"] is None
     assert inspection["is_demo"] is True and inspection["road_type_source"] == "user_declared"
     assert (inspection["image_width"], inspection["image_height"]) == (80, 40)
     original = inspection["detections"][0]
     assert original["confidence"] == 0.42 and original["image_width"] == 80
     assert original["bbox_xyxy"][2] <= 80 and original["bbox_xyxy"][3] <= 40
-    assert created["input_revision"] == 0 and not created["planning_input_changed"]
+    assert created["detection"] == {key: original[key] for key in created["detection"]}
+    assert client.get("/api/v1/tasks/snapshot").json()["input_revision"] == 0
     image = client.get(inspection["image_url"])
     assert image.status_code == 200 and image.headers["content-type"] == "image/png"
     assert image.headers["x-content-type-options"] == "nosniff"
@@ -90,8 +92,9 @@ def test_upload_review_correction_task_completion_and_replay(client, png):
     assert client.patch(f"/api/v1/tasks/{task_id}", json=patch).json()["replayed"]
     assert client.get("/api/v1/health").json()["input_revision"] == 2
     replayed_upload = upload(client, png)
-    assert replayed_upload.status_code == 200 and replayed_upload.json()["replayed"]
-    assert replayed_upload.json()["inspection"]["status"] == "accepted"
+    assert replayed_upload.status_code == 200
+    assert replayed_upload.json()["status"] == "accepted"
+    assert replayed_upload.json()["task_id"] == task_id
 
 
 @pytest.mark.parametrize("scenario,status,has_task", [
@@ -104,15 +107,17 @@ def test_all_scenarios_persist_with_correct_task_gate(client, png, scenario, sta
     response = upload(client, png, scenario)
     assert response.status_code == 201, response.text
     result = response.json()
-    assert result["inspection"]["status"] == status
-    assert (result["task"] is not None) is has_task
-    assert result["input_revision"] == int(has_task)
+    assert set(result) == {"inspection_id", "status", "detection", "task_id"}
+    assert result["status"] == status
+    assert (result["task_id"] is not None) is has_task
+    assert (result["detection"] is None) == (status == "no_detection")
+    assert client.get("/api/v1/tasks/snapshot").json()["input_revision"] == int(has_task)
     assert client.get("/api/v1/inspections").json()["total"] == 1
     assert client.get("/api/v1/tasks").json()["total"] == int(has_task)
 
 
 def test_dismiss_keeps_inspection_history_without_task(client, png):
-    inspection = upload(client, png).json()["inspection"]
+    inspection = upload(client, png).json()
     request = {"action": "dismiss", "request_id": "dismiss-1", "expected_version": 1, "note": "False positive."}
     url = f'/api/v1/inspections/{inspection["inspection_id"]}/review'
     response = client.post(url, json=request)
@@ -126,8 +131,7 @@ def test_dismiss_keeps_inspection_history_without_task(client, png):
 def test_reused_upload_key_and_stale_task_versions_do_not_write(client, png):
     created = upload(client, png, "high_confidence").json()
     assert upload(client, png, "low_confidence").status_code == 409
-    task = created["task"]
-    url = f'/api/v1/tasks/{task["task_id"]}'
+    url = f'/api/v1/tasks/{created["task_id"]}'
     patch = {"request_id": "edit-1", "expected_version": 1, "damage_label": "pothole_deep"}
     edited = client.patch(url, json=patch)
     assert edited.status_code == 200, edited.text
@@ -197,7 +201,8 @@ def test_bad_image_unknown_scenario_and_missing_resource_are_safe(client, settin
 
 def test_pagination_state_errors_and_illegal_task_fields(client, png):
     upload(client, png, "no_detection", key="one")
-    task = upload(client, png, "high_confidence", key="two").json()["task"]
+    created = upload(client, png, "high_confidence", key="two").json()
+    task = client.get(f'/api/v1/tasks/{created["task_id"]}').json()
     listing = client.get("/api/v1/inspections?limit=1&offset=1").json()
     assert listing["total"] == 2 and len(listing["items"]) == 1
     for query in ("limit=0", "limit=101", "offset=-1", "status=secret"):
@@ -212,10 +217,13 @@ def test_pagination_state_errors_and_illegal_task_fields(client, png):
 def test_restart_preserves_records_and_images(settings, png):
     with TestClient(create_app(settings)) as client:
         created = upload(client, png, "high_confidence").json()
+        task = client.get(f'/api/v1/tasks/{created["task_id"]}').json()
+        inspection = client.get(f'/api/v1/inspections/{created["inspection_id"]}').json()
     with TestClient(create_app(settings)) as client:
-        assert client.get("/api/v1/tasks").json()["items"][0] == created["task"]
-        assert client.get(created["inspection"]["image_url"]).status_code == 200
-        assert upload(client, png, "high_confidence").json()["replayed"]
+        assert client.get("/api/v1/tasks").json()["items"][0] == task
+        assert client.get(inspection["image_url"]).status_code == 200
+        replay = upload(client, png, "high_confidence")
+        assert replay.status_code == 200 and replay.json() == created
         assert client.get("/api/v1/health").json()["input_revision"] == 1
 
 

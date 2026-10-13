@@ -18,7 +18,10 @@ BACKEND = Path(__file__).resolve().parents[1] / "backend"
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
-from roadguard.schemas import InspectionMutation, TaskMutation, TaskSnapshot
+from roadguard.schemas import (
+    InspectionMutationResponse, InspectionResponse, InspectionUploadResponse,
+    TaskMutation, TaskRecord, TaskSnapshot,
+)
 
 
 def require(condition: bool, message: str) -> None:
@@ -45,30 +48,34 @@ def run_demo(client: httpx.Client) -> dict:
                        files={"image": ("synthetic.png", image.getvalue(), "image/png")},
                        data={"metadata": json.dumps({"mode": "demo", "scenario_id": scenario,
                              "latitude": 1.34, "longitude": 103.72, "road_type": "public_motor_road"})})
-        return InspectionMutation.model_validate(data)
+        return InspectionUploadResponse.model_validate(data)
 
     initial = TaskSnapshot.model_validate(request("initial_snapshot", "GET", "/tasks/snapshot"))
     revision = initial.input_revision
     high = upload("auto_accepted", "high_confidence")
-    require(high.task is not None and high.input_revision == revision + 1, "Auto acceptance did not create a task")
+    require(high.task_id is not None and high.status == "accepted", "Auto acceptance did not create a task")
+    high_task = TaskRecord.model_validate(request("auto_task_detail", "GET", f"/tasks/{high.task_id}"))
+    require(TaskSnapshot.model_validate(request("auto_snapshot", "GET", "/tasks/snapshot")).input_revision == revision + 1,
+            "Auto acceptance did not increment the input revision")
     low = upload("pending_review", "low_confidence")
-    require(low.task is None and low.inspection.status == "pending_review", "Low confidence bypassed review")
-    review_payload = {"request_id": prefix + "-review", "expected_version": low.inspection.record_version,
-                      "action": "correct", "detection_id": low.inspection.detections[0].detection_id,
+    require(low.task_id is None and low.status == "pending_review", "Low confidence bypassed review")
+    low_detail = InspectionResponse.model_validate(request("pending_detail", "GET", f"/inspections/{low.inspection_id}"))
+    review_payload = {"request_id": prefix + "-review", "expected_version": low_detail.record_version,
+                      "action": "correct", "detection_id": low_detail.detections[0].detection_id,
                       "damage_label": "pothole_deep"}
-    review_path = f"/inspections/{low.inspection.inspection_id}/review"
-    corrected = InspectionMutation.model_validate(request("corrected_review", "POST", review_path, json=review_payload))
+    review_path = f"/inspections/{low.inspection_id}/review"
+    corrected = InspectionMutationResponse.model_validate(request("corrected_review", "POST", review_path, json=review_payload))
     require(corrected.task is not None and corrected.task.priority == "P1", "Corrected rule mapping was not applied")
-    require(corrected.inspection.detections == low.inspection.detections, "Original evidence changed during review")
-    replay = InspectionMutation.model_validate(request("replayed_review", "POST", review_path, json=review_payload))
+    require(corrected.inspection.detections == low_detail.detections, "Original evidence changed during review")
+    replay = InspectionMutationResponse.model_validate(request("replayed_review", "POST", review_path, json=review_payload))
     require(replay.replayed and not replay.planning_input_changed and replay.input_revision == revision + 2,
             "Repeated review changed planning input")
 
     empty = upload("no_detection", "no_detection")
-    require(empty.task is None and empty.inspection.status == "no_detection", "No detection created a task")
+    require(empty.task_id is None and empty.status == "no_detection" and empty.detection is None, "No detection created a task")
     rejected = upload("pending_dismissal", "low_confidence")
-    dismissed = InspectionMutation.model_validate(request("dismissed_review", "POST",
-        f"/inspections/{rejected.inspection.inspection_id}/review", json={
+    dismissed = InspectionMutationResponse.model_validate(request("dismissed_review", "POST",
+        f"/inspections/{rejected.inspection_id}/review", json={
             "request_id": prefix + "-dismiss", "expected_version": 1, "action": "dismiss",
             "note": "Synthetic handoff case; caller identity is unverified.",
         }))
@@ -81,7 +88,7 @@ def run_demo(client: httpx.Client) -> dict:
                     params={"expected_revision": revision})
     require(stale["code"] == "stale_input_revision", "Stale input was accepted")
 
-    for name, task, target_status in (("completed_task", high.task, "completed"),
+    for name, task, target_status in (("completed_task", high_task, "completed"),
                                      ("cancelled_task", corrected.task, "cancelled")):
         result = TaskMutation.model_validate(request(name, "PATCH", f"/tasks/{task.task_id}", json={
             "request_id": prefix + "-" + name, "expected_version": task.record_version, "status": target_status,

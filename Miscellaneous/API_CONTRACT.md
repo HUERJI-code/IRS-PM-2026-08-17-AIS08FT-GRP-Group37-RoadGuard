@@ -10,7 +10,7 @@
 
 第 7 步增量为 `a-task-query-v1`，提供 B/C 使用的一致活动任务快照；完整使用方式、固定输入、知识包及 HTTP 示例见 [B/C 交接说明](BC_HANDOFF.md)。没有改变原 Task 或 TaskRecord 的字段，也没有冻结 B 的完整 PlanningInput。
 
-第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。真实非空结果一律先审核，未校准的模型不使用演示阈值自动接受。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
+第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。当前 v4 按用户确认的主框置信度阈值 0.60 自动建一个任务，低于阈值待审核；阈值不代表已校准的模型准确率。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
 
 ## 通用表示
 
@@ -41,7 +41,7 @@ Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须�
 
 ## 路由实现状态与错误
 
-当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v3 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
+当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v5 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
 
 ### a-demo-v1：检测与规则预览
 
@@ -59,30 +59,31 @@ RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无
 
 `GET /api/v1/demo/scenarios` 返回 DemoScenarioCatalogue；`POST /api/v1/demo/assessments` 接收 DemoAssessmentRequest，200 返回 DemoAssessmentResponse。调用示例 `{"scenario_id":"high_confidence"}`。预览调用只执行服务，不存储巡检/任务、不递增 input_revision，重复请求不会产生队列记录。候选中不含期限，不能计算逾期指标；持久化任务通过第 6 步接口创建，由业务服务执行位置验证、审核分流、存储和幂等性检查。
 
-### a-workflow-v3：持久化业务接口（保留原请求）
+### a-workflow-v5：持久化业务接口（保留原请求）
 
 可执行类型位于 [schemas/workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py)，路由位于 [api/workflow.py](../SystemCode/backend/roadguard/api/workflow.py)。字段和操作说明以[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)及 schema 为准。
 
 | 类型 | 相对基础 DTO 的增量 |
 | --- | --- |
-| UploadMetadata | 必填 mode=demo、scenario_id、严格数值坐标、road_type=public_motor_road；multipart metadata 字符串的 JSON 内容 |
-| InspectionRecord | Inspection 加 created_at、updated_at、record_version、mode、demo_scenario_id、model_version、image_width/height、scope_version、road_type、road_type_source、review_history；强制 is_demo=true |
+| UploadMetadata | 必填 mode=real/demo、严格数值坐标、road_type=public_motor_road；demo 必填 scenario_id，real 禁止该字段；multipart metadata 字符串的 JSON 内容 |
+| InspectionResponse（HTTP）/ InspectionRecord（内部） | Inspection 加 created_at、updated_at、record_version、mode、demo_scenario_id、model_version、image_width/height、scope_version、road_type、road_type_source、review_history；强制 is_demo=true |
 | TaskRecord | Task 加 updated_at、record_version、repair_recommendation、history；强制 is_demo=true |
 | ReviewRequest | request_id、expected_version、action；confirm/correct 必须选 detection_id，correct 必须给 damage_label；dismiss 禁止这些字段；可选 note |
 | TaskPatch | request_id、expected_version；至少一个实际修改字段；允许 completed/cancelled、damage_label，或完整 latitude/longitude/road_type；不能直接指定优先级、工时、期限 |
-| InspectionMutation | inspection、nullable task、input_revision、planning_input_changed、replayed |
+| InspectionUploadResponse（POST /inspections） | 仅 inspection_id、status、nullable detection、nullable task_id；detection 只含 label、confidence、bbox_xyxy、image_width、image_height |
+| InspectionMutationResponse（审核） | inspection、nullable task、input_revision、planning_input_changed、replayed |
 | TaskMutation | task、input_revision、planning_input_changed、replayed |
-| InspectionList / TaskList | items、total、limit、offset；TaskList 额外返回同一快照的 input_revision |
+| InspectionListResponse / TaskList | items、total、limit、offset；TaskList 额外返回同一快照的 input_revision |
 
-Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP 调用方须采用相应 Record 类型。原检测标签/置信度保留；人工纠正由 review_history 和 Task.history 表达。review_history 中操作员身份未经认证，不能被当作身份凭据。候选变成任务时才通过事务更新规划版本，单独 `/demo` 调用仍不写库。
+Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP 巡检调用方须采用 InspectionResponse，内部 InspectionRecord 保留所有框；任务调用方使用 TaskRecord。原检测标签/置信度保留；人工纠正由 review_history 和 Task.history 表达。review_history 中操作员身份未经认证，不能被当作身份凭据。候选变成任务时才通过事务更新规划版本，单独 `/demo` 调用仍不写库。
 
-2026-10-13 发布增量 `a-workflow-v3`：InspectionRecord 新增可空 `primary_suggestion`，可执行定义为 [schemas/primary.py](../SystemCode/backend/roadguard/schemas/primary.py)。字段为 policy_version、strategy、threshold、nullable detection_id、nullable ranking_score、ambiguous 和 competing_detection_ids；它只提供展示/审核建议，原始 detections 全部保留，不能代替 selected_detection_id 或自动建任务。历史记录缺字段时读取为 null，严格 v2 客户端须接受新字段。默认模型配置、安装、完整响应样例与调用方影响见[发布接入指南](MODEL_RELEASE_AND_BACKEND.md)。SQLite v2 和 a-task-query-v1 不变。
+2026-10-13 发布增量 `a-workflow-v3`：InspectionRecord 新增可空 `primary_suggestion`，可执行定义为 [schemas/primary.py](../SystemCode/backend/roadguard/schemas/primary.py)。字段为 policy_version、strategy、threshold、nullable detection_id、nullable ranking_score、ambiguous 和 competing_detection_ids；v3 最初仅供展示/审核；v4 按选定主框的原始置信度分流。数据库保留原始 detections，但 HTTP 最多返回一框。历史记录缺字段时读取为 null，严格 v2 客户端须接受新字段。默认模型配置、安装、完整响应样例与调用方影响见[发布接入指南](MODEL_RELEASE_AND_BACKEND.md)。SQLite v2 和 a-task-query-v1 不变。v4 新增 nullable auto_acceptance（policy_version、confidence_threshold），TaskHistory.actor_source 新增 system_confidence_policy。原记录不会重新分流。v5 进一步将上传响应缩减为四个字段，详细记录通过 GET /inspections/{id} 查询；审核和任务端点的响应保持原格式。上传重放以 HTTP 200 标识，新建为 201。完整字段和实际响应示例见[逐字段说明](INSPECTION_RESPONSE_FIELDS.md)。
 
 ### a-task-query-v1：同版本活动任务快照
 
 `GET /api/v1/tasks/snapshot` 返回 `TaskSnapshot`；可选查询参数 expected_revision 为非负整数，不匹配返回 409 stale_input_revision。此固定路径先于 `/tasks/{task_id}` 注册，不会被解释为任务 ID。
 
-可执行定义为 [schemas/task_query.py](../SystemCode/backend/roadguard/schemas/task_query.py)，公共导入为 `from roadguard.schemas import TaskSnapshot`。字段：contract_version 固定 a-task-query-v1；source 为 persisted_workflow 或 synthetic_fixture；input_revision 非负整数；tasks 为原 Task 精确字段列表；total 等于列表长度；is_demo 必须 true。任务均为 active 且 is_demo=true，task_id/inspection_id 不重复。当前不接受真实模型任务，不暗示生产规则已经确认。
+可执行定义为 [schemas/task_query.py](../SystemCode/backend/roadguard/schemas/task_query.py)，公共导入为 `from roadguard.schemas import TaskSnapshot`。字段：contract_version 固定 a-task-query-v1；source 为 persisted_workflow 或 synthetic_fixture；input_revision 非负整数；tasks 为原 Task 精确字段列表；total 等于列表长度；is_demo 必须 true。任务均为 active 且 is_demo=true，task_id/inspection_id 不重复。可包含真实检测经自动接受或审核产生的演示业务任务，不暗示生产规则已经确认。
 
 在线服务使用 persisted_workflow，读取全部任务、校验存储一致性后返回 active 投影；排序为 created_at、task_id，不截断或分页。损坏的持久化任务导致整次查询 503，不静默返回部分数据。空列表仍为有效 200。查询不改变数据库或 input_revision，未知 service_minutes/due_at 保持 null。
 

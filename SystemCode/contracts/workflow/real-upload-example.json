@@ -1,0 +1,17 @@
+{
+  "inspection_id": "64301168dffd408383b4b140846cbfd6",
+  "status": "accepted",
+  "detection": {
+    "label": "alligator_crack",
+    "confidence": 0.6036037802696228,
+    "bbox_xyxy": [
+      678.1834716796875,
+      365.3304138183594,
+      2748.0,
+      2018.901611328125
+    ],
+    "image_width": 2748,
+    "image_height": 2061
+  },
+  "task_id": "7f773124cd1d4983a209cc69def98b27"
+}

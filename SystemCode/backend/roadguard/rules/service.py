@@ -45,6 +45,10 @@ class RuleService:
         The workflow service must record/validate the review decision before calling.
         This is not a second automatic confidence gate or a task persistence method.
         """
+        return self.candidate_for(detection, damage_label)
+
+    def candidate_for(self, detection: Detection, damage_label: str | None = None) -> RuleCandidate:
+        """Map a workflow-approved detection, after its automatic gate or review."""
         try:
             snapshot = Detection.model_validate(detection.model_dump(warnings=False))
             label = snapshot.label if damage_label is None else damage_label

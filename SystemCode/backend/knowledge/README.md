@@ -1,6 +1,6 @@
 # A → C 知识资料包
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v3`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v5`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
 
 先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
 

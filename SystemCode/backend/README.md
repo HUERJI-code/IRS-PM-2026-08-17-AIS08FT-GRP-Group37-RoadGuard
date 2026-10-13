@@ -2,7 +2,9 @@
 
 See [released model installation and primary suggestions](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) for the current default detector and client migration.
 
-A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real detections require review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v3, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+
+上传成功体仅返回 `inspection_id`、`status`、`detection`、`task_id`；详情从 `GET /api/v1/inspections/{id}` 读取。数据库位置、PyCharm 查看方式与只读 SQL 见[数据库查看指南](../../Miscellaneous/DATABASE_VIEWING.md)。
 
 ## 环境与启动
 
@@ -39,7 +41,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 ## 配置入口
 
-The original demo upload/review/task behavior is documented in the [workflow guide](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). Uploads explicitly select demo mode with a named scenario, or real mode without a scenario. Real mode requires the optional locally configured detector; all nonempty real results wait for review. Accepted tasks remain persisted demo business objects. Road type is user-declared. The [Step 8 guide](../../Miscellaneous/REAL_VISION_API.md) describes this extension.
+The original demo upload/review/task behavior is documented in the [workflow guide](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). Uploads explicitly select demo mode with a named scenario, or real mode without a scenario. Real mode requires the optional locally configured detector; the selected primary result creates one task at the configured confidence threshold (default 0.60), otherwise waits for review. All inspection HTTP responses contain at most one box, with raw evidence retained internally. See [every response field](../../Miscellaneous/INSPECTION_RESPONSE_FIELDS.md). Accepted tasks remain persisted demo business objects. Road type is user-declared. The [Step 8 guide](../../Miscellaneous/REAL_VISION_API.md) describes this extension.
 
 默认读取 `SystemCode/config/project.example.json` 与演示策略 `SystemCode/config/demo_rules.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持以下环境变量：
 

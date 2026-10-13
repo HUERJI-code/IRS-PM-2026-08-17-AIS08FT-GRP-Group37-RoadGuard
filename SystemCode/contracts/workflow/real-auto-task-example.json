@@ -1,0 +1,128 @@
+{
+  "inspection": {
+    "inspection_id": "e2db2f92bd9140d4a6399e307278fcde",
+    "image_url": "/api/v1/inspections/e2db2f92bd9140d4a6399e307278fcde/image",
+    "annotated_image_url": null,
+    "latitude": 1.3405,
+    "longitude": 103.706,
+    "detections": [
+      {
+        "detection_id": "real-d68c4d4a8d2142c5ad3fb35a36494a1e-0",
+        "class_id": 4,
+        "label": "alligator_crack",
+        "confidence": 0.6036037802696228,
+        "bbox_xyxy": [
+          678.1834716796875,
+          365.3304138183594,
+          2748.0,
+          2018.901611328125
+        ],
+        "image_width": 2748,
+        "image_height": 2061,
+        "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+        "is_demo": false
+      }
+    ],
+    "selected_detection_id": "real-d68c4d4a8d2142c5ad3fb35a36494a1e-0",
+    "status": "accepted",
+    "task_id": "832672fdd10d440e8d7a1167b8a199ba",
+    "decision_trace": [
+      {
+        "code": "demo_business_assumptions",
+        "message": "Detection uses real image pixels. Inspection and task remain demo business objects: severity, priority, service time and road eligibility are unvalidated assumptions.",
+        "rule_version": "demo-rules-v1",
+        "is_demo": true
+      },
+      {
+        "code": "real_primary_auto_accepted",
+        "message": "Only the primary detection's raw confidence is compared with the user-selected threshold 0.6. The threshold is met; create one task. Ranking and ambiguity do not change this confidence gate. This threshold is not a calibrated accuracy guarantee.",
+        "rule_version": "demo-rules-v1",
+        "is_demo": true
+      },
+      {
+        "code": "real_primary_task_created",
+        "message": "The eligible candidate was accepted and a single demo business task was created after declared-road and Jurong boundary validation. No route plan was calculated.",
+        "rule_version": "demo-rules-v1",
+        "is_demo": true
+      }
+    ],
+    "is_demo": true,
+    "created_at": "2026-10-13T12:37:53.634299Z",
+    "updated_at": "2026-10-13T12:37:53.634299Z",
+    "record_version": 1,
+    "mode": "real",
+    "demo_scenario_id": null,
+    "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+    "model_weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+    "model_manifest_version": "roadguard-model-v1",
+    "primary_suggestion": {
+      "policy_version": "single-damage-v1",
+      "strategy": "area_quarter",
+      "threshold": 0.2,
+      "detection_id": "real-d68c4d4a8d2142c5ad3fb35a36494a1e-0",
+      "ranking_score": 0.5321903046565215,
+      "ambiguous": false,
+      "competing_detection_ids": []
+    },
+    "auto_acceptance": {
+      "policy_version": "single-primary-auto-v1",
+      "confidence_threshold": 0.6
+    },
+    "image_width": 2748,
+    "image_height": 2061,
+    "scope_version": "jurong-je-jw-mp2025-v1",
+    "road_type": "public_motor_road",
+    "road_type_source": "user_declared",
+    "review_history": []
+  },
+  "task": {
+    "task_id": "832672fdd10d440e8d7a1167b8a199ba",
+    "inspection_id": "e2db2f92bd9140d4a6399e307278fcde",
+    "latitude": 1.3405,
+    "longitude": 103.706,
+    "damage_label": "alligator_crack",
+    "severity": "medium",
+    "priority": "P2",
+    "service_minutes": 45.0,
+    "created_at": "2026-10-13T12:37:53.634299Z",
+    "due_at": null,
+    "status": "active",
+    "rule_version": "demo-rules-v1",
+    "is_demo": true,
+    "updated_at": "2026-10-13T12:37:53.634299Z",
+    "record_version": 1,
+    "repair_recommendation": "Demo suggestion: inspect and assess a surface repair method.",
+    "history": [
+      {
+        "request_id": "02-worn-pavement-jpg",
+        "action": "created",
+        "recorded_at": "2026-10-13T12:37:53.634299Z",
+        "changed_fields": [
+          "status",
+          "latitude",
+          "longitude",
+          "damage_label",
+          "severity",
+          "priority",
+          "service_minutes",
+          "rule_version"
+        ],
+        "before": null,
+        "after": {
+          "status": "active",
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "damage_label": "alligator_crack",
+          "severity": "medium",
+          "priority": "P2",
+          "service_minutes": 45.0,
+          "rule_version": "demo-rules-v1"
+        },
+        "actor_source": "system_confidence_policy"
+      }
+    ]
+  },
+  "input_revision": 1,
+  "planning_input_changed": true,
+  "replayed": false
+}

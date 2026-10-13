@@ -2,6 +2,8 @@
 
 日期：2026-10-12；负责人：A。此交付提供活动任务的一致查询、固定任务输入、可引用的项目知识及实际 HTTP 调用示例。巡检/任务仍使用明确的演示检测和规则；不代表 B 的规划、C 的页面/检索/助手或完整系统已经实现。
 
+a-workflow-v5 调用方变更：上传只返回 inspection_id、status、detection、task_id。C 展示 detection，并在审核前 GET /inspections/{id} 获取检测 ID 和记录版本；自动任务详情从 GET /tasks/{task_id} 查询，规划输入版本从 /tasks/snapshot 读取。联调脚本已采用此调用方式。
+
 ## 1. 交付入口和边界
 
 | 使用者 | 交付物 | 入口 |
@@ -43,7 +45,7 @@ GET /api/v1/tasks/snapshot?expected_revision=12
 | input_revision | 与任务在同一数据库读取事务中取得；不是任务数量，也不是某条记录版本 |
 | expected_revision | 可选非负整数；不一致返回 409 stale_input_revision，不返回混合数据 |
 | source | 在线查询是 persisted_workflow；固定 JSON 是 synthetic_fixture，不能冒充在线版本 |
-| is_demo | 当前契约仅包含明确的演示任务；接真实模型后须另行协调契约 |
+| is_demo | 当前契约仅包含明确的演示任务；可由真实检测自动接受/审核产生，业务规则仍是演示 |
 | 空队列 | 200、tasks=[]、total=0，仍带有效版本；数据库故障返回 503，不能伪装为空队列 |
 
 查询无写入，不创建任务或增加版本。完成/取消任务从快照消失，但仍可通过任务详情/列表查询历史。无检测、待审核和驳回巡检从未形成活动任务。service_minutes=null 是未知时长，不得当作零；due_at=null 是无已知期限，不得编造延误。任务标签/优先级/时长取保存的 Task，不由 B 从标签重新推算。
@@ -137,4 +139,4 @@ python -m pytest SystemCode/tests -q
 
 测试覆盖完整查询（含超过 100 条）、原 Task 字段投影、未知值保留、终态过滤、输入版本冲突、并发一致性、外部连接生命周期、损坏数据失败、固定输入可复现、知识来源一致性，以及 HTTP 对接示例。没有执行真实模型训练、Google 行程获取、规划、GPT 调用或前端演示。
 
-第 8 步当前实现与实际数据/模型验收见[视觉验收记录](STEP8_VISION_ACCEPTANCE.md)。C 须更新 a-workflow-v3 巡检 schema（可空 primary_suggestion；不能当作审核通过）和 a-knowledge-v3 知识索引，安装说明见[模型发布](MODEL_RELEASE_AND_BACKEND.md)；真实检测与演示业务标志须分别展示。B 可使用任务快照/固定输入开发调度；C 可使用现有 HTTP、知识包与引用验收案例开发界面和助手。组员接入后的跨模块联调仍是第 9 步。
+第 8 步当前实现与实际数据/模型验收见[视觉验收记录](STEP8_VISION_ACCEPTANCE.md)。C 须更新 a-workflow-v5 巡检 schema（detections 最多一框；新增可空 auto_acceptance；主框 ≥ 0.60 自动建任务）和 a-knowledge-v5 知识索引，安装说明见[模型发布](MODEL_RELEASE_AND_BACKEND.md)；真实检测与演示业务标志须分别展示。B 可使用任务快照/固定输入开发调度；C 可使用现有 HTTP、知识包与引用验收案例开发界面和助手。组员接入后的跨模块联调仍是第 9 步。
