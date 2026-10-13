@@ -74,7 +74,7 @@ def test_model_injected_training_reports_failure_and_never_silently_restarts(con
         def __init__(self, path):
             assert Path(path).is_file()
         def add_callback(self, event, callback):
-            assert event == "on_model_save"
+            assert event in {"on_model_save", "on_train_epoch_start", "on_train_end"}
         def train(self, **arguments):
             assert arguments["cache"] is False and arguments["save_period"] == -1
             raise train.TrainingInterrupted("fake interruption")
@@ -85,6 +85,40 @@ def test_model_injected_training_reports_failure_and_never_silently_restarts(con
     assert json.loads((run_dir / "run_status.json").read_text())["status"] == "interrupted"
     with pytest.raises(ValueError, match="Run already exists"):
         train.run_training(value, model_factory=FakeModel, runtime=runtime)
+
+
+def test_training_fairness_records_actual_nominal_batch_and_warmup_state(tmp_path):
+    config = {"train": {"batch": 32, "epochs": 30, "seed": 42, "amp": False}}
+    trainer = SimpleNamespace(batch_size=32, args=SimpleNamespace(**config["train"], nbs=64),
+                              accumulate=1, epoch=0)
+    train.training_fairness_callback(config, tmp_path)(trainer)
+    evidence = json.loads((tmp_path / "effective_training.json").read_text())
+    assert evidence["actual_batch"] == evidence["configured_batch"] == evidence["argument_batch"] == 32
+    assert evidence["nominal_accumulate"] == 2 and evidence["effective_nominal_batch"] == 64
+    assert evidence["current_accumulate"] == 1 and evidence["epoch_1based"] == 1
+    assert evidence["config_sha256"] == checkpointing.fingerprint(config)
+    assert evidence["train_args_subset"] == config["train"]
+    trainer.epoch, trainer.accumulate = 29, 2
+    train.training_fairness_callback(config, tmp_path, event="train_end")(trainer)
+    evidence = json.loads((tmp_path / "effective_training.json").read_text())
+    assert evidence["epoch_1based"] == 30 and evidence["event"] == "train_end"
+
+
+@pytest.mark.parametrize("changed_field", ["batch_size", "argument_batch", "both"])
+def test_training_fairness_rejects_oom_batch_reduction_without_replacing_evidence(tmp_path, changed_field):
+    config = {"train": {"batch": 32, "epochs": 30}}
+    trainer = SimpleNamespace(batch_size=32, args=SimpleNamespace(**config["train"], nbs=64),
+                              accumulate=2, epoch=0)
+    callback = train.training_fairness_callback(config, tmp_path)
+    callback(trainer)
+    evidence = (tmp_path / "effective_training.json").read_bytes()
+    if changed_field in {"batch_size", "both"}:
+        trainer.batch_size = 16
+    if changed_field in {"argument_batch", "both"}:
+        trainer.args.batch = 16
+    with pytest.raises(ValueError, match="Automatic OOM batch reduction"):
+        callback(trainer)
+    assert (tmp_path / "effective_training.json").read_bytes() == evidence
 
 
 def fake_metrics():

@@ -28,9 +28,13 @@
 
 每个已完成 epoch 的 `on_model_save` 保存完整恢复状态，通过同目录临时文件、flush/fsync 和原子 replace 发布 `weights/resume-latest.pt`，上一份保留为 `resume-previous.pt`。Windows 保证文件替换发布边界；突然断电的最终持久性仍取决于文件系统与硬件。中途退出会丢失当前未完成 epoch，从最近完成的 epoch 恢复。最新损坏时必须显式指定 previous，禁止悄悄重新训练。
 
+训练入口每个 epoch 开始（含 OOM 重试）核对实际 batch 与冻结配置一致；Ultralytics 自动减小 batch 后会明确失败，保留证据，不能继续声称相同 batch 比较。`effective_training.json` 原子记录实际 batch、库的 `nbs`、名义梯度累积和配置参数，训练结束再次更新。默认 `nbs=64` 时 batch 32 的 warmup 后名义累积为 2、有效名义 batch 为 64；warmup 期间累积可较小。
+
 恢复检查配置、数据 YAML、manifest、预训练权重 SHA256 和 Python/主要包版本。完整状态包含 epoch、原精度 optimizer、AMP scaler、scheduler、实时模型、EMA、early-stop 状态、Python/NumPy/torch/CUDA RNG 和 dataloader generator。Ultralytics 自身恢复先运行；`on_pretrain_routine_end` 再恢复实时状态。`resume_verified.json` 记录下一 epoch 与 optimizer state 数量。多 worker 的预取与 GPU 运算意味着不保证中断运行与连续运行逐位相同。
 
 Ultralytics 完成训练时会移除 `last.pt`／`best.pt` 的优化器；这两份用于推理和选优，独立 recovery 权重不会被移除状态。已完成配置的最后 epoch 不允许用 resume 重新开始；应直接评估。默认不产生每 epoch 的历史副本，只保留 last、best、latest、previous 和相关证据。
+
+若最后 epoch 已保存，但库的最终验证／绘图阶段中断导致 `run_status.json` 仍为 interrupted/failed，现有入口不会仅凭最后检查点将其宣称完成。此时显式使用 `resume-previous.pt` 重放最后 epoch 并让完整训练流程结束，然后评估；不得手改状态绕过完成检查。
 
 ```powershell
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config SystemCode/model/training.example.json --split val

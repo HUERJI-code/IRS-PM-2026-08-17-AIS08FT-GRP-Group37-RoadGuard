@@ -211,6 +211,42 @@ def restore_callback(checkpoint: dict):
     return restore
 
 
+def training_fairness_callback(config: dict, run_dir: Path, *, event: str = "epoch_start"):
+    """Reject Ultralytics' automatic OOM batch changes before another epoch runs."""
+    configured_batch = config["train"]["batch"]
+
+    def check(trainer):
+        actual_batch = trainer.batch_size
+        argument_batch = trainer.args.batch
+        if actual_batch != configured_batch or argument_batch != configured_batch:
+            raise ValueError(
+                f"Training batch changed from configured {configured_batch}: "
+                f"trainer.batch_size={actual_batch}, trainer.args.batch={argument_batch}. "
+                "Automatic OOM batch reduction invalidates this comparison; keep the failed run's evidence "
+                "and use a new explicitly configured run rather than continuing it."
+            )
+        nbs = trainer.args.nbs
+        nominal_accumulate = max(round(nbs / actual_batch), 1)
+        write_json(run_dir / "effective_training.json", {
+            "schema_version": "roadguard-effective-training-v1",
+            "config_sha256": fingerprint(config),
+            "configured_batch": configured_batch,
+            "actual_batch": actual_batch,
+            "argument_batch": argument_batch,
+            "nbs": nbs,
+            "nominal_accumulate": nominal_accumulate,
+            "effective_nominal_batch": actual_batch * nominal_accumulate,
+            "current_accumulate": trainer.accumulate,
+            "epoch_1based": trainer.epoch + 1,
+            "epochs": trainer.args.epochs,
+            "event": event,
+            "train_args_subset": {key: getattr(trainer.args, key) for key in config["train"]},
+            "batch_matches_configuration": True,
+            "accumulation_note": "Nominal accumulation applies after warmup; warmup may use smaller accumulation.",
+        })
+    return check
+
+
 def run_training(config: dict, resume: Path | None = None, stop_after_epoch: int | None = None, *, model_factory=None, runtime=None) -> Path:
     runtime = runtime if runtime is not None else runtime_metadata()
     identity = {"config_sha256": fingerprint(config), "manifest_sha256": sha256_file(local_path(config["manifest"])),
@@ -245,6 +281,8 @@ def run_training(config: dict, resume: Path | None = None, stop_after_epoch: int
         model_factory = YOLO
     model = model_factory(str(resume or local_path(config["model"])))
     model.add_callback("on_model_save", recovery_callback(identity, RecoveryStore(run_dir / "weights"), stop_after_epoch))
+    model.add_callback("on_train_epoch_start", training_fairness_callback(config, run_dir))
+    model.add_callback("on_train_end", training_fairness_callback(config, run_dir, event="train_end"))
     if checkpoint is not None:
         model.add_callback("on_pretrain_routine_end", restore_callback(checkpoint))
     args = {**config["train"], "data": str(local_path(config["data"])), "project": str(run_dir.parent),
