@@ -6,6 +6,8 @@ Step 1 geography is documented as of 2026-10-12: [Jurong East/West boundary and 
 
 A's preparation step 2, [dataset and label verification](DATASET_AND_LABEL_AUDIT.md), records the source version, eight class IDs, full archive-directory counts and targeted sample checks. Step 8 now provides full content validation, class-frequency statistics and grouped split manifests; actual bounded training and recovery evidence is tracked in [Step 8 acceptance](STEP8_VISION_ACCEPTANCE.md).
 
+The authorized [30-epoch n/s follow-up](VISION_30_EPOCH_COMPARISON.md) is complete: validation error analysis, both independent training runs, CPU comparison and selected-model HTTP acceptance. YOLO11s wins the preregistered validation ranking; business accuracy and confidence calibration remain pending.
+
 ## A's agreed work sequence
 
 This sequence is the project owner's personal task list. Its step numbers differ from the whole-project milestones below.

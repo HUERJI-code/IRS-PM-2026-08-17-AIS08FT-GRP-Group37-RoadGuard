@@ -50,7 +50,7 @@
     "image_set_sha256": "64位小写十六进制的固定输入列表指纹",
     "backend_source_sha256": "64位小写十六进制的后端来源指纹",
     "imgsz": 640, "conf": 0.25, "iou": 0.7,
-    "cpu_threads": 4, "warmup": 2, "repeats": 5
+    "cpu_threads": 4, "warmup": 2, "repeats": 3
   },
   "candidates": {
     "n": {"weights_sha256": "n的best.pt SHA256", "median_ms": 80.0},
@@ -61,10 +61,25 @@
 
 以上 80 / 100 仅说明结构，不是测量结果。最少一次 warmup、三次正式重复；两个候选共享整个 protocol。精确指标平局但没有完整延迟证据、或延迟也相等时，工具拒绝任意指定胜者。
 
+实际 CPU 延迟验收入口为 `benchmark_cpu.py`，须在两个候选训练与 val 评估均成功后执行。它先复用比较工具检查冻结计划和完整运行证据，未完成时在导入 torch／创建输出前失败。仓库根目录命令如下；`--repo .` 也可替换成仓库绝对路径，`--run-name` 须为未使用名称：
+
+```powershell
+.venv/Scripts/python.exe SystemCode/model/benchmark_cpu.py --repo . --run-name acceptance-v1
+# 需要延迟决胜时，将实际证据交给比较入口；已有 summary 不覆盖。
+.venv/Scripts/python.exe SystemCode/model/compare_models.py compare --cpu-latency Dataset/compare30/cpu-latency/acceptance-v1/latency.json --output Dataset/compare30/summary-with-latency.json
+```
+
+协议固定从冻结 val originals 中选 Czech、India、Japan、United_States 各 10 张，共 40 张；各国内按 `SHA256("42:" + sample_id)` 排序后取前 10 张，再按上述国家顺序交错排列。两模型共用输入顺序，每次重新读取并核对图片 SHA256，拒绝镜像／排除项，不打开 train 或 test 图片。CPU intra-op 线程为 4、inter-op 为 1；每个模型用固定输入前两张作两次 warmup，再做三轮完整测量，每模型记录 120 次单图时间。轮次模型顺序为 n/s、s/n、n/s；实际 CPU、float32、推理参数和线程数均核对。库 CPU 设备选择会重置线程，入口仅在本进程将库的线程常量设为 4，不更改安装源码。
+
+计时从 `ImageStore.prepare(bytes)` 前到 `LocalVisionDetector.detect(prepared)` 返回 DTO 列表，包含图片校验／解码、EXIF/RGB/PNG 规范化、准备图解码、YOLO 前处理、CPU 推理、NMS／后处理和 Detection DTO 构建校验；排除文件读取、模型／清单加载、warmup、运行时断言、结果序列化、图片存储和 HTTP／数据库／规则／审核／任务流程。权重及 predictor 保持预热，但不缓存准备图片或复用预测结果。中位数和 nearest-rank p95 来自每模型 120 个正式测量；此固定小样本不代表生产流量或统计显著差异，OS 缓存、调度及温度仍可能影响时间。
+
+输出只写 `Dataset/compare30/cpu-latency/{run-name}/`，拒绝已有目录或路径逃逸，保留状态、完整 `latency.json` 和本次本地工具缓存。JSON 是上面契约的扩展，包含 40 张输入与哈希、逐图逐轮时间／检测数量、median／p95、计时与总 wall time、模型／运行环境、后端来源及入口来源 SHA256；`helper_source_sha256` 使用实际执行时的 tracked `benchmark_cpu.py`。命令和协议不代表测量已执行；实际数值只能从保存证据填写。
+
 这是单 seed 的受限比较，不能估计训练方差或宣称统计显著优势。RDD2022ES 不是 Jurong 实拍，宽 / 深 / 下沉是视觉标签而非测量的工程尺寸；验证数值有效不等于业务准确率已达标，不校准自动接受阈值。选择完成后如另行授权最终 held-out test，应只评估已选模型一次，并将结果作为选型后的独立证据保留。
 
 轻量验证命令（不安装 torch / Ultralytics，不使用 GPU）：
 
 ```powershell
 .venv/Scripts/python.exe -m pytest SystemCode/tests/test_vision_comparison.py -q
+.venv/Scripts/python.exe -m pytest SystemCode/tests/test_cpu_benchmark.py -q
 ```

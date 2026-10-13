@@ -1,0 +1,1260 @@
+{
+  "schema_version": "roadguard-compare30-supervisor-acceptance-v1",
+  "date": "2026-10-13",
+  "implementation_owner": "A; GPT-6.1-sol subagents developed tooling; root agent reviewed and executed acceptance",
+  "comparison": {
+    "schema_version": "roadguard-compare30-summary-v1",
+    "plan_sha256": "21fb06f5b8158aff73a7c5cbbe61965d6a83b181074b07399e1e5298d4513cb3",
+    "policy": {
+      "selection_split": "val",
+      "ranking": [
+        "map50_95_desc",
+        "map50_desc",
+        "matched_cpu_backend_median_ms_asc_on_exact_tie"
+      ],
+      "test_used_for_selection": false,
+      "seed": 42,
+      "epochs": 30,
+      "initialization": "independent_official_COCO_pretrained_not_baseline10_resume",
+      "limitation": "One seed; no estimate of training variance or statistical superiority."
+    },
+    "source_class_names": [
+      "longitudinal crack",
+      "longitudinal crack wide",
+      "transverse crack",
+      "transverse crack wide",
+      "alligator crack",
+      "alligator crack sunken",
+      "pothole",
+      "pothole deep"
+    ],
+    "frozen_input_sha256": {
+      "data": "8212940a9fedfac57a885726314c5176c9c90813fb8b94f6e355d1029fa6791d",
+      "manifest": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341",
+      "audit.json": "25fe0b4944e3341ad18b129f224ad456274fe06b30012e6cd7f23e7a85eca6ac",
+      "split_summary.json": "75cb83e70d3b7ec61cba6f714f0e778b4c89c7a483e9e389ba325ea5659237bb"
+    },
+    "matched_train": {
+      "epochs": 30,
+      "imgsz": 640,
+      "batch": 32,
+      "seed": 42,
+      "patience": 30,
+      "workers": 4,
+      "device": "0",
+      "cache": false,
+      "fliplr": 0.0,
+      "deterministic": true,
+      "amp": false,
+      "optimizer": "AdamW",
+      "lr0": 0.001,
+      "lrf": 0.01,
+      "warmup_epochs": 1.0,
+      "close_mosaic": 2
+    },
+    "candidates": {
+      "n": {
+        "run_name": "yolo11n-rdd2022es-compare30-seed42",
+        "model_version": "yolo11n-rdd2022es-v1-compare30-seed42-experimental",
+        "completed_epochs": 30,
+        "config_sha256": "b9138b1dd9d93fcfe89c91f3c36120b1d5311a437f945a80a9efe661e09588c5",
+        "pretrained": {
+          "source_url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+          "architecture": "YOLO11n",
+          "pretraining": "COCO",
+          "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+          "size_bytes": 5613764
+        },
+        "checkpoints_sha256": {
+          "best.pt": "438e2819ee52ba98f6eabc3e735974647703c1e9ca50c61053ba0f1bff749117",
+          "last.pt": "ab89dc3c11c2f777c617c1869d401bbffe34681782eb6f84c3631d84505bc8ca",
+          "resume-latest.pt": "c9983ee57bce9ddc0863bc03800aa24a9a71ee8eae004c036de90234d7136b97",
+          "resume-previous.pt": "104cebb0cd326badb59fe82f5ba5f1ddc8e8aa0e8de572dbaac856664debd1b0"
+        },
+        "validation": {
+          "map50_95": 0.1915930745676082,
+          "map50": 0.37273071074121333,
+          "precision": 0.3825814462084328,
+          "recall": 0.40739194322849337,
+          "f1_macro_present_classes": 0.39188598392103885
+        },
+        "validation_images": 1921,
+        "validation_class_instances": [
+          941,
+          148,
+          541,
+          46,
+          526,
+          77,
+          299,
+          45
+        ],
+        "model_manifest_path": "Dataset/runs/yolo11n-rdd2022es-compare30-seed42/model_manifest.json",
+        "actual_training_args_sha256": "f2847eec7cbe8450b1618f606b0c2bfa5ddd2ab12d7dba99670355499d85f7d2",
+        "effective_nominal_batch": 64,
+        "runtime": {
+          "python": "3.12.14",
+          "packages": {
+            "torch": "2.10.0+cu128",
+            "torchvision": "0.25.0+cu128",
+            "ultralytics": "8.4.176",
+            "numpy": "2.5.2"
+          },
+          "source_file_sha256": {
+            "train.py": "b7779a8c3cfaa190b1b93d793a5de2171763d3710466f64224684d2f24d86094",
+            "checkpointing.py": "73cd919a2dd50310328120ca13b915c560f3243b9b08b3e6240a039a8a75d9f3",
+            "evaluate.py": "0211d014fcc196da273afce43fb91d496c567b26c30d5daf547e4f3ec33c109b",
+            "data_pipeline.py": "63f2c0d70c6f3579f899278886b1d93afd198782aa0e1bde8ebaa1a0cb78f8a6",
+            "requirements-vision.txt": "ecc2c217e1e35ccc4122401007162a0fe0bf8dd79bd7908b52a382b9012d505c"
+          },
+          "git_commit": "7cfd6ae82597fddb7a608df632a792df83176668",
+          "git_dirty": false
+        }
+      },
+      "s": {
+        "run_name": "yolo11s-rdd2022es-compare30-seed42",
+        "model_version": "yolo11s-rdd2022es-v1-compare30-seed42-experimental",
+        "completed_epochs": 30,
+        "config_sha256": "e275aed4c7a7b48ce40bd9a3a2cc8a749e8043ece69d76ad4c2f3b654488036c",
+        "pretrained": {
+          "source_url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11s.pt",
+          "architecture": "YOLO11s",
+          "pretraining": "COCO",
+          "sha256": "85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5",
+          "size_bytes": 19313732
+        },
+        "checkpoints_sha256": {
+          "best.pt": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+          "last.pt": "e9ea747fb25dda8c3b6b66185ba192aea0055399f5fa787641e3da31c5905561",
+          "resume-latest.pt": "93c2d40362f2f621c15089c390eeb3a1f44933cf58afb759a6331fd676f6729e",
+          "resume-previous.pt": "50c0c94218e5c5946082780592c70af337dc6fe03c5900ea92b756eed1499b82"
+        },
+        "validation": {
+          "map50_95": 0.202303714460138,
+          "map50": 0.387686195936541,
+          "precision": 0.4062100364504389,
+          "recall": 0.43481208247407493,
+          "f1_macro_present_classes": 0.41469224053152665
+        },
+        "validation_images": 1921,
+        "validation_class_instances": [
+          941,
+          148,
+          541,
+          46,
+          526,
+          77,
+          299,
+          45
+        ],
+        "model_manifest_path": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/model_manifest.json",
+        "actual_training_args_sha256": "f2847eec7cbe8450b1618f606b0c2bfa5ddd2ab12d7dba99670355499d85f7d2",
+        "effective_nominal_batch": 64,
+        "runtime": {
+          "python": "3.12.14",
+          "packages": {
+            "torch": "2.10.0+cu128",
+            "torchvision": "0.25.0+cu128",
+            "ultralytics": "8.4.176",
+            "numpy": "2.5.2"
+          },
+          "source_file_sha256": {
+            "train.py": "b7779a8c3cfaa190b1b93d793a5de2171763d3710466f64224684d2f24d86094",
+            "checkpointing.py": "73cd919a2dd50310328120ca13b915c560f3243b9b08b3e6240a039a8a75d9f3",
+            "evaluate.py": "0211d014fcc196da273afce43fb91d496c567b26c30d5daf547e4f3ec33c109b",
+            "data_pipeline.py": "63f2c0d70c6f3579f899278886b1d93afd198782aa0e1bde8ebaa1a0cb78f8a6",
+            "requirements-vision.txt": "ecc2c217e1e35ccc4122401007162a0fe0bf8dd79bd7908b52a382b9012d505c"
+          },
+          "git_commit": "7cfd6ae82597fddb7a608df632a792df83176668",
+          "git_dirty": false
+        }
+      }
+    },
+    "selection": {
+      "variant": "s",
+      "reason": "higher_validation_map50_95",
+      "split": "val",
+      "test_used": false,
+      "recommended_manifest_path": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/model_manifest.json",
+      "backend_environment_changed": false
+    },
+    "latency_evidence_sha256": "b1fc8dca856900c0f593b301885a5540adeebba90e65489da005d93340f61858",
+    "status": "experimental",
+    "accuracy_acceptance": "not_defined_not_claimed"
+  },
+  "results": {
+    "baseline10": {
+      "run_name": "yolo11n-rdd2022es-baseline10-seed42",
+      "validation": {
+        "images": 1921,
+        "aggregate": {
+          "precision": 0.35040470767303866,
+          "recall": 0.42943816349522185,
+          "f1_macro_present_classes": 0.3760825027567985,
+          "map50": 0.34278991250794844,
+          "map50_95": 0.1693240672220516
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "instances": 941,
+            "evaluated": true,
+            "precision": 0.4435729149033775,
+            "recall": 0.6633289827902784,
+            "f1": 0.5316365814337197,
+            "map50": 0.5493058153406178,
+            "map50_95": 0.2956017639944336
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "instances": 148,
+            "evaluated": true,
+            "precision": 0.2671653884604279,
+            "recall": 0.5,
+            "f1": 0.3482500546545562,
+            "map50": 0.2963042018473464,
+            "map50_95": 0.16812247369275046
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "instances": 541,
+            "evaluated": true,
+            "precision": 0.39112117704621946,
+            "recall": 0.5674676524953789,
+            "f1": 0.46307365439629516,
+            "map50": 0.4467483787161072,
+            "map50_95": 0.1989629048477695
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "instances": 46,
+            "evaluated": true,
+            "precision": 0.28519682467891105,
+            "recall": 0.15625354594358956,
+            "f1": 0.2018936583294408,
+            "map50": 0.1767387391347155,
+            "map50_95": 0.06100797689732355
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "instances": 526,
+            "evaluated": true,
+            "precision": 0.5145256345376017,
+            "recall": 0.5475285171102662,
+            "f1": 0.5305143005306896,
+            "map50": 0.5066148448948196,
+            "map50_95": 0.25879445153333036
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "instances": 77,
+            "evaluated": true,
+            "precision": 0.24996141199420147,
+            "recall": 0.37662337662337664,
+            "f1": 0.30049025358086107,
+            "map50": 0.23355185009400048,
+            "map50_95": 0.12554774479841965
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "instances": 299,
+            "evaluated": true,
+            "precision": 0.36088056470838337,
+            "recall": 0.2909698996655518,
+            "f1": 0.3221762887146137,
+            "map50": 0.26736452408786543,
+            "map50_95": 0.12037507564651573
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "instances": 45,
+            "evaluated": true,
+            "precision": 0.29081374505518687,
+            "recall": 0.3333333333333333,
+            "f1": 0.31062523041421186,
+            "map50": 0.26569094594811493,
+            "map50_95": 0.12618014636587005
+          }
+        ],
+        "weights_sha256": "6701105881507946244e27d4155fa9febc2ad0bd2657bf52ee519a824c1619de"
+      },
+      "logged_training": {
+        "epochs": 10,
+        "best_map50_95_epoch": 10,
+        "seconds": 496.855
+      },
+      "operational_errors": {
+        "split": "val",
+        "inference": {
+          "conf": 0.25,
+          "iou": 0.7,
+          "max_det": 100,
+          "imgsz": 640,
+          "batch": 1,
+          "device": "0",
+          "half": false,
+          "rect": true,
+          "augment": false,
+          "agnostic_nms": false,
+          "save": false,
+          "verbose": false
+        },
+        "match_iou": 0.5,
+        "api_comparison": {
+          "api_device": "cpu",
+          "device_differs": true,
+          "same_rgb_single_image_input": true,
+          "notes": "Uses conf=.25 by default, IoU=.7, imgsz=640, max_det=100; compare deployed manifest settings separately. GPU kernels can differ from CPU. Explicit float32, rect=True and no augmentation."
+        },
+        "totals": {
+          "tp": 1080,
+          "fp": 978,
+          "fn": 1543
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 503,
+            "fp": 444,
+            "fn": 438,
+            "instances": 941,
+            "precision": 0.5311510031678986,
+            "recall": 0.5345377258235919
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 44,
+            "fp": 65,
+            "fn": 104,
+            "instances": 148,
+            "precision": 0.4036697247706422,
+            "recall": 0.2972972972972973
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 239,
+            "fp": 231,
+            "fn": 302,
+            "instances": 541,
+            "precision": 0.5085106382978724,
+            "recall": 0.4417744916820702
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 2,
+            "fp": 4,
+            "fn": 44,
+            "instances": 46,
+            "precision": 0.3333333333333333,
+            "recall": 0.043478260869565216
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 216,
+            "fp": 146,
+            "fn": 310,
+            "instances": 526,
+            "precision": 0.5966850828729282,
+            "recall": 0.41064638783269963
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 15,
+            "fp": 32,
+            "fn": 62,
+            "instances": 77,
+            "precision": 0.3191489361702128,
+            "recall": 0.19480519480519481
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 55,
+            "fp": 50,
+            "fn": 244,
+            "instances": 299,
+            "precision": 0.5238095238095238,
+            "recall": 0.18394648829431437
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 6,
+            "fp": 6,
+            "fn": 39,
+            "instances": 45,
+            "precision": 0.5,
+            "recall": 0.13333333333333333
+          }
+        ],
+        "diagnostic_categories": {
+          "fp": {
+            "localization": 284,
+            "background": 392,
+            "confusion": 207,
+            "duplicate": 95
+          },
+          "fn": {
+            "localization": 198,
+            "missed": 1201,
+            "confusion": 144
+          }
+        },
+        "limitations": [
+          "Fixed operational point diagnostics, not official mAP or max-F1 validation P/R.",
+          "Diagnostic links can reuse objects; confusion/localization contribute both FP and FN.",
+          "Background FP can suggest missing annotations but is not a confirmed label defect.",
+          "Only frozen validation originals are inferred; no threshold selection or test-image access.",
+          "Stable ordering/selection; GPU inference is not guaranteed bitwise reproducible.",
+          "Experimental model; no business acceptance threshold is established."
+        ],
+        "micro_precision": 0.5247813411078717,
+        "micro_recall": 0.41174227983225314
+      }
+    },
+    "n": {
+      "run_name": "yolo11n-rdd2022es-compare30-seed42",
+      "validation": {
+        "images": 1921,
+        "aggregate": {
+          "precision": 0.3825814462084328,
+          "recall": 0.40739194322849337,
+          "f1_macro_present_classes": 0.39188598392103885,
+          "map50": 0.37273071074121333,
+          "map50_95": 0.1915930745676082
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "instances": 941,
+            "evaluated": true,
+            "precision": 0.5172799020385919,
+            "recall": 0.6217750587614158,
+            "f1": 0.5647343676204156,
+            "map50": 0.5685469525946706,
+            "map50_95": 0.31637948933948434
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "instances": 148,
+            "evaluated": true,
+            "precision": 0.30765678571110106,
+            "recall": 0.4263583013218403,
+            "f1": 0.3574096142250974,
+            "map50": 0.34877193051566097,
+            "map50_95": 0.19981472347507498
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "instances": 541,
+            "evaluated": true,
+            "precision": 0.493598942983806,
+            "recall": 0.5098813837311793,
+            "f1": 0.5016080641674868,
+            "map50": 0.4878770311901742,
+            "map50_95": 0.22526744531052886
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "instances": 46,
+            "evaluated": true,
+            "precision": 0.22396607013141015,
+            "recall": 0.15217391304347827,
+            "f1": 0.1812186675460143,
+            "map50": 0.14355170664900535,
+            "map50_95": 0.05490014178164733
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "instances": 526,
+            "evaluated": true,
+            "precision": 0.5382135353595209,
+            "recall": 0.5665399239543726,
+            "f1": 0.5520135788181502,
+            "map50": 0.5336109430491803,
+            "map50_95": 0.2751178666000412
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "instances": 77,
+            "evaluated": true,
+            "precision": 0.2955261827976715,
+            "recall": 0.2857142857142857,
+            "f1": 0.29053741713501874,
+            "map50": 0.2838773446250645,
+            "map50_95": 0.18013483626459437
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "instances": 299,
+            "evaluated": true,
+            "precision": 0.3796697618123669,
+            "recall": 0.3411371237458194,
+            "f1": 0.35937351075006024,
+            "map50": 0.2930749008439907,
+            "map50_95": 0.12915539185488517
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "instances": 45,
+            "evaluated": true,
+            "precision": 0.3047403888329945,
+            "recall": 0.35555555555555557,
+            "f1": 0.3281926511060674,
+            "map50": 0.3225348764619602,
+            "map50_95": 0.15197470191460943
+          }
+        ],
+        "weights_sha256": "438e2819ee52ba98f6eabc3e735974647703c1e9ca50c61053ba0f1bff749117"
+      },
+      "logged_training": {
+        "epochs": 30,
+        "best_map50_95_epoch": 29,
+        "seconds": 1425.51
+      },
+      "operational_errors": {
+        "split": "val",
+        "inference": {
+          "conf": 0.25,
+          "iou": 0.7,
+          "max_det": 100,
+          "imgsz": 640,
+          "batch": 1,
+          "device": "0",
+          "half": false,
+          "rect": true,
+          "augment": false,
+          "agnostic_nms": false,
+          "save": false,
+          "verbose": false
+        },
+        "match_iou": 0.5,
+        "api_comparison": {
+          "api_device": "cpu",
+          "device_differs": true,
+          "same_rgb_single_image_input": true,
+          "notes": "Uses conf=.25 by default, IoU=.7, imgsz=640, max_det=100; compare deployed manifest settings separately. GPU kernels can differ from CPU. Explicit float32, rect=True and no augmentation."
+        },
+        "totals": {
+          "tp": 1236,
+          "fp": 1199,
+          "fn": 1387
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 535,
+            "fp": 452,
+            "fn": 406,
+            "instances": 941,
+            "precision": 0.5420466058763931,
+            "recall": 0.5685441020191286
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 52,
+            "fp": 103,
+            "fn": 96,
+            "instances": 148,
+            "precision": 0.33548387096774196,
+            "recall": 0.35135135135135137
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 256,
+            "fp": 245,
+            "fn": 285,
+            "instances": 541,
+            "precision": 0.5109780439121756,
+            "recall": 0.4731977818853974
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 5,
+            "fp": 18,
+            "fn": 41,
+            "instances": 46,
+            "precision": 0.21739130434782608,
+            "recall": 0.10869565217391304
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 268,
+            "fp": 193,
+            "fn": 258,
+            "instances": 526,
+            "precision": 0.5813449023861171,
+            "recall": 0.5095057034220533
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 24,
+            "fp": 52,
+            "fn": 53,
+            "instances": 77,
+            "precision": 0.3157894736842105,
+            "recall": 0.3116883116883117
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 89,
+            "fp": 121,
+            "fn": 210,
+            "instances": 299,
+            "precision": 0.4238095238095238,
+            "recall": 0.2976588628762542
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 7,
+            "fp": 15,
+            "fn": 38,
+            "instances": 45,
+            "precision": 0.3181818181818182,
+            "recall": 0.15555555555555556
+          }
+        ],
+        "diagnostic_categories": {
+          "fp": {
+            "background": 531,
+            "confusion": 240,
+            "localization": 330,
+            "duplicate": 98
+          },
+          "fn": {
+            "missed": 1007,
+            "confusion": 162,
+            "localization": 218
+          }
+        },
+        "limitations": [
+          "Fixed operational point diagnostics, not official mAP or max-F1 validation P/R.",
+          "Diagnostic links can reuse objects; confusion/localization contribute both FP and FN.",
+          "Background FP can suggest missing annotations but is not a confirmed label defect.",
+          "Only frozen validation originals are inferred; no threshold selection or test-image access.",
+          "Stable ordering/selection; GPU inference is not guaranteed bitwise reproducible.",
+          "Experimental model; no business acceptance threshold is established."
+        ],
+        "micro_precision": 0.5075975359342916,
+        "micro_recall": 0.4712161646969119
+      }
+    },
+    "s": {
+      "run_name": "yolo11s-rdd2022es-compare30-seed42",
+      "validation": {
+        "images": 1921,
+        "aggregate": {
+          "precision": 0.4062100364504389,
+          "recall": 0.43481208247407493,
+          "f1_macro_present_classes": 0.41469224053152665,
+          "map50": 0.387686195936541,
+          "map50_95": 0.202303714460138
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "instances": 941,
+            "evaluated": true,
+            "precision": 0.5305387377190378,
+            "recall": 0.6485173380993514,
+            "f1": 0.5836254559908425,
+            "map50": 0.6063469912702314,
+            "map50_95": 0.3384724737281172
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "instances": 148,
+            "evaluated": true,
+            "precision": 0.3293115924503834,
+            "recall": 0.4797297297297297,
+            "f1": 0.3905376818513574,
+            "map50": 0.34279762114882173,
+            "map50_95": 0.19995398256188135
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "instances": 541,
+            "evaluated": true,
+            "precision": 0.4923099764706386,
+            "recall": 0.5341959334565619,
+            "f1": 0.5123983893075921,
+            "map50": 0.4860233946083464,
+            "map50_95": 0.22793191012678507
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "instances": 46,
+            "evaluated": true,
+            "precision": 0.2415463277591259,
+            "recall": 0.15217391304347827,
+            "f1": 0.18671658739951474,
+            "map50": 0.18164606388610316,
+            "map50_95": 0.08553388748411843
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "instances": 526,
+            "evaluated": true,
+            "precision": 0.5636493460736005,
+            "recall": 0.5532319391634981,
+            "f1": 0.5583920598514437,
+            "map50": 0.5348362804908422,
+            "map50_95": 0.2838649947443587
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "instances": 77,
+            "evaluated": true,
+            "precision": 0.36926286734879654,
+            "recall": 0.3116883116883117,
+            "f1": 0.3380416195354273,
+            "map50": 0.3378825138551575,
+            "map50_95": 0.1947472322437356
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "instances": 299,
+            "evaluated": true,
+            "precision": 0.40913390279282036,
+            "recall": 0.35451505016722407,
+            "f1": 0.3798712104861561,
+            "map50": 0.30798911805813345,
+            "map50_95": 0.13761770811530807
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "instances": 45,
+            "evaluated": true,
+            "precision": 0.3139275409891082,
+            "recall": 0.4444444444444444,
+            "f1": 0.36795491982987955,
+            "map50": 0.30396758417469205,
+            "map50_95": 0.15030752667679997
+          }
+        ],
+        "weights_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a"
+      },
+      "logged_training": {
+        "epochs": 30,
+        "best_map50_95_epoch": 26,
+        "seconds": 2100.26
+      },
+      "operational_errors": {
+        "split": "val",
+        "inference": {
+          "conf": 0.25,
+          "iou": 0.7,
+          "max_det": 100,
+          "imgsz": 640,
+          "batch": 1,
+          "device": "0",
+          "half": false,
+          "rect": true,
+          "augment": false,
+          "agnostic_nms": false,
+          "save": false,
+          "verbose": false
+        },
+        "match_iou": 0.5,
+        "api_comparison": {
+          "api_device": "cpu",
+          "device_differs": true,
+          "same_rgb_single_image_input": true,
+          "notes": "Uses conf=.25 by default, IoU=.7, imgsz=640, max_det=100; compare deployed manifest settings separately. GPU kernels can differ from CPU. Explicit float32, rect=True and no augmentation."
+        },
+        "totals": {
+          "tp": 1343,
+          "fp": 1419,
+          "fn": 1280
+        },
+        "per_class": [
+          {
+            "class_id": 0,
+            "source_name": "longitudinal crack",
+            "tp": 574,
+            "fp": 537,
+            "fn": 367,
+            "instances": 941,
+            "precision": 0.5166516651665166,
+            "recall": 0.6099893730074389
+          },
+          {
+            "class_id": 1,
+            "source_name": "longitudinal crack wide",
+            "tp": 68,
+            "fp": 130,
+            "fn": 80,
+            "instances": 148,
+            "precision": 0.3434343434343434,
+            "recall": 0.4594594594594595
+          },
+          {
+            "class_id": 2,
+            "source_name": "transverse crack",
+            "tp": 278,
+            "fp": 286,
+            "fn": 263,
+            "instances": 541,
+            "precision": 0.4929078014184397,
+            "recall": 0.5138632162661737
+          },
+          {
+            "class_id": 3,
+            "source_name": "transverse crack wide",
+            "tp": 7,
+            "fp": 22,
+            "fn": 39,
+            "instances": 46,
+            "precision": 0.2413793103448276,
+            "recall": 0.15217391304347827
+          },
+          {
+            "class_id": 4,
+            "source_name": "alligator crack",
+            "tp": 271,
+            "fp": 205,
+            "fn": 255,
+            "instances": 526,
+            "precision": 0.569327731092437,
+            "recall": 0.5152091254752852
+          },
+          {
+            "class_id": 5,
+            "source_name": "alligator crack sunken",
+            "tp": 27,
+            "fp": 46,
+            "fn": 50,
+            "instances": 77,
+            "precision": 0.3698630136986301,
+            "recall": 0.35064935064935066
+          },
+          {
+            "class_id": 6,
+            "source_name": "pothole",
+            "tp": 99,
+            "fp": 155,
+            "fn": 200,
+            "instances": 299,
+            "precision": 0.38976377952755903,
+            "recall": 0.3311036789297659
+          },
+          {
+            "class_id": 7,
+            "source_name": "pothole deep",
+            "tp": 19,
+            "fp": 38,
+            "fn": 26,
+            "instances": 45,
+            "precision": 0.3333333333333333,
+            "recall": 0.4222222222222222
+          }
+        ],
+        "diagnostic_categories": {
+          "fp": {
+            "background": 690,
+            "localization": 358,
+            "confusion": 266,
+            "duplicate": 105
+          },
+          "fn": {
+            "missed": 894,
+            "localization": 227,
+            "confusion": 159
+          }
+        },
+        "limitations": [
+          "Fixed operational point diagnostics, not official mAP or max-F1 validation P/R.",
+          "Diagnostic links can reuse objects; confusion/localization contribute both FP and FN.",
+          "Background FP can suggest missing annotations but is not a confirmed label defect.",
+          "Only frozen validation originals are inferred; no threshold selection or test-image access.",
+          "Stable ordering/selection; GPU inference is not guaranteed bitwise reproducible.",
+          "Experimental model; no business acceptance threshold is established."
+        ],
+        "micro_precision": 0.48624185372918177,
+        "micro_recall": 0.5120091498284407
+      }
+    }
+  },
+  "cpu_latency": {
+    "protocol": {
+      "pipeline": "backend_real_single_image",
+      "source_split": "val",
+      "test_used": false,
+      "image_set_sha256": "7ae3de2abaa548872473ab8e7e46040f5a37c03efe8bfb8a6de4ca5f1e1734df",
+      "backend_source_sha256": "786afa0911d9d26ea3aa64d29b05b632f2a804cfca692f22cee7a4ea867538a8",
+      "imgsz": 640,
+      "conf": 0.25,
+      "iou": 0.7,
+      "cpu_threads": 4,
+      "interop_threads": 1,
+      "warmup": 2,
+      "repeats": 3,
+      "max_det": 100,
+      "images": 40,
+      "seed": 42,
+      "country_counts": {
+        "Czech": 10,
+        "India": 10,
+        "Japan": 10,
+        "United_States": 10
+      },
+      "selection": "Per country sort by SHA256('42:'+sample_id), take first10; interleave Czech/India/Japan/United_States.",
+      "warmup_definition": "Two untimed fresh prepare+detect calls per candidate on the first two fixed inputs.",
+      "repeat_definition": "Three complete passes over the same ordered40images;120timedcalls per candidate.",
+      "candidate_execution_order": [
+        [
+          "n",
+          "s"
+        ],
+        [
+          "s",
+          "n"
+        ],
+        [
+          "n",
+          "s"
+        ]
+      ],
+      "timing_boundary": "perf_counter_ns immediately before ImageStore.prepare(bytes) until LocalVisionDetector.detect returns Detection DTO list",
+      "includes": [
+        "upload byte hash",
+        "image verify/decode",
+        "EXIF/RGB/PNG normalization",
+        "prepared PNG decode",
+        "YOLO preprocessing",
+        "CPU inference",
+        "NMS/postprocessing",
+        "Detection DTO construction/validation"
+      ],
+      "excludes": [
+        "disk image read and SHA assertion",
+        "model/manifest/checkpoint load",
+        "warmup",
+        "result serialization",
+        "runtime assertions",
+        "persistent image storage",
+        "HTTP/database/rules/review/task processing"
+      ],
+      "p95_definition": "nearest rank ceil(0.95*N), on120single-image pipeline measurements",
+      "cache_policy": "Models/predictors warmed and retained; image bytes re-read every call, fresh prepare/detect, no image/result memoization."
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+      "packages": {
+        "torch": "2.10.0+cu128",
+        "torchvision": "0.25.0+cu128",
+        "ultralytics": "8.4.176",
+        "Pillow": "12.3.0",
+        "numpy": "2.5.2",
+        "pydantic": "2.14.1"
+      },
+      "actual_torch_num_threads": 4,
+      "actual_torch_interop_threads": 1
+    },
+    "backend_source_files_sha256": {
+      "SystemCode/backend/roadguard/images.py": "94014ff335effd59ef11ee50061ecd5498031f2d51454c6d5f66e7887ed10a75",
+      "SystemCode/backend/roadguard/schemas/__init__.py": "6a76f652027f2678d67f8e96efa112e0ba6b38f4fd9a22f51ad2e000f3839dc6",
+      "SystemCode/backend/roadguard/schemas/assessment.py": "ddc92501160dbfef5bad8cbaa93b0aafdb9f41c7c977711ee502eb7a2a300c78",
+      "SystemCode/backend/roadguard/schemas/common.py": "a7596932df854b6611d521afc5993fd4f5ab451110a45529ba1c7d8f9b1d5882",
+      "SystemCode/backend/roadguard/schemas/detection.py": "19414cee9a04c060a7076d601cc68ecda133658eb875937e95bcc351ad0b1669",
+      "SystemCode/backend/roadguard/schemas/inspection.py": "34dbc2dde033479720511778c3702955426a0fba27773c14a00a63e536a4cdb5",
+      "SystemCode/backend/roadguard/schemas/responses.py": "53c74606e02fa26b995b0c05c97824af2d127caad9954e993601fa1236cfc2dc",
+      "SystemCode/backend/roadguard/schemas/task.py": "63980aee58c3c7d1c5b527331ccf114ccf387366789c34b5447822d9417b0ed0",
+      "SystemCode/backend/roadguard/schemas/task_query.py": "48891c604d12e5139a8b4b00b1278fc811d3782e54d30a78c2b0bbccdd0f391f",
+      "SystemCode/backend/roadguard/schemas/workflow.py": "8ec361871d17a9c1b4c0df9759c0ba0dab86203a2f92624200793ec9c4acd585",
+      "SystemCode/backend/roadguard/vision/real.py": "49983c9f42730ee82f94f8cfcaa74d394c23e3cf4ed03cf2618b32d66915af0f"
+    },
+    "helper_source_sha256": "5247126eb86c554e70d50156334f52b2bd4094ca6530da5189248162393bca6c",
+    "limitations": [
+      "40 country-balanced validation originals are a fixed latency sample, not production traffic.",
+      "Median/p95 summarize 120 calls per candidate; no statistical superiority claim.",
+      "Warm loaded-model latency; excludes cold start, disk read, HTTP, database and task processing.",
+      "OS filesystem cache and CPU scheduling/thermal state are not controlled.",
+      "Alternating candidate blocks reduces but does not eliminate order/thermal effects.",
+      "Ultralytics NUM_THREADS is set to4 in this process only; repository source is unchanged."
+    ],
+    "candidates": {
+      "n": {
+        "weights_sha256": "438e2819ee52ba98f6eabc3e735974647703c1e9ca50c61053ba0f1bff749117",
+        "manifest_sha256": "1848815a6ed1c8f3ccf215d61d6565e8bdef4efc658a76ffe2e53c84310ac410",
+        "model_version": "yolo11n-rdd2022es-v1-compare30-seed42-experimental",
+        "parameter_count_before_fusion": 2606584,
+        "median_ms": 53.273700000000005,
+        "p95_ms": 63.5893,
+        "min_ms": 43.9475,
+        "max_ms": 72.6235,
+        "timed_calls": 120,
+        "total_timed_pipeline_seconds": 6.4916594000000005
+      },
+      "s": {
+        "weights_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+        "manifest_sha256": "a7bbe5f45a43374c575975e5c9a7a11c5d0257e1aa8b1bc190f056116d3d5777",
+        "model_version": "yolo11s-rdd2022es-v1-compare30-seed42-experimental",
+        "parameter_count_before_fusion": 9430888,
+        "median_ms": 81.8694,
+        "p95_ms": 91.851,
+        "min_ms": 62.6765,
+        "max_ms": 97.6302,
+        "timed_calls": 120,
+        "total_timed_pipeline_seconds": 9.785331099999999
+      }
+    }
+  },
+  "integrity": {
+    "schema_version": "roadguard-compare30-integrity-v1",
+    "status": "passed",
+    "checked_at": "2026-10-13T04:32:39.348809+00:00",
+    "train_val_files_sha256_verified": 39674,
+    "images": {
+      "train": 17916,
+      "val": 1921
+    },
+    "class_counts": {
+      "train": [
+        9112,
+        1640,
+        5228,
+        486,
+        4886,
+        622,
+        2954,
+        386
+      ],
+      "val": [
+        941,
+        148,
+        541,
+        46,
+        526,
+        77,
+        299,
+        45
+      ]
+    },
+    "groups_disjoint_across_train_val_test": true,
+    "test_metadata_read_for_group_isolation": true,
+    "test_images_and_labels_opened": false,
+    "test_candidate_evaluations_exist": false,
+    "source_commit": "7cfd6ae82597fddb7a608df632a792df83176668",
+    "source_commit_clean_for_both_runs": true,
+    "runtime_and_frozen_source_hashes_match": true,
+    "checkpoints": {
+      "n": {
+        "resume-latest.pt": {
+          "completed_epochs": 30,
+          "optimizer_state_entries": 255,
+          "live_and_ema_tensors_finite": true,
+          "sha256": "c9983ee57bce9ddc0863bc03800aa24a9a71ee8eae004c036de90234d7136b97",
+          "bytes": 47910138
+        },
+        "resume-previous.pt": {
+          "completed_epochs": 29,
+          "optimizer_state_entries": 255,
+          "live_and_ema_tensors_finite": true,
+          "sha256": "104cebb0cd326badb59fe82f5ba5f1ddc8e8aa0e8de572dbaac856664debd1b0",
+          "bytes": 47910010
+        },
+        "training_seconds_logged": 1425.51
+      },
+      "s": {
+        "resume-latest.pt": {
+          "completed_epochs": 30,
+          "optimizer_state_entries": 255,
+          "live_and_ema_tensors_finite": true,
+          "sha256": "93c2d40362f2f621c15089c390eeb3a1f44933cf58afb759a6331fd676f6729e",
+          "bytes": 170888954
+        },
+        "resume-previous.pt": {
+          "completed_epochs": 29,
+          "optimizer_state_entries": 255,
+          "live_and_ema_tensors_finite": true,
+          "sha256": "50c0c94218e5c5946082780592c70af337dc6fe03c5900ea92b756eed1499b82",
+          "bytes": 170888826
+        },
+        "training_seconds_logged": 2100.26
+      }
+    }
+  },
+  "http_acceptance": {
+    "status": "passed",
+    "completed_at": "2026-10-13T04:34:26.456491+00:00",
+    "transport": "loopback HTTP to isolated Uvicorn subprocesses",
+    "default_port_8000_used": false,
+    "weights_sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a",
+    "validation_candidates_attempted": [
+      {
+        "sample_id": "Czech_000006",
+        "image_sha256": "9f4dda8098647d5c856d4652ee1bf15f25de8c6cb202aef4b16a8b412c15f55f",
+        "detections": 1
+      }
+    ],
+    "response_cases": 11,
+    "selected_detection": {
+      "detection_id": "real-5013a216d0fe409ead653f6dfb572d2d-0",
+      "class_id": 0,
+      "label": "longitudinal_crack",
+      "confidence": 0.5985193848609924,
+      "bbox_xyxy": [
+        141.08590698242188,
+        412.4170227050781,
+        164.40072631835938,
+        465.09381103515625
+      ],
+      "image_width": 600,
+      "image_height": 600,
+      "model_version": "yolo11s-rdd2022es-v1-compare30-seed42-experimental",
+      "is_demo": false
+    },
+    "input_revisions": [
+      0,
+      1,
+      2
+    ],
+    "limitations": "Synthetic Jurong coordinate and automated review exercise business plumbing only; no geographic provenance or expert approval."
+  },
+  "visual_review": {
+    "baseline10": {
+      "schema_version": "roadguard-supervisor-error-review-v1",
+      "reviewed_at": "2026-10-13T03:29:33.972442+00:00",
+      "reviewer": "root agent, visual diagnostic review; not a road engineering expert",
+      "report_sha256": "550409f8517a41e789d8e7193d15cef105544f76485eeb37011fa3c7b1bf3f45",
+      "images_reviewed_in_contact_sheets": 40,
+      "individual_images_reviewed": [
+        "Japan_003097",
+        "Japan_005511",
+        "India_001650"
+      ],
+      "findings": [
+        {
+          "sample_id": "Japan_003097",
+          "observation": "Longitudinal versus longitudinal-wide class confusion around the same diagonal crack."
+        },
+        {
+          "sample_id": "Japan_005511",
+          "observation": "Several nearby and overlapping crack annotations with class confusion and partial boxes in a complex painted road scene."
+        },
+        {
+          "sample_id": "India_001650",
+          "observation": "Faint low-contrast annotated cracks have no retained prediction at confidence 0.25."
+        }
+      ],
+      "interpretation": "Rare classes and potholes have low recall; missed subtle defects, duplicate boxes, localization and subtype confusion all occur. Apparent background predictions are not proof of incorrect annotations. No claim of measured crack width/depth.",
+      "label_changes": false,
+      "threshold_changed": false,
+      "test_images_or_labels_opened": false,
+      "next_action": "Independently train YOLO11n and YOLO11s for 30 epochs using the frozen comparison plan, then compare the same validation split."
+    },
+    "n": {
+      "schema_version": "roadguard-supervisor-error-review-v1",
+      "images_reviewed_in_contact_sheets": 40,
+      "findings": [
+        "Longitudinal/narrow-versus-wide confusion persists in Japan_003097.",
+        "Several faint/complex defects remain unmatched; India_001650 contains an off-target retained prediction.",
+        "Fragmented or duplicate boxes and subtype confusion remain visible across the four source countries."
+      ],
+      "annotation_edits": false,
+      "expert_quality_approval": false,
+      "threshold_changed": false
+    },
+    "s": {
+      "schema_version": "roadguard-supervisor-error-review-v1",
+      "images_reviewed_in_contact_sheets": 40,
+      "findings": [
+        "India_001650 retains no prediction for faint annotated road defects.",
+        "Czech_001238 has a retained prediction without a reference annotation; this is a reference-based FP, not proof that the image is defect-free.",
+        "Overlapping and fragmented predictions, localization errors and subtype confusion remain visible in complex scenes such as Japan_005511."
+      ],
+      "annotation_edits": false,
+      "expert_quality_approval": false,
+      "threshold_changed": false
+    }
+  },
+  "cleanup": {
+    "dry_run": false,
+    "files": [
+      {
+        "path": "Dataset/prepared/labels/train.cache",
+        "bytes": 4344707
+      },
+      {
+        "path": "Dataset/prepared/labels/val.cache",
+        "bytes": 452896
+      }
+    ],
+    "bytes": 4797603,
+    "scope": "prepared/labels/{train,val,test}.cache and prepared/images/{train,val,test}/*.npy only"
+  },
+  "checks": {
+    "application_pytest_passed": 692,
+    "application_pytest_skipped": 1,
+    "skip_reason": "Windows account lacks permission for the real symlink test; Linux CI exercises it",
+    "ci_guard_tests_passed": 44,
+    "real_http_response_cases_passed": 11
+  },
+  "evidence_sha256": {
+    "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/evaluation-val.json": "c4852a36e8b5128449737a2e321caf26e80490b9a492fbca39b0572e87c1bbb8",
+    "Dataset/error-analysis/baseline10-val-errors/report.json": "550409f8517a41e789d8e7193d15cef105544f76485eeb37011fa3c7b1bf3f45",
+    "Dataset/runs/yolo11n-rdd2022es-baseline10-seed42/results.csv": "ec346a36b6b87e03138a615f0de5d94dc042eecf5199bb1eb15e1e74bd93eea4",
+    "Dataset/runs/yolo11n-rdd2022es-compare30-seed42/evaluation-val.json": "e307c3448ae92f449a1a176e71e2ef9846ae70538aa1cacb52e90d571677329a",
+    "Dataset/error-analysis/compare30-n-val-errors/report.json": "d85657983d807b1ade8bfb8878b3f6639cd99059cec054cf33ffc63d60ef0215",
+    "Dataset/runs/yolo11n-rdd2022es-compare30-seed42/results.csv": "0407af267d27ce3a8ede274a51d0f08afe2189410bf32acdab9de7addc7b3cf6",
+    "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/evaluation-val.json": "3a2d6cfea74483d4e20640df352e4e1a662d4c4a0e3be1474b7e1bfbe842f34a",
+    "Dataset/error-analysis/compare30-s-val-errors/report.json": "83a88ac804db25f06d06dc1d8e2cdfb5068f87707ce5cdffe94c4a335e2ca641",
+    "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/results.csv": "26f70e3e0a5fe7f6a24204c985f09dbd4fe599e83b6ff905907a4f84166d80a9",
+    "Dataset/compare30/plan.json": "9ae86f598be017c5d39dd15e0ee1b1628b076dda0293756aa362830cff245ac2",
+    "Dataset/compare30/summary-with-latency.json": "7f9eac8a0c1eddd27b7decdcd44972098035099923b8b3f102a0f9f3cda51562",
+    "Dataset/compare30/cpu-latency/acceptance-v2/latency.json": "b1fc8dca856900c0f593b301885a5540adeebba90e65489da005d93340f61858",
+    "Dataset/compare30/integrity.json": "a669699fd11a832cba49aa4f3a6bfd413b229b6ae2719d253789583cf3849c01",
+    "Dataset/compare30/http-acceptance/summary.json": "c369b0b7f80844f53edc4c8d1c7e64d269c23a75d268f870335e33083eab451d",
+    "Dataset/compare30/final-pytest.log": "94ef3a09b6cab4447923aa97e0eaafe89d7e79a97a87d68f6622688914ebdfc4",
+    "Dataset/compare30/final-ci-guards.log": "cb75fed99a6d25f967216ebe3de1ab67a14c722040ce7d556c1c0d8313a9745f",
+    "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/cleanup-applied.json": "9938820027062ff2501f735e880f73e73f1cccd6662b70cf29fb132c8a4f0748"
+  },
+  "limitations": [
+    "Single seed and the same validation set; no estimate of training variance.",
+    "Baseline10 test was previously inspected; no candidate test images/labels were opened or evaluated this round.",
+    "0.25 fixed-threshold errors are GPU diagnostics; CPU timing and selected-model HTTP acceptance are separate evidence.",
+    "All nonempty real detections require review; business rules and synthetic Jurong task coordinates remain demo.",
+    "Numerical and integration acceptance do not establish business accuracy or measured defect width/depth."
+  ]
+}
