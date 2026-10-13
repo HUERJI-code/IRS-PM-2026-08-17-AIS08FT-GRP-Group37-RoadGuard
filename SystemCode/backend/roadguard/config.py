@@ -14,6 +14,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CONFIG_PATH = Path("SystemCode/config/project.example.json")
 DEFAULT_DB_PATH = Path("SystemCode/backend/data/roadguard.sqlite3")
 DEFAULT_DEMO_RULES_PATH = Path("SystemCode/config/demo_rules.example.json")
+DEFAULT_VISION_MANIFEST_PATH = Path("SystemCode/model/releases/roadguard-single-v1.json")
 
 
 class ConfigurationError(ValueError):
@@ -104,5 +105,6 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
         config_path=config_path, database_path=database_path, project=project,
         demo_rules_path=demo_rules_path,
         upload_path=environment.get("ROADGUARD_UPLOAD_PATH"),
-        vision_manifest_path=environment.get("ROADGUARD_VISION_MANIFEST_PATH"),
+        vision_manifest_path=(None if environment.get("ROADGUARD_VISION_MANIFEST_PATH") == "disabled"
+                              else environment.get("ROADGUARD_VISION_MANIFEST_PATH", DEFAULT_VISION_MANIFEST_PATH)),
     )

@@ -1,6 +1,8 @@
 # RoadGuard 共用后端基础
 
-A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real detections require review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v2, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+See [released model installation and primary suggestions](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) for the current default detector and client migration.
+
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real detections require review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v3, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
 ## 环境与启动
 
@@ -47,7 +49,7 @@ The original demo upload/review/task behavior is documented in the [workflow gui
 | `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
 | `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
 | `ROADGUARD_UPLOAD_PATH` | 图片保存目录，默认在数据库文件旁的 uploads 子目录；必须与数据库一起保存/备份 |
-| `ROADGUARD_VISION_MANIFEST_PATH` | Optional trusted local model manifest; unset disables real inference. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
+| `ROADGUARD_VISION_MANIFEST_PATH` | Defaults to `SystemCode/model/releases/roadguard-single-v1.json`; install its private Release weight first. Set `disabled` to turn off real inference. A local manifest path overrides the default. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
 
 默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
 

@@ -1,5 +1,9 @@
 # RoadGuard vision model
 
+The user-authorized [model release and backend integration](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) publishes the best weight as a private GitHub Release asset, selects a default local manifest, and adds the persisted `primary_suggestion` field. The model remains experimental; all real detections require review.
+
+The [single-main-damage follow-up](../../Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md) adds a validation-only selector comparison and a standalone image runner. Its 377-image confirmation subset achieved eight-type image Precision/Recall of 61.63%/61.99%; this is a different metric/population from historical detection scores, not an independent test, and not both 70%. Known obvious potholes still fail. The experimental runner returns at most one main suggestion plus all raw evidence; that initial experiment did not change server defaults. The later user-authorized integration above now selects this recipe by default, preserving review, the eight classes and checkpoints.
+
 A owns the eight-class RDD2022ES data pipeline, local YOLO11n/YOLO11s training, checkpoint recovery, evaluation and backend inference adapter. See [Step 8 acceptance evidence](../../Miscellaneous/STEP8_VISION_ACCEPTANCE.md) for what has actually run and its limitations; implementation alone does not establish model accuracy.
 
 The source is `juusos/rdd2022es` version 1. The ordered IDs 0–7 and source names are fixed by [label_schema.json](label_schema.json). These images are not from Jurong; visual modifiers such as wide, sunken and deep are not measured dimensions or engineering priorities. The [original audit](../../Miscellaneous/DATASET_AND_LABEL_AUDIT.md) retains the publisher's conflicting BY-SA description and BY-NC-SA metadata.

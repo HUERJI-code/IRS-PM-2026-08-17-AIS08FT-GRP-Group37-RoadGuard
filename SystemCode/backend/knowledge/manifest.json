@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v2",
+  "package_version": "a-knowledge-v3",
   "language": "zh-CN",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -16,7 +16,7 @@
     "depot_version": "nus-iss-v1",
     "label_schema_version": "rdd2022es-v1-labels-1",
     "rule_version": "demo-rules-v1",
-    "workflow_contract_version": "a-workflow-v2"
+    "workflow_contract_version": "a-workflow-v3"
   },
   "classification_vocabulary": [
     "confirmed_project_fact",
@@ -63,14 +63,14 @@
     {
       "source_id": "src-workflow-schema",
       "path": "SystemCode/backend/roadguard/schemas/workflow.py",
-      "version": "a-workflow-v2",
-      "sha256": "8ec361871d17a9c1b4c0df9759c0ba0dab86203a2f92624200793ec9c4acd585"
+      "version": "a-workflow-v3",
+      "sha256": "c835a53bd448e9d7939d9f47353545f40efb3b0ed72555a2e968da0ae5e7c960"
     },
     {
       "source_id": "src-workflow-service",
       "path": "SystemCode/backend/roadguard/inspections/service.py",
-      "version": "a-workflow-v2",
-      "sha256": "320bc78e4c4c0a26ef79a5a8b4a6337df3bcaa1ef53c25e9dbd3ca4d3bde1773"
+      "version": "a-workflow-v3",
+      "sha256": "0bdc77a156cc3dbe03fe68028ec3135b9d69f91be2d428c224aeafc2d7bbc9be"
     },
     {
       "source_id": "src-geography-code",
@@ -220,10 +220,10 @@
     {
       "document_id": "rg-kb-workflow",
       "path": "04_workflow.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "ad49d5f972f4daf4d684bd4efe6ce0d9bb245c1daf75e5c9b8eaeb0e7290e54b",
+      "sha256": "2425421ef41828b4185220c52ab40beed2ba3f0d62d7dbce8efa0ac7ee52ac60",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -345,11 +345,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "1bccdb4614c9e1669a7f7b34350feba65237a2b8e1ab08307bbab67cad4d36e4",
+    "sha256": "1fbecce319680ca1928bb3deece5486dfd7a3c6633b2dda9a5459d7fea0bb575",
     "case_count": 10
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "3e31818f6d93a28116d6b6c8f26592f5a900ebdf6f2166eb69fca3dbe2404689"
+    "sha256": "2dd210aea55f8fe0ec25aef659c18f1b1e8009766072588a6f33f8b963742354"
   }
 }

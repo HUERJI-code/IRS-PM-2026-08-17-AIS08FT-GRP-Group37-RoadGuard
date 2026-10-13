@@ -56,9 +56,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     application = FastAPI(
         title="RoadGuard API",
-        version="0.5.0",
+        version="0.6.0",
         description=(
-            "Persisted inspections using explicit demo scenarios or an opt-in trusted local real detector. "
+            "Persisted inspections using explicit demo scenarios or the locally installed released detector. "
+            "Real records preserve all detections and a separate primary display suggestion when configured. "
             "Real detections require review; business rules and tasks remain demo assumptions. "
             "Road type is user-declared. No route planning is performed. "
             "The separate /demo endpoints remain stateless previews."

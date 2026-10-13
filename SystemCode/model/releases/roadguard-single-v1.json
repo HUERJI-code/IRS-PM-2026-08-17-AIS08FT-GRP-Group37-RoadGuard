@@ -1,0 +1,32 @@
+{
+  "schema_version": "roadguard-model-v1",
+  "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
+  "status": "experimental",
+  "weights_path": "Dataset/models/roadguard-yolo11s-single-v1.pt",
+  "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
+  "weights_bytes": 19218837,
+  "source_class_names": [
+    "longitudinal crack", "longitudinal crack wide", "transverse crack", "transverse crack wide",
+    "alligator crack", "alligator crack sunken", "pothole", "pothole deep"
+  ],
+  "source_dataset": {
+    "ref": "juusos/rdd2022es",
+    "version": 1,
+    "manifest_sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341"
+  },
+  "inference": {"conf": 0.2, "iou": 0.7, "imgsz": 832},
+  "primary_policy": {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": 0.2},
+  "evaluation_path": "SystemCode/experiments/vision/single_damage_summary.json",
+  "release": {
+    "repository": "HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard",
+    "tag": "vision-single-v1",
+    "asset": "roadguard-yolo11s-single-v1.pt",
+    "url": "https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1"
+  },
+  "limitations": [
+    "Experimental: requires human review; not both 70 percent typed precision and recall.",
+    "Single-subject image-type metrics are not multi-object localization metrics.",
+    "Known obvious potholes and the AI-generated example still fail.",
+    "Source images do not establish Jurong or Singapore generalization."
+  ]
+}

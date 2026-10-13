@@ -230,6 +230,10 @@ class WorkflowService:
         self.scope.validate(metadata.latitude, metadata.longitude, metadata.road_type)
         # CPU/GPU work happens before BEGIN IMMEDIATE; other domain writes proceed.
         assessment, model_version, weights_sha256, manifest_version = self._detect(metadata, image)
+        suggestion = None
+        if metadata.mode == "real" and getattr(self.real_detector, "primary_policy", None) is not None:
+            from roadguard.vision.suggestion import primary_suggestion
+            suggestion = primary_suggestion(assessment.detections, self.real_detector.primary_policy)
         saved_image_id = None
         try:
             with self.database.transaction() as connection:
@@ -248,6 +252,7 @@ class WorkflowService:
                     record_version=1, mode=metadata.mode, demo_scenario_id=metadata.scenario_id,
                     model_version=model_version, model_weights_sha256=weights_sha256,
                     model_manifest_version=manifest_version, image_width=image.width, image_height=image.height,
+                    primary_suggestion=suggestion,
                     scope_version=self.scope.scope_version, road_type=metadata.road_type, review_history=[],
                 )
                 if candidate is not None:

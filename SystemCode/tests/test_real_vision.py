@@ -26,6 +26,7 @@ from roadguard.schemas.workflow import InspectionRecord, ReviewRequest, UploadMe
 from roadguard.tasks import TaskQueryService
 from roadguard.vision import DemoDetector
 from roadguard.vision.real import LocalVisionDetector, source_class_names
+from roadguard.vision.primary import PrimaryPolicy
 
 
 def png(width=80, height=60):
@@ -230,6 +231,73 @@ def test_local_detector_lazy_load_exact_names_digest_pixel_dimensions(local_mani
     assert model.options["device"] == "cpu" and model.options["max_det"] == 100
     assert model.options["save"] is False and model.options["stream"] is False
     assert isinstance(model.options["source"], Image.Image)
+    assert model.options["quantize"] is None
+    assert detector.primary_policy is None
+
+
+def test_released_default_manifest_and_explicit_disable():
+    assert load_settings({}).vision_manifest_path == REPOSITORY_ROOT / "SystemCode/model/releases/roadguard-single-v1.json"
+    assert load_settings({"ROADGUARD_VISION_MANIFEST_PATH": "disabled"}).vision_manifest_path is None
+
+
+def test_manifest_primary_policy_is_validated_before_loading(local_manifest, image):
+    path, payload = local_manifest
+    payload["primary_policy"] = {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": .25}
+    path.write_text(json.dumps(payload))
+    detector = LocalVisionDetector(path, model_loader=lambda *a, **k: FakeModel())
+    detector.detect(image)
+    assert detector.primary_policy == PrimaryPolicy("area_quarter", .25)
+
+
+@pytest.mark.parametrize("policy", [None, [], {},
+    {"policy_version": "single-damage-v2", "strategy": "area_quarter", "threshold": .25},
+    {"policy_version": "single-damage-v1", "strategy": "unknown", "threshold": .25},
+    {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": .2},
+    {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": .25, "auto_accept": True},
+])
+def test_malformed_primary_policy_never_loads_weights(local_manifest, image, policy):
+    path, payload = local_manifest
+    payload["primary_policy"] = policy
+    path.write_text(json.dumps(payload))
+    calls = []
+    detector = LocalVisionDetector(path, model_loader=lambda *a, **k: calls.append(a))
+    with pytest.raises(AppError) as error:
+        detector.detect(image)
+    assert error.value.status_code == 503 and not calls
+
+
+def test_primary_suggestion_remains_separate_from_acceptance_and_survives_restart(service, image):
+    service.real_detector.primary_policy = PrimaryPolicy("area_quarter", .2)
+    initial = service.create(metadata(), image, "suggestion")
+    suggestion = initial.inspection.primary_suggestion
+    assert suggestion.detection_id == initial.inspection.detections[0].detection_id
+    assert initial.inspection.selected_detection_id is None
+    assert initial.inspection.status == "pending_review" and initial.task is None and initial.input_revision == 0
+    restarted = WorkflowService(service.database, service.rules, service.detector, service.scope, service.images)
+    replay = restarted.create(metadata(), image, "suggestion")
+    assert replay.replayed and replay.inspection.primary_suggestion == suggestion
+    reviewed = restarted.review(initial.inspection.inspection_id, ReviewRequest(
+        request_id="confirm-primary", expected_version=1, action="confirm", detection_id=suggestion.detection_id))
+    assert reviewed.inspection.primary_suggestion == suggestion and reviewed.task is not None
+    assert reviewed.input_revision == 1
+
+
+def test_empty_primary_suggestion_and_legacy_records(service, image):
+    service.real_detector.primary_policy = PrimaryPolicy("area_quarter", .2)
+    service.real_detector.confidence = None
+    record = service.create(metadata(), image, "empty-primary").inspection
+    assert record.primary_suggestion.detection_id is None and record.status == "no_detection"
+    old = record.model_dump()
+    del old["primary_suggestion"]
+    assert InspectionRecord.model_validate(old).primary_suggestion is None
+
+
+def test_foreign_primary_id_rejected(service, image):
+    service.real_detector.primary_policy = PrimaryPolicy("area_quarter", .2)
+    record = service.create(metadata(), image, "bad-primary").inspection.model_dump()
+    record["primary_suggestion"]["detection_id"] = "another-inspection"
+    with pytest.raises(ValidationError):
+        InspectionRecord.model_validate(record)
 
 
 @pytest.mark.parametrize("changes", [
