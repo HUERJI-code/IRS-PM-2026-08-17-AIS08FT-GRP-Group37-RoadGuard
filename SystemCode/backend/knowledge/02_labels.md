@@ -1,6 +1,6 @@
 # 八类标签与解释限制
 
-document_id：`rg-kb-labels`；document_version：`1`；owner：`A`。
+document_id：`rg-kb-labels`；document_version：`2`；owner：`A`。
 
 <a id="label-table"></a>
 ## 中央标签字典
@@ -27,6 +27,6 @@ classification：`confirmed_project_fact`。citation_id：`rg-kb-labels#label-ta
 
 classification：`confirmed_project_fact`。citation_id：`rg-kb-labels#label-limits`。
 
-`wide`、`sunken`、`deep` 是来源数据集的视觉类别描述，不是量测的裂缝宽度、沉陷/坑洞深度或结构诊断。没有限定词的类别也不证明损坏轻微。标签字典不能直接提供 severity、priority、service_minutes 或 due_at；当前映射只在演示规则中定义，不能说来自数据集或正式工程标准。训练划分、真实推理和逐类指标尚需实际交付证据。
+`wide`、`sunken`、`deep` 是来源数据集的视觉类别描述，不是量测的裂缝宽度、沉陷/坑洞深度或结构诊断。没有限定词的类别也不证明损坏轻微。标签字典不能直接提供 severity、priority、service_minutes 或 due_at；当前映射只在演示规则中定义，不能说来自数据集或正式工程标准。训练划分、真实推理和逐类指标必须引用对应模型版本的实际交付证据，不能从标签字典推断。
 
 来源：[src-label-schema](../../model/label_schema.json)、[src-demo-rules](../../config/demo_rules.example.json)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。

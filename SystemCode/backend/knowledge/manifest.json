@@ -1,13 +1,13 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v1",
+  "package_version": "a-knowledge-v2",
   "language": "zh-CN",
   "owner": "A",
   "review_basis": "repository_consistency_review",
   "review": {
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
-    "reviewed_on": "2026-10-12",
+    "reviewed_on": "2026-10-13",
     "note": "Repository source/config consistency check only; not engineering approval, road permission or experiment validation."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
@@ -16,7 +16,7 @@
     "depot_version": "nus-iss-v1",
     "label_schema_version": "rdd2022es-v1-labels-1",
     "rule_version": "demo-rules-v1",
-    "workflow_contract_version": "a-workflow-v1"
+    "workflow_contract_version": "a-workflow-v2"
   },
   "classification_vocabulary": [
     "confirmed_project_fact",
@@ -63,14 +63,14 @@
     {
       "source_id": "src-workflow-schema",
       "path": "SystemCode/backend/roadguard/schemas/workflow.py",
-      "version": "a-workflow-v1",
-      "sha256": "55bcfb9142267f11c583cbd30b8b17bb7395d9099dc7ee5ced56ce84441225d2"
+      "version": "a-workflow-v2",
+      "sha256": "8ec361871d17a9c1b4c0df9759c0ba0dab86203a2f92624200793ec9c4acd585"
     },
     {
       "source_id": "src-workflow-service",
       "path": "SystemCode/backend/roadguard/inspections/service.py",
-      "version": "a-workflow-v1",
-      "sha256": "db94baaba880af45fb809e139c77b9c3ce2cb2434ad518bccae5174962d96ac3"
+      "version": "a-workflow-v2",
+      "sha256": "320bc78e4c4c0a26ef79a5a8b4a6337df3bcaa1ef53c25e9dbd3ca4d3bde1773"
     },
     {
       "source_id": "src-geography-code",
@@ -153,10 +153,10 @@
     {
       "document_id": "rg-kb-labels",
       "path": "02_labels.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "b4faf49a14826dc8f81fef7f36c6ee1bbf8d1ccaa6703e95b84f11c764c818ab",
+      "sha256": "9c5663785cc380de66c9a9cb23d21962a4155345d33d33d7858f323e6a644e00",
       "sections": [
         {
           "section_id": "label-table",
@@ -220,10 +220,10 @@
     {
       "document_id": "rg-kb-workflow",
       "path": "04_workflow.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "01aff4a855ea72b9623ca957df7a8eb2304949df653d63fbebe90e42e7006df6",
+      "sha256": "ad49d5f972f4daf4d684bd4efe6ce0d9bb245c1daf75e5c9b8eaeb0e7290e54b",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -313,10 +313,10 @@
     {
       "document_id": "rg-kb-pending",
       "path": "06_pending_decisions.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "49e57e2649ae11e3fb9d36cef23b4a9f772c13353b930ee9b9c256cf50206cea",
+      "sha256": "4f1238cc5c0c6bb8057fc517abd2534f7dbc5ae2792ad92036e7f1141a1dec31",
       "sections": [
         {
           "section_id": "pending-business",
@@ -345,11 +345,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "ffadcd965de857d7969ae40b7f897b1141fe52e34dc5a07e47bf8c3040070fc8",
+    "sha256": "1bccdb4614c9e1669a7f7b34350feba65237a2b8e1ab08307bbab67cad4d36e4",
     "case_count": 10
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "ba2586e7fbbbae80542baf90fdc0d2a8377a68e8906df9941e24f08c30f52556"
+    "sha256": "3e31818f6d93a28116d6b6c8f26592f5a900ebdf6f2166eb69fca3dbe2404689"
   }
 }

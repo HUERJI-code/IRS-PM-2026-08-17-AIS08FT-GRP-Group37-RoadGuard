@@ -1,4 +1,4 @@
-"""Demo upload/review/task workflow; original detection DTOs remain compatible."""
+"""a-workflow-v2 detector modes; business tasks remain explicitly demo."""
 
 from typing import Annotated, Literal, Self
 
@@ -24,11 +24,19 @@ def _label(value: str | None) -> str | None:
 
 
 class UploadMetadata(ContractModel):
-    mode: Literal["demo"]
-    scenario_id: Annotated[NonEmptyString, Field(max_length=64)]
+    mode: Literal["demo", "real"]
+    scenario_id: Annotated[NonEmptyString, Field(max_length=64)] | None = None
     latitude: Latitude
     longitude: Longitude
     road_type: RoadType
+
+    @model_validator(mode="after")
+    def validate_mode(self) -> Self:
+        if self.mode == "demo" and self.scenario_id is None:
+            raise ValueError("demo mode requires a named scenario")
+        if self.mode == "real" and "scenario_id" in self.model_fields_set:
+            raise ValueError("real mode cannot select a demo scenario")
+        return self
 
 
 class ReviewRequest(ContractModel):
@@ -113,9 +121,11 @@ class InspectionRecord(Inspection):
     created_at: UTCTimestamp
     updated_at: UTCTimestamp
     record_version: PositiveInt
-    mode: Literal["demo"]
-    demo_scenario_id: NonEmptyString
+    mode: Literal["demo", "real"]
+    demo_scenario_id: NonEmptyString | None
     model_version: NonEmptyString
+    model_weights_sha256: Annotated[str, StringConstraints(strict=True, pattern=r"^[0-9a-f]{64}$")] | None = None
+    model_manifest_version: Literal["roadguard-model-v1"] | None = None
     image_width: PositiveInt
     image_height: PositiveInt
     scope_version: NonEmptyString
@@ -128,10 +138,21 @@ class InspectionRecord(Inspection):
     def validate_provenance(self) -> Self:
         if self.updated_at < self.created_at:
             raise ValueError("updated_at cannot precede created_at")
+        if self.mode == "demo":
+            if self.demo_scenario_id is None or self.model_weights_sha256 is not None or self.model_manifest_version is not None:
+                raise ValueError("demo records require scenario provenance and no real checkpoint")
+        elif (self.demo_scenario_id is not None or self.model_weights_sha256 is None
+              or self.model_manifest_version is None or self.model_version.startswith("demo")):
+            raise ValueError("real records require checkpoint provenance without a demo scenario")
+        if self.mode == "real" and self.status == "accepted" and not any(
+            entry.action in {"confirm", "correct"} and entry.detection_id == self.selected_detection_id
+            for entry in self.review_history
+        ):
+            raise ValueError("real detections require explicit review before acceptance")
         if any((item.image_width, item.image_height, item.model_version) !=
-               (self.image_width, self.image_height, self.model_version) or not item.is_demo
+               (self.image_width, self.image_height, self.model_version) or item.is_demo != (self.mode == "demo")
                for item in self.detections):
-            raise ValueError("detections must match original image and demo model provenance")
+            raise ValueError("detections must match original image and detector mode provenance")
         return self
 
 

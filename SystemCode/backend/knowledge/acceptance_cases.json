@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v1",
+  "package_version": "a-knowledge-v2",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -66,7 +66,7 @@
     {
       "case_id": "qa-03",
       "is_synthetic_case": true,
-      "question": "0.60 达标吗？高低混合的巡检能自动建任务，复核会改掉模型证据吗？",
+      "question": "demo 模式下 0.60 达标吗？高低混合的巡检能自动建任务，复核会改掉模型证据吗？",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -84,7 +84,8 @@
       "expected_grounded_points": [
         "演示阈值为 0.60，等号达标，0.5999 低于阈值。",
         "任一低置信度使整条巡检 pending_review，保留所有检测且确认前没有任务。",
-        "人工确认/纠正独立保存审核历史，不把原置信度变为 1.0，也不覆盖原始标签。"
+        "人工确认/纠正独立保存审核历史，不把原置信度变为 1.0，也不覆盖原始标签。",
+        "real 模式尚未校准，所有非空真实检测一律先审核，不能套用 demo 自动接受阈值。"
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [

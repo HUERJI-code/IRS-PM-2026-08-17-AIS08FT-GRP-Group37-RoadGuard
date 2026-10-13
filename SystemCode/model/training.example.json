@@ -1,0 +1,31 @@
+{
+  "dataset_root": "Dataset",
+  "data": "Dataset/prepared/data.yaml",
+  "manifest": "Dataset/prepared/manifest.jsonl",
+  "model": "Dataset/pretrained/yolo11n.pt",
+  "run_name": "yolo11n-rdd2022es-v1-seed42",
+  "model_version": "yolo11n-rdd2022es-v1-seed42-experimental",
+  "train": {
+    "epochs": 30,
+    "imgsz": 640,
+    "batch": 16,
+    "seed": 42,
+    "patience": 10,
+    "workers": 0,
+    "device": "0",
+    "cache": false,
+    "fliplr": 0.0,
+    "deterministic": true,
+    "amp": false,
+    "optimizer": "AdamW",
+    "lr0": 0.001,
+    "lrf": 0.01,
+    "warmup_epochs": 1.0,
+    "close_mosaic": 2
+  },
+  "inference": {
+    "conf": 0.25,
+    "iou": 0.7,
+    "imgsz": 640
+  }
+}

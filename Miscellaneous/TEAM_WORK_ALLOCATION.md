@@ -1,6 +1,6 @@
 # RoadGuard 三人分工与接口对接表
 
-编制日期：2026-10-11；更新：2026-10-12。状态：A 的第 3～7 步已完成，包含模拟上传/审核/任务持久化、同版本任务快照、固定输入与知识交付；真实模型与 B/C 模块按以下分工推进。
+编制日期：2026-10-11；更新：2026-10-13。状态：A 的第 3～7 步已完成；第 8 步增加全量数据流水线、恢复训练/评估和真实检测接入，运行结果见[验收记录](STEP8_VISION_ACCEPTANCE.md)。B/C 模块按以下分工推进。
 
 所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
 
@@ -94,7 +94,7 @@ C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户
 
 | 数据对象 | 提供者 → 使用者 | 最少需要的字段 | 关键约定 |
 | --- | --- | --- | --- |
-| **Detection / Inspection / Task** | A → B/C | 见[接口契约](API_CONTRACT.md) | 原 DTO 及 a-workflow-v1 记录契约已实现；在线巡检/审核/任务仍采用演示规则 |
+| **Detection / Inspection / Task** | A → B/C | 见[接口契约](API_CONTRACT.md) | 原 DTO 及 a-workflow-v2 记录契约已实现；在线巡检/审核/任务仍采用演示规则 |
 | **Crew** | B → A/C | `crew_id`、`name`、`available`、出发点坐标、`shift_minutes` | 默认四个固定 ID；停用或没有任务的队伍仍保留；能力差异首版不扩展 |
 | **PlanningInput** | A/B → B | `input_revision`、`planning_start_at`、`tasks`、`crews`、班次/返基地设置、目标权重、`random_seed` | 一个规划批次使用一致输入；任务或队伍配置变化时通过共用方法更新输入版本 |
 | **TravelMatrix** | B 内部，摘要供 A/C | `node_ids`、`duration_minutes`、`provider`、`generated_at` | 第 i 行第 j 列表示 i→j；不假设对称；不可达用空值并显式处理；同一轮 GA/Greedy 共用矩阵 |

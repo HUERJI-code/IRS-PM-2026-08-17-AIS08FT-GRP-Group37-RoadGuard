@@ -21,6 +21,7 @@ build/
 coverage/
 
 # Runtime data, datasets and trained weights
+/Dataset/
 *.db
 *.db-shm
 *.db-wal

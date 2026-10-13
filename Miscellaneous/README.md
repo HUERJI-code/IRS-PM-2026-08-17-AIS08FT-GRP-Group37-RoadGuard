@@ -9,6 +9,8 @@
 - [Demo detection and configurable rule assessment (中文)](DEMO_DETECTION_AND_RULES.md)
 - [Persisted inspection, review and task workflow (中文)](INSPECTION_REVIEW_TASK_WORKFLOW.md)
 - [B/C task snapshot, fixtures and knowledge handoff (中文)](BC_HANDOFF.md)
+- [Optional real vision API and detector provenance](REAL_VISION_API.md)
+- [Step 8 training, checkpoints, metrics and acceptance (中文)](STEP8_VISION_ACCEPTANCE.md)
 - [Implementation plan](IMPLEMENTATION_PLAN.md)
 - [Three-person responsibilities and interface contracts (中文)](TEAM_WORK_ALLOCATION.md)
 - [Submission checklist](SUBMISSION_CHECKLIST.md)

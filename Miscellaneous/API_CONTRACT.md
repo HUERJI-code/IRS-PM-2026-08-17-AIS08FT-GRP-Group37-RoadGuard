@@ -10,6 +10,8 @@
 
 第 7 步增量为 `a-task-query-v1`，提供 B/C 使用的一致活动任务快照；完整使用方式、固定输入、知识包及 HTTP 示例见 [B/C 交接说明](BC_HANDOFF.md)。没有改变原 Task 或 TaskRecord 的字段，也没有冻结 B 的完整 PlanningInput。
 
+第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。真实非空结果一律先审核，未校准的模型不使用演示阈值自动接受。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
+
 ## 通用表示
 
 - JSON 字段使用 `snake_case`；ID 与版本用非空字符串，前后空白被去除，纯空白无效。未知字段拒绝，防止调用方静默拼错字段。
@@ -39,7 +41,7 @@ Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须�
 
 ## 路由实现状态与错误
 
-当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v1 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
+当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v2 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
 
 ### a-demo-v1：检测与规则预览
 
@@ -57,7 +59,7 @@ RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无
 
 `GET /api/v1/demo/scenarios` 返回 DemoScenarioCatalogue；`POST /api/v1/demo/assessments` 接收 DemoAssessmentRequest，200 返回 DemoAssessmentResponse。调用示例 `{"scenario_id":"high_confidence"}`。预览调用只执行服务，不存储巡检/任务、不递增 input_revision，重复请求不会产生队列记录。候选中不含期限，不能计算逾期指标；持久化任务通过第 6 步接口创建，由业务服务执行位置验证、审核分流、存储和幂等性检查。
 
-### a-workflow-v1：持久化业务接口
+### a-workflow-v2：持久化业务接口（保留原 demo 请求）
 
 可执行类型位于 [schemas/workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py)，路由位于 [api/workflow.py](../SystemCode/backend/roadguard/api/workflow.py)。字段和操作说明以[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)及 schema 为准。
 

@@ -12,6 +12,7 @@ from roadguard.database import Database
 from roadguard.errors import install_error_handlers
 from roadguard.rules import RuleService, load_rule_policy
 from roadguard.vision import DemoDetector
+from roadguard.vision.real import LocalVisionDetector
 from roadguard.geography import JurongScope
 from roadguard.images import ImageStore
 from roadguard.inspections import WorkflowService
@@ -36,8 +37,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         application.state.database = database
         application.state.rule_service = rule_service
         application.state.demo_detector = DemoDetector()
+        application.state.real_detector = LocalVisionDetector(active_settings.vision_manifest_path)
         application.state.workflow_service = WorkflowService(
             database, rule_service, application.state.demo_detector, scope, images,
+            real_detector=application.state.real_detector,
         )
         application.state.task_query_service = TaskQueryService(database)
         try:
@@ -47,15 +50,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             application.state.database = None
             application.state.rule_service = None
             application.state.demo_detector = None
+            application.state.real_detector = None
             application.state.workflow_service = None
             application.state.task_query_service = None
 
     application = FastAPI(
         title="RoadGuard API",
-        version="0.4.0",
+        version="0.5.0",
         description=(
-            "Persisted image inspections, review and task management using explicit synthetic detection. "
-            "Road type is user-declared. No real image inference or route planning is performed. "
+            "Persisted inspections using explicit demo scenarios or an opt-in trusted local real detector. "
+            "Real detections require review; business rules and tasks remain demo assumptions. "
+            "Road type is user-declared. No route planning is performed. "
             "The separate /demo endpoints remain stateless previews."
         ),
         lifespan=lifespan,

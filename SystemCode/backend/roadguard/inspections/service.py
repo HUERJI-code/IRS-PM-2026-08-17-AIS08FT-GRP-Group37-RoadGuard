@@ -1,12 +1,14 @@
 """Transactional demo workflow. Detected facts and frozen policies are retained."""
 
 from datetime import datetime, timezone
+from contextlib import contextmanager
 from functools import wraps
 import hashlib
 import json
 import logging
 import re
 import sqlite3
+from threading import Lock
 from uuid import uuid4
 
 from pydantic import TypeAdapter
@@ -16,7 +18,7 @@ from roadguard.errors import AppError
 from roadguard.geography import JurongScope
 from roadguard.images import ImageStore, PreparedImage
 from roadguard.rules import RulePolicy, RuleService
-from roadguard.schemas import DecisionTrace
+from roadguard.schemas import DecisionTrace, Detection, RuleAssessment
 from roadguard.schemas.workflow import (
     InspectionList, InspectionMutation, InspectionRecord, RequestId, ReviewHistoryEntry,
     ReviewRequest, TaskAuditValues, TaskHistoryEntry, TaskList, TaskMutation, TaskPatch, TaskRecord,
@@ -40,7 +42,8 @@ def _db_operation(method):
 
 def _validated(model, payload, *, patch=False):
     try:
-        return model.model_validate(payload.model_dump(warnings=False, exclude_unset=patch))
+        return model.model_validate(payload.model_dump(warnings=False, exclude_unset=patch,
+                                                     exclude_none=model is UploadMetadata))
     except (AttributeError, TypeError, ValueError):
         raise AppError("validation_error", "Workflow request validation failed.", 422) from None
 
@@ -55,9 +58,65 @@ def _now():
 
 class WorkflowService:
     def __init__(self, database: Database, rules: RuleService, detector: DemoDetector,
-                 scope: JurongScope, images: ImageStore) -> None:
+                 scope: JurongScope, images: ImageStore, *, real_detector=None) -> None:
         self.database, self.rules, self.detector = database, rules, detector
         self.scope, self.images = scope, images
+        self.real_detector = real_detector
+        self._key_guard, self._create_locks = Lock(), {}
+
+    @contextmanager
+    def _create_key_lock(self, key):
+        # Single-flight per key in this process. Cross-process writes still recheck
+        # the durable key under SQLite's write lock before saving any resources.
+        with self._key_guard:
+            entry = self._create_locks.setdefault(key, [Lock(), 0])
+            entry[1] += 1
+        try:
+            with entry[0]:
+                yield
+        finally:
+            with self._key_guard:
+                entry[1] -= 1
+                if entry[1] == 0:
+                    del self._create_locks[key]
+
+    def _detect(self, metadata, image):
+        if metadata.mode == "demo":
+            try:
+                detections = self.detector.detect(metadata.scenario_id, image_width=image.width, image_height=image.height)
+            except DemoScenarioNotFound:
+                raise AppError("demo_scenario_not_found", "The requested demo scenario is not available.", 404) from None
+            return self.rules.evaluate(detections), self.detector.model_version, None, None
+        if self.real_detector is None:
+            raise AppError("detector_unavailable", "The local real detector is unavailable.", 503)
+        try:
+            detections = [Detection.model_validate(item.model_dump(warnings=False))
+                          for item in self.real_detector.detect(image)]
+            if (len(detections) > 100 or not isinstance(self.real_detector.model_version, str)
+                    or not self.real_detector.model_version.strip()
+                    or self.real_detector.model_version.strip().startswith("demo")
+                    or not isinstance(self.real_detector.weights_sha256, str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", self.real_detector.weights_sha256)
+                    or self.real_detector.manifest_version != "roadguard-model-v1"):
+                raise ValueError("invalid real detector provenance")
+            if any(item.is_demo or (item.image_width, item.image_height, item.model_version) !=
+                   (image.width, image.height, self.real_detector.model_version) for item in detections):
+                raise ValueError("inconsistent real detection provenance")
+            trace = [DecisionTrace(code="demo_business_assumptions", rule_version=self.rules.policy.rule_version,
+                                   is_demo=True, message="Detection uses real image pixels. Inspection and any reviewed task remain demo business objects: severity, priority, service time and road eligibility are unvalidated assumptions.")]
+            trace.append(DecisionTrace(
+                code="real_uncalibrated_review_required" if detections else "no_detection",
+                message="Every nonempty real detection requires human review; no calibrated acceptance threshold exists. The demo confidence threshold is not applied." if detections else "No real detections survived the model inference filter; no task is produced. This does not prove the image is damage-free.",
+                rule_version=self.rules.policy.rule_version, is_demo=True,
+            ))
+            assessment = RuleAssessment(status="pending_review" if detections else "no_detection", detections=detections,
+                                        selected_detection_id=None, candidate=None, decision_trace=trace,
+                                        rule_version=self.rules.policy.rule_version, is_demo=True)
+            return assessment, self.real_detector.model_version, self.real_detector.weights_sha256, self.real_detector.manifest_version
+        except AppError:
+            raise
+        except Exception:
+            raise AppError("detector_inference_failed", "Real image inference failed; no inspection was created.", 502) from None
 
     @staticmethod
     def _resource_id(value):
@@ -159,18 +218,24 @@ class WorkflowService:
         except (TypeError, ValueError):
             raise AppError("validation_error", "Upload request validation failed.", 422) from None
         fingerprint = _hash({"metadata": metadata.model_dump(mode="json"), "source_sha256": image.source_sha256})
+        with self._create_key_lock(key):
+            return self._create_prepared(metadata, image, key, fingerprint)
+
+    def _create_prepared(self, metadata, image, key, fingerprint):
+        # Replay is independent of model availability and never invokes inference.
+        with self.database.connect() as connection:
+            replay_id = self._lookup_key(connection, "create", key, fingerprint)
+            if replay_id:
+                return self._inspection_result(connection, replay_id, replayed=True)
+        self.scope.validate(metadata.latitude, metadata.longitude, metadata.road_type)
+        # CPU/GPU work happens before BEGIN IMMEDIATE; other domain writes proceed.
+        assessment, model_version, weights_sha256, manifest_version = self._detect(metadata, image)
         saved_image_id = None
         try:
             with self.database.transaction() as connection:
                 replay_id = self._lookup_key(connection, "create", key, fingerprint)
                 if replay_id:
                     return self._inspection_result(connection, replay_id, replayed=True)
-                self.scope.validate(metadata.latitude, metadata.longitude, metadata.road_type)
-                try:
-                    detections = self.detector.detect(metadata.scenario_id, image_width=image.width, image_height=image.height)
-                except DemoScenarioNotFound:
-                    raise AppError("demo_scenario_not_found", "The requested demo scenario is not available.", 404) from None
-                assessment = self.rules.evaluate(detections)
                 now, inspection_id = _now(), uuid4().hex
                 candidate = assessment.candidate
                 task_id = uuid4().hex if candidate is not None else None
@@ -180,8 +245,9 @@ class WorkflowService:
                     detections=assessment.detections, selected_detection_id=assessment.selected_detection_id,
                     status="accepted" if candidate else assessment.status, task_id=task_id,
                     decision_trace=assessment.decision_trace, is_demo=True, created_at=now, updated_at=now,
-                    record_version=1, mode="demo", demo_scenario_id=metadata.scenario_id,
-                    model_version=self.detector.model_version, image_width=image.width, image_height=image.height,
+                    record_version=1, mode=metadata.mode, demo_scenario_id=metadata.scenario_id,
+                    model_version=model_version, model_weights_sha256=weights_sha256,
+                    model_manifest_version=manifest_version, image_width=image.width, image_height=image.height,
                     scope_version=self.scope.scope_version, road_type=metadata.road_type, review_history=[],
                 )
                 if candidate is not None:

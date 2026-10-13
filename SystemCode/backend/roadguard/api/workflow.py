@@ -95,8 +95,8 @@ async def _upload(request: Request) -> tuple[UploadMetadata, bytes]:
 @router.post(
     "/inspections", response_model=InspectionMutation, status_code=201, tags=["Inspections"],
     responses={**ERRORS, 200: {"model": InspectionMutation}, 413: {"model": ErrorResponse},
-               415: {"model": ErrorResponse}},
-    summary="Upload an image with an explicitly selected synthetic scenario",
+               415: {"model": ErrorResponse}, 502: {"model": ErrorResponse}},
+    summary="Upload an image for an explicit demo scenario or opt-in real detection",
     openapi_extra={"requestBody": {"required": True, "content": {"multipart/form-data": {
         "schema": {"type": "object", "required": ["image", "metadata"], "properties": {
             "image": {"type": "string", "format": "binary", "description": "One JPEG or PNG, at most 8 MiB and 20 megapixels."},
