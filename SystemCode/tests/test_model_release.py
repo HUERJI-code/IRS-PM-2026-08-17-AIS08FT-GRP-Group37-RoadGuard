@@ -14,7 +14,7 @@ from roadguard.schemas import Detection
 from roadguard.schemas.common import LABELS_BY_ID
 from roadguard.vision.primary import PrimaryPolicy
 from roadguard.vision.suggestion import primary_suggestion
-from roadguard.schemas.workflow import InspectionRecord
+from roadguard.schemas.workflow import InspectionRecord, InspectionMutationResponse, InspectionUploadResponse
 
 
 @pytest.fixture
@@ -67,6 +67,26 @@ def test_shared_real_response_example_is_review_only():
     record = InspectionRecord.model_validate_json((root / "SystemCode/contracts/workflow/real-primary-example.json").read_text())
     assert record.mode == "real" and record.primary_suggestion.detection_id in {d.detection_id for d in record.detections}
     assert record.status == "pending_review" and record.selected_detection_id is None and record.task_id is None
+
+
+def test_previous_full_response_example_is_one_box_with_an_automatic_task():
+    root = Path(__file__).resolve().parents[2]
+    result = InspectionMutationResponse.model_validate_json(
+        (root / "SystemCode/contracts/workflow/real-auto-task-example.json").read_text())
+    assert result.inspection.status == "accepted" and len(result.inspection.detections) == 1
+    assert result.inspection.auto_acceptance.confidence_threshold == .6
+    assert result.inspection.detections[0].confidence >= .6
+    assert result.task.task_id == result.inspection.task_id
+    assert result.task.history[0].actor_source == "system_confidence_policy"
+
+
+def test_current_upload_example_has_only_display_fields_and_task_reference():
+    root = Path(__file__).resolve().parents[2]
+    source = json.loads((root / "SystemCode/contracts/workflow/real-upload-example.json").read_text())
+    result = InspectionUploadResponse.model_validate(source)
+    assert set(source) == {"inspection_id", "status", "detection", "task_id"}
+    assert result.status == "accepted" and result.task_id is not None
+    assert result.detection.confidence >= .6
 
 
 @pytest.mark.parametrize("scores,classes,boxes", [

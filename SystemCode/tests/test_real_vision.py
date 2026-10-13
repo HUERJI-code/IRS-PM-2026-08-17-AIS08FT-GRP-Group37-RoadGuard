@@ -46,7 +46,7 @@ class FakeDetector:
     weights_sha256 = "a" * 64
     manifest_version = "roadguard-model-v1"
 
-    def __init__(self, confidence=0.95):
+    def __init__(self, confidence=0.55):
         self.confidence, self.calls = confidence, 0
         self.on_detect = None
 
@@ -76,17 +76,23 @@ def image(service):
     return service.images.prepare(png())
 
 
-@pytest.mark.parametrize("confidence", [0.05, 0.59, 0.60, 0.99])
-def test_real_scores_never_use_demo_acceptance_gate(service, image, confidence):
+@pytest.mark.parametrize("confidence", [0.05, 0.59, 0.599999, 0.60, 0.600001, 0.99])
+def test_real_primary_uses_inclusive_confidence_gate(service, image, confidence):
     service.real_detector.confidence = confidence
     result = service.create(metadata(), image, "real")
     assert result.inspection.mode == "real" and result.inspection.demo_scenario_id is None
     assert result.inspection.is_demo and not result.inspection.detections[0].is_demo
-    assert result.inspection.status == "pending_review" and result.task is None
-    assert result.input_revision == 0 and not result.planning_input_changed
+    accepted = confidence >= .6
+    assert result.inspection.status == ("accepted" if accepted else "pending_review")
+    assert (result.task is not None) == accepted
+    assert result.input_revision == int(accepted) and result.planning_input_changed == accepted
     assert result.inspection.model_weights_sha256 == "a" * 64
-    assert {trace.code for trace in result.inspection.decision_trace} == {
-        "demo_business_assumptions", "real_uncalibrated_review_required"}
+    codes = {trace.code for trace in result.inspection.decision_trace}
+    assert ("real_primary_auto_accepted" if accepted else "real_primary_review_required") in codes
+    if accepted:
+        assert result.inspection.auto_acceptance.confidence_threshold == .6
+        assert result.task.history[0].actor_source == "system_confidence_policy"
+        assert result.inspection.review_history == []
     assert service.get_inspection(result.inspection.inspection_id) == result.inspection
 
 
@@ -140,7 +146,9 @@ def test_duplicate_inference_single_flight_and_not_under_database_write_lock(ser
     assert service._create_locks == {}
 
 
-def test_real_persistence_failure_rolls_back_image_record_and_key(service, image, monkeypatch):
+@pytest.mark.parametrize("confidence", [.55, .8])
+def test_real_persistence_failure_rolls_back_image_record_and_key(service, image, monkeypatch, confidence):
+    service.real_detector.confidence = confidence
     transaction = service.database.transaction
     @contextmanager
     def fail_transaction(*args, **kwargs):
@@ -403,12 +411,13 @@ def test_http_real_upload_review_snapshot_restart_and_errors(tmp_path):
         response = client.post("/api/v1/inspections", data=form, files={"image": ("photo.png", png())},
                                headers={"Idempotency-Key": "http-real"})
         assert response.status_code == 201
-        record = response.json()["inspection"]
+        summary = response.json()
+        record = client.get(f'/api/v1/inspections/{summary["inspection_id"]}').json()
         assert record["mode"] == "real" and record["is_demo"] and not record["detections"][0]["is_demo"]
         client.app.state.workflow_service.real_detector = None
         replay = client.post("/api/v1/inspections", data=form, files={"image": ("photo.png", png())},
                              headers={"Idempotency-Key": "http-real"})
-        assert replay.status_code == 200 and replay.json()["replayed"]
+        assert replay.status_code == 200 and replay.json() == summary
         unavailable = client.post("/api/v1/inspections", data=form, files={"image": ("photo.png", png())},
                                   headers={"Idempotency-Key": "new"})
         assert unavailable.status_code == 503 and unavailable.json()["code"] == "detector_unavailable"

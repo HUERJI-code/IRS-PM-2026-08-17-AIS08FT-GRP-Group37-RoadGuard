@@ -20,11 +20,12 @@ from roadguard.images import ImageStore, PreparedImage
 from roadguard.rules import RulePolicy, RuleService
 from roadguard.schemas import DecisionTrace, Detection, RuleAssessment
 from roadguard.schemas.workflow import (
-    InspectionList, InspectionMutation, InspectionRecord, RequestId, ReviewHistoryEntry,
+    AutoAcceptance, InspectionList, InspectionMutation, InspectionRecord, RequestId, ReviewHistoryEntry,
     ReviewRequest, TaskAuditValues, TaskHistoryEntry, TaskList, TaskMutation, TaskPatch, TaskRecord,
     UploadMetadata,
 )
 from roadguard.vision import DemoDetector, DemoScenarioNotFound
+from roadguard.vision.suggestion import primary_suggestion
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +87,7 @@ class WorkflowService:
                 detections = self.detector.detect(metadata.scenario_id, image_width=image.width, image_height=image.height)
             except DemoScenarioNotFound:
                 raise AppError("demo_scenario_not_found", "The requested demo scenario is not available.", 404) from None
-            return self.rules.evaluate(detections), self.detector.model_version, None, None
+            return self.rules.evaluate(detections), self.detector.model_version, None, None, None
         if self.real_detector is None:
             raise AppError("detector_unavailable", "The local real detector is unavailable.", 503)
         try:
@@ -102,17 +103,26 @@ class WorkflowService:
             if any(item.is_demo or (item.image_width, item.image_height, item.model_version) !=
                    (image.width, image.height, self.real_detector.model_version) for item in detections):
                 raise ValueError("inconsistent real detection provenance")
+            policy = getattr(self.real_detector, "primary_policy", None)
+            suggestion = primary_suggestion(detections, policy) if policy is not None else None
+            primary = (next((d for d in detections if d.detection_id == suggestion.detection_id), None)
+                       if suggestion is not None else max(detections, key=lambda d: d.confidence, default=None))
+            threshold = self.rules.policy.confidence_threshold
+            candidate = self.rules.candidate_for(primary) if primary is not None and primary.confidence >= threshold else None
             trace = [DecisionTrace(code="demo_business_assumptions", rule_version=self.rules.policy.rule_version,
-                                   is_demo=True, message="Detection uses real image pixels. Inspection and any reviewed task remain demo business objects: severity, priority, service time and road eligibility are unvalidated assumptions.")]
+                                   is_demo=True, message="Detection uses real image pixels. Inspection and task remain demo business objects: severity, priority, service time and road eligibility are unvalidated assumptions.")]
             trace.append(DecisionTrace(
-                code="real_uncalibrated_review_required" if detections else "no_detection",
-                message="Every nonempty real detection requires human review; no calibrated acceptance threshold exists. The demo confidence threshold is not applied." if detections else "No real detections survived the model inference filter; no task is produced. This does not prove the image is damage-free.",
+                code=("real_primary_auto_accepted" if candidate else "real_primary_review_required") if detections else "no_detection",
+                message=(f"Only the primary detection's raw confidence is compared with the user-selected threshold {threshold:g}. "
+                         + ("The threshold is met; create one task. " if candidate else "The threshold is not met; human review is required. ")
+                         + "Ranking and ambiguity do not change this confidence gate. This threshold is not a calibrated accuracy guarantee.")
+                        if detections else "No real detections survived the model inference filter; no task is produced. This does not prove the image is damage-free.",
                 rule_version=self.rules.policy.rule_version, is_demo=True,
             ))
-            assessment = RuleAssessment(status="pending_review" if detections else "no_detection", detections=detections,
-                                        selected_detection_id=None, candidate=None, decision_trace=trace,
+            assessment = RuleAssessment(status="ready_for_task" if candidate else "pending_review" if detections else "no_detection", detections=detections,
+                                        selected_detection_id=primary.detection_id if candidate else None, candidate=candidate, decision_trace=trace,
                                         rule_version=self.rules.policy.rule_version, is_demo=True)
-            return assessment, self.real_detector.model_version, self.real_detector.weights_sha256, self.real_detector.manifest_version
+            return assessment, self.real_detector.model_version, self.real_detector.weights_sha256, self.real_detector.manifest_version, suggestion
         except AppError:
             raise
         except Exception:
@@ -229,11 +239,7 @@ class WorkflowService:
                 return self._inspection_result(connection, replay_id, replayed=True)
         self.scope.validate(metadata.latitude, metadata.longitude, metadata.road_type)
         # CPU/GPU work happens before BEGIN IMMEDIATE; other domain writes proceed.
-        assessment, model_version, weights_sha256, manifest_version = self._detect(metadata, image)
-        suggestion = None
-        if metadata.mode == "real" and getattr(self.real_detector, "primary_policy", None) is not None:
-            from roadguard.vision.suggestion import primary_suggestion
-            suggestion = primary_suggestion(assessment.detections, self.real_detector.primary_policy)
+        assessment, model_version, weights_sha256, manifest_version, suggestion = self._detect(metadata, image)
         saved_image_id = None
         try:
             with self.database.transaction() as connection:
@@ -253,11 +259,14 @@ class WorkflowService:
                     model_version=model_version, model_weights_sha256=weights_sha256,
                     model_manifest_version=manifest_version, image_width=image.width, image_height=image.height,
                     primary_suggestion=suggestion,
+                    auto_acceptance=(AutoAcceptance(confidence_threshold=self.rules.policy.confidence_threshold)
+                                     if metadata.mode == "real" and candidate else None),
                     scope_version=self.scope.scope_version, road_type=metadata.road_type, review_history=[],
                 )
                 if candidate is not None:
                     inspection.decision_trace.append(DecisionTrace(
-                        code="demo_task_created", message="The validated demo candidate was accepted and a single task "
+                        code="real_primary_task_created" if metadata.mode == "real" else "demo_task_created",
+                        message="The eligible candidate was accepted and a single demo business task "
                         "was created after declared-road and Jurong boundary validation. No route plan was calculated.",
                         rule_version=candidate.rule_version, is_demo=True,
                     ))
@@ -267,7 +276,8 @@ class WorkflowService:
                                    (inspection_id, inspection.status, 1, now.isoformat(), inspection.model_dump_json(),
                                     self.rules.policy.model_dump_json()))
                 if candidate is not None:
-                    task = self._make_task(inspection, candidate, key, "system_demo_rules", now)
+                    actor = "system_confidence_policy" if metadata.mode == "real" else "system_demo_rules"
+                    task = self._make_task(inspection, candidate, key, actor, now)
                     self._insert_task(connection, task)
                     increment_revision(connection)
                 self._save_key(connection, "create", key, fingerprint, inspection_id)

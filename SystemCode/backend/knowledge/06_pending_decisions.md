@@ -1,13 +1,13 @@
 # 未定选项与后续证据
 
-document_id：`rg-kb-pending`；document_version：`2`；owner：`A`。
+document_id：`rg-kb-pending`；document_version：`3`；owner：`A`。
 
 <a id="pending-business"></a>
 ## 业务与场景待确认
 
 classification：`pending_decision`。citation_id：`rg-kb-pending#pending-business`。
 
-待 A/B 确认班次长度、是否返基地、工程队能力假设、正式维修分钟数、任务期限/延误定义及目标权重；待 A 校准真实模型阈值、正式标签映射和多检测形成任务的策略。demo-rules-v1 只让流程可演示，不解决这些正式业务问题。NUS-ISS 建筑参考坐标仍需 B 核验车辆出入口，任务道路资格与真实矩阵来源另需证据。
+待 A/B 确认班次长度、是否返基地、工程队能力假设、正式维修分钟数、任务期限/延误定义及目标权重；当前项目已确认单主框 ≥ 0.60 自动建一个任务，低于阈值待审核；待 A 提供真实场景校准证据与正式标签映射。demo-rules-v1 只让流程可演示，不解决这些正式业务问题。NUS-ISS 建筑参考坐标仍需 B 核验车辆出入口，任务道路资格与真实矩阵来源另需证据。
 
 due_at=null 时没有已定义的任务期限；return_to_depot=null 时没有已定义的返程策略。未知时长不是零，无可用方案不是空的有效方案，不可达行程不是零分钟。
 

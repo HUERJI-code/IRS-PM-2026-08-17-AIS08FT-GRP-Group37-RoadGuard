@@ -1,6 +1,6 @@
 # 当前模型发布与后端接入
 
-日期：2026-10-13；负责人：A。本次按项目发起人要求发布最佳已训练权重并接入后端，不启动新训练。接口增量为 **a-workflow-v3**，FastAPI 文档版本 **0.6.0**；任务快照仍为 a-task-query-v1。
+日期：2026-10-13；负责人：A。本次按项目发起人要求发布最佳已训练权重并接入后端，不启动新训练。接口增量为 **a-workflow-v5**，FastAPI 文档版本 **0.8.0**；任务快照仍为 a-task-query-v1。
 
 ## 选用哪个模型
 
@@ -10,9 +10,9 @@
 - SHA-256：`464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`。
 - 八类：仍按 RDD2022ES 0～7，不合并宽/深等类型。
 - 单图主要损伤场景：原图推理 832，原始置信度过滤 0.20，NMS IoU 0.70，最多保留 100 条原始检测；CPU FP32。
-- 主建议：原始置信度 × 框面积占比的四次方根选一个。保留竞争类别/区域提示与全部原始框。
+- 主建议：原始置信度 × 框面积占比的四次方根选一个。接口最多返回一个框；数据库保留竞争类别/区域提示与全部原始框。
 
-这里“最佳”指已完成实验中的权重与本场景的均衡选型，不表示每项指标都最高。多目标框检测曾选择原图加翻转配方；本次单主目标校准选择原图配方，两者使用相同权重。[单目标实验](SINGLE_DAMAGE_OPTIMIZATION.md)的 377 张确认图片上，图像级八类 Precision/Recall 为 **61.63%/61.99%**，两个 70% 仍未达到；这不是独立真实场景测试。已知明显坑洞照片与 AI 图仍失败。发布不改变 experimental 状态，所有真实非空结果仍需审核。
+这里“最佳”指已完成实验中的权重与本场景的均衡选型，不表示每项指标都最高。多目标框检测曾选择原图加翻转配方；本次单主目标校准选择原图配方，两者使用相同权重。[单目标实验](SINGLE_DAMAGE_OPTIMIZATION.md)的 377 张确认图片上，图像级八类 Precision/Recall 为 **61.63%/61.99%**，两个 70% 仍未达到；这不是独立真实场景测试。已知明显坑洞照片与 AI 图仍失败。发布不改变 experimental 状态，用户已确认主框原始 confidence ≥ 0.60 自动建 Task，低于阈值待审核；此业务变更不提高模型准确率。
 
 ## GitHub 中保存什么
 
@@ -56,9 +56,11 @@ python -m pip install -r SystemCode/model/requirements-vision.txt
 {"mode":"real","latitude":1.3405,"longitude":103.706,"road_type":"public_motor_road"}
 ```
 
-位置只是演示输入，不能据此声称照片摄于 Jurong；道路类型仍由用户声明。real 模式不传 scenario_id。可执行完整响应样例在 [真实主建议示例](../SystemCode/contracts/workflow/real-primary-example.json)。
+位置只是演示输入，不能据此声称照片摄于 Jurong；道路类型仍由用户声明。real 模式不传 scenario_id。当前上传响应样例见 [精简上传示例](../SystemCode/contracts/workflow/real-upload-example.json)，逐字段含义见[响应字段说明](INSPECTION_RESPONSE_FIELDS.md)。旧 real-primary-example.json 保留为 v3 历史记录兼容样例。
 
-`inspection.primary_suggestion` 新增：
+上传只返回 inspection_id、status、detection、task_id。下列信息通过 `GET /api/v1/inspections/{id}` 获取；上传不再返回完整巡检或任务。
+
+详情中的 `primary_suggestion`：
 
 | 字段 | 含义 |
 | --- | --- |
@@ -70,11 +72,11 @@ python -m pip install -r SystemCode/model/requirements-vision.txt
 
 普通 demo 或未配置主建议的旧 manifest 返回 `primary_suggestion:null`；默认发布模型无检测时返回该对象，但其中 detection_id/ranking_score 为 null。历史巡检缺少此字段时按 null 读取，不重新推理或重写其证据。
 
-C 展示时从 `detections` 查找主建议 ID，默认画一个框；允许展开全部证据。歧义与低置信度均应提示审核。**`selected_detection_id` 仍表示原有流程的选择结果，不能拿主建议当已审核结果**。审核可以确认/纠正任何该巡检中保留的检测，并非只能选择主建议。
+C 直接绘制 `detections[0]`，列表最多一条；无检测时为空。数据库仍保存所有原始证据，HTTP 不提供展开所有框的入口。返回框优先是已接受的 selected_detection_id，其次是 primary_suggestion，旧记录缺建议时取最高置信度框。历史人工选择可与初始建议不同；竞争 ID 可指向内部证据。歧义保留为提示，不覆盖用户指定的置信度分流。审核仍能接受本巡检的保留 ID；普通 UI 使用返回的唯一检测 ID。
 
-真实非空上传状态仍是 pending_review，task 为 null，input_revision 不变。确认/纠正后才生成唯一 Task 并递增版本；Task 与业务规则仍是 demo。相同上传重试、模型不可用时重读、重启与审核都保留原始主建议快照。SQLite schema 仍为 v2，无破坏性数据库迁移。
+真实主框原始 confidence 达到配置的 confidence_threshold（默认 0.60）时，上传返回 accepted 和 task_id；任务与 auto_acceptance 快照在详情接口查询，input_revision 递增一次；低于阈值是 pending_review，task_id=null，版本不变。审核也可接受低分检测。自动任务 history.actor_source=system_confidence_policy。Task 与业务规则仍是 demo。相同上传重试、模型不可用时重读、重启与审核都保留原始主建议快照。SQLite schema 仍为 v2，无破坏性数据库迁移。
 
-严格解析 a-workflow-v2 InspectionRecord、禁止额外字段的客户端须更新为 v3 并接受新增可空字段。Detection、Task、任务快照和审核请求字段没有更改。
+HTTP 客户端更新为 a-workflow-v5 的 InspectionUploadResponse（上传）及 InspectionResponse / InspectionMutationResponse / InspectionListResponse（详情/审核/列表），接受新增可空 auto_acceptance 和最多一条 detections；不要再以内部 InspectionRecord 解析单框视图。旧记录不补任务、不重新推理。TaskRecord 历史 actor_source 新增 system_confidence_policy；基础 Detection、Task、任务快照和审核请求字段不变。
 
 ## 验收
 

@@ -4,7 +4,7 @@
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with mandatory review; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
 
 > 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测并强制复核，业务规则仍为演示；道路类型声明及合成任务点不能替代道路核验。
 
@@ -31,7 +31,7 @@ Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS
 
 RoadGuard is a planned web application that connects road damage observations to maintenance decisions. An inspector submits a road image and its location. A YOLO detector identifies damage type, basic severity and confidence. A confidence gate sends uncertain results for human review, while accepted results pass through explicit priority rules and enter the maintenance queue.
 
-The completed [30-epoch YOLO11n/YOLO11s comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md) selects YOLO11s by validation mAP50-95. It improves recall at the fixed confidence threshold while increasing false positives and CPU latency; all nonempty real detections still require review.
+The completed [30-epoch YOLO11n/YOLO11s comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md) selects YOLO11s by validation mAP50-95. It improves recall at the fixed confidence threshold while increasing false positives and CPU latency; the current user-selected workflow accepts the primary detection at confidence >= 0.60; lower confidence requires review. This setting does not improve model accuracy. See [one-box responses and fields](Miscellaneous/INSPECTION_RESPONSE_FIELDS.md).
 
 The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md) completed another 40 fine-tuning epochs and compared four validation candidates. The selected checkpoint reaches 50.5% Precision and 52.0% Recall at confidence 0.25 with correct eight-class, IoU 0.5 matching, versus 48.6% / 51.2% for the parent. The requested simultaneous 70% target remains unmet, and some damage types regressed. The local recommendation remains experimental and opt-in.
 

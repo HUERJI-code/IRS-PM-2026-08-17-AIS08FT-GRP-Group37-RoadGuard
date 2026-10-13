@@ -1,12 +1,12 @@
 # RoadGuard 项目与 Agent 协作规范
 
-版本：1.11 · 更新日期：2026-10-13 · 适用范围：本仓库全部目录、三名成员及其使用的 coding agent。
+版本：1.13 · 更新日期：2026-10-13 · 适用范围：本仓库全部目录、三名成员及其使用的 coding agent。
 
 这是本项目共用的开发规范入口。成员应使用同一仓库版本，并让 agent 在任务开始前读取本文件。详细分工和接口草案见 [TEAM_WORK_ALLOCATION.md](Miscellaneous/TEAM_WORK_ALLOCATION.md)，不依赖某位成员的聊天记录。
 
 ## 1. 当前阶段与工作授权
 
-- 当前已完成 A 的第 3～7 步；第 8 步已实现全量数据准备、可恢复训练/评估和真实检测接入，实际运行验收以 [第 8 步记录](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) 为准。真实模型保持 experimental，所有非空真实检测先审核；业务规则仍为演示。四队调度、前端和 GPT/RAG 服务仍待实现。
+- 当前已完成 A 的第 3～7 步；第 8 步已实现全量数据准备、可恢复训练/评估和真实检测接入，实际运行验收以 [第 8 步记录](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) 为准。真实模型保持 experimental，真实主框置信度达到配置阈值（默认 0.60）自动建一个任务，低于阈值先审核；业务规则仍为演示。四队调度、前端和 GPT/RAG 服务仍待实现。
 - 每次只实施人类明确交办的任务；基础工程的实现授权不等于可以一次性实现整个项目。
 - 用户只要求解释、评审、计划或文档时，交付对应成果，不顺带创建业务代码、安装运行依赖、启动训练或调用收费服务。
 - 已明确授权范围内的常规实现、局部修复和必要验证自行完成。只有缺少关键业务决定、需要扩大范围或存在破坏性影响时，才提出具体问题；可独立完成的工作继续进行。
@@ -37,13 +37,13 @@
 
 默认队伍 ID 使用 `crew-01` 至 `crew-04`，与示例配置保持一致。队伍数量应通过配置/输入传递，不能沿用旧提案硬编码两队；改变主要实验场景须同步范围与评估说明。
 
-2026-10-13 确认通常一张照片只有一个主要损伤类型和一个主要对象；允许无检测、多目标及不确定情况。不得强制最高分框成为已接受任务或删除原始证据。[单目标优化](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md)之后，按用户明确授权[发布最佳权重并接入后端](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md)：默认采用发布 manifest，a-workflow-v3 增加独立 primary_suggestion，a-knowledge-v3 同步说明。原始证据、审核前不建真实任务、八类含义均保留；图像类型指标须与框检测指标分开，两个 70% 仍未达到。
+2026-10-13 确认通常一张照片只有一个主要损伤类型和一个主要对象；允许无检测、多目标及不确定情况。2026-10-13 用户进一步确认接口最多返回一个框，选定主框原始 confidence ≥ 0.60 自动创建一个任务；低于阈值待审核，无检测不建任务。不得删除原始证据或把阈值描述为准确率保证。[单目标优化](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md)之后，按用户明确授权[发布最佳权重并接入后端](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md)：默认采用发布 manifest，a-workflow-v5 上传仅返回 inspection_id、status、detection（单对象或 null）、task_id；详情保留单框、完整来源和 auto_acceptance，a-knowledge-v5 同步说明。数据库保留原始证据，八类含义不变；图像类型指标须与框检测指标分开，两个 70% 仍未达到。
 
-以下事项尚待 M0 确认：班次及是否返基地、维修时长、任务期限、类别与规则映射、置信度阈值、多检测如何形成任务、目标函数权重及 GA 参数。NUS-ISS 的建筑参考坐标已确定，实际车辆入口由 B 在道路行程接入时核验。不得自行把 `0.60` 或固定班次当作已确认值，也不得静默替换基地坐标。需要占位时明确标为演示假设并集中配置；正式验证不得混用未确认假设。
+以下事项尚待 M0 确认：班次及是否返基地、维修时长、任务期限、类别与规则映射、真实场景阈值校准、目标函数权重及 GA 参数。NUS-ISS 的建筑参考坐标已确定，实际车辆入口由 B 在道路行程接入时核验。当前项目已确认自动接受阈值 `0.60`，集中读取 demo_rules.example.json 的 confidence_threshold，并在 auto_acceptance 中冻结；这不是经过模型校准的正确概率。不得自行把固定班次当作已确认值，也不得静默替换基地坐标。需要占位时明确标为演示假设并集中配置；正式验证不得混用未确认假设。
 
 第 5 步的 [demo_rules.example.json](SystemCode/config/demo_rules.example.json) 已集中实现演示阈值、八类映射和单候选选取策略，说明见[模拟检测与规则](Miscellaneous/DEMO_DETECTION_AND_RULES.md)。所有输出显式标记演示；`ready_for_task` 仅表示候选计算完成，不是已接受巡检或入队任务。规则参数变更时更新版本，不能将这些演示假设升级为正式批准值。
 
-第 6 步的[巡检/审核/任务流程](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)以明确选择的 demo 案例生成检测，保存原始证据、完整规则快照及独立的审核/任务历史。道路类别目前由调用者声明并记录来源，不能声称已自动核验道路权限。审核与标签修正使用巡检冻结规则；任务变更同事务递增 input_revision；重试不重复建任务。HTTP 巡检记录已扩展为 a-workflow-v2，包含模式、模型权重哈希等额外字段，严格使用旧记录 schema 的客户端须更新。真实 Detection.is_demo=false，但演示业务 Inspection/Task.is_demo=true；真实非空结果强制先审核。
+第 6 步的[巡检/审核/任务流程](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)以明确选择的 demo 案例生成检测，保存原始证据、完整规则快照及独立的审核/任务历史。道路类别目前由调用者声明并记录来源，不能声称已自动核验道路权限。审核与标签修正使用巡检冻结规则；任务变更同事务递增 input_revision；重试不重复建任务。HTTP 巡检记录已扩展为 a-workflow-v2，包含模式、模型权重哈希等额外字段，严格使用旧记录 schema 的客户端须更新。真实 Detection.is_demo=false，但演示业务 Inspection/Task.is_demo=true；真实上传按 single-primary-auto-v1 分流：主框原始置信度达标自动建 Task，低置信度待审核；Task 的严重度、工时和优先级仍为演示映射。
 
 第 7 步的 [B/C 交接说明](Miscellaneous/BC_HANDOFF.md)冻结 a-task-query-v1：TaskQueryService 在同一事务读取全部活动任务与 input_revision，可参与调用者已有的共享事务；B 不拼接不同版本的分页结果。固定 10/15/20 任务点仅经多边形校验，未核验道路。C 使用带版本/引用的知识包，区分项目事实、演示假设和待定事项；知识核对不代表专家审批，具体路线事实仍来自 B 的方案。保存规划结果前须在写事务中再次检查输入版本。
 

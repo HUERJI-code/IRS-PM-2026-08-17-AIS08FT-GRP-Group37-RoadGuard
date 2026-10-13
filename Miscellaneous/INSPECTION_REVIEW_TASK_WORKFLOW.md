@@ -1,6 +1,6 @@
 # 第 6 步：巡检、审核与任务
 
-负责人：A；原第 6 步日期：2026-10-12；本页说明原 `a-workflow-v1` 的 demo 请求与流程。第 8 步已扩展为 `a-workflow-v2`，具体 real 请求及新增字段见[真实视觉接口](REAL_VISION_API.md)。本页的自动接受分流只适用于 demo 案例；真实非空检测一律先审核。规则仍使用 `demo-rules-v1` 演示策略，业务记录仍标记为演示；不调用 Google 或 GPT，不生成路线。
+负责人：A；原第 6 步日期：2026-10-12；本页说明原 `a-workflow-v1` 的 demo 请求与流程。第 8 步已扩展为 `a-workflow-v2`，具体 real 请求及新增字段见[真实视觉接口](REAL_VISION_API.md)。下表是原 demo 分流；当前 a-workflow-v5 的 real 分流已按用户要求改为主框 confidence ≥ 0.60 自动建任务，低于阈值待审核，接口最多返回一个框，见[最新字段与行为](INSPECTION_RESPONSE_FIELDS.md)。规则仍使用 `demo-rules-v1` 演示策略，业务记录仍标记为演示；不调用 Google 或 GPT，不生成路线。
 
 ## 1. 巡检与任务的区别
 
@@ -35,11 +35,11 @@
 
 | 方法与路径 | 输入 | 正常输出 |
 | --- | --- | --- |
-| `POST /inspections` | multipart 的 `image` 文件、`metadata` JSON 文本；请求头 `Idempotency-Key` | 新建 201；相同请求重试 200；`InspectionMutation` |
+| `POST /inspections` | multipart 的 `image` 文件、`metadata` JSON 文本；请求头 `Idempotency-Key` | 新建 201；相同请求重试 200；`InspectionUploadResponse`，仅 inspection_id/status/detection/task_id |
 | `GET /inspections` | 可选 status、limit、offset | `InspectionList` |
 | `GET /inspections/{id}` | 巡检 ID | `InspectionRecord` |
 | `GET /inspections/{id}/image` | 巡检 ID | 规范化后的 image/png |
-| `POST /inspections/{id}/review` | `ReviewRequest` | `InspectionMutation` |
+| `POST /inspections/{id}/review` | `ReviewRequest` | `InspectionMutationResponse` |
 | `GET /tasks` | status 默认 active，可取 all/completed/cancelled；limit、offset | `TaskList`，含同一读取快照的 input_revision |
 | `GET /tasks/{id}` | 任务 ID | `TaskRecord`，包含历史 |
 | `PATCH /tasks/{id}` | `TaskPatch` | `TaskMutation` |
@@ -107,7 +107,8 @@ curl.exe -X POST "http://127.0.0.1:8000/api/v1/inspections" -H "Idempotency-Key:
 
 审核/任务修改用 request_id 防重，范围分别是该巡检的审核和该任务的修改。完全相同的重试优先识别，旧 expected_version 不阻止安全重放；同一 request_id 改动内容返回 409。重放返回**当前**资源和当前输入版本，不返回可能已经过时的历史响应。
 
-- `InspectionMutation`：inspection、可空 task、input_revision、planning_input_changed、replayed。
+- 上传 `InspectionUploadResponse`：仅 inspection_id、status、可空 detection、可空 task_id；详情通过 GET /inspections/{id} 查询。
+- 审核 `InspectionMutationResponse`：inspection、可空 task、input_revision、planning_input_changed、replayed。
 - `TaskMutation`：task、input_revision、planning_input_changed、replayed。
 - planning_input_changed 仅表示此次请求真正改变规划输入；它不是“路线已计算完成”。第 6 步不调用尚未实现的 B 规划服务，也不返回虚构方案 ID。
 - InspectionRecord/TaskRecord 在基础 DTO 之上新增时间、record_version、来源和历史等字段。原基础 DTO 设置 extra=forbid，不能直接解析包含这些额外字段的新 HTTP 记录；C 应使用新记录契约，B 使用明确的 Task 字段投影或新记录类型。旧 `a-dto-v1` 固定样例保持原义。

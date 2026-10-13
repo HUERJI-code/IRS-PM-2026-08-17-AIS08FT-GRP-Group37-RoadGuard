@@ -56,11 +56,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     application = FastAPI(
         title="RoadGuard API",
-        version="0.6.0",
+        version="0.8.0",
         description=(
             "Persisted inspections using explicit demo scenarios or the locally installed released detector. "
-            "Real records preserve all detections and a separate primary display suggestion when configured. "
-            "Real detections require review; business rules and tasks remain demo assumptions. "
+            "Inspection responses contain at most one box; raw evidence is retained internally. "
+            "Uploads return only inspection_id, status, detection and task_id; details are queried separately. "
+            "Real primary detections meeting the configured confidence threshold (default 0.60) create one task. "
+            "Lower-confidence detections require review; business rules and tasks remain demo assumptions. "
             "Road type is user-declared. No route planning is performed. "
             "The separate /demo endpoints remain stateless previews."
         ),
