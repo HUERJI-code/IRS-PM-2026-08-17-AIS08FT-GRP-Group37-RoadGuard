@@ -1,0 +1,217 @@
+{
+  "schema_version": "roadguard-inference-followup-plan-v1",
+  "frozen_at": "2026-10-13T07:41:10.324458+00:00",
+  "purpose": "Improve both correct-eight-type micro precision and recall; target both >=.70 at same global confidence threshold.",
+  "budget": {
+    "new_training_runs": 0,
+    "candidate_count": 8,
+    "new_full_validation_prediction_methods": 4,
+    "validation_images": 1921,
+    "maximum_views_per_image": 5,
+    "new_model_view_calls": 17289,
+    "new_weights_downloads": 0,
+    "package_upgrades": 0
+  },
+  "data_role": "Previously used validation for continued development/model/threshold selection; not independent held-out evidence.",
+  "inputs": {
+    "manifest": {
+      "path": "Dataset/prepared/manifest.jsonl",
+      "sha256": "569b0acfff46b3bd62a3e7634416927fb58439c621eeafa3900b95eab88b6341"
+    },
+    "data_yaml": {
+      "path": "Dataset/prepared/data.yaml",
+      "sha256": "8212940a9fedfac57a885726314c5176c9c90813fb8b94f6e355d1029fa6791d"
+    },
+    "label_schema": {
+      "path": "SystemCode/model/label_schema.json",
+      "sha256": "8b6e9932904e70ebc7e406e93a1c4ac4958f10f91f16a93b309f5a0487af33e7"
+    },
+    "current_weights": {
+      "path": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+      "sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488"
+    },
+    "parent_weights": {
+      "path": "Dataset/runs/yolo11s-rdd2022es-compare30-seed42/weights/best.pt",
+      "sha256": "92749da1b1c05f2186e388c9d0cee65cc868613662c5aa21d940d76ec003940a"
+    },
+    "current_export": {
+      "path": "Dataset/balanced-metrics/balanced70-new-best832/export.json",
+      "sha256": "2bccfb7eed899e4f8c7045928f02a2168e143d714ff99ce3a4a33366b2b3bd6b"
+    },
+    "parent_export": {
+      "path": "Dataset/balanced-metrics/balanced70-parent640/export.json",
+      "sha256": "d445b3acad70210a1b59c210da381a2f1fa0c07cccacee0d6e5c7a9808e439a3"
+    }
+  },
+  "candidates": [
+    {
+      "id": "baseline832",
+      "method": "existing_balanced_export",
+      "source_exports": [
+        "Dataset/balanced-metrics/balanced70-new-best832/export.json"
+      ],
+      "imgsz": 832,
+      "view_nms_iou": 0.7
+    },
+    {
+      "id": "renms832",
+      "method": "union_nms",
+      "source_exports": [
+        "Dataset/balanced-metrics/balanced70-new-best832/export.json"
+      ],
+      "global_nms_iou": 0.5
+    },
+    {
+      "id": "standard640",
+      "method": "standard",
+      "weights": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+      "imgsz": 640,
+      "view_nms_iou": 0.7,
+      "global_nms_iou": 0.7
+    },
+    {
+      "id": "standard960",
+      "method": "standard",
+      "weights": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+      "imgsz": 960,
+      "view_nms_iou": 0.7,
+      "global_nms_iou": 0.7
+    },
+    {
+      "id": "flip832",
+      "method": "flip",
+      "weights": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+      "imgsz": 832,
+      "views": [
+        "full",
+        "horizontal_flip"
+      ],
+      "view_nms_iou": 0.7,
+      "global_nms_iou": 0.5
+    },
+    {
+      "id": "tiles832",
+      "method": "tiles",
+      "weights": "Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt",
+      "imgsz": 832,
+      "views": [
+        "full",
+        "top_left",
+        "top_right",
+        "bottom_left",
+        "bottom_right"
+      ],
+      "tile_fraction": 0.625,
+      "tile_rounding": "ceil_each_native_dimension",
+      "view_nms_iou": 0.7,
+      "global_nms_iou": 0.5
+    },
+    {
+      "id": "ensemble_union",
+      "method": "union_nms",
+      "source_exports": [
+        "Dataset/balanced-metrics/balanced70-parent640/export.json",
+        "Dataset/balanced-metrics/balanced70-new-best832/export.json"
+      ],
+      "global_nms_iou": 0.5
+    },
+    {
+      "id": "ensemble_paired",
+      "method": "paired_score",
+      "source_exports": [
+        "Dataset/balanced-metrics/balanced70-parent640/export.json",
+        "Dataset/balanced-metrics/balanced70-new-best832/export.json"
+      ],
+      "pair_match_iou": 0.55,
+      "max_boxes_per_model_per_cluster": 1,
+      "coordinate_rule": "confidence-weighted mean within matched pair",
+      "confidence_rule": "sum of scores / 2; missing model contributes zero; singleton score divided by 2",
+      "global_nms_iou": 0.5
+    }
+  ],
+  "candidate_order_for_ties": [
+    "baseline832",
+    "renms832",
+    "standard640",
+    "standard960",
+    "flip832",
+    "tiles832",
+    "ensemble_union",
+    "ensemble_paired"
+  ],
+  "common": {
+    "class_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "primary_matching_iou": 0.5,
+    "secondary_matching_iou": 0.3,
+    "export_confidence_floor": 0.001,
+    "max_detections_per_view": 100,
+    "max_detections_after_merge": 100,
+    "class_aware_nms": true,
+    "threshold_grid": [
+      0.001,
+      0.005,
+      0.01,
+      0.02,
+      0.03,
+      0.05,
+      0.075,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7,
+      0.75,
+      0.8,
+      0.85,
+      0.9,
+      0.95
+    ],
+    "device": "0",
+    "precision": "float32",
+    "batch": 1,
+    "seed": 42,
+    "rect": true,
+    "augment": false,
+    "quantize": null,
+    "selection_rule": "maximize min(micro precision, micro recall), then macro F1, then micro recall; exact threshold ties first ascending grid value, exact method ties earlier candidate"
+  },
+  "acceptance": [
+    "Same frozen validation originals, labels and hashes; no train/test images used for method selection.",
+    "Report all eight types and support; relaxed matching is diagnostic only.",
+    "Require both precision and recall above baseline at their frozen selected points to recommend replacing baseline.",
+    "Retain original checkpoints and candidate failures.",
+    "Only selected method may be inspected on existing six external exploratory photos after selection; no retuning against them.",
+    "Compare CPU cost before any deployment recommendation.",
+    "Keep current backend/workflow unchanged unless later justified and separately documented."
+  ],
+  "limitations": [
+    "Training data audit remains training-only; no automatic relabeling.",
+    "Paired-score is a defined heuristic, not calibrated probability or an exact implementation of published WBF.",
+    "Original+flip is explicit two-view augmentation, not a claim to reproduce Ultralytics built-in multi-scale TTA.",
+    "Fractional four-tile method is inspired by sliced inference, not SAHI library implementation.",
+    "All methods keep the original eight source labels."
+  ],
+  "references": [
+    "https://docs.ultralytics.com/guides/sahi-tiled-inference/",
+    "https://obss.github.io/sahi/guides/sliced-inference/",
+    "https://docs.ultralytics.com/yolov5/tutorials/test-time-augmentation/",
+    "https://arxiv.org/abs/1910.13302"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "roadguard-inference-followup-clarifications-v1",
+  "frozen_at": "2026-10-13T07:43:54.830658+00:00",
+  "base_plan_sha256": "4c94fe8ce85a0a2f9561c360189d8756a1d5a8c26f2b7960b3fd7f5490b1b48e",
+  "cached_post_nms": "renms832 and cached-fusion inputs have already undergone confidence .001, view NMS .7 and max_det100. A later .5 NMS is two-stage postprocessing and is not equivalent to fresh detector NMS .5.",
+  "stable_order": "Global NMS: descending confidence, then source/view order in plan, then original prediction index. Suppress same-class boxes only when IoU > threshold.",
+  "paired_score": "Sort all source boxes by descending confidence, then source order and original index. Each unassigned box is a seed; match at most one unassigned box from the other model with the same class and IoU>=.55, using highest IoU then confidence then original index. Pairs never merge transitively. Coordinates are score-weighted; score=(s1+s2)/2, absent score=0. Drop scores<.001 after scoring, before final NMS and top100.",
+  "selection": "Report the global winner using base-plan ranking. Recommend the highest-ranked candidate among those whose selected operating point improves BOTH precision and recall strictly over baseline; if none, retain baseline. Keep the global winner and eligible recommendation distinct when they differ.",
+  "deployment": "Composite methods are experimental recipes, not ordinary roadguard-model-v1 manifests. They require exact-pipeline CPU and business-integration verification before activation. Existing workflow remains unchanged.",
+  "method_limitations": [
+    "Parent/current models are related checkpoints, not independent model votes.",
+    "The same validation set is reused for selection; no new independent accuracy claim.",
+    "Low score truncation and max100 can remove useful boxes; no extra grid expansion this round."
+  ]
+}

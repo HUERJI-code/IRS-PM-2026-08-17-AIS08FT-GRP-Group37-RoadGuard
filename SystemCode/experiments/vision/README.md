@@ -1,5 +1,15 @@
 # Experimental vision evidence
 
+## Completed eight-method inference follow-up
+
+The new comparison used the same 1,921 validation originals and 2,623 ground-truth boxes, no new training, and eight preregistered methods. At their fixed selected thresholds, baseline832 achieved P/R **50.52%/52.00%**; the selected original-plus-flip832 recipe achieved **53.02%/53.26%** at confidence 0.30. No candidate reached both 70% targets on the fixed grid. The result adds 33 TP and removes 98 FP, but macro Recall slightly decreased and several rare-type recalls regressed. This is continued validation selection, not an independent test or evidence of Jurong generalization.
+
+[Plan](inference_followup_plan.json), [clarifications](inference_followup_clarifications.json), [summary and primary curves](inference_followup_summary.json), [operating points CSV](inference_followup_operating_points.csv), [operating-point chart](inference_followup_operating_points.png), [per-class F1 chart](inference_followup_per_class.png) and [training-data diagnosis](inference_followup_data_diagnosis.json) are small shareable evidence. The [supervisor report](../../../Miscellaneous/INFERENCE_OPTIMIZATION.md) includes all eight class supports, CPU differences, qualitative external-photo failures and reproduction details.
+
+Exact-recipe CPU median/P95 increased from 85.19/99.00 ms to 142.64/160.94 ms on 40 fixed images, with 120 timed calls per candidate. Use the isolated second timing run; the first overlapped external-photo inference and is excluded. CPU/GPU scores differ numerically; selected detections on these 40 images pair at same-class IoU 0.5, but full CPU accuracy has not been reevaluated. This is recipe verification, not API integration. The composite recipe is not activated, and the existing single-weight manifest and review workflow remain unchanged. Full predictions, audit photos, checkpoints and six-photo comparisons remain under ignored `Dataset/`.
+
+Source commit `173d0e1` introduced the tool; final source SHA256 is `e6856697cd5a6bfd816a860b85441b5563f23a55887e4142d1454d11fcb3833f`. Focused tests: 64 passed; full regression: 790 passed, one Windows symlink-permission skip; CI guard tests: 44 passed. These checks establish execution correctness, not recognition acceptance.
+
 ## Completed balanced precision/recall follow-up
 
 The target of both eight-class Precision and Recall ≥70% was **not met**. The selected `new_best832` at confidence 0.25 and class-aware IoU≥0.5 achieved micro P/R/F1 **50.52% / 52.00% / 51.25%**, versus parent640 **48.62% / 51.20% / 49.88%**: small gains of 1.89/0.80/1.37 percentage points. Macro P/R/F1 were 42.02%/43.52%/42.62%; the sunken-alligator class declined from 36.99%/35.06%/36.00% to 24.49%/31.17%/27.43%. No class met both 70%, and none of the four candidates met the micro target within the preregistered grid.

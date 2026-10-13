@@ -1,0 +1,145 @@
+{
+  "schema_version": "roadguard-training-diagnosis-summary-v1",
+  "audit_sha256": "c56327b7e1f28a0d009c5944ed7dfc2dc7619eb8d77fe6ae3ab2441dc07f821a",
+  "notes_sha256": "63380a184025497eada117953e7cdd18275a31cabbcebcd343ba42960cea2456",
+  "supervisor_review_sha256": "d7e8adf28769b5fb238de7bb663caa03c80d07dfbcc516411638a8e6bf0d1037",
+  "verified_source_files": 40,
+  "training_originals_visually_reviewed": 20,
+  "annotation_changes": 0,
+  "confirmed_data_counts": {
+    "train_original_images": 8958,
+    "train_original_empty_labels": 2865,
+    "train_original_empty_rate": 0.3198,
+    "train_mirror_images": 8958,
+    "train_mirror_empty_labels": 2865,
+    "train_original_class_support": [
+      4556,
+      820,
+      2614,
+      243,
+      2443,
+      311,
+      1477,
+      193
+    ],
+    "train_mirror_class_support": [
+      4556,
+      820,
+      2614,
+      243,
+      2443,
+      311,
+      1477,
+      193
+    ],
+    "validation_original_images": 1921,
+    "validation_empty_labels": 649,
+    "validation_empty_rate": 0.3378,
+    "validation_mirrors": 0,
+    "training_country_empty_images": {
+      "Czech": [
+        1389,
+        2355
+      ],
+      "India": [
+        849,
+        1771
+      ],
+      "Japan": [
+        614,
+        2793
+      ],
+      "United_States": [
+        13,
+        2039
+      ]
+    },
+    "interpretation": "Mirrors double effective box counts but leave class imbalance/empty rates unchanged and add no independent scene support. Empty-label rates differ strongly by country; this is a dataset composition/annotation-density observation, not proof of missing labels."
+  },
+  "confirmed_runtime_loss_and_augmentation": {
+    "installed_version": "Ultralytics8.4.176",
+    "classification": "utils/loss.py lines358,450-454: BCEWithLogitsLoss(reduction=none), multiplied by class_weights then summed/target_scores_sum. This weights positive and negative BCE entries, not only rare positive examples. Global cls gain=.75.",
+    "weights": "models/yolo/detect/train.py lines151-180: counts include the actual training labels, inverse frequency**.25 normalized to mean1. Mirroring every source equally cancels in normalization. Actual logged weights [0.644,0.989,0.740,1.340,0.753,1.260,0.854,1.420].",
+    "assignment": "TaskAlignedAssigner topk10, alpha=.5,beta=6 combines class score**.5 with nonnegative CIoU**6; candidates must lie insideGT. Classification confidence and spatial assignment quality are coupled, so treating localization as secondary does not remove its effect on learned scores.",
+    "augmentation": "Actual configured mosaic=.5, closes for last10epochs; scale=.3,translate=.05,HSV .015/.4/.3, no flips,mixup,cutmix,copy_paste. RandomPerspective filters boxes with width/height<=2px, extreme aspect ratio>=100 or retained area<=10% for detection boxes. Filter behavior is confirmed source semantics, not a measured frequency of lost training boxes.",
+    "optional_augmentation": "Albumentations is not installed. Its optional Blur/MedianBlur/ToGray/CLAHE defaults were read in source but must not be claimed as applied.",
+    "training_curve": {
+      "epoch10": {
+        "train_box": 1.37967,
+        "train_cls": 1.66123,
+        "train_dfl": 1.50014,
+        "val_box": 1.77017,
+        "val_cls": 2.2139,
+        "val_dfl": 1.81706,
+        "native_map50_95": 0.20292
+      },
+      "epoch40": {
+        "train_box": 1.06616,
+        "train_cls": 0.93925,
+        "train_dfl": 1.27939,
+        "val_box": 1.91262,
+        "val_cls": 2.48113,
+        "val_dfl": 2.02068,
+        "native_map50_95": 0.18231
+      }
+    },
+    "curve_interpretation": "Training loss falls while validation losses rise and native mAP drops from best epoch10 to40. This is consistent with a generalization gap, but train augmentation also changes when mosaic closes; not a controlled proof of overfitting or of any single setting's effect."
+  },
+  "saved_candidate_score_separation_evidence": {
+    "source": "Dataset/balanced-metrics/balanced70-new-best832/analyses/sweep/report.json, primaryIoU.5, unchanged saved export",
+    "typed_at_conf_0_05": {
+      "tp": 1890,
+      "fp": 6090,
+      "precision": 0.2368,
+      "recall": 0.7205
+    },
+    "class_agnostic_at_conf_0_05": {
+      "tp": 2058,
+      "fp": 5922,
+      "precision": 0.2579,
+      "recall": 0.7846
+    },
+    "class_agnostic_at_conf_0_001": {
+      "tp": 2477,
+      "fp": 66695,
+      "precision": 0.0358,
+      "recall": 0.9443
+    },
+    "typed_at_conf_0_25": {
+      "tp": 1364,
+      "fp": 1336,
+      "precision": 0.5052,
+      "recall": 0.52
+    },
+    "interpretation": "Many GT already have geometrically adequate low-score candidates. Raising a threshold trades away recall to suppress a large FP pool; the observed bottleneck is score/type/background separation, not a demonstrated absence of representable damage features.",
+    "target_filter_requirement_from_typed_0_05_pool": "For R>=.7 with2623GT, retain>=1837TP, losing at most53 of1890. P>=.7 then permits<=787FP, requiring removal of>=5303/6090FP (87.1%). This is an arithmetic requirement, not an expected performance forecast. A more expressive reranker might also relabel class-agnostic candidates, so it is not limited to this fixed typed pool."
+  },
+  "prioritized_recommendations": [
+    {
+      "priority": 1,
+      "method": "Complete bounded inference alternatives first; audit label consistency and hard-negative eligibility in parallel",
+      "reason": "Cheap retained-candidate analysis can change ranking/NMS without training, while questionable negative labels must not be blindly mined. Preserve frozen split/annotations; document adjudications in a separate candidate data version with original/mirror propagation only after approval."
+    },
+    {
+      "priority": 2,
+      "method": "A bounded second-stage proposal/crop reranker pilot is justified after negative/rare-label review",
+      "reason": "Low-confidence candidates offer78.5% class-agnostic localization recall at.05. Pilot needs damage-vs-background rejection plus the original eight-type prediction, not only an eight-way classifier that always calls every crop damaged. Train on train-only GT/context crops and manually screened hard-negative proposals; preserve source groups and mirror linkage. Validate full detector+reranker P/R, runtime and rare-class regressions. Achieving70 requires very strong filtering/retention and is not promised."
+    },
+    {
+      "priority": 3,
+      "method": "Targeted, manually screened train-only hard negatives before another generic epoch extension",
+      "reason": "628 selected-point FP are background and generic negatives already comprise32% of train originals. Prioritize confusing shadows, road joints/repair textures, painted lines and country-specific backgrounds, not more easy blank roads. Do not take label-empty images as automatically correct negatives; exclude ambiguous damage until reviewed. No validation examples are to be recycled into training."
+    },
+    {
+      "priority": 4,
+      "method": "Defer a larger detector until controlled evidence identifies a capacity/localization bottleneck",
+      "reason": "Raw current proposals already localize94.4% ofGT at.001, while extra epochs reduce validation fitness. A larger detector may improve ranking/representation but does not repair ambiguous labels or scarce independent rare support. If later authorized, use one frozen matched run with exact same data/selection and report all eight classes, cost and error changes; no blind additional runs."
+    },
+    {
+      "priority": 5,
+      "method": "If another detector training pilot is eventually justified, isolate one change",
+      "reason": "After label review, compare background-aware/crop supervision or reduced mosaic for tiny objects against the same starting checkpoint. Log augmented GT survival counts and preserve eight-type evaluation. Current evidence cannot attribute gains to resolution, loss weights or augmentation individually."
+    }
+  ],
+  "claim_scope": "Exploratory training-only audit and validation-tuned diagnosis. No new holdout/generalization, annotation correctness, depth measurement or causal efficacy claim."
+}
