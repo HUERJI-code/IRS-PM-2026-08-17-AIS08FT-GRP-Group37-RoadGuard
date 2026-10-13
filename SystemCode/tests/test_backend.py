@@ -1,7 +1,7 @@
 """Executable checks for the shared foundation, independent of future domains."""
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 import sqlite3
 
@@ -199,6 +199,50 @@ def test_database_initialization_is_idempotent_and_revision_persists(database):
             connection.execute("UPDATE infra_metadata SET input_revision = 2")
     with pytest.raises(sqlite3.ProgrammingError):
         connection.execute("SELECT 1")
+
+
+@pytest.mark.parametrize("external_transaction", ["reader", "writer"])
+def test_restart_current_database_while_external_transaction_is_open(settings, database, external_transaction):
+    # A database viewer can keep a read transaction open after fetching a table.
+    # A current-schema startup only needs a snapshot, not a write lock/commit.
+    external = sqlite3.connect(database.path, isolation_level=None)
+    try:
+        assert external.execute("PRAGMA journal_mode").fetchone()[0] == "delete"
+        external.execute("BEGIN" if external_transaction == "reader" else "BEGIN IMMEDIATE")
+        assert external.execute("SELECT input_revision FROM infra_metadata").fetchone()[0] == 0
+        if external_transaction == "writer":
+            external.execute("UPDATE infra_metadata SET input_revision=42")
+        with TestClient(create_app(replace(settings, database_busy_timeout_ms=100))) as client:
+            response = client.get("/api/v1/health")
+            assert response.status_code == 200
+            assert response.json()["input_revision"] == 0
+        assert external.in_transaction
+    finally:
+        external.rollback()
+        external.close()
+    with database.connect() as connection:
+        assert read_revision(connection) == 0
+
+
+def test_migration_still_requires_lock_and_rolls_back_before_retry(tmp_path):
+    database = Database(tmp_path / "legacy.sqlite3", busy_timeout_ms=100)
+    with sqlite3.connect(database.path) as connection:
+        connection.execute("CREATE TABLE infra_metadata(singleton_id INTEGER PRIMARY KEY, schema_version INTEGER, input_revision INTEGER)")
+        connection.execute("INSERT INTO infra_metadata VALUES (1,1,7)")
+    reader = sqlite3.connect(database.path, isolation_level=None)
+    try:
+        reader.execute("BEGIN")
+        assert tuple(reader.execute("SELECT * FROM infra_metadata").fetchone()) == (1, 1, 7)
+        with pytest.raises(sqlite3.OperationalError, match="locked"):
+            database.initialize()
+        assert tuple(reader.execute("SELECT * FROM infra_metadata").fetchone()) == (1, 1, 7)
+        assert {row[0] for row in reader.execute("SELECT name FROM sqlite_master WHERE type='table'")} == {"infra_metadata"}
+    finally:
+        reader.rollback()
+        reader.close()
+    database.initialize()
+    with database.connect() as connection:
+        assert read_revision(connection) == 7
 
 
 def test_mutation_and_revision_share_commit_and_rollback(database):

@@ -59,7 +59,9 @@ The original demo upload/review/task behavior is documented in the [workflow gui
 
 `roadguard.database.Database` 是各模块共用入口。每次操作获取独立连接并在退出时关闭；连接开启外键和 5000 毫秒 busy timeout。`connect()` 是只读事务，提供一致的查询快照；`transaction(expected_revision=None)` 使用 `BEGIN IMMEDIATE` 串行化写入，成功提交，异常回滚。不要在上下文内自行提交、回滚或关闭连接。
 
-`initialize()` 是唯一迁移入口：基础 schema v1 原地迁移至 v2，保留 input_revision，新增 inspections、tasks、operation_keys 及索引；新数据库初始 revision=0。v2 重新启动校验已有结构；未知版本或缺失业务表拒绝启动，不清空/重建记录。B/C 后续业务表仍由负责人提供增量，A 在同一迁移入口整合。
+`initialize()` 是唯一迁移入口：基础 schema v1 原地迁移至 v2，保留 input_revision，新增 inspections、tasks、operation_keys 及索引；新数据库初始 revision=0。v2 重新启动使用只读事务校验已有结构，避免查看工具的长时间查询阻塞不必要的写提交；新建/迁移仍在写事务中重新校验并提交。未知版本或缺失业务表拒绝启动，不清空/重建记录。B/C 后续业务表仍由负责人提供增量，A 在同一迁移入口整合。
+
+若报 `sqlite3.OperationalError: database is locked`，先按[数据库锁排查](../../Miscellaneous/DATABASE_VIEWING.md#遇到-database-is-locked)结束查看工具未完成的事务并断开数据库连接。只读启动校验不保证后续写入一定可用：独占锁仍会阻塞读取，实际迁移、上传保存和任务修改仍需要取得写锁。
 
 供 A/B 共用的函数是 `read_revision(connection)`、`assert_revision(connection, expected_revision)` 和 `increment_revision(connection, expected_revision=None)`。输入变更与版本递增必须处于**同一个领域事务**，每次实际输入变更递增一次。不要使用独立计数器或事后第二次连接更新版本。例如，B 实现工程队状态服务时采用：
 
