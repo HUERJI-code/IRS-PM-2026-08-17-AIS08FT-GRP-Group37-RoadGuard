@@ -2,7 +2,7 @@
 
 版本：`a-dto-v1`；日期：2026-10-12；维护人：A。此文件是已落实的 A 公共 DTO 契约唯一维护位置。分工表第 6、7 节保留成员职责与未来接口设计，涉及已落实的字段定义应链接本文件；B/C 后续对象由对应负责人提出，不从本文件推定其已冻结。可执行来源为 [schemas](../SystemCode/backend/roadguard/schemas/)，固定样例为 [contracts](../SystemCode/contracts/README.md)。变更必须同时更新 DTO、样例、必要测试与调用方影响说明。
 
-本次冻结数据表示和最低一致性验证，不等于完成 M0：置信度阈值、标签与业务规则映射、多检测选取策略、维修时长、期限和调度参数仍待确认。严禁把样例升级为批准规则。公共导入为 `from roadguard.schemas import Detection, Inspection, Task, ErrorResponse, HealthResponse, PlanningRevision`；另提供结构化 `DecisionTrace`。
+首批冻结的是数据表示和最低一致性验证，不等于完成 M0。后续已确认单框和 0.60 分流；2026-10-14 已定稿课程模拟规则 `demo-rules-v2`，P3/P2/P1＝60/120/240 分钟，见[业务规则基线](BUSINESS_RULES_BASELINE.md)。任务期限、班次/返基地与优化约束继续待定；规则不代表工程测量标准。历史固定样例保持原版本，不替代当前运行配置。公共导入为 `from roadguard.schemas import Detection, Inspection, Task, ErrorResponse, HealthResponse, PlanningRevision`；另提供结构化 `DecisionTrace`。
 
 第 5 步增量契约为 `a-demo-v1`，保留上述 DTO 字段兼容性，新增 `RuleCandidate`、`RuleAssessment` 和 `/demo` 演示接口。实际演示策略见[规则说明](DEMO_DETECTION_AND_RULES.md)；已实现演示映射不表示正式阈值、工时和优先级获得批准。
 
@@ -10,7 +10,7 @@
 
 第 7 步增量为 `a-task-query-v1`，提供 B/C 使用的一致活动任务快照；完整使用方式、固定输入、知识包及 HTTP 示例见 [B/C 交接说明](BC_HANDOFF.md)。没有改变原 Task 或 TaskRecord 的字段，也没有冻结 B 的完整 PlanningInput。
 
-第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。当前 v4 按用户确认的主框置信度阈值 0.60 自动建一个任务，低于阈值待审核；阈值不代表已校准的模型准确率。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
+第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。当前 v5 按用户确认的主框置信度阈值 0.60 自动建一个任务，低于阈值待审核；阈值不代表已校准的模型准确率。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
 
 ## 通用表示
 

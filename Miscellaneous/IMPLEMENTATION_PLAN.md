@@ -24,10 +24,10 @@ This sequence is the project owner's personal task list. Its step numbers differ
 | 6 | Image upload, inspection/review and task CRUD workflow | Implemented in explicit demo mode: upload, polygon check, declared road type, persistence, review, task edits/status, idempotency and transactional revision; see [workflow guide](INSPECTION_REVIEW_TASK_WORKFLOW.md) |
 | 7 | Stable task query input for B and reviewed knowledge for C | Delivered: consistent TaskSnapshot service/API, reproducible 10/15/20-task inputs, versioned source-checked knowledge and actual HTTP consumer example; see [B/C handoff](BC_HANDOFF.md). Review is repository consistency checking, not expert approval |
 | 8 | Train/evaluate and integrate the real vision model | Data/preparation, checkpointed training/evaluation and opt-in real workflow implemented; see [actual acceptance evidence](STEP8_VISION_ACCEPTANCE.md). Calibration and business accuracy acceptance remain pending |
-| 9 | Integrate A/B/C workflows and validate failure cases | Pending |
+| 9 | Integrate A/B/C workflows and validate failure cases | A preparation delivered: [simulation rule baseline](BUSINESS_RULES_BASELINE.md) and [acceptance checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md); B/C integration deferred until their modules are ready |
 | 10 | Complete reports, evaluation evidence and submission | Pending |
 
-Steps 3/4 do not freeze business mappings, implement review/task APIs or complete M0. The fixture severity/priority/duration values are explicitly demonstration assumptions.
+Steps 3/4 do not freeze business mappings, implement review/task APIs or complete M0. The fixture severity/priority/duration values remain simulation assumptions; the course baseline was finalized as demo-rules-v2 on 2026-10-14 with P3/P2/P1 service times of 60/120/240 minutes. This does not settle scheduling constraints or establish measured engineering values.
 
 Step 5 remains a stateless detector-to-rule preview. Step 6 adds the persisted workflow using the same explicit demo assumptions, without real image inference. Polygon checks are implemented; road eligibility is declared by the caller, not independently verified. Step 7 delivers task/knowledge inputs; actual planning, knowledge retrieval/generation and production calibration remain pending.
 
@@ -39,7 +39,7 @@ See [the three-person work allocation and interface draft](TEAM_WORK_ALLOCATION.
 | --- | --- | --- |
 | 1 | Confirm study boundary, depot, task model and routing constraints | Written scenario and consistent configuration |
 | 2 | Backend/frontend startup, database schema and four-crew configuration | Backend, infrastructure and A-owned inspection/task tables implemented; frontend and crew records pending |
-| 3 | Image upload, labelled demo detector, confidence gate and rules | Persisted demo workflow and opt-in real inference implemented; all real nonempty outputs require review |
+| 3 | Image upload, labelled demo detector, confidence gate and rules | Implemented: one displayed box, compact upload, real primary confidence >=0.60 creates one task; lower confidence requires review; simulation rules v2 finalized |
 | 4 | Task queue, travel-time provider and greedy planner | Valid routes and explicit handling of unassigned tasks |
 | 5 | Group-built GA and automatic replanning | Valid four-crew routes, deterministic seeded checks and queue-change demonstration |
 | 6 | RDD2022ES training/evaluation and real detector integration | Held-out metrics and documented dataset splits |

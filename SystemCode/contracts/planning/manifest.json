@@ -29,26 +29,26 @@
   },
   "depot_version": "nus-iss-v1",
   "due_at_policy": "All deadlines are null; no lateness metric is defined.",
-  "fixture_version": "planning-synthetic-v1",
+  "fixture_version": "planning-synthetic-v2",
   "generator": "SystemCode/contracts/planning/generate.py",
   "input_revision": 0,
   "is_demo": true,
   "label_schema_version": "rdd2022es-v1-labels-1",
   "prefix_relationship": "tasks_10.json is the first ten tasks of tasks_15.json, which is the first fifteen of tasks_20.json.",
   "revision_meaning": "Fixed fixture marker only; never a live database revision or mutation count.",
-  "rule_version": "demo-rules-v1",
+  "rule_version": "demo-rules-v2",
   "scope_version": "jurong-je-jw-mp2025-v1",
   "snapshots": {
     "tasks_10.json": {
-      "sha256": "b2a158b6896263de5c6c6cf4fc33081cd190bb021094cac76c3531286ab51d1c",
+      "sha256": "71f26d5ca83a58ea4c4da2007dd11846ac5b01372ef6d5c2f8f3d4f42a973058",
       "total": 10
     },
     "tasks_15.json": {
-      "sha256": "5efbc0f293f1b47705879cacd6590426be657b6bb693eeaea089ba1f4e16bc59",
+      "sha256": "252a8f50bf9aeea8a14257a9905ffcb6b7f7fa209de656b91663f4b058a82d4c",
       "total": 15
     },
     "tasks_20.json": {
-      "sha256": "f81ab01a829976144d9d2b3a6dd316ec1d3bfbdef9d3a5906cde54b288b53282",
+      "sha256": "292478cd36f38b4f03e3161f6a39c872c725d9ab957a336e10b72f3f9ab4e08d",
       "total": 20
     },
     "tasks_empty.json": {
@@ -56,7 +56,7 @@
       "total": 0
     },
     "tasks_unknown_service.json": {
-      "sha256": "7ca1fef5f3b454a1299e2f09ff9cd90e883c065a3735c88d44c7d9ca4f928630",
+      "sha256": "6517ae03a6e8a9566481aa1b9ff741e26150bc7fa2e2d2ff5d4d1523f00a2e31",
       "total": 1
     }
   },
@@ -68,7 +68,7 @@
     },
     {
       "path": "SystemCode/config/demo_rules.example.json",
-      "sha256": "3560b31bf8542a9d769de57dd8eb43392c1f4de9b5f1c756c40d3b17d2f103b6"
+      "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a"
     },
     {
       "path": "SystemCode/model/label_schema.json",
@@ -85,7 +85,7 @@
   ],
   "unknown_service_edge": {
     "file": "tasks_unknown_service.json",
-    "meaning": "Explicit missing-duration contract edge; other rule fields derive from demo-rules-v1. Not the output of its current duration mapping.",
+    "meaning": "Explicit missing-duration contract edge; other rule fields derive from demo-rules-v2. Not the output of its current duration mapping.",
     "override": {
       "service_minutes": null
     }

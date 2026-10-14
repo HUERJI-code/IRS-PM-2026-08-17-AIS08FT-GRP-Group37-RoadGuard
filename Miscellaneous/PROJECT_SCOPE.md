@@ -2,9 +2,11 @@
 
 Recorded: 2026-10-10. This records the current project decision, not the date of the teacher's feedback.
 
-Updated: 2026-10-12. The geographic baseline and user-selected dispatch origin are defined in [Jurong scope and NUS-ISS depot (中文)](JURONG_SCOPE_AND_DEPOT.md).
+Updated: 2026-10-14. The geographic baseline and user-selected dispatch origin are defined in [Jurong scope and NUS-ISS depot (中文)](JURONG_SCOPE_AND_DEPOT.md).
 
 ## Confirmed changes
+
+- On 2026-10-14 the owner finalized course-simulation rule durations: P3=60, P2=120 and P1=240 minutes per task, retaining the eight severity/priority mappings and 0.60 automatic gate. Runtime version is demo-rules-v2; these are simulated service times, not measured engineering standards or deadlines. See [business baseline](BUSINESS_RULES_BASELINE.md) and [acceptance checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md). B/C integration is deferred until their modules are ready.
 
 - Typical capture scenario (2026-10-13): one main damage type and one main subject per photo. This is not a guarantee that every input contains damage or exactly one object. The [single-main-damage experiment](SINGLE_DAMAGE_OPTIMIZATION.md) retains raw detections and review; The [released model integration](MODEL_RELEASE_AND_BACKEND.md) now provides a default local manifest and persisted primary suggestion; model-quality acceptance remains pending. The later user-approved a-workflow-v5 returns at most one box and automatically creates one task when its raw confidence is at least 0.60; raw evidence is retained internally. See [response fields](INSPECTION_RESPONSE_FIELDS.md).
 
@@ -30,7 +32,7 @@ Routing tasks are synthetic test data on eligible public motor roads inside the 
 
 - Verify a drivable NUS-ISS access point before obtaining the real travel matrix; the current coordinate is a building address point.
 - Decide whether crews must return to the depot. The origin-to-first-task journey is required under either policy.
-- Shift length, repair/service times and crew capability assumptions.
+- Shift length and crew capability assumptions; measured operational service times remain unvalidated, while the course-simulation durations are fixed above.
 - The definition of urgent-task lateness and the associated weights.
 - GA encoding, population, stopping criteria and reproducible seeds.
 - Routing-provider behavior and the distinction between road-network and simulated travel times.

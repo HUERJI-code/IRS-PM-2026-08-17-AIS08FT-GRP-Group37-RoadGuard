@@ -44,10 +44,10 @@ def service(policy):
 
 
 @pytest.mark.parametrize("class_id,severity,priority,minutes", [
-    (0, "low", "P3", 20), (1, "medium", "P2", 35),
-    (2, "low", "P3", 20), (3, "medium", "P2", 35),
-    (4, "medium", "P2", 45), (5, "high", "P1", 60),
-    (6, "medium", "P2", 45), (7, "high", "P1", 60),
+    (0, "low", "P3", 60), (1, "medium", "P2", 120),
+    (2, "low", "P3", 60), (3, "medium", "P2", 120),
+    (4, "medium", "P2", 120), (5, "high", "P1", 240),
+    (6, "medium", "P2", 120), (7, "high", "P1", 240),
 ])
 def test_eight_demo_labels_map_to_explicit_project_assumptions(service, class_id, severity, priority, minutes):
     result = service.evaluate([detection(class_id)])
@@ -56,7 +56,7 @@ def test_eight_demo_labels_map_to_explicit_project_assumptions(service, class_id
     assert candidate.damage_label == LABELS_BY_ID[class_id]
     assert (candidate.severity, candidate.priority, candidate.service_minutes) == (severity, priority, minutes)
     assert candidate.repair_recommendation == service.policy.rules[candidate.damage_label].recommendation
-    assert result.rule_version == candidate.rule_version == "demo-rules-v1"
+    assert result.rule_version == candidate.rule_version == "demo-rules-v2"
     assert result.is_demo is candidate.is_demo is True
     assert all(trace.is_demo and trace.rule_version == result.rule_version for trace in result.decision_trace)
     assert service.policy.rules[candidate.damage_label].reason in result.decision_trace[2].message
@@ -101,14 +101,16 @@ def test_priority_takes_precedence_over_confidence(service):
 
 
 def test_severity_takes_precedence_over_duration_when_priority_ties(source):
-    source["rules"][LABELS_BY_ID[0]].update(priority="P1", severity="low", service_minutes=120)
+    source["rules"][LABELS_BY_ID[0]].update(priority="P1", severity="low", service_minutes=480)
     result = RuleService(RulePolicy.model_validate(source)).evaluate([
         detection(0, 1, "long-low"), detection(7, 0.6, "short-high"),
     ])
     assert result.selected_detection_id == "short-high"
 
 
-def test_longest_known_duration_takes_precedence_over_confidence(service):
+def test_longest_known_duration_takes_precedence_over_confidence(source):
+    source["rules"][LABELS_BY_ID[1]]["service_minutes"] = 60
+    service = RuleService(RulePolicy.model_validate(source))
     result = service.evaluate([detection(1, 1, "short"), detection(6, 0.6, "long")])
     assert result.selected_detection_id == "long"
 
@@ -154,7 +156,7 @@ def test_corrected_label_uses_same_rule_engine(service):
     corrected = service.evaluate([Detection.model_validate(corrected_data)])
     assert initial.candidate.priority == "P3"
     assert corrected.candidate.priority == "P1"
-    assert corrected.candidate.service_minutes == 60
+    assert corrected.candidate.service_minutes == 240
     assert corrected.rule_version == initial.rule_version
 
 
@@ -285,7 +287,7 @@ def test_policy_requires_exact_label_set_and_complete_fields(source, tmp_path, m
 @pytest.mark.parametrize("content", [
     b'{"rule_version":"a","rule_version":"b"}', b'{secret-input malformed}', b'[]', b'\xff',
     POLICY_PATH.read_bytes().replace(b'"confidence_threshold": 0.60', b'"confidence_threshold": 1e999'),
-    POLICY_PATH.read_bytes().replace(b'"service_minutes": 20', b'"service_minutes": 1e999', 1),
+    POLICY_PATH.read_bytes().replace(b'"service_minutes": 60', b'"service_minutes": 1e999', 1),
     POLICY_PATH.read_bytes().replace(b'"severity": "low"', b'"severity": "low", "severity": "high"', 1),
 ])
 def test_bad_json_and_encoding_rejected_without_path_or_content(tmp_path, content):

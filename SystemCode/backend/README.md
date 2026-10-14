@@ -31,13 +31,15 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0
 
 ## 跑通第 5 步
 
-在 `/docs` 中先调用 `GET /api/v1/demo/scenarios`，再向 `POST /api/v1/demo/assessments` 发送 `{"scenario_id":"high_confidence"}`。默认得到 P2、45 分钟的演示候选；`low_confidence` 得到 pending_review，`no_detection` 不产生候选。完整七个案例、阈值边界与八类演示映射见[模拟检测与规则指南](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md)。这些接口不接收图片、不创建数据库记录，也不更新 input_revision。
+在 `/docs` 中先调用 `GET /api/v1/demo/scenarios`，再向 `POST /api/v1/demo/assessments` 发送 `{"scenario_id":"high_confidence"}`。默认得到 P2、120 分钟的演示候选；`low_confidence` 得到 pending_review，`no_detection` 不产生候选。完整七个案例、阈值边界与八类演示映射见[模拟检测与规则指南](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md)。这些接口不接收图片、不创建数据库记录，也不更新 input_revision。
 
 ## 第 7 步：任务和知识对接
 
 `GET /api/v1/tasks/snapshot` 一次返回全部活动 Task 及同一事务的 input_revision，支持 expected_revision 查询参数；`/tasks` 保留页面分页/TaskRecord 历史用途。B 的内部入口是 `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`，应用通过 `request.app.state.task_query_service` 提供实例。传入同数据库已有事务的连接可与 B 未来的队伍查询共用快照；服务不结束调用者事务。
 
 完整契约、计算/保存时的版本检查、固定 10/15/20 任务、C 知识资料和实际 HTTP 消费示例见 [B/C 交接说明](../../Miscellaneous/BC_HANDOFF.md)。知识来源按仓库事实核对，不是工程专家审批；没有实现路线、检索/生成或前端。没有新增依赖或数据库迁移。
+
+当前课程模拟规则为 `demo-rules-v2`：P3/P2/P1＝60/120/240 分钟；新巡检使用启动时配置，旧记录继续使用冻结规则，不自动重算。业务定义与版本影响见[业务规则基线](../../Miscellaneous/BUSINESS_RULES_BASELINE.md)，本阶段检查见[联调验收清单](../../Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)。B/C 集成暂缓。
 
 ## 配置入口
 

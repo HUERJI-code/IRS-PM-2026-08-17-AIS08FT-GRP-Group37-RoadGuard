@@ -1,6 +1,6 @@
 # RoadGuard 项目与 Agent 协作规范
 
-版本：1.13 · 更新日期：2026-10-13 · 适用范围：本仓库全部目录、三名成员及其使用的 coding agent。
+版本：1.14 · 更新日期：2026-10-14 · 适用范围：本仓库全部目录、三名成员及其使用的 coding agent。
 
 这是本项目共用的开发规范入口。成员应使用同一仓库版本，并让 agent 在任务开始前读取本文件。详细分工和接口草案见 [TEAM_WORK_ALLOCATION.md](Miscellaneous/TEAM_WORK_ALLOCATION.md)，不依赖某位成员的聊天记录。
 
@@ -39,7 +39,9 @@
 
 2026-10-13 确认通常一张照片只有一个主要损伤类型和一个主要对象；允许无检测、多目标及不确定情况。2026-10-13 用户进一步确认接口最多返回一个框，选定主框原始 confidence ≥ 0.60 自动创建一个任务；低于阈值待审核，无检测不建任务。不得删除原始证据或把阈值描述为准确率保证。[单目标优化](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md)之后，按用户明确授权[发布最佳权重并接入后端](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md)：默认采用发布 manifest，a-workflow-v5 上传仅返回 inspection_id、status、detection（单对象或 null）、task_id；详情保留单框、完整来源和 auto_acceptance，a-knowledge-v5 同步说明。数据库保留原始证据，八类含义不变；图像类型指标须与框检测指标分开，两个 70% 仍未达到。
 
-以下事项尚待 M0 确认：班次及是否返基地、维修时长、任务期限、类别与规则映射、真实场景阈值校准、目标函数权重及 GA 参数。NUS-ISS 的建筑参考坐标已确定，实际车辆入口由 B 在道路行程接入时核验。当前项目已确认自动接受阈值 `0.60`，集中读取 demo_rules.example.json 的 confidence_threshold，并在 auto_acceptance 中冻结；这不是经过模型校准的正确概率。不得自行把固定班次当作已确认值，也不得静默替换基地坐标。需要占位时明确标为演示假设并集中配置；正式验证不得混用未确认假设。
+2026-10-14 用户定稿课程模拟规则 `demo-rules-v2`：八类严重度/优先级映射不变，P3/P2/P1 预计维修时长分别为 60/120/240 分钟；保持 is_demo=true，不冒充工程标准。详见[业务规则基线](Miscellaneous/BUSINESS_RULES_BASELINE.md)和[联调验收清单](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)。旧巡检与任务沿用各自冻结规则，不批量重算；B 读取保存的 Task 工时。知识包更新为 a-knowledge-v6，固定样例更新为 planning-synthetic-v2。本轮只做 A 的规则和验收准备，B/C 接入整合暂缓。
+
+以下事项尚待 M0 确认：班次及是否返基地、任务期限、真实工程映射与工时证据、真实场景阈值校准、目标函数权重及 GA 参数。NUS-ISS 的建筑参考坐标已确定，实际车辆入口由 B 在道路行程接入时核验。当前项目已确认自动接受阈值 `0.60`，集中读取 demo_rules.example.json 的 confidence_threshold，并在 auto_acceptance 中冻结；这不是经过模型校准的正确概率。不得自行把固定班次当作已确认值，也不得静默替换基地坐标。需要占位时明确标为演示假设并集中配置；正式验证不得混用未确认假设。
 
 第 5 步的 [demo_rules.example.json](SystemCode/config/demo_rules.example.json) 已集中实现演示阈值、八类映射和单候选选取策略，说明见[模拟检测与规则](Miscellaneous/DEMO_DETECTION_AND_RULES.md)。所有输出显式标记演示；`ready_for_task` 仅表示候选计算完成，不是已接受巡检或入队任务。规则参数变更时更新版本，不能将这些演示假设升级为正式批准值。
 

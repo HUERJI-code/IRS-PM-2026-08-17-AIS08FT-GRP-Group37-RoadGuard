@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v5",
+  "package_version": "a-knowledge-v6",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -52,7 +52,7 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "demo-rules-v1 中 pothole_deep 是 high/P1/60 分钟，longitudinal_crack 是 low/P3/20 分钟，都是演示假设。",
+        "demo-rules-v2 中 pothole_deep 是 high/P1/240 分钟，longitudinal_crack 是 low/P3/60 分钟，都是演示假设。",
         "排序优先比较 P1/P2/P3，再严重度、已知工时降序（null 后）、置信度降序、ID 字典序。",
         "deep/wide/sunken 是视觉类别，不证明实测深度/宽度/工程严重度。"
       ],
@@ -151,7 +151,7 @@
     {
       "case_id": "qa-06",
       "is_synthetic_case": true,
-      "question": "任务记录使用 demo-rules-v2，但只给了本包，为什么它是 P1 和 60 分钟？",
+      "question": "任务记录使用 demo-rules-v1，但只给了本包，为什么它是 P1 和 60 分钟？",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -164,7 +164,7 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "本包只钉住 demo-rules-v1，不能用该表解释或重算 v2 的原始决策。",
+        "本包只钉住 demo-rules-v2，不能用该表解释或重算 v1 的原始决策。",
         "需要相符 rule_version 的保存 decision_trace/history 或冻结规则证据；不足时说明无法确定。"
       ],
       "required_runtime_evidence": [
@@ -173,11 +173,11 @@
         "stored_decision_trace_or_history"
       ],
       "forbidden_claims": [
-        "直接套用 v1 或最新表得出 v2 理由。",
+        "直接套用 v2 或最新表得出 v1 理由。",
         "规则版本不同说明记录必定错误。"
       ],
       "provided_context": {
-        "rule_version": "demo-rules-v2",
+        "rule_version": "demo-rules-v1",
         "decision_trace": null,
         "history": null
       }
