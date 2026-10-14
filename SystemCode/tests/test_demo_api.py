@@ -51,11 +51,11 @@ def test_demo_flows_through_detector_and_rules(client, scenario, status, priorit
     assert body["confidence_threshold"] == 0.60
     assessment = body["assessment"]
     assert assessment["status"] == status
-    assert assessment["rule_version"] == "demo-rules-v1"
+    assert assessment["rule_version"] == "demo-rules-v2"
     assert assessment["is_demo"] is True
     assert all(detection["is_demo"] for detection in assessment["detections"])
     assert assessment["decision_trace"]
-    assert all(trace["rule_version"] == "demo-rules-v1" and trace["is_demo"] for trace in assessment["decision_trace"])
+    assert all(trace["rule_version"] == "demo-rules-v2" and trace["is_demo"] for trace in assessment["decision_trace"])
     if priority is None:
         assert assessment["candidate"] is None
         assert assessment["selected_detection_id"] is None

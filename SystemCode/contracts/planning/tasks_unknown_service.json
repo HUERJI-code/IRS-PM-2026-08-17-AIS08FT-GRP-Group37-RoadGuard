@@ -13,7 +13,7 @@
       "latitude": 1.332,
       "longitude": 103.676,
       "priority": "P3",
-      "rule_version": "demo-rules-v1",
+      "rule_version": "demo-rules-v2",
       "service_minutes": null,
       "severity": "low",
       "status": "active",

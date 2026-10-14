@@ -1,10 +1,12 @@
 # A → C 知识资料包
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v5`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v6`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
 
 先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
 
 每个 section 的 classification 区分：`confirmed_project_fact` 是已记录的项目决定或当前可执行行为；`demo_assumption` 是明确未校准的演示参数/策略；`pending_decision` 是仍未确认的选项。项目约定可以已经确定而对应服务尚未实现，正文会明确区分。不能把分类为项目事实的“计划接口要求”描述成正在运行的功能。
+
+本次 v6 同步 demo-rules-v2 的项目工时决定；参数经项目发起人确认不等于工程有效性获批，下面的 review 元数据仅说明资料包核对方式。
 
 review_basis 为 `repository_consistency_review`：本轮 coding agent 代表 A 对照仓库源码/配置进行一致性核对，不代表 A 本人的人工签署、工程专家批准、道路许可或真实试验验证。manifest 明确记录 `human_or_expert_approval=false`。
 

@@ -4,24 +4,26 @@
 
 ## 演示规则与正式规则的区别
 
-唯一规则配置为 [demo_rules.example.json](../SystemCode/config/demo_rules.example.json)。当前版本 `demo-rules-v1`，`is_demo=true`，`status=demonstration_assumptions`。阈值 `0.60` 和下列映射是用于跑通流程的项目演示假设，未经过模型验证或工程工时测量。RDD2022ES 的标签不提供这些业务参数，真实模型接入后仍须由 A 校准、记录依据并重新发布规则版本。
+唯一规则配置为 [demo_rules.example.json](../SystemCode/config/demo_rules.example.json)。当前版本 `demo-rules-v2`，`is_demo=true`，`status=demonstration_assumptions`。2026-10-14 项目发起人定稿模拟工时 P3/P2/P1＝60/120/240 分钟，沿用原严重度/优先级映射及已确认的 `0.60` 阈值；详见[业务规则基线](BUSINESS_RULES_BASELINE.md)。这些值用于课程模拟，未经过真实场景阈值校准或工程工时测量，RDD2022ES 标签不提供这些业务参数。
 
 | 数据集标签 | 演示严重度 | 演示优先级 | 演示维修分钟数 |
 | --- | --- | --- | --- |
-| longitudinal_crack | low | P3 | 20 |
-| longitudinal_crack_wide | medium | P2 | 35 |
-| transverse_crack | low | P3 | 20 |
-| transverse_crack_wide | medium | P2 | 35 |
-| alligator_crack | medium | P2 | 45 |
-| alligator_crack_sunken | high | P1 | 60 |
-| pothole | medium | P2 | 45 |
-| pothole_deep | high | P1 | 60 |
+| longitudinal_crack | low | P3 | 60 |
+| longitudinal_crack_wide | medium | P2 | 120 |
+| transverse_crack | low | P3 | 60 |
+| transverse_crack_wide | medium | P2 | 120 |
+| alligator_crack | medium | P2 | 120 |
+| alligator_crack_sunken | high | P1 | 240 |
+| pothole | medium | P2 | 120 |
+| pothole_deep | high | P1 | 240 |
 
 这张表描述当前示例配置；改动以配置为准，并同步本文。建议与理由也保存在配置中，均说明模拟性质；不用于指挥真实维修。配置允许未知时长为 `null`，不允许以 0 代替未知值。未定义任务期限，不生成期限或逾期指标。
 
 配置必须完整覆盖中央标签字典中的八个 `label_key`；缺失/额外类别、重复 JSON 键、非法优先级、布尔/字符串数值及非有限数字均拒绝。`ROADGUARD_DEMO_RULES_PATH` 可覆盖配置路径；相对路径以仓库根目录解析。配置在启动时读取，修改后重启并更新 `rule_version`；错误配置使启动失败，不悄悄回退。
 
 ## 分流与候选选择
+
+本节描述 stateless demo 预览和显式 demo 上传。真实上传使用已发布模型选定的单主框比较 0.60，行为见[业务基线](BUSINESS_RULES_BASELINE.md#3-当前分流单框与任务创建)；不能把 demo 的多候选门槛套用到真实上传。
 
 1. 没有检测：`no_detection`，候选和选中 ID 均为 `null`。
 2. 任意检测的置信度 **小于** 阈值：`pending_review`。高低置信度混合时也保留所有检测并整体等待审核，不丢掉低置信度框后自动接受。
@@ -47,7 +49,7 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/demo/assessment
 
 | scenario_id | 固定检测内容 | 默认规则下的结果 |
 | --- | --- | --- |
-| high_confidence | pothole，0.96 | ready_for_task，medium / P2 / 45 分钟 |
+| high_confidence | pothole，0.96 | ready_for_task，medium / P2 / 120 分钟 |
 | low_confidence | pothole，0.42 | pending_review，无候选 |
 | no_detection | 空检测列表 | no_detection，无候选 |
 | multiple_detections | 0.98 的纵向裂缝与 0.90 的深坑洞 | 选择 P1 的深坑洞，不仅看最高置信度 |
@@ -63,7 +65,7 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/demo/assessment
 - `RuleService(policy).evaluate(detections)` 返回公共 `RuleAssessment`，只处理传入快照，不进行数据库写入。内部输入也重新校验标签、框、重复 ID 和同图尺寸。
 - `RuleCandidate` 提供损坏标签、严重度、优先级、时长、维修建议、规则版本与演示标记。它没有 task_id、位置和创建时间；B 应继续使用 Task 契约，不能把候选直接当作可规划任务。
 - 第 6 步负责图片/位置校验、巡检保存、人工确认/纠正/驳回、任务幂等创建和同事务版本递增。人工确认不能通过伪造置信度为 1.0 实现，需明确记录审核事实后复用标签映射。
-- 原有第 3 步固定 JSON 是 `a-dto-v1` 的独立快照，使用 `demo-unconfirmed-v1`；当前在线演示使用 `demo-rules-v1`，不把旧快照当作规则配置加载。
+- 原有第 3 步固定 JSON 是 `a-dto-v1` 的独立快照，使用 `demo-unconfirmed-v1`；当前在线演示使用 `demo-rules-v2`，不把旧快照当作规则配置加载。
 
 新增 DTO 与错误码见[统一接口契约](API_CONTRACT.md)。本步不校验 Jurong 道路范围、不存储任务、不生成四队方案，不据此声称完整项目流程或检测准确率已验证。
 

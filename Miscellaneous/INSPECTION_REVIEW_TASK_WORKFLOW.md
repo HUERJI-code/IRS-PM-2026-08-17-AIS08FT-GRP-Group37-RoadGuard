@@ -1,6 +1,6 @@
 # 第 6 步：巡检、审核与任务
 
-负责人：A；原第 6 步日期：2026-10-12；本页说明原 `a-workflow-v1` 的 demo 请求与流程。第 8 步已扩展为 `a-workflow-v2`，具体 real 请求及新增字段见[真实视觉接口](REAL_VISION_API.md)。下表是原 demo 分流；当前 a-workflow-v5 的 real 分流已按用户要求改为主框 confidence ≥ 0.60 自动建任务，低于阈值待审核，接口最多返回一个框，见[最新字段与行为](INSPECTION_RESPONSE_FIELDS.md)。规则仍使用 `demo-rules-v1` 演示策略，业务记录仍标记为演示；不调用 Google 或 GPT，不生成路线。
+负责人：A；原第 6 步日期：2026-10-12；本页说明原 `a-workflow-v1` 的 demo 请求与流程。第 8 步已扩展为 `a-workflow-v2`，具体 real 请求及新增字段见[真实视觉接口](REAL_VISION_API.md)。下表是原 demo 分流；当前 a-workflow-v5 的 real 分流已按用户要求改为主框 confidence ≥ 0.60 自动建任务，低于阈值待审核，接口最多返回一个框，见[最新字段与行为](INSPECTION_RESPONSE_FIELDS.md)。2026-10-14 当前规则已更新为 `demo-rules-v2`（P3/P2/P1＝60/120/240 分钟），见[业务基线](BUSINESS_RULES_BASELINE.md)；旧记录保留冻结的 v1 规则，业务参数仍标记为演示。不调用 Google 或 GPT，不生成路线。
 
 ## 1. 巡检与任务的区别
 

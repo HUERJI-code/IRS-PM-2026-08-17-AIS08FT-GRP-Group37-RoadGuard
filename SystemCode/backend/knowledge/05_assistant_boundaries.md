@@ -1,6 +1,6 @@
 # 助手回答与修改的证据边界
 
-document_id：`rg-kb-assistant`；document_version：`1`；owner：`A`。
+document_id：`rg-kb-assistant`；document_version：`2`；owner：`A`。
 
 <a id="assistant-plan-facts"></a>
 ## 动态路线事实
@@ -27,7 +27,7 @@ classification：`confirmed_project_fact`。citation_id：`rg-kb-assistant#assis
 
 classification：`confirmed_project_fact`。citation_id：`rg-kb-assistant#assistant-rule-versions`。
 
-本包钉住 demo-rules-v1，而运行配置或旧巡检冻结快照可以属于 demo-rules-v2 等其他版本。C 必须先检查任务/巡检的 rule_version，依据该记录的 decision_trace、审核/任务 history 及相符的规则证据解释；不能默默改用最新静态表格推导原决策。匹配的保存证据足够时才解释；缺少匹配证据时返回 insufficient_data，并要求提供对应记录/版本。版本不一致不等于记录错误，也不授权修改业务数据。
+本包钉住 demo-rules-v2，而运行配置或旧巡检冻结快照可以属于 demo-rules-v1 等其他版本。C 必须先检查任务/巡检的 rule_version，依据该记录的 decision_trace、审核/任务 history 及相符的规则证据解释；不能默默改用最新静态表格推导原决策。匹配的保存证据足够时才解释；缺少匹配证据时返回 insufficient_data，并要求提供对应记录/版本。版本不一致不等于记录错误，也不授权修改业务数据。
 
 来源：[src-demo-rules](../../config/demo_rules.example.json)、[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)。
 

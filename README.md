@@ -6,7 +6,9 @@ Road damage assessment and maintenance planning for **Jurong, Singapore**, with 
 
 This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测并强制复核，业务规则仍为演示；道路类型声明及合成任务点不能替代道路核验。
+> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测，主框 ≥0.60 自动建任务，低于阈值复核；业务规则仍为课程模拟；道路类型声明及合成任务点不能替代道路核验。
+
+2026-10-14：[业务规则定稿](Miscellaneous/BUSINESS_RULES_BASELINE.md)采用 `demo-rules-v2`，P3/P2/P1＝60/120/240 分钟；[联调验收清单](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)覆盖 A 当前检查和 B/C 就绪后的场景。B/C 接入整合暂缓，已有记录保留旧规则。
 
 ## SECTION 1 : PROJECT TITLE
 

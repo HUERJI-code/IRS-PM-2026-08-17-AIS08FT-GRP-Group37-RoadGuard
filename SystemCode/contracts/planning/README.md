@@ -12,7 +12,7 @@
 
 所有快照为 `source=synthetic_fixture`、`is_demo=true`，`input_revision=0` 只是固定样例标记，不代表在线数据库当前版本或任务数。ID、UTC 时间戳和点位顺序固定；任务均为 `active`。全部 `due_at=null`，不能凭这些样例计算期限延误。
 
-标签按中央 [标签字典](../../model/label_schema.json) 的 class_id 循环排列，严重度、优先级、时长和规则版本从 [demo_rules.example.json](../../config/demo_rules.example.json) 读取，不维护第二套映射。该规则仍为演示假设。未知时长文件仅将一个衍生任务的时长显式置为 null，其他属性沿用共享规则；它是独立契约边界，不能称为当前完整规则映射的实际输出，也不加入 10/15/20 集合。
+标签按中央 [标签字典](../../model/label_schema.json) 的 class_id 循环排列，严重度、优先级、时长和规则版本从 [demo_rules.example.json](../../config/demo_rules.example.json) 读取，不维护第二套映射。当前 `planning-synthetic-v2` 对应 `demo-rules-v2`：P3/P2/P1＝60/120/240 分钟；同一个任务 ID 在不同 fixture_version 下内容可能不同，比较实验须同时记录样例版本与文件摘要。这是定稿的课程模拟假设，历史 v1 样例可从 Git 追溯。未知时长文件仅将一个衍生任务的时长显式置为 null，其他属性沿用共享规则；它是独立契约边界，不能称为当前完整规则映射的实际输出，也不加入 10/15/20 集合。
 
 坐标从冻结 [JE/JW 多边形](../../../Miscellaneous/geography/jurong-boundary-mp2025.geojson) 内的固定网格合成，已检查多边形并集覆盖。**没有检查道路网络、道路类型或权限，点位可能不在道路上或落在被排除的道路上。** 因此可用于解析、地图加载和算法数据流开发；道路验证、行程矩阵、约束冻结及 B 的规划实现完成前，不能用作真实行程实验或性能结论。
 

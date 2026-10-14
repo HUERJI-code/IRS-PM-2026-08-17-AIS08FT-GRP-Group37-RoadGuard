@@ -73,7 +73,7 @@ def test_upload_review_correction_task_completion_and_replay(client, png):
     assert accepted["inspection"]["review_history"][0]["action"] == "correct"
     task = accepted["task"]
     assert task["damage_label"] == "pothole_deep" and task["priority"] == "P1"
-    assert task["service_minutes"] == 60 and task["due_at"] is None
+    assert task["service_minutes"] == 240 and task["due_at"] is None
     assert task["inspection_id"] == identifier and accepted["input_revision"] == 1
     assert accepted["planning_input_changed"] and not accepted["replayed"]
     repeated = client.post(f"/api/v1/inspections/{identifier}/review", json=review).json()

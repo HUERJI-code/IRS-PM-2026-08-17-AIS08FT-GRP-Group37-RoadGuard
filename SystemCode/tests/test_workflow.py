@@ -190,7 +190,7 @@ def test_task_label_and_location_corrections_audit_changes_and_preserve_inspecti
                       latitude=1.3410, longitude=103.706, road_type="public_motor_road")
     result = service.update_task(initial.task.task_id, patch)
     assert result.planning_input_changed and result.input_revision == 2
-    assert result.task.record_version == 2 and result.task.priority == "P1" and result.task.service_minutes == 60
+    assert result.task.record_version == 2 and result.task.priority == "P1" and result.task.service_minutes == 240
     assert result.task.latitude == 1.3410 and len(result.task.history) == 2
     assert result.task.history[-1].before.damage_label == "pothole"
     assert result.task.history[-1].after.damage_label == "pothole_deep"
@@ -246,9 +246,9 @@ def test_restart_keeps_frozen_inspection_policy_for_review_and_task_correction(s
     restarted = WorkflowService(fresh_database, RuleService(RulePolicy.model_validate(source)),
                                 service.detector, service.scope, service.images)
     result = restarted.review(original.inspection_id, review_request(original))
-    assert result.task.service_minutes == 45 and result.task.rule_version == "demo-rules-v1"
+    assert result.task.service_minutes == 120 and result.task.rule_version == "demo-rules-v2"
     patch = restarted.update_task(result.task.task_id, TaskPatch(request_id="correct", expected_version=1, damage_label="pothole_deep"))
-    assert patch.task.priority == "P1" and patch.task.rule_version == "demo-rules-v1"
+    assert patch.task.priority == "P1" and patch.task.rule_version == "demo-rules-v2"
     assert restarted.get_inspection(original.inspection_id).detections == original.detections
 
 

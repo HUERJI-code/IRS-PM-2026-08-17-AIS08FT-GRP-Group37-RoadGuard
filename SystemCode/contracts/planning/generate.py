@@ -112,7 +112,7 @@ def build_artifacts() -> dict[str, bytes]:
     artifacts = {name: _json_bytes(snapshot) for name, snapshot in snapshots.items()}
     depot, planning = project["scenario"]["depot"], project["planning"]
     manifest = {
-        "fixture_version": "planning-synthetic-v1",
+        "fixture_version": "planning-synthetic-v2",
         "contract_version": "a-task-query-v1", "source": "synthetic_fixture", "is_demo": True,
         "input_revision": 0,
         "revision_meaning": "Fixed fixture marker only; never a live database revision or mutation count.",
