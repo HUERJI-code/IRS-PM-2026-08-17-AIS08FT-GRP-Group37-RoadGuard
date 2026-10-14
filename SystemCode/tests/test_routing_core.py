@@ -60,7 +60,7 @@ def test_example_config_is_explicit_demo_with_chosen_policies():
     settings = CONFIG.settings
     assert settings.is_demo is True and settings.config_version == "b-routing-demo-v1"
     assert settings.return_to_depot is True
-    assert settings.shift_limit == ShiftLimit(mode="unlimited")
+    assert settings.shift_limit == ShiftLimit(mode="limited", minutes=480.0)
     assert CONFIG.ga.seed_with_greedy is False
     assert PROJECT["planning"]["return_to_depot"] is None   # A's project config stays undecided
 
@@ -150,7 +150,9 @@ def test_unavailable_crew_gets_no_tasks_and_stays_visible():
     plan = greedy(make_input(unavailable=frozenset({"crew-02"})))
     crew2 = plan.crew_routes[1]
     assert crew2.crew_id == "crew-02" and crew2.status == "unavailable" and crew2.stops == []
-    assert sorted(assigned_ids(plan)) == sorted(t.task_id for t in snapshot().tasks)
+    # Three crews cannot fit four 240-minute P1 jobs plus travel into 480-minute shifts.
+    assert_exact_cover(plan, snapshot().tasks, all_p1_fit=False)
+    assert plan.metrics.unassigned_by_priority["P1"] == 1
 
 
 def test_all_crews_unavailable_reports_every_task():
@@ -211,11 +213,24 @@ def test_greedy_is_deterministic_and_dispatches_p1_first():
     assert "P1" in first_stops
 
 
+def assert_exact_cover(plan, tasks, limit=480.0, *, all_p1_fit=True):
+    """Every task once (route or unassigned); 480-minute shifts hold; P1 kept when capacity allows."""
+    listed = assigned_ids(plan) + [u.task_id for u in plan.unassigned_tasks]
+    assert sorted(listed) == sorted(t.task_id for t in tasks)
+    assert all(r.total_work_minutes <= limit for r in plan.crew_routes)
+    assert {u.reason for u in plan.unassigned_tasks} <= {"exceeds_shift_limit"}
+    if all_p1_fit:
+        assert plan.metrics.unassigned_by_priority["P1"] == 0
+    assert sum(plan.metrics.unassigned_by_priority.values()) == len(plan.unassigned_tasks)
+
+
 @pytest.mark.parametrize("count", [10, 15, 20])
 def test_greedy_covers_every_fixture_task_exactly_once(count):
     planning_input = make_input(count)
     plan = greedy(planning_input)
-    assert sorted(assigned_ids(plan)) == sorted(t.task_id for t in planning_input.tasks)
+    assert_exact_cover(plan, planning_input.tasks)
+    if count == 10:
+        assert plan.unassigned_tasks == []
     assert plan.is_demo and plan.matrix_is_simulated and plan.random_seed is None
     assert plan.metrics.tasks_with_due_at == 0 and plan.metrics.total_lateness_minutes is None
     total_travel = sum(r.travel_minutes for r in plan.crew_routes)
@@ -254,3 +269,26 @@ def test_planning_input_rejects_non_active_or_duplicate_tasks():
     done = planning_input.tasks[0].model_copy(update={"status": "completed"}).model_dump()
     with pytest.raises(ValidationError):
         type(planning_input).model_validate({**planning_input.model_dump(), "tasks": [done]})
+
+
+def test_unlimited_shift_assigns_every_reachable_task():
+    planning_input = make_input(20, shift_limit=ShiftLimit(mode="unlimited"))
+    plan = greedy(planning_input)
+    assert plan.unassigned_tasks == [] and len(assigned_ids(plan)) == 20
+    assert max(r.total_work_minutes for r in plan.crew_routes) > 480.0
+
+
+def test_objective_key_never_trades_a_p1_for_shorter_tasks():
+    """Dropping one long P1 to fit two P3 tasks must rank worse, whatever the cost."""
+    planning_input = make_input(20)
+    problem = RoutingProblem(planning_input, matrix_for(planning_input))
+    p1 = next(i for i, t in enumerate(planning_input.tasks) if t.priority == "P1")
+    p3s = [i for i, t in enumerate(planning_input.tasks) if t.priority == "P3"][:2]
+    keep_p1 = problem.evaluate([[p1], [], [], []])
+    tiny = problem.limit
+    problem.limit = 0.0    # force every task to be skipped for the comparison sample
+    drop_all = problem.evaluate([[p1, *p3s], [], [], []])
+    problem.limit = tiny
+    assert drop_all.skipped_by_priority == (1, 0, 2)
+    assert keep_p1.key < drop_all.key
+    assert (0, 0, 2, 10_000.0) < (1, 0, 0, 0.0)

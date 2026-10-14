@@ -1,10 +1,3 @@
-"""
-Rule: the available crew that becomes free earliest picks next. It takes the
-highest-priority task it can still feasibly serve (P1 before P2 before P3), breaking
-ties by the shortest travel time from its current position and then by snapshot order.
-A crew that can take no remaining task stops. Leftover tasks are reported with reasons.
-"""
-
 from .evaluation import Evaluation, RoutingProblem
 
 PRIORITY_RANK = {"P1": 0, "P2": 1, "P3": 2}
