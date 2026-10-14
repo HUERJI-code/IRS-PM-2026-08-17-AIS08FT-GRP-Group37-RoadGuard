@@ -3,6 +3,7 @@
 from collections.abc import Mapping
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -37,10 +38,16 @@ class GAParameters(ContractModel):
     seed_with_greedy: bool
 
 
+class PlanningServiceConfig(ContractModel):
+    # One fixed seed makes online recalculation reproducible for the same input.
+    ga_seed: int = Field(strict=True)
+
+
 class RoutingConfig(ContractModel):
     settings: PlanningSettings
     simulated_matrix: SimulatedMatrixParameters
     ga: GAParameters
+    planning_service: PlanningServiceConfig
     experiment: dict[str, Any]
 
 
@@ -51,8 +58,17 @@ def _reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return dict(pairs)
 
 
+def routing_config_path() -> Path:
+    """ROADGUARD_ROUTING_CONFIG_PATH overrides the example; relative paths use the repo root."""
+    override = os.environ.get("ROADGUARD_ROUTING_CONFIG_PATH")
+    if override is None:
+        return DEFAULT_ROUTING_CONFIG
+    path = Path(override)
+    return path if path.is_absolute() else REPOSITORY_ROOT / path
+
+
 def load_routing_config(path: Path | None = None) -> RoutingConfig:
-    source = json.loads(Path(path or DEFAULT_ROUTING_CONFIG).read_text(encoding="utf-8"),
+    source = json.loads(Path(path or routing_config_path()).read_text(encoding="utf-8"),
                         object_pairs_hook=_reject_duplicates)
     objective = source["objective"]
     settings = PlanningSettings(
@@ -71,6 +87,7 @@ def load_routing_config(path: Path | None = None) -> RoutingConfig:
         settings=settings,
         simulated_matrix=SimulatedMatrixParameters.model_validate(source["simulated_matrix"]),
         ga=ga,
+        planning_service=PlanningServiceConfig.model_validate(source["planning_service"]),
         experiment=source["experiment"],
     )
 
