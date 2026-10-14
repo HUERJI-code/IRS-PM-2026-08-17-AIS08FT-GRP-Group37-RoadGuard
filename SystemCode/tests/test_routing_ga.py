@@ -7,7 +7,7 @@ from roadguard.routing.ga import GeneticPlanner
 from roadguard.routing.greedy import solve_greedy
 from roadguard.routing.models import ShiftLimit
 
-from test_routing_core import CONFIG, assigned_ids, make_input, matrix_for, with_cells
+from test_routing_core import CONFIG, assert_exact_cover, assigned_ids, make_input, matrix_for, with_cells
 
 
 FAST = CONFIG.ga.model_copy(update={"population_size": 20, "max_generations": 40, "patience_generations": 15})
@@ -31,7 +31,7 @@ def test_same_seed_reproduces_the_same_plan():
 def test_ga_covers_every_fixture_task_exactly_once(count):
     planning_input = make_input(count)
     plan, _ = ga(planning_input)
-    assert sorted(assigned_ids(plan)) == sorted(t.task_id for t in planning_input.tasks)
+    assert_exact_cover(plan, planning_input.tasks)
     assert [r.crew_id for r in plan.crew_routes] == ["crew-01", "crew-02", "crew-03", "crew-04"]
 
 
@@ -53,7 +53,7 @@ def test_ga_never_assigns_unavailable_crews():
     plan, _ = ga(make_input(12, unavailable=frozenset({"crew-01", "crew-04"})))
     assert plan.crew_routes[0].status == plan.crew_routes[3].status == "unavailable"
     assert plan.crew_routes[0].stops == plan.crew_routes[3].stops == []
-    assert len(assigned_ids(plan)) == 12
+    assert len(assigned_ids(plan)) + len(plan.unassigned_tasks) == 12
 
 
 def test_ga_handles_empty_tasks_and_all_crews_unavailable():
@@ -92,3 +92,12 @@ def test_ga_requires_seed_and_parameters():
         plan_routes(planning_input, matrix_for(planning_input), "ga", ga_parameters=FAST)
     with pytest.raises(ValueError):
         plan_routes(planning_input, matrix_for(planning_input), "ga", random_seed=1)
+
+
+@pytest.mark.parametrize("count", [15, 20])
+def test_ga_with_default_parameters_keeps_every_p1_under_shift_limit(count):
+    """Regression: a plain unassigned count once let GA drop all long P1 jobs."""
+    planning_input = make_input(count)
+    for seed in (1, 2):
+        plan, _ = ga(planning_input, seed=seed, parameters=CONFIG.ga)
+        assert_exact_cover(plan, planning_input.tasks)

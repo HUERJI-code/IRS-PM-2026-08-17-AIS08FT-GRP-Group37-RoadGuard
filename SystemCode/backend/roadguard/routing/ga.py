@@ -13,7 +13,7 @@ class GAResult:
     best: Evaluation
     generations_run: int
     unique_evaluations: int
-    best_key_history: tuple[tuple[int, float], ...]
+    best_key_history: tuple[tuple[int, int, int, float], ...]   # (skipped P1, P2, P3, objective)
 
 
 class GeneticPlanner:

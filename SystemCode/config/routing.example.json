@@ -4,8 +4,8 @@
   "decision_status": "B proposal selected on 2026-10-14; demo assumption pending A confirmation, not an approved operating rule",
   "return_to_depot": true,
   "shift_limit": {
-    "mode": "unlimited",
-    "minutes": null
+    "mode": "limited",
+    "minutes": 480.0
   },
   "simulated_matrix": {
     "provider": "simulated_haversine_v1",

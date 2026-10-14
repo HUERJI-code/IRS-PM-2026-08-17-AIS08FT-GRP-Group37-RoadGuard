@@ -157,6 +157,7 @@ class UnassignedTask(ContractModel):
 class PlanMetrics(ContractModel):
     assigned_task_count: NonNegativeInt
     unassigned_task_count: NonNegativeInt
+    unassigned_by_priority: dict[Priority, NonNegativeInt]
     total_travel_minutes: NonNegativeMinutes
     total_service_minutes: NonNegativeMinutes
     makespan_minutes: NonNegativeMinutes

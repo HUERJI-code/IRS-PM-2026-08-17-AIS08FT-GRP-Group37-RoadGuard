@@ -40,7 +40,7 @@ FIXTURES = ROOT / "SystemCode/contracts/planning"
 METRICS = ("assigned_task_count", "unassigned_task_count", "total_travel_minutes", "total_service_minutes",
            "makespan_minutes", "workload_std_minutes", "priority_weighted_completion_minutes",
            "objective_value", "algorithm_runtime_ms")
-RAW_FIELDS = ("task_count", "algorithm", "seed", *METRICS, "generations_run", "unique_evaluations",
+RAW_FIELDS = ("task_count", "algorithm", "seed", *METRICS, "unassigned_p1", "unassigned_p2", "unassigned_p3", "generations_run", "unique_evaluations",
               "matrix_preparation_ms")
 
 
@@ -57,6 +57,11 @@ def git_state() -> dict[str, object]:
         return {"commit": commit, "working_tree_dirty": dirty}
     except (OSError, subprocess.CalledProcessError):
         return {"commit": None, "working_tree_dirty": None}
+
+
+def comparison_key(row: dict) -> tuple:
+    """Same lexicographic order the planners optimise: unassigned P1, P2, P3, then cost."""
+    return (row["unassigned_p1"], row["unassigned_p2"], row["unassigned_p3"], row["objective_value"])
 
 
 def describe(values: list[float]) -> dict[str, float]:
@@ -95,19 +100,20 @@ def run_experiments(output_dir: Path, *, task_counts=(10, 15, 20), seeds=None, g
         for plan, result in runs:
             row = {"task_count": count, "algorithm": plan.algorithm, "seed": plan.random_seed,
                    **{name: getattr(plan.metrics, name) for name in METRICS},
+                   **{f"unassigned_{p.lower()}": n for p, n in plan.metrics.unassigned_by_priority.items()},
                    "generations_run": result.generations_run if result else None,
                    "unique_evaluations": result.unique_evaluations if result else None,
                    "matrix_preparation_ms": matrix_ms}
             raw_rows.append(row)
             if result:
-                for generation, (unassigned, objective) in enumerate(result.best_key_history):
+                for generation, (p1, p2, p3, objective) in enumerate(result.best_key_history):
                     convergence_rows.append({"task_count": count, "seed": plan.random_seed,
-                                             "generation": generation, "best_unassigned": unassigned,
+                                             "generation": generation, "best_skipped_p1": p1,
+                                             "best_skipped_p2": p2, "best_skipped_p3": p3,
                                              "best_objective": objective})
         ga_rows = [row for row in raw_rows if row["task_count"] == count and row["algorithm"] == "ga"]
         greedy_row = next(row for row in raw_rows if row["task_count"] == count and row["algorithm"] == "greedy")
-        greedy_key = (greedy_row["unassigned_task_count"], greedy_row["objective_value"])
-        ga_keys = [(row["unassigned_task_count"], row["objective_value"]) for row in ga_rows]
+        greedy_key, ga_keys = comparison_key(greedy_row), [comparison_key(row) for row in ga_rows]
         scenarios[str(count)] = {
             "fixture": fixture.relative_to(ROOT).as_posix(),
             "fixture_sha256": sha256_bytes(fixture_bytes),
@@ -142,7 +148,7 @@ def run_experiments(output_dir: Path, *, task_counts=(10, 15, 20), seeds=None, g
         "limitations": [
             "Simulated travel matrix (great-circle x detour / speed); not road-network or Google data.",
             "Task points are synthetic and polygon-checked only; road eligibility is not verified.",
-            "return_to_depot=true and unlimited shift are B demo assumptions pending A confirmation.",
+            "return_to_depot=true and the 480-minute shift limit are B demo assumptions pending A confirmation.",
             "All due_at are null, so no lateness is reported; priority-weighted completion is not lateness.",
             "Objective weights are a demo proposal; runtime is single-machine wall time.",
         ],
@@ -154,8 +160,9 @@ def run_experiments(output_dir: Path, *, task_counts=(10, 15, 20), seeds=None, g
         writer.writeheader()
         writer.writerows(raw_rows)
     with (output_dir / "ga_convergence.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=("task_count", "seed", "generation", "best_unassigned",
-                                                    "best_objective"), lineterminator="\n")
+        writer = csv.DictWriter(handle, fieldnames=("task_count", "seed", "generation", "best_skipped_p1",
+                                                    "best_skipped_p2", "best_skipped_p3", "best_objective"),
+                                lineterminator="\n")
         writer.writeheader()
         writer.writerows(convergence_rows)
     summary = {"scenarios": scenarios, "is_demo": True}
