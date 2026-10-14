@@ -1,5 +1,7 @@
 # Experiments - planned
 
+Routing (B): the runner, settings and instructions for generating simulated-matrix results are in [routing/](routing/README.md). Full experiment results are not included in this commit.
+
 Primary scenario: four crews, one fictional shared depot and synthetic tasks within the defined Jurong study area.
 
 The proposal's initial task counts are 10, 15 and 20. For each scenario, compare GA with greedy using identical tasks, matrix, service times, shifts and feasibility constraints. Record fixed random seeds and repeat the stochastic GA across multiple seeds.
