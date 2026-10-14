@@ -1,6 +1,6 @@
 # B 路线模块：四队调度、模拟行程矩阵、Greedy 与 GA
 
-负责人：B。状态（2026-10-14）：已完成 B-1～B-3，即纯算法核心、自建 GA 和实验脚本。**尚未实现**：数据库表、CrewService、PlanningService、HTTP 接口（B-4），以及 Google 行程矩阵（B-5）。本模块目前不读写数据库，不注册路由，也不改变 `input_revision`。
+负责人：B。状态（2026-10-14）：已完成 B-1～B-4，包括纯算法核心、自建 GA、实验脚本，以及数据库表、队伍和规划服务、HTTP 接口。**尚未实现**：Google 行程矩阵（B-5）。
 
 ## 1. 演示假设（集中配置）
 
@@ -16,7 +16,7 @@
 
 ## 2. 数据模型（`b-*-v1-draft`，尚未写入共享接口契约）
 
-定义见 [models.py](models.py)。B-4 实现 HTTP 时再冻结到[接口契约](../../../../Miscellaneous/API_CONTRACT.md)。
+定义见 [models.py](models.py)。HTTP 接口已登记在[接口契约](../../../../Miscellaneous/API_CONTRACT.md)，版本名仍带 `-draft`，三人联调确认后再去掉。
 
 - **PlanningInput**：`input_revision`、`planning_start_at`、`depot`、`crews`（全部配置的队伍，包括停用的）、`tasks`（a-task-query-v1 的 Task）、`settings`。任务只能是 active 状态，ID 唯一。
 - **TravelMatrix**：`node_ids` 第 0 个是基地，之后按快照顺序排任务。`duration_minutes[i][j]` 表示 i→j 的行程，不假设对称，`null` 表示不可达。对角线必须为 0。
@@ -63,7 +63,7 @@ greedy_plan, _ = plan_routes(planning_input, matrix, "greedy")
 ga_plan, ga_result = plan_routes(planning_input, matrix, "ga", ga_parameters=config.ga, random_seed=1)
 ```
 
-`snapshot` 可以是 `TaskQueryService.snapshot()` 的结果，也可以是固定样例 `TaskSnapshot`。B-4 将按[交接说明](../../../../Miscellaneous/BC_HANDOFF.md)的方式，在同一个只读事务里读任务和队伍，退出事务后再计算，保存方案前在写事务中再次核对版本。
+`snapshot` 可以是 `TaskQueryService.snapshot()` 的结果，也可以是固定样例 `TaskSnapshot`。在线服务按[交接说明](../../../../Miscellaneous/BC_HANDOFF.md)的方式运行，见第 9 节。
 
 实验脚本、运行方式和输出说明见 [experiments/routing](../../../experiments/routing/README.md)；本次提交不包含完整实验结果。
 
@@ -80,4 +80,23 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 - 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。B-5 接入 Google 前需要核验 NUS-ISS 的车辆入口，并单独获得 API 和费用授权。
 - 固定任务点只经过多边形校验，没有核验是否在可作业道路上。
 - 返基地、班次、目标权重和 GA 参数都是演示假设，需要 A 确认后才能作为正式口径。
-- B-4 需要 A 统筹数据库迁移（v2→v3 新增 crews/route_plans 表）和路由注册；队伍状态变更要在同一事务中递增 `input_revision`。
+- B-4 修改了 A 的公共入口：`database.py`（v3 迁移）、`api/__init__.py`（路由注册）和 `main.py`（服务装配）。同时更新了 `test_backend.py`、`test_workflow.py` 中写死 v2 和接口列表的断言。
+
+## 9. B-4：持久化与 HTTP 接口
+
+接口契约见[API 契约](../../../../Miscellaneous/API_CONTRACT.md)中的 B 小节，运行后也可以在 `/docs` 的 Crews、Route plans 分组中查看。
+
+**数据库（schema v3）**：`Database.initialize()` 把 v2 原地迁移到 v3，新增 `crews`（只保存被修改过的队伍状态）和 `route_plans`（方案 JSON 以及算法、输入版本、创建时间）。原有巡检、任务、幂等记录和 `input_revision` 不变。v3 缺少路线表时拒绝启动，不会悄悄重建。
+
+**队伍（[crews/](../crews/service.py)）**：队伍名单以项目配置的 `crew_ids` 为准。没有记录的队伍使用默认值（可用、`record_version=1`、`updated_at=null`），所以启动时不需要写库。`PATCH` 时实际改变可用状态才会写入，并在同一事务里递增 `input_revision`。幂等记录复用 A 的 `operation_keys` 表，scope 为 `crew:<id>`。
+
+**重算（[service.py](service.py)）**：
+1. 在同一个只读事务中读取任务快照和队伍状态，并核对 `expected_revision`。
+2. 退出事务后生成模拟矩阵，在同一输入上运行 Greedy 和 GA（种子 `planning_service.ga_seed=1`）。
+3. 在写事务中再次核对版本后同时保存两个方案；版本已变化就都不保存，返回 409。
+
+**过期判断**：读取时比较方案的 `input_revision` 与当前版本，不同即 `is_stale=true`。旧方案仍可以按 ID 查询，供前后比较。
+
+**设计选择**：队伍修改和任务修改（A）都不会自动触发重算，只通过 `planning_input_changed` 和方案过期来提示。这样不会在用户不知情时生成新方案，也避免把重算失败和业务修改混在一起。C 的确认流程是：先 `PATCH /crews/{id}`，再用返回的 `input_revision` 调用 recalculate。
+
+测试：`SystemCode/tests/test_routing_api.py`。覆盖默认队伍不写库、修改与幂等、版本冲突、无方案 404、空队列、完整流程（建任务 → 重算 → 停用队伍 → 过期 → 完成任务 → 重算）、计算期间输入变化不保存、重启后仍保留、v2→v3 迁移，以及异常库拒绝启动。

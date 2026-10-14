@@ -91,6 +91,22 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 
 固定文件的 source=synthetic_fixture、版本号仅为离线样例上下文，不是在线数据库状态。知识包另有自身文档版本；规则说明必须匹配任务保存的 rule_version。
 
+### b-crew-v1 / b-recalculation-v1 / b-route-plan-v1-draft：四队与路线方案（B）
+
+2026-10-14 由 B 实现，数据结构定义见[路线模块说明](../SystemCode/backend/roadguard/routing/README.md)。行程来自标明为模拟的矩阵；班次 480 分钟、返基地和目标权重是 B 的演示假设，待 A 确认。
+
+| 接口 | 请求 | 正常响应 | 主要错误 |
+| --- | --- | --- | --- |
+| `GET /crews` | 无 | CrewList：配置的全部队伍（含停用），`input_revision` | 503 |
+| `PATCH /crews/{crew_id}` | `request_id`、`expected_version`、`available` | CrewMutation：crew、input_revision、planning_input_changed、replayed | 404、409 `stale_record_version` / `idempotency_conflict`、422 |
+| `POST /route-plans/recalculate` | `expected_revision`（必填）、可选 `planning_start_at` | RecalculationResult：同一输入和矩阵下 greedy、ga 两个方案的 ID 与摘要 | 409 `stale_input_revision`、422、503 |
+| `GET /route-plans/latest?algorithm=ga\|greedy` | 算法 | RoutePlan，`is_stale` 在读取时按当前版本计算 | 404 `route_plan_not_found` |
+| `GET /route-plans/{plan_id}` | `plan-` + 32 位十六进制 | 保存的 RoutePlan（含旧方案） | 404 `route_plan_not_found`、422 |
+
+- 队伍可用状态属于规划输入：实际改变时与 `input_revision` 在同一事务中递增；重复请求不会重复修改。队伍修改不会自动重算，调用方需要用返回的版本调用 recalculate。
+- 计算期间任务或队伍发生变化时，两个方案都不保存，返回 409。保存方案不递增 `input_revision`。
+- 无方案时返回 404，而不是空的有效方案。每支队伍都会输出路线，停用的为 `unavailable`、无任务的为 `idle`；未分配任务都带原因。`geometry=null`，前端只能画标明示意的直线。
+
 ### 统一错误
 
 统一错误的可执行来源为 [errors.py](../SystemCode/backend/roadguard/errors.py) 及 [health.py](../SystemCode/backend/roadguard/api/health.py)；使用 `code` 判断，不匹配 message 文本。当前错误码如下，变更须与实现同步：
@@ -100,7 +116,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 | `validation_error` | 422 | FastAPI 请求校验失败，details 仅 error_count，不回显原始输入 |
 | `not_found` | 404 | 路径、巡检或任务不存在 |
 | `method_not_allowed` | 405 | 已有路径不支持该方法，保留 Allow header |
-| `stale_input_revision` | 409 | 共享数据库或任务快照拒绝旧预期版本；details 含 expected_revision/current_revision；仍无规划 HTTP handler |
+| `stale_input_revision` | 409 | 共享数据库或任务快照拒绝旧预期版本；details 含 expected_revision/current_revision；规划重算和保存同样使用 |
 | `database_unavailable` | 503 | 数据库不可用、基础状态无效或持久化记录无法解析 |
 | `internal_error` | 500 | 未处理异常的安全公共说明，无原始异常文字 |
 | `http_error` | 对应 HTTP 状态 | 其他 HTTPException 的通用安全说明 |
@@ -123,6 +139,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 | `invalid_detection_selection` | 422 | 选择的检测不属于此巡检 |
 | `workflow_unavailable` | 503 | 巡检业务服务未就绪 |
 | `task_query_unavailable` | 503 | 任务快照服务未就绪，不能返回空队列冒充成功 |
+| `route_plan_not_found` | 404 | 指定 plan_id 不存在，或该算法尚无保存的方案；不是空的有效方案 |
 
 错误样例使用 `validation_error` / 422，details 中的 is_demo 标记属于固定样例附加 metadata，不要求真实响应添加。未来业务错误由对应服务明确抛出并记录，不能从固定样例推定已有业务逻辑。
 

@@ -8,7 +8,36 @@ from typing import Iterator
 from roadguard.errors import StaleRevisionError
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
+
+# B-owned routing tables (v3). Crew availability is planning input; plans are outputs and
+# never change input_revision. A integrates them through this single migration entrypoint.
+ROUTING_TABLES = {
+    "crews": ("CREATE TABLE crews (crew_id TEXT PRIMARY KEY, name TEXT NOT NULL, "
+              "available INTEGER NOT NULL CHECK(available IN (0,1)), depot_id TEXT NOT NULL, "
+              "record_version INTEGER NOT NULL CHECK(record_version>=1), updated_at TEXT NOT NULL)",
+              ("crew_id", "name", "available", "depot_id", "record_version", "updated_at")),
+    "route_plans": ("CREATE TABLE route_plans (plan_id TEXT PRIMARY KEY, "
+                    "algorithm TEXT NOT NULL CHECK(algorithm IN ('ga','greedy')), "
+                    "input_revision INTEGER NOT NULL CHECK(input_revision>=0), created_at TEXT NOT NULL, "
+                    "plan_json TEXT NOT NULL)",
+                    ("plan_id", "algorithm", "input_revision", "created_at", "plan_json")),
+}
+
+
+def _validate_routing_schema(connection: sqlite3.Connection) -> None:
+    for table, (_, columns) in ROUTING_TABLES.items():
+        info = connection.execute(f"PRAGMA table_info({table})").fetchall()
+        if tuple(row[1] for row in info) != columns:
+            raise DatabaseStateError("Routing schema is missing or incompatible.")
+        if tuple(row[1] for row in info if row[5]) != (columns[0],):
+            raise DatabaseStateError("Routing schema primary keys are incompatible.")
+
+
+def _create_routing_tables(connection: sqlite3.Connection) -> None:
+    for statement, _ in ROUTING_TABLES.values():
+        connection.execute(statement)
+    connection.execute("CREATE INDEX route_plans_algorithm_created ON route_plans(algorithm,created_at,plan_id)")
 
 
 def _validate_workflow_schema(connection: sqlite3.Connection) -> None:
@@ -44,7 +73,7 @@ def _schema_version(connection: sqlite3.Connection) -> int:
     if tuple(row[1] for row in columns) != ("singleton_id", "schema_version", "input_revision"):
         raise DatabaseStateError("Infrastructure metadata schema is incompatible.")
     row = connection.execute("SELECT schema_version, input_revision FROM infra_metadata WHERE singleton_id=1").fetchone()
-    if (row is None or row[0] not in {1, SCHEMA_VERSION} or type(row[1]) is not int or row[1] < 0
+    if (row is None or row[0] not in {1, 2, SCHEMA_VERSION} or type(row[1]) is not int or row[1] < 0
             or connection.execute("SELECT COUNT(*) FROM infra_metadata").fetchone()[0] != 1):
         raise DatabaseStateError("Infrastructure schema is incompatible.")
     return row[0]
@@ -161,6 +190,7 @@ class Database:
                 ).fetchone()
                 if metadata_exists and _schema_version(connection) == SCHEMA_VERSION:
                     _validate_workflow_schema(connection)
+                    _validate_routing_schema(connection)
                     read_revision(connection)
                     return
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -181,8 +211,19 @@ class Database:
                     "input_revision INTEGER NOT NULL CHECK (input_revision >= 0))"
                 )
                 connection.execute("INSERT INTO infra_metadata VALUES (1,1,0)")
-            if _schema_version(connection) == SCHEMA_VERSION:
+            version = _schema_version(connection)
+            if version == SCHEMA_VERSION:
                 _validate_workflow_schema(connection)
+                _validate_routing_schema(connection)
+                read_revision(connection)
+                return
+            if tables & set(ROUTING_TABLES):
+                raise DatabaseStateError("Pre-v3 database has unexpected routing tables.")
+            if version == 2:
+                # v2 -> v3 keeps every inspection/task/key row and the input revision.
+                _validate_workflow_schema(connection)
+                _create_routing_tables(connection)
+                connection.execute("UPDATE infra_metadata SET schema_version=? WHERE singleton_id=1", (SCHEMA_VERSION,))
                 read_revision(connection)
                 return
             if tables & workflow_tables:
@@ -208,5 +249,6 @@ class Database:
             connection.execute("CREATE INDEX IF NOT EXISTS inspections_status_created ON inspections(status,created_at,inspection_id)")
             connection.execute("CREATE INDEX IF NOT EXISTS tasks_status_created ON tasks(status,created_at,task_id)")
             _validate_workflow_schema(connection)
+            _create_routing_tables(connection)
             connection.execute("UPDATE infra_metadata SET schema_version=? WHERE singleton_id=1", (SCHEMA_VERSION,))
             read_revision(connection)
