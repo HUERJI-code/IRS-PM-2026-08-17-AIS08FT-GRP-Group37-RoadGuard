@@ -6,13 +6,13 @@
 
 | 项目 | 取值 |
 | --- | --- |
-| 场景 | 四队全部可用；共用 NUS-ISS 基地；返基地；不设班次上限（演示假设，待 A 确认） |
+| 场景 | 四队全部可用；共用 NUS-ISS 基地；返基地；每队每天班次上限 480 分钟（演示假设，待 A 确认） |
 | 任务 | [固定样例](../../contracts/planning/README.md) `planning-synthetic-v2` 的 10/15/20 个任务（前缀关系），`due_at` 全部为 null |
 | 行程 | `simulated_haversine_v1` 模拟矩阵；同一场景下 GA 和 Greedy 使用同一个矩阵（记录 SHA-256） |
 | 开始时刻 | `2026-10-15T01:00:00Z`（新加坡 09:00） |
 | Greedy | 每个场景运行 1 次（确定性） |
 | GA | 种子 1～10，各运行 1 次；参数取自 `routing.example.json`，不用 Greedy 作初始解 |
-| 比较 | 字典序 `(未分配数, 目标值)`；同时报告 makespan、总行程、工作量标准差、优先级加权完工时间、运行耗时 |
+| 比较 | 字典序 `(未分配 P1, 未分配 P2, 未分配 P3, 目标值)`，与算法优化的顺序一致；另报告各优先级未分配数、同时报告 makespan、总行程、工作量标准差、优先级加权完工时间、运行耗时 |
 
 每次运行都写入 `raw_runs.csv`，包括 GA 不如 Greedy 的种子。`ga_convergence.csv` 记录每代的最优值，`summary.json` 是统计汇总，`run_metadata.json` 记录配置全文和哈希、样例哈希、代码 commit、Python 和平台信息。
 

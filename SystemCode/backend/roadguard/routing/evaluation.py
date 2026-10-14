@@ -32,15 +32,17 @@ class Evaluation:
     workload_std: float | None
     priority_completion: float | None
     objective: float
+    skipped_by_priority: tuple[int, int, int]   # skipped P1, P2, P3 counts
 
     @property
     def unassigned_count(self) -> int:
         return len(self.skipped)
 
     @property
-    def key(self) -> tuple[int, float]:
-        # Lexicographic: first never drop tasks to look better, then the weighted cost.
-        return (self.unassigned_count, self.objective)
+    def key(self) -> tuple[int, int, int, float]:
+        # Lexicographic: never drop a more urgent task to fit more short ones, and never
+        # drop tasks to improve cost. A plain count would let long P1 jobs be sacrificed.
+        return (*self.skipped_by_priority, self.objective)
 
 
 class RoutingProblem:
@@ -145,6 +147,8 @@ class RoutingProblem:
             crew_return=tuple(return_legs), crew_service=tuple(service_totals), arrival=arrival, completion=completion,
             makespan=makespan, total_travel=total_travel, workload_std=workload_std,
             priority_completion=priority_completion, objective=objective,
+            skipped_by_priority=tuple(
+                sum(1 for task, _ in skipped if self.tasks[task].priority == p) for p in ("P1", "P2", "P3")),
         )
 
     def build_routes_and_metrics(self, evaluation: Evaluation, runtime_ms: float
@@ -183,6 +187,8 @@ class RoutingProblem:
         metrics = PlanMetrics(
             assigned_task_count=len(evaluation.completion),
             unassigned_task_count=len(unassigned_tasks),
+            unassigned_by_priority={p: sum(1 for i, _ in unassigned if self.tasks[i].priority == p)
+                                    for p in ("P1", "P2", "P3")},
             total_travel_minutes=evaluation.total_travel,
             total_service_minutes=sum(evaluation.crew_service),
             makespan_minutes=evaluation.makespan,
