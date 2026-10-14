@@ -248,6 +248,45 @@ def test_released_default_manifest_and_explicit_disable():
     assert load_settings({"ROADGUARD_VISION_MANIFEST_PATH": "disabled"}).vision_manifest_path is None
 
 
+@pytest.mark.parametrize("state", ["present", "missing", "corrupt"])
+def test_default_model_folder_loads_directly_without_cwd_or_old_dataset_fallback(tmp_path, monkeypatch, image, state):
+    import roadguard.vision.real as real
+
+    monkeypatch.chdir(tmp_path)
+    payload = json.loads(load_settings({}).vision_manifest_path.read_text(encoding="utf-8"))
+    relative = "SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt"
+    assert payload["weights_path"] == relative
+    contents = b"test-only approved weight; never deserialized"
+    payload["weights_sha256"] = hashlib.sha256(contents).hexdigest()
+    payload["weights_bytes"] = len(contents)
+    destination = tmp_path / relative
+    destination.parent.mkdir(parents=True)
+    if state != "missing":
+        destination.write_bytes(contents if state == "present" else b"wrong model")
+    old_weight = tmp_path / "Dataset/models/roadguard-yolo11s-single-v1.pt"
+    old_weight.parent.mkdir(parents=True)
+    old_weight.write_bytes(contents)
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+    model, calls = FakeModel(), []
+
+    def loader(path, **options):
+        calls.append(path)
+        return model
+
+    monkeypatch.setattr(real, "REPOSITORY_ROOT", tmp_path)
+    monkeypatch.setattr(real, "source_class_names", lambda: payload["source_class_names"])
+    detector = LocalVisionDetector(manifest, model_loader=loader)
+    if state == "present":
+        assert detector.detect(image)[0].label == "pothole"
+        assert calls == [str(destination.resolve())]
+    else:
+        with pytest.raises(AppError) as error:
+            detector.detect(image)
+        assert error.value.code == "detector_unavailable"
+        assert calls == []
+
+
 def test_manifest_primary_policy_is_validated_before_loading(local_manifest, image):
     path, payload = local_manifest
     payload["primary_policy"] = {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": .25}

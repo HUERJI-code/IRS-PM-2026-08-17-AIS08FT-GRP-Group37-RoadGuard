@@ -2,6 +2,8 @@
 
 See [released model installation and primary suggestions](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) for the current default detector and client migration.
 
+部署权重已随 Git 提交到 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`，普通 clone/pull 会同时取得，后端默认从该位置加载。新环境按模型接入说明安装后端与视觉依赖后启动即可，无需单独下载权重或修改模型路径。详见[后端模型目录](roadguard/model/README.md)。
+
 A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. Crews, routing, assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
 上传成功体仅返回 `inspection_id`、`status`、`detection`、`task_id`；详情从 `GET /api/v1/inspections/{id}` 读取。数据库位置、PyCharm 查看方式与只读 SQL 见[数据库查看指南](../../Miscellaneous/DATABASE_VIEWING.md)。
@@ -53,7 +55,7 @@ The original demo upload/review/task behavior is documented in the [workflow gui
 | `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
 | `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
 | `ROADGUARD_UPLOAD_PATH` | 图片保存目录，默认在数据库文件旁的 uploads 子目录；必须与数据库一起保存/备份 |
-| `ROADGUARD_VISION_MANIFEST_PATH` | Defaults to `SystemCode/model/releases/roadguard-single-v1.json`; install its private Release weight first. Set `disabled` to turn off real inference. A local manifest path overrides the default. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
+| `ROADGUARD_VISION_MANIFEST_PATH` | Defaults to `SystemCode/model/releases/roadguard-single-v1.json`, which loads the Git-bundled `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`. Set `disabled` to turn off real inference. A local manifest path overrides the default. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
 
 默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
 

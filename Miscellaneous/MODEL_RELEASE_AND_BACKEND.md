@@ -2,6 +2,8 @@
 
 日期：2026-10-13；负责人：A。本次按项目发起人要求发布最佳已训练权重并接入后端，不启动新训练。接口增量为 **a-workflow-v5**，FastAPI 文档版本 **0.8.0**；任务快照仍为 a-task-query-v1。
 
+2026-10-14 更新：按用户要求，默认部署权重改放到 `SystemCode/backend/roadguard/model/`，并将这一份权重作为普通 Git 文件随代码提交，组员 clone/pull 后即可取得。模型字节、推理参数和 API 行为不变；原始数据、训练保存点仍保留在本地 `Dataset/`。
+
 ## 选用哪个模型
 
 训练权重为 YOLO11s 的 balanced40/img832 实验 best（第 10 轮），与此前选定的最佳权重字节完全相同：
@@ -16,7 +18,9 @@
 
 ## GitHub 中保存什么
 
-源代码、模型 manifest、评估摘要、测试和文档通过 PR 进入 main。权重作为同一**私有仓库**的 [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) 附件上传；有仓库权限的成员可下载。Release 可保存二进制附件，代码克隆与模型下载分别进行。[GitHub Release 说明](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases)
+源代码、模型 manifest、评估摘要、测试、文档和这份 19,218,837-byte 部署权重通过 PR 一起进入 main。权重是普通 Git 二进制文件，不使用 Git LFS；有本私有仓库权限的组员 clone/pull 后会同时取得文件。CI 固定校验这份文件的路径、大小、SHA-256 和 manifest 一致性，其他权重与整个 Dataset 仍禁止进入 Git。
+
+同一仓库的 [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) 附件继续保留，作为备份下载渠道。
 
 用户本次授权只发布这一份部署权重。Dataset 图片、原始标注、完整预测、上传图、数据库、训练恢复保存点继续忽略；原有 `best`、`last`、`resume-latest` 和 `resume-previous` 不移动、不删除。仓库可见性保持私有。
 
@@ -30,13 +34,23 @@ python -m pip install torch==2.10.0 torchvision==0.25.0 --index-url https://down
 python -m pip install -r SystemCode/model/requirements-vision.txt
 ```
 
-登录 GitHub，从上面的私有 Release 下载 `roadguard-yolo11s-single-v1.pt`，再执行：
+clone/pull 已包含模型，确认下面的文件存在即可：
+
+```text
+SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt
+```
+
+这就是后端默认读取的位置，不需要单独下载、运行安装脚本或修改代码。第一次真实推理仍会检查文件 SHA-256 和模型标签；安装好依赖后启动或重启服务。
+
+如果需要从 Release 备份恢复同一份权重，也可以运行安装器，让它校验后复制到同一位置：
 
 ```powershell
 .\.venv\Scripts\python.exe SystemCode/model/install_released_model.py --file "C:\Users\你的用户名\Downloads\roadguard-yolo11s-single-v1.pt"
 ```
 
-安装器核对文件大小和 SHA-256，原子安装到 `Dataset/models/roadguard-yolo11s-single-v1.pt`。相同文件重复安装无影响；已有不同文件则拒绝覆盖。它不反序列化权重、不从其他网站找模型。
+安装器核对文件大小和 SHA-256，原子安装到 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`。相同文件重复安装无影响；已有不同文件则拒绝覆盖。它不反序列化权重、不从其他网站找模型。正常 clone/pull 无需运行此脚本。
+
+仓库中的清单使用新路径；Release 附件及 2026-10-13 的验收摘要保留原发布记录，其中的历史路径和清单哈希不重写。日常后端使用当前仓库清单，无需另行下载 Release 的 JSON。旧 `Dataset/models/` 文件可以保留，但默认加载器不会回退使用它。
 
 后端默认读取已提交的 [发布 manifest](../SystemCode/model/releases/roadguard-single-v1.json)。正常启动即可：
 

@@ -6,7 +6,7 @@ The existing image upload endpoint now accepts an explicitly selected detector m
 
 ## Enable the local detector
 
-The default manifest is now `SystemCode/model/releases/roadguard-single-v1.json`. Follow [released model installation](MODEL_RELEASE_AND_BACKEND.md) to obtain and verify its weight from the private repository Release. The base backend and CI do not require Ultralytics; real uploads require the optional runtime and local weight. Set `ROADGUARD_VISION_MANIFEST_PATH=disabled` to disable real inference. An explicit trusted local manifest can still override the default:
+The default manifest is `SystemCode/model/releases/roadguard-single-v1.json`. Its weight is bundled in Git at `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`; ordinary clone/pull retrieves it, with no separate download, installer or environment override required. Follow [released model installation](MODEL_RELEASE_AND_BACKEND.md) for dependencies and verification. The base backend and CI do not require Ultralytics; real uploads still require the optional vision runtime installed locally. Set `ROADGUARD_VISION_MANIFEST_PATH=disabled` to disable real inference. An explicit trusted local manifest can still override the default:
 
 ```powershell
 $env:ROADGUARD_VISION_MANIFEST_PATH = "Dataset/runs/<run-id>/model_manifest.json"

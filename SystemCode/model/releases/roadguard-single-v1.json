@@ -2,7 +2,7 @@
   "schema_version": "roadguard-model-v1",
   "model_version": "yolo11s-rdd2022es-balanced40-best-single-v1",
   "status": "experimental",
-  "weights_path": "Dataset/models/roadguard-yolo11s-single-v1.pt",
+  "weights_path": "SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt",
   "weights_sha256": "464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488",
   "weights_bytes": 19218837,
   "source_class_names": [

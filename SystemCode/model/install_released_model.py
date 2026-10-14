@@ -25,9 +25,9 @@ def install(source: Path, *, root: Path = ROOT, manifest_path: Path = MANIFEST) 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     source = source.resolve(strict=True)
     destination = (root / manifest["weights_path"]).resolve()
-    allowed = root.resolve() / "Dataset/models"
+    allowed = root.resolve() / "SystemCode/backend/roadguard/model"
     if not destination.is_relative_to(allowed) or destination.suffix != ".pt":
-        raise ValueError("Model destination must be a .pt file inside Dataset/models")
+        raise ValueError("Model destination must be a .pt file inside SystemCode/backend/roadguard/model")
     if source.stat().st_size != manifest["weights_bytes"] or digest(source) != manifest["weights_sha256"]:
         raise ValueError("Downloaded model size or SHA-256 does not match the release manifest")
     if destination.exists():

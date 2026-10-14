@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -27,6 +28,37 @@ PYTHON_ROOTS = ('SystemCode/backend/', 'SystemCode/model/', 'SystemCode/experime
 FRONTEND_ROOT = 'SystemCode/frontend/'
 CONFLICT_MARKER = re.compile(r'^(?:<{7}|={7}|>{7}|\|{7})(?:\s|$)', re.MULTILINE)
 INLINE_LINK = re.compile(r'\]\((<[^>]+>|[^\s)]+)(?:\s+["\'][^)]*)?\)')
+DEPLOYED_MODEL_PATH = 'SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt'
+DEPLOYED_MODEL_MANIFEST = 'SystemCode/model/releases/roadguard-single-v1.json'
+DEPLOYED_MODEL_BYTES = 19218837
+DEPLOYED_MODEL_SHA256 = '464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488'
+
+
+def validate_deployed_model(root: Path, tracked: set[str], parsed_json: dict) -> list[str]:
+    """Allow only the approved deployment bytes, without deserializing the model."""
+    if not {DEPLOYED_MODEL_PATH, DEPLOYED_MODEL_MANIFEST} & tracked:
+        return []
+    errors = []
+    path = root / DEPLOYED_MODEL_PATH
+    if DEPLOYED_MODEL_PATH not in tracked or not path.is_file() or path.is_symlink():
+        errors.append(f'Missing tracked regular deployment weight: {DEPLOYED_MODEL_PATH}')
+    else:
+        try:
+            if path.stat().st_size != DEPLOYED_MODEL_BYTES:
+                errors.append('Deployment weight size does not match the approved release.')
+            else:
+                with path.open('rb') as stream:
+                    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                if digest != DEPLOYED_MODEL_SHA256:
+                    errors.append('Deployment weight SHA-256 does not match the approved release.')
+        except OSError:
+            errors.append('Deployment weight could not be read.')
+    manifest = parsed_json.get(DEPLOYED_MODEL_MANIFEST)
+    expected = {'weights_path': DEPLOYED_MODEL_PATH, 'weights_bytes': DEPLOYED_MODEL_BYTES,
+                'weights_sha256': DEPLOYED_MODEL_SHA256}
+    if not isinstance(manifest, dict) or any(manifest.get(key) != value for key, value in expected.items()):
+        errors.append('Deployment manifest must identify the approved bundled weight, size and SHA-256.')
+    return errors
 
 
 def markdown_prose(text: str) -> str:
@@ -58,11 +90,14 @@ def validate(root: Path, paths: list[str]) -> tuple[list[str], dict[str, bool]]:
     for name in sorted(tracked):
         relative = PurePosixPath(name)
         path = root / name
+        if relative.parts[0].casefold() == 'dataset':
+            errors.append(f'Dataset must never be tracked: {name}')
         if not path.is_file():
             continue
         if (relative.name == '.env' or
                 (relative.name.startswith('.env.') and relative.name != '.env.example') or
-                relative.suffix in {'.pem', '.key', '.db', '.sqlite', '.sqlite3', '.pt', '.pth', '.onnx'} or
+                relative.suffix.lower() in {'.pem', '.key', '.db', '.sqlite', '.sqlite3'} or
+                (relative.suffix.lower() in {'.pt', '.pth', '.onnx'} and name != DEPLOYED_MODEL_PATH) or
                 any(part in {'node_modules', '.venv', '__pycache__'} for part in relative.parts)):
             errors.append(f'Remove local credentials/runtime/generated file from Git: {name}')
         if relative.suffix not in TEXT_SUFFIXES:
@@ -97,6 +132,7 @@ def validate(root: Path, paths: list[str]) -> tuple[list[str], dict[str, bool]]:
                 elif not destination.exists():
                     errors.append(f'Broken local Markdown link: {name} -> {target}')
 
+    errors.extend(validate_deployed_model(root, tracked, parsed_json))
     config = parsed_json.get('SystemCode/config/project.example.json')
     if 'SystemCode/config/project.example.json' in parsed_json:
         try:
