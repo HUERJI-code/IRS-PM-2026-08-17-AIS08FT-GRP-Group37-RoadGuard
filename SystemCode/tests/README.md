@@ -17,6 +17,8 @@ Step 6 adds `test_images.py`, `test_geography.py`, `test_workflow.py` and `test_
 
 Step 7 adds `test_task_query.py` and `test_task_query_api.py` for complete shared-revision snapshots (including 125 tasks), nullable fields, corruption failures, caller-owned connections and concurrent updates. `test_planning_fixtures.py` checks deterministic inputs against central sources; `test_knowledge_handoff.py` checks knowledge citations/versions and source integrity. `test_handoff_demo.py` runs the shipped HTTP consumer example against isolated handlers; it creates real persisted demo records, not fake success responses.
 
+B's routing work adds `test_routing_core.py`, `test_routing_ga.py` and `test_routing_experiments.py`. They cover the shared evaluator, simulated matrix, Greedy and GA on fixed snapshots: empty/single/fewer-than-four tasks, disabled crews, unreachable legs, unknown service time, shift limits, exactly-once coverage, fixed seeds and experiment provenance. They use simulated travel times and no database; persistence, HTTP and recalculation (B-4) are not yet covered. See the [routing module guide](../backend/roadguard/routing/README.md).
+
 ## CI integration
 
 Step 8 adds dataset archive/content/group-split tests, resumable download tests, checkpoint/evaluation/cache-cleanup tests and real-detector adapter/workflow tests. Ordinary CI uses generated small files and injected models, requires no GPU or optional vision packages, and never downloads or trains. Actual GPU recovery, full-data evaluation and real HTTP evidence are recorded separately in the [Step 8 acceptance report](../../Miscellaneous/STEP8_VISION_ACCEPTANCE.md).
