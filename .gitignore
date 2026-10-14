@@ -37,6 +37,9 @@ SystemCode/model/weights/
 *.pth
 *.onnx
 
+# Owner-approved deployment weight; all other weights and Dataset stay local.
+!/SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt
+
 # Locally prepared submission packages and confidential individual submissions
 member-github.txt
 IndividualSubmission/

@@ -41,6 +41,8 @@ git push -u origin feature/b-greedy-planner
 
 当前已加入后端基础和公共 schema，Python tests 必须执行；前端尚未实现，因此 Frontend checks 仍显示 skipped。跳过只代表没有对应模块，不代表测试通过。检查脚本无法证明所有逻辑正确，提交者或 agent 仍须按改动完成自检；本项目不把人工审核设为 PR 门槛。Markdown 检查仅验证本地文件目标，不检查远程网页或标题锚点。
 
+2026-10-14 起，Repository checks 允许用户明确批准的单个部署权重 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt` 随代码提交。检查其固定大小、SHA-256 和默认模型清单一致性；缺失、损坏、错误版本或 Git LFS 指针均失败。该例外不放开其他权重，强制加入的 Dataset 文件也会失败。CI 只读文件计算哈希，不加载或执行权重；真实推理仍在本地验收。更新批准的部署权重时需同步清单和校验值。
+
 英文检查要求非空标题/正文，只接受拉丁字母、数字、标点等字符；允许 Markdown、URL、重音拉丁字母与 emoji。它能拒绝中英文混写等情况，不能判断拉丁字母组成的文字是否真是英文。评论和摘要由成员及 agent 按规范撰写，不由此检查自动翻译或验证。编辑 PR 标题/正文会重新运行 CI。
 
 ## 3. 自动合并的条件与执行方式

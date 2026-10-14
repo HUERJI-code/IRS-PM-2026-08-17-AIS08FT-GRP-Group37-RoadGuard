@@ -37,7 +37,7 @@
 | operation_keys | 上传/审核/修改的幂等请求键及关联资源，防重复创建或执行 |
 | infra_metadata | 数据库结构版本与全局规划输入版本 input_revision |
 
-图片本体保存在数据库旁边的 uploads 目录（除非覆盖 ROADGUARD_UPLOAD_PATH），数据库保存图片地址，不把图片当作二进制字段存储。模型权重另在 Dataset/models 中。
+图片本体保存在数据库旁边的 uploads 目录（除非覆盖 ROADGUARD_UPLOAD_PATH），数据库保存图片地址，不把图片当作二进制字段存储。默认部署模型权重另在 SystemCode/backend/roadguard/model 中。
 
 业务对象的完整字段存储为 record_json，所以表格中不会每个业务字段都单独显示一列。可以查看该单元格的 JSON，或者用下面的只读 SQL 提取想看的字段。
 
