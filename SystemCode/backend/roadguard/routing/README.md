@@ -65,7 +65,7 @@ ga_plan, ga_result = plan_routes(planning_input, matrix, "ga", ga_parameters=con
 
 `snapshot` 可以是 `TaskQueryService.snapshot()` 的结果，也可以是固定样例 `TaskSnapshot`。B-4 将按[交接说明](../../../../Miscellaneous/BC_HANDOFF.md)的方式，在同一个只读事务里读任务和队伍，退出事务后再计算，保存方案前在写事务中再次核对版本。
 
-实验脚本和结果见 [experiments/routing](../../../experiments/routing/README.md)。
+实验脚本、运行方式和输出说明见 [experiments/routing](../../../experiments/routing/README.md)；本次提交不包含完整实验结果。
 
 ## 7. 测试
 
