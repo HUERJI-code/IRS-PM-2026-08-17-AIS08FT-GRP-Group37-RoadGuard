@@ -1,0 +1,290 @@
+{
+  "scenarios": {
+    "10": {
+      "fixture": "SystemCode/contracts/planning/tasks_10.json",
+      "fixture_sha256": "71f26d5ca83a58ea4c4da2007dd11846ac5b01372ef6d5c2f8f3d4f42a973058",
+      "matrix_provider": "google_routes_compute_route_matrix_v2",
+      "matrix_is_simulated": false,
+      "matrix_source": "sliced_from_20",
+      "matrix_file": "matrix_10.json",
+      "matrix_sha256": "2cdb0e431d4cb6edd25face1151fcf03858ef5b8691aa8a5450a01e9b52be6e2",
+      "unreachable_pairs": 0,
+      "unassigned_reasons": {
+        "greedy": [],
+        "ga": []
+      },
+      "greedy": {
+        "assigned_task_count": 10,
+        "unassigned_task_count": 0,
+        "total_travel_minutes": 207.29999999999998,
+        "total_service_minutes": 1260.0,
+        "makespan_minutes": 409.0,
+        "workload_std_minutes": 24.551107408831886,
+        "priority_weighted_completion_minutes": 259.78947368421063,
+        "objective_value": 592.6302905465212,
+        "algorithm_runtime_ms": 0.14250000003812602
+      },
+      "ga": {
+        "assigned_task_count": {
+          "mean": 10.0,
+          "std": 0.0,
+          "min": 10,
+          "median": 10.0,
+          "max": 10
+        },
+        "unassigned_task_count": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0,
+          "median": 0.0,
+          "max": 0
+        },
+        "total_travel_minutes": {
+          "mean": 205.60999999999999,
+          "std": 4.956702532934573,
+          "min": 199.6,
+          "median": 204.6,
+          "max": 215.2
+        },
+        "total_service_minutes": {
+          "mean": 1260.0,
+          "std": 0.0,
+          "min": 1260.0,
+          "median": 1260.0,
+          "max": 1260.0
+        },
+        "makespan_minutes": {
+          "mean": 407.45,
+          "std": 1.4270599146496967,
+          "min": 403.8,
+          "median": 407.9,
+          "max": 409.6
+        },
+        "workload_std_minutes": {
+          "mean": 23.88045950891413,
+          "std": 1.2624742148309545,
+          "min": 20.957635839951045,
+          "median": 24.442642596084504,
+          "max": 24.93535391768082
+        },
+        "priority_weighted_completion_minutes": {
+          "mean": 252.49684210526317,
+          "std": 1.2451394697659242,
+          "min": 251.55263157894737,
+          "median": 252.1684210526316,
+          "max": 255.92105263157896
+        },
+        "objective_value": {
+          "mean": 586.7606508070887,
+          "std": 1.8374098691372414,
+          "min": 582.8488179199755,
+          "median": 586.925116593274,
+          "max": 589.6484183131594
+        },
+        "algorithm_runtime_ms": {
+          "mean": 114.6769500001028,
+          "std": 17.03695207346299,
+          "min": 91.18300000045565,
+          "median": 109.08985000014582,
+          "max": 147.25189999990107
+        }
+      },
+      "ga_seed_count": 10,
+      "ga_better_than_greedy_seeds": 10,
+      "ga_equal_to_greedy_seeds": 0,
+      "ga_worse_than_greedy_seeds": 0,
+      "coverage_checked": true
+    },
+    "15": {
+      "fixture": "SystemCode/contracts/planning/tasks_15.json",
+      "fixture_sha256": "252a8f50bf9aeea8a14257a9905ffcb6b7f7fa209de656b91663f4b058a82d4c",
+      "matrix_provider": "google_routes_compute_route_matrix_v2",
+      "matrix_is_simulated": false,
+      "matrix_source": "sliced_from_20",
+      "matrix_file": "matrix_15.json",
+      "matrix_sha256": "b9bf12c24cb5262df81d281638aa4f98f65ef53f49cc76875e69f1e329aa48ab",
+      "unreachable_pairs": 0,
+      "unassigned_reasons": {
+        "greedy": [],
+        "ga": []
+      },
+      "greedy": {
+        "assigned_task_count": 15,
+        "unassigned_task_count": 0,
+        "total_travel_minutes": 245.7,
+        "total_service_minutes": 1920.0,
+        "makespan_minutes": 546.5,
+        "workload_std_minutes": 3.680607966083857,
+        "priority_weighted_completion_minutes": 353.59655172413784,
+        "objective_value": 774.2785798451109,
+        "algorithm_runtime_ms": 0.09620000037102727
+      },
+      "ga": {
+        "assigned_task_count": {
+          "mean": 15.0,
+          "std": 0.0,
+          "min": 15,
+          "median": 15.0,
+          "max": 15
+        },
+        "unassigned_task_count": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0,
+          "median": 0.0,
+          "max": 0
+        },
+        "total_travel_minutes": {
+          "mean": 239.6,
+          "std": 8.82473795644947,
+          "min": 222.0,
+          "median": 239.35000000000002,
+          "max": 252.6
+        },
+        "total_service_minutes": {
+          "mean": 1920.0,
+          "std": 0.0,
+          "min": 1920.0,
+          "median": 1920.0,
+          "max": 1920.0
+        },
+        "makespan_minutes": {
+          "mean": 548.27,
+          "std": 4.544458163521806,
+          "min": 538.0,
+          "median": 548.15,
+          "max": 555.6
+        },
+        "workload_std_minutes": {
+          "mean": 6.67503970361232,
+          "std": 2.9889956432218314,
+          "min": 3.2687918257362445,
+          "median": 5.471136230311876,
+          "max": 11.784841959059117
+        },
+        "priority_weighted_completion_minutes": {
+          "mean": 335.56689655172414,
+          "std": 3.0138346087254915,
+          "min": 331.1551724137931,
+          "median": 334.90344827586205,
+          "max": 341.7931034482759
+        },
+        "objective_value": {
+          "mean": 767.3109681276683,
+          "std": 7.6175169497845925,
+          "min": 751.6236187100681,
+          "median": 767.7326079941687,
+          "max": 782.9089727036675
+        },
+        "algorithm_runtime_ms": {
+          "mean": 168.13264999991588,
+          "std": 32.47957026643264,
+          "min": 129.4082000003982,
+          "median": 168.14185000021098,
+          "max": 227.40040000007866
+        }
+      },
+      "ga_seed_count": 10,
+      "ga_better_than_greedy_seeds": 9,
+      "ga_equal_to_greedy_seeds": 0,
+      "ga_worse_than_greedy_seeds": 1,
+      "coverage_checked": true
+    },
+    "20": {
+      "fixture": "SystemCode/contracts/planning/tasks_20.json",
+      "fixture_sha256": "292478cd36f38b4f03e3161f6a39c872c725d9ab957a336e10b72f3f9ab4e08d",
+      "matrix_provider": "google_routes_compute_route_matrix_v2",
+      "matrix_is_simulated": false,
+      "matrix_source": "fetched",
+      "matrix_file": "matrix_20.json",
+      "matrix_sha256": "4f3dee06d1b0cb5c1bc3762e37c72b28e675bdc287d8da3a0dedf5ee802003a4",
+      "unreachable_pairs": 0,
+      "unassigned_reasons": {
+        "greedy": [],
+        "ga": []
+      },
+      "greedy": {
+        "assigned_task_count": 20,
+        "unassigned_task_count": 0,
+        "total_travel_minutes": 282.9,
+        "total_service_minutes": 2520.0,
+        "makespan_minutes": 736.6,
+        "workload_std_minutes": 32.76884000083005,
+        "priority_weighted_completion_minutes": 441.628947368421,
+        "objective_value": 1030.3788936846256,
+        "algorithm_runtime_ms": 0.11659999927360332
+      },
+      "ga": {
+        "assigned_task_count": {
+          "mean": 20.0,
+          "std": 0.0,
+          "min": 20,
+          "median": 20.0,
+          "max": 20
+        },
+        "unassigned_task_count": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0,
+          "median": 0.0,
+          "max": 0
+        },
+        "total_travel_minutes": {
+          "mean": 270.3,
+          "std": 8.62473187989053,
+          "min": 259.29999999999995,
+          "median": 270.04999999999995,
+          "max": 281.8
+        },
+        "total_service_minutes": {
+          "mean": 2520.0,
+          "std": 0.0,
+          "min": 2520.0,
+          "median": 2520.0,
+          "max": 2520.0
+        },
+        "makespan_minutes": {
+          "mean": 725.88,
+          "std": 4.53515159614318,
+          "min": 716.8,
+          "median": 727.65,
+          "max": 731.9
+        },
+        "workload_std_minutes": {
+          "mean": 25.82741873729855,
+          "std": 2.789030542722718,
+          "min": 21.37175413951786,
+          "median": 25.87903807680642,
+          "max": 31.2144497789085
+        },
+        "priority_weighted_completion_minutes": {
+          "mean": 409.77473684210526,
+          "std": 3.632129096391405,
+          "min": 404.40526315789475,
+          "median": 409.3881578947369,
+          "max": 418.578947368421
+        },
+        "objective_value": {
+          "mean": 997.7410777897019,
+          "std": 6.369946844071427,
+          "min": 984.5327191750221,
+          "median": 999.2165852241264,
+          "max": 1005.39643541577
+        },
+        "algorithm_runtime_ms": {
+          "mean": 208.90692000020863,
+          "std": 46.097574644357145,
+          "min": 143.40730000003532,
+          "median": 199.64824999988195,
+          "max": 308.94200000057026
+        }
+      },
+      "ga_seed_count": 10,
+      "ga_better_than_greedy_seeds": 10,
+      "ga_equal_to_greedy_seeds": 0,
+      "ga_worse_than_greedy_seeds": 0,
+      "coverage_checked": true
+    }
+  },
+  "is_demo": true
+}

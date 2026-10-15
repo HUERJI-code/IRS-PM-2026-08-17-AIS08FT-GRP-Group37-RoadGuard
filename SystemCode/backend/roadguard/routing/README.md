@@ -1,6 +1,6 @@
 # B 路线模块：四队调度、模拟行程矩阵、Greedy 与 GA
 
-负责人：B。状态（2026-10-15）：已完成 B-1～B-5，包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）。Google 矩阵已于 2026-10-15 用真实密钥完成 3 个任务的冒烟测试（见第 10 节），默认仍使用模拟矩阵。
+负责人：B。状态（2026-10-15）：已完成 B-1～B-5 和 B6。B-1～B-5 包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）；在线服务默认仍使用模拟矩阵。B6 完成了模拟矩阵和 Google 矩阵下 10/15/20 个任务的 GA 与 Greedy 对比实验（第 12 节）。尚未开始：B7（报告章节与视频素材）。
 
 ## 1. 演示假设（集中配置）
 
@@ -78,7 +78,7 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 
 ## 8. 已知限制与后续
 
-- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵目前只做过 3 个任务的冒烟测试；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。B6 已保存模拟矩阵实验结果；Google 矩阵版本的实验尚未运行。
+- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵做过 3 个任务的冒烟测试，并用于 B6 实验（两次取数，共 882 个元素）；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。
 - 固定任务点只经过多边形校验，没有核验是否在可作业道路上。
 - 返基地、班次、目标权重和 GA 参数都是演示假设，需要 A 确认后才能作为正式口径。
 - B-4 修改了 A 的公共入口：`database.py`（v3 迁移）、`api/__init__.py`（路由注册）和 `main.py`（服务装配）。同时更新了 `test_backend.py`、`test_workflow.py` 中写死 v2 和接口列表的断言。
@@ -135,13 +135,13 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 - **冒烟测试（2026-10-15，B 本地真实密钥，`TRAFFIC_UNAWARE`）**：用 [google_smoke.py](../../../experiments/routing/google_smoke.py) 在 Jurong 建 3 个演示任务，计 16 个元素。重算返回 `matrix_is_simulated=false`；基地往返分别为 20.3/21.8、20.9/18.8、23.4/23.9 分钟，往返不对称，没有不可达；同一位置的模拟矩阵结果约 25～31 分钟，数量级一致。Greedy 与 GA 总行程都是 129.1 分钟。只是 3 个点的冒烟测试，不是正式的精度评估。
 - NUS-ISS 车辆入口：3 条首段都可达，时间也合理，初步检查未见异常，但**还没有正式核验**入口位置。Google 会把坐标吸附到最近道路；如果后续出现首段异常，应由 A/B 记录入口坐标并更新基地版本，GA/Greedy 继续共用同一坐标。
 - 不提供路线几何，`geometry` 仍为 null；前端只能画标明示意的直线（C）。
-- 实验脚本已支持 `--matrix-provider google_routes`，并会保存矩阵原始结果；Google 矩阵版本的 10/15/20 实验尚未运行。
+- B6 已用 Google 矩阵完成 10/15/20 个任务的实验，见 [results/README.md](../../../experiments/routing/results/README.md) 第 6 节。
 
 测试：`SystemCode/tests/test_routing_google_matrix.py`，全部用假传输层，并屏蔽真实网络调用。冒烟测试中发现总行程用 `sum()` 累加时结果依赖队伍顺序（同一组路线得到 129.1 和 129.10000000000002），已改为 `math.fsum` 并加了回归测试。
 
-## 11. B-1～B-5 新建文件一览
+## 11. B-1～B6 新建文件一览
 
-阶段按测试文件标注：B-1 核心与 Greedy，B-2 GA，B-3 实验，B-4 持久化与接口，B-5 Google 矩阵。
+阶段按测试文件标注：B-1 核心与 Greedy，B-2 GA，B-3 实验，B-4 持久化与接口，B-5 Google 矩阵，B6 正式实验结果。
 
 | 文件 | 阶段 | 用途 |
 | --- | --- | --- |
@@ -154,8 +154,8 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 | [routing/planner.py](planner.py) | B-1 | 无状态规划入口 `plan_routes()`：一份输入 + 一个矩阵 → 校验过的 RoutePlan，并检查任务不重不漏 |
 | [routing/ga.py](ga.py) | B-2 | 自建遗传算法：顺序 + 归属双染色体、OX 交叉、四种变异、精英保留、固定种子可复现 |
 | [config/routing.example.json](../../../config/routing.example.json) | B-1 | B 的集中配置（演示假设）；B-5 增加 `travel_matrix_provider` 和 `google_routes` |
-| [experiments/routing/run_experiments.py](../../../experiments/routing/run_experiments.py) | B-3 | 10/15/20 个任务的 GA（多种子）与 Greedy 对比实验，输出原始数据、收敛曲线、汇总和运行元数据 |
-| [experiments/routing/plot_results.py](../../../experiments/routing/plot_results.py) | B-3 | 根据保存的实验结果画图（可选，需要 matplotlib） |
+| [experiments/routing/run_experiments.py](../../../experiments/routing/run_experiments.py) | B-3（B6 扩展） | 10/15/20 个任务的 GA（多种子）与 Greedy 对比实验，输出原始数据、收敛曲线、汇总、运行元数据和矩阵全文；B6 增加 `--matrix-provider google_routes` 和 `--unlimited-shift` |
+| [experiments/routing/plot_results.py](../../../experiments/routing/plot_results.py) | B-3（B6 扩展） | 根据保存的实验结果画对比图和收敛图（需要 matplotlib）；B6 起图标题标明矩阵来源和班次设置 |
 | [experiments/routing/README.md](../../../experiments/routing/README.md) | B-3 | 实验设计与复现说明 |
 | [crews/\_\_init\_\_.py](../crews/__init__.py) | B-4 | 队伍模块入口 |
 | [crews/schemas.py](../crews/schemas.py) | B-4 | 队伍接口的请求和响应模型（`b-crew-v1`） |
@@ -167,8 +167,34 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 | [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google 矩阵冒烟测试：建 3 个演示任务 → 重算 → 打印数据来源和各段时间 |
 | [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | 测试模型、模拟矩阵、评估器和 Greedy 的边界情况 |
 | [tests/test_routing_ga.py](../../../tests/test_routing_ga.py) | B-2 | 测试 GA 的合法性、可复现性，以及与 Greedy 约束一致 |
-| [tests/test_routing_experiments.py](../../../tests/test_routing_experiments.py) | B-3 | 测试实验脚本的记录完整性和拒绝覆盖 |
+| [tests/test_routing_experiments.py](../../../tests/test_routing_experiments.py) | B-3（B6 扩展） | 测试实验脚本的记录完整性、拒绝覆盖；B6 增加矩阵保存、Google 只取一次并截取、取数失败不留输出、不限班次覆盖的记录 |
+| [experiments/routing/results/README.md](../../../experiments/routing/results/README.md) | B6 | 实验结果说明：运行记录、指标表、图、结论和局限，供报告引用 |
+| `experiments/routing/results/simulated-shift480-v1/`、`simulated-unlimited-v1/` | B6 | 模拟矩阵实验输出（480 分钟班次 / 不限班次）：原始数据、收敛记录、汇总、元数据、矩阵和图 |
+| `experiments/routing/results/google-shift480-v1/`、`google-unlimited-v1/` | B6 | Google 矩阵实验输出，内容同上 |
 | [tests/test_routing_api.py](../../../tests/test_routing_api.py) | B-4 | 测试队伍接口、重算、版本冲突、方案过期、重启后保留和 v2→v3 迁移 |
 | [tests/test_routing_google_matrix.py](../../../tests/test_routing_google_matrix.py) | B-5 | 用假传输层测试 Google 矩阵的映射、分块、缓存、错误处理和“不回退”行为 |
 
 B-4 还修改了 A 的公共文件：`database.py`（v3 迁移）、`api/__init__.py`（注册路由）、`main.py`（装配服务）。这些不是新建文件，所以没有列在表里。
+
+## 12. B6：路线指标与实验
+
+结果和分析见 [results/README.md](../../../experiments/routing/results/README.md)，设计和复现见 [experiments/routing](../../../experiments/routing/README.md)。
+
+| 实验 | 代码版本 | 内容 |
+| --- | --- | --- |
+| `simulated-shift480-v1` | `7651947` | 模拟矩阵，480 分钟班次（主实验） |
+| `simulated-unlimited-v1` | `7651947` | 模拟矩阵，不限班次（敏感性） |
+| `google-shift480-v1` | `06cb76b` | Google 矩阵，480 分钟班次 |
+| `google-unlimited-v1` | `06cb76b` | Google 矩阵，不限班次 |
+
+共同条件：四队、10/15/20 个任务，Greedy 运行 1 次，GA 使用种子 1～10。GA 和 Greedy 在每个场景下使用同一输入和同一矩阵。算法耗时与矩阵准备时间（Google 时即 API 等待）分开记录。每次运行都保存了矩阵全文，并记录了代码版本。
+
+主要结论（详见结果页第 4、6.4 节）：
+
+- 480 分钟班次下，15、20 个任务时的主要瓶颈是班次容量，不是算法；P1 全部排上。
+- GA 的优势主要是让高优先级任务更早完成。在模拟矩阵上，代价是总行程略长。
+- **GA 并非总是更好**：Google 矩阵、480 分钟班次、15 个任务时，5/10 个种子比 Greedy 少排 1 个 P3。这些结果原样保留。
+- 数据源会改变结论：同一场景下，Greedy 在模拟矩阵上漏排 3 个任务，在 Google 矩阵上漏排 2 个。
+
+B6 没有改动在线服务的代码和接口，只扩展了实验脚本、画图脚本和测试。
+
