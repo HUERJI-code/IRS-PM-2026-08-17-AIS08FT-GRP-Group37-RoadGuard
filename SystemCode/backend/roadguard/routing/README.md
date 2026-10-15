@@ -1,6 +1,6 @@
 # B 路线模块：四队调度、模拟行程矩阵、Greedy 与 GA
 
-负责人：B。状态（2026-10-14）：已完成 B-1～B-4，包括纯算法核心、自建 GA、实验脚本，以及数据库表、队伍和规划服务、HTTP 接口。**尚未实现**：Google 行程矩阵（B-5）。
+负责人：B。状态（2026-10-15）：已完成 B-1～B-5，包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）。Google 矩阵已于 2026-10-15 用真实密钥完成 3 个任务的冒烟测试（见第 10 节），默认仍使用模拟矩阵。
 
 ## 1. 演示假设（集中配置）
 
@@ -13,6 +13,7 @@
 | 开始时刻 | 所有可用队伍在 `planning_start_at`（第 0 分钟）同时从 NUS-ISS 出发 | 符合“统一开始时刻重新规划”的首版语义；不跟踪在途车辆 |
 | 等待 | 没有时间窗，行驶和维修连续进行 | `due_at` 只用来计算延误，不作为时间窗 |
 | 模拟矩阵 | 球面距离 × 1.3 绕行系数 ÷ 30 km/h，保留 1 位小数 | `provider=simulated_haversine_v1`、`is_simulated=true`；不是道路网络或 Google 数据 |
+| 矩阵来源 | `travel_matrix_provider: "simulated"`（默认） | 可改为 `google_routes`，见第 10 节；两者之间没有自动回退 |
 
 ## 2. 数据模型（`b-*-v1-draft`，尚未写入共享接口契约）
 
@@ -77,7 +78,7 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 
 ## 8. 已知限制与后续
 
-- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。B-5 接入 Google 前需要核验 NUS-ISS 的车辆入口，并单独获得 API 和费用授权。
+- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵目前只做过 3 个任务的冒烟测试；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。实验脚本仍只用模拟矩阵，Google 矩阵实验留给 B6。
 - 固定任务点只经过多边形校验，没有核验是否在可作业道路上。
 - 返基地、班次、目标权重和 GA 参数都是演示假设，需要 A 确认后才能作为正式口径。
 - B-4 修改了 A 的公共入口：`database.py`（v3 迁移）、`api/__init__.py`（路由注册）和 `main.py`（服务装配）。同时更新了 `test_backend.py`、`test_workflow.py` 中写死 v2 和接口列表的断言。
@@ -100,3 +101,74 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 **设计选择**：队伍修改和任务修改（A）都不会自动触发重算，只通过 `planning_input_changed` 和方案过期来提示。这样不会在用户不知情时生成新方案，也避免把重算失败和业务修改混在一起。C 的确认流程是：先 `PATCH /crews/{id}`，再用返回的 `input_revision` 调用 recalculate。
 
 测试：`SystemCode/tests/test_routing_api.py`。覆盖默认队伍不写库、修改与幂等、版本冲突、无方案 404、空队列、完整流程（建任务 → 重算 → 停用队伍 → 过期 → 完成任务 → 重算）、计算期间输入变化不保存、重启后仍保留、v2→v3 迁移，以及异常库拒绝启动。
+
+## 10. B-5：Google Routes 行程矩阵
+
+实现见 [google_matrix.py](google_matrix.py)，配置在 [routing.example.json](../../../config/routing.example.json) 的 `google_routes`。
+
+**启用方式**（默认关闭，不会产生费用）：
+
+```powershell
+$env:ROADGUARD_TRAVEL_MATRIX_PROVIDER = "google_routes"
+$env:ROADGUARD_GOOGLE_MAPS_API_KEY = "<服务端 Routes API 密钥>"
+python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
+```
+
+也可以改配置文件中的 `travel_matrix_provider`；环境变量优先。密钥只从 `api_key_env` 指定的环境变量读取，不写入配置、方案、日志或错误响应，也不能放进前端。建议在 Google Cloud 中把这把密钥限制为只允许 Routes API。
+
+**调用方式**：`POST https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix`，`travelMode=DRIVE`，坐标用 `latLng`，字段掩码 `originIndex,destinationIndex,duration,condition,status`。
+
+| 规则 | 实现 |
+| --- | --- |
+| 行列顺序 | 节点仍是“基地 + 快照顺序的任务”。按 Google 返回的 originIndex/destinationIndex 写回第 i 行第 j 列；返回顺序不固定，也不假设对称。proto3 省略的 0 号下标按 0 处理 |
+| 单位 | `duration`（如 `"754s"`）÷ 60，保留 `minutes_decimals` 位小数；对角线固定 0 |
+| 不可达 | `ROUTE_NOT_FOUND` 记为 `null`，由评估器给出 `unreachable_*` 等未分配原因，不当成 0 分钟 |
+| 失败 | 缺少密钥、HTTP 错误、超时、网络错误、元素 status 非 0、缺少/重复元素、格式异常都抛 `TravelMatrixError`；重算返回 503 `travel_matrix_unavailable`，两个方案都不保存，**不回退到模拟矩阵** |
+| 分块 | 每次请求不超过 25×25 且不超过 `max_elements_per_request`（≤625；`TRAFFIC_AWARE_OPTIMAL` 另限 100）。20 个任务 + 基地 = 21×21 = 441 个元素，一次请求 |
+| 费用保护 | 节点数超过 `max_nodes`（默认 31，即 30 个任务）直接拒绝，不发请求。每次未命中缓存的取数按“节点数²”计费元素，记录在 `parameters.billed_elements_per_fetch` |
+| 缓存 | 仅 `TRAFFIC_UNAWARE` 时按坐标和参数缓存在进程内（默认 16 份），只修改队伍后的重算不会再次计费。命中时 `generated_at` 保持原取数时间，`served_from_cache=true`。重启后缓存清空 |
+| 出发时间 | 默认 `TRAFFIC_UNAWARE`，不发送出发时间。改成路况模式时，`planning_start_at` 在未来才作为 `departureTime` 发送；已过去则由 Google 按请求时刻计算，实际使用值记录在 `parameters.departure_time` |
+| GA/Greedy 一致 | 一次重算只取一次矩阵，两种算法共用；`RecalculationResult` 和 RoutePlan 用 `matrix_provider`、`matrix_is_simulated=false` 标明来源，`matrix_generated_at` 给出取数时间 |
+
+**尚未完成 / 需要对接**：
+
+- **冒烟测试（2026-10-15，B 本地真实密钥，`TRAFFIC_UNAWARE`）**：用 [google_smoke.py](../../../experiments/routing/google_smoke.py) 在 Jurong 建 3 个演示任务，计 16 个元素。重算返回 `matrix_is_simulated=false`；基地往返分别为 20.3/21.8、20.9/18.8、23.4/23.9 分钟，往返不对称，没有不可达；同一位置的模拟矩阵结果约 25～31 分钟，数量级一致。Greedy 与 GA 总行程都是 129.1 分钟。只是 3 个点的冒烟测试，不是正式的精度评估。
+- NUS-ISS 车辆入口：3 条首段都可达，时间也合理，初步检查未见异常，但**还没有正式核验**入口位置。Google 会把坐标吸附到最近道路；如果后续出现首段异常，应由 A/B 记录入口坐标并更新基地版本，GA/Greedy 继续共用同一坐标。
+- 不提供路线几何，`geometry` 仍为 null；前端只能画标明示意的直线（C）。
+- 实验脚本（B6）仍使用模拟矩阵；用 Google 矩阵做 10/15/20 实验时应保存矩阵原始结果，保证可追溯。
+
+测试：`SystemCode/tests/test_routing_google_matrix.py`，全部用假传输层，并屏蔽真实网络调用。冒烟测试中发现总行程用 `sum()` 累加时结果依赖队伍顺序（同一组路线得到 129.1 和 129.10000000000002），已改为 `math.fsum` 并加了回归测试。
+
+## 11. B-1～B-5 新建文件一览
+
+阶段按测试文件标注：B-1 核心与 Greedy，B-2 GA，B-3 实验，B-4 持久化与接口，B-5 Google 矩阵。
+
+| 文件 | 阶段 | 用途 |
+| --- | --- | --- |
+| [routing/\_\_init\_\_.py](__init__.py) | B-1 | 对外导出路线模块的公共入口（模型、矩阵、规划函数、配置加载） |
+| [routing/models.py](models.py) | B-1 | 数据模型：Crew、Depot、PlanningInput、TravelMatrix、RoutePlan、CrewRoute、Stop、未分配原因及校验 |
+| [routing/settings.py](settings.py) | B-1 | 读取 `routing.example.json`（班次、返基地、目标权重、GA 参数、矩阵来源），组装 PlanningInput |
+| [routing/matrix.py](matrix.py) | B-1 | 模拟行程矩阵（球面距离 × 绕行系数 ÷ 车速）和统一的节点顺序（基地在前，任务按快照顺序） |
+| [routing/evaluation.py](evaluation.py) | B-1 | Greedy 与 GA 共用的评估器：约束检查、解码路线、计算指标和目标值，保证两种算法口径一致 |
+| [routing/greedy.py](greedy.py) | B-1 | Greedy 基线：最早空闲的队伍优先选最紧急、最近的任务 |
+| [routing/planner.py](planner.py) | B-1 | 无状态规划入口 `plan_routes()`：一份输入 + 一个矩阵 → 校验过的 RoutePlan，并检查任务不重不漏 |
+| [routing/ga.py](ga.py) | B-2 | 自建遗传算法：顺序 + 归属双染色体、OX 交叉、四种变异、精英保留、固定种子可复现 |
+| [config/routing.example.json](../../../config/routing.example.json) | B-1 | B 的集中配置（演示假设）；B-5 增加 `travel_matrix_provider` 和 `google_routes` |
+| [experiments/routing/run_experiments.py](../../../experiments/routing/run_experiments.py) | B-3 | 10/15/20 个任务的 GA（多种子）与 Greedy 对比实验，输出原始数据、收敛曲线、汇总和运行元数据 |
+| [experiments/routing/plot_results.py](../../../experiments/routing/plot_results.py) | B-3 | 根据保存的实验结果画图（可选，需要 matplotlib） |
+| [experiments/routing/README.md](../../../experiments/routing/README.md) | B-3 | 实验设计与复现说明 |
+| [crews/\_\_init\_\_.py](../crews/__init__.py) | B-4 | 队伍模块入口 |
+| [crews/schemas.py](../crews/schemas.py) | B-4 | 队伍接口的请求和响应模型（`b-crew-v1`） |
+| [crews/service.py](../crews/service.py) | B-4 | 队伍可用状态：读取、修改、幂等处理；修改时在同一事务里递增 `input_revision` |
+| [crews/api.py](../crews/api.py) | B-4 | HTTP 接口 `GET /crews`、`PATCH /crews/{id}` |
+| [routing/service.py](service.py) | B-4 | 规划服务：一致快照读取 → 取矩阵 → Greedy/GA → 写事务内复核版本后保存；方案查询和过期判断 |
+| [routing/api.py](api.py) | B-4 | HTTP 接口 `POST /route-plans/recalculate`、`GET /route-plans/latest`、`GET /route-plans/{id}` |
+| [routing/google_matrix.py](google_matrix.py) | B-5 | Google Routes 行程矩阵：分块请求、下标映射、不可达记为 null、失败报错不回退、缓存与费用保护 |
+| [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google 矩阵冒烟测试：建 3 个演示任务 → 重算 → 打印数据来源和各段时间 |
+| [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | 测试模型、模拟矩阵、评估器和 Greedy 的边界情况 |
+| [tests/test_routing_ga.py](../../../tests/test_routing_ga.py) | B-2 | 测试 GA 的合法性、可复现性，以及与 Greedy 约束一致 |
+| [tests/test_routing_experiments.py](../../../tests/test_routing_experiments.py) | B-3 | 测试实验脚本的记录完整性和拒绝覆盖 |
+| [tests/test_routing_api.py](../../../tests/test_routing_api.py) | B-4 | 测试队伍接口、重算、版本冲突、方案过期、重启后保留和 v2→v3 迁移 |
+| [tests/test_routing_google_matrix.py](../../../tests/test_routing_google_matrix.py) | B-5 | 用假传输层测试 Google 矩阵的映射、分块、缓存、错误处理和“不回退”行为 |
+
+B-4 还修改了 A 的公共文件：`database.py`（v3 迁移）、`api/__init__.py`（注册路由）、`main.py`（装配服务）。这些不是新建文件，所以没有列在表里。

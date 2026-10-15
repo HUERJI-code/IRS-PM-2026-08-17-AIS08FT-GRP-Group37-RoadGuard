@@ -81,8 +81,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "Uploads return only inspection_id, status, detection and task_id; details are queried separately. "
             "Real primary detections meeting the configured confidence threshold (default 0.60) create one task. "
             "Lower-confidence detections require review; business rules and tasks remain demo assumptions. "
-            "Road type is user-declared. Four-crew Greedy/GA route plans use a labelled simulated travel matrix "
-            "and demo shift/objective assumptions; recalculation is explicit and never automatic. "
+            "Road type is user-declared. Four-crew Greedy/GA route plans use the configured travel matrix "
+            "(labelled simulated by default, or Google Routes when enabled) and demo shift/objective "
+            "assumptions; recalculation is explicit and never automatic. "
             "The separate /demo endpoints remain stateless previews."
         ),
         lifespan=lifespan,

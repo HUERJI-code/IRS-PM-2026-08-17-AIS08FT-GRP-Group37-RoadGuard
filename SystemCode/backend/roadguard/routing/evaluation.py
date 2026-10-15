@@ -132,7 +132,7 @@ class RoutingProblem:
             service_totals.append(service_sum)
         work = [t + s for t, s in zip(travel_totals, service_totals)]
         makespan = max(work, default=0.0)
-        total_travel = sum(travel_totals)
+        total_travel = math.fsum(travel_totals)  # order independent: GA and Greedy report equal sums
         workload_std = statistics.pstdev(work) if work else None
         weight_sum = sum(self.priority_weight[t] for t in completion)
         priority_completion = (sum(self.priority_weight[t] * c for t, c in completion.items()) / weight_sum

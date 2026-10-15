@@ -93,18 +93,19 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 
 ### b-crew-v1 / b-recalculation-v1 / b-route-plan-v1-draft：四队与路线方案（B）
 
-2026-10-14 由 B 实现，数据结构定义见[路线模块说明](../SystemCode/backend/roadguard/routing/README.md)。行程来自标明为模拟的矩阵；班次 480 分钟、返基地和目标权重是 B 的演示假设，待 A 确认。
+2026-10-14 由 B 实现，数据结构定义见[路线模块说明](../SystemCode/backend/roadguard/routing/README.md)。行程默认来自标明为模拟的矩阵；2026-10-15 的 B-5 新增可选的 Google Routes 矩阵（配置切换，默认关闭），方案以 `matrix_provider`、`matrix_is_simulated` 区分来源；班次 480 分钟、返基地和目标权重是 B 的演示假设，待 A 确认。
 
 | 接口 | 请求 | 正常响应 | 主要错误 |
 | --- | --- | --- | --- |
 | `GET /crews` | 无 | CrewList：配置的全部队伍（含停用），`input_revision` | 503 |
 | `PATCH /crews/{crew_id}` | `request_id`、`expected_version`、`available` | CrewMutation：crew、input_revision、planning_input_changed、replayed | 404、409 `stale_record_version` / `idempotency_conflict`、422 |
-| `POST /route-plans/recalculate` | `expected_revision`（必填）、可选 `planning_start_at` | RecalculationResult：同一输入和矩阵下 greedy、ga 两个方案的 ID 与摘要 | 409 `stale_input_revision`、422、503 |
+| `POST /route-plans/recalculate` | `expected_revision`（必填）、可选 `planning_start_at` | RecalculationResult：同一输入和矩阵下 greedy、ga 两个方案的 ID 与摘要，以及 `matrix_provider`、`matrix_is_simulated`、`matrix_generated_at`（B-5 新增，增量字段） | 409 `stale_input_revision`、422、503 `database_unavailable` / `travel_matrix_unavailable` |
 | `GET /route-plans/latest?algorithm=ga\|greedy` | 算法 | RoutePlan，`is_stale` 在读取时按当前版本计算 | 404 `route_plan_not_found` |
 | `GET /route-plans/{plan_id}` | `plan-` + 32 位十六进制 | 保存的 RoutePlan（含旧方案） | 404 `route_plan_not_found`、422 |
 
 - 队伍可用状态属于规划输入：实际改变时与 `input_revision` 在同一事务中递增；重复请求不会重复修改。队伍修改不会自动重算，调用方需要用返回的版本调用 recalculate。
 - 计算期间任务或队伍发生变化时，两个方案都不保存，返回 409。保存方案不递增 `input_revision`。
+- 启用 Google 矩阵时，取不到行程（缺少密钥、HTTP/网络错误、响应不完整或元素错误）返回 503 `travel_matrix_unavailable`，`details` 含 `provider`、`reason`，HTTP 错误另含 `http_status`；两个方案都不保存，**不会**改用模拟矩阵。Google 判定无路线的点对记为不可达（null），不是 0 分钟。
 - 无方案时返回 404，而不是空的有效方案。每支队伍都会输出路线，停用的为 `unavailable`、无任务的为 `idle`；未分配任务都带原因。`geometry=null`，前端只能画标明示意的直线。
 
 ### 统一错误
@@ -140,6 +141,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 | `workflow_unavailable` | 503 | 巡检业务服务未就绪 |
 | `task_query_unavailable` | 503 | 任务快照服务未就绪，不能返回空队列冒充成功 |
 | `route_plan_not_found` | 404 | 指定 plan_id 不存在，或该算法尚无保存的方案；不是空的有效方案 |
+| `travel_matrix_unavailable` | 503 | 已配置 Google 行程矩阵但取不到可用结果；details 含 provider、reason（`missing_api_key` / `too_many_nodes` / `http_error` / `timeout` / `network_error` / `invalid_response` / `element_error`），可选 http_status；不保存方案，也不改用模拟行程 |
 
 错误样例使用 `validation_error` / 422，details 中的 is_demo 标记属于固定样例附加 metadata，不要求真实响应添加。未来业务错误由对应服务明确抛出并记录，不能从固定样例推定已有业务逻辑。
 

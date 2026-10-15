@@ -7,6 +7,19 @@
     "mode": "limited",
     "minutes": 480.0
   },
+  "travel_matrix_provider": "simulated",
+  "google_routes": {
+    "provider": "google_routes_compute_route_matrix_v2",
+    "endpoint": "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
+    "api_key_env": "ROADGUARD_GOOGLE_MAPS_API_KEY",
+    "travel_mode": "DRIVE",
+    "routing_preference": "TRAFFIC_UNAWARE",
+    "max_elements_per_request": 625,
+    "max_nodes": 31,
+    "timeout_seconds": 20.0,
+    "minutes_decimals": 1,
+    "cache_entries": 16
+  },
   "simulated_matrix": {
     "provider": "simulated_haversine_v1",
     "detour_factor": 1.3,

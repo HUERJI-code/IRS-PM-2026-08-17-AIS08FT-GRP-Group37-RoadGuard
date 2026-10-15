@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import Field
 
@@ -24,6 +24,25 @@ class SimulatedMatrixParameters(ContractModel):
     detour_factor: FiniteNumber = Field(ge=1)
     average_speed_kmh: FiniteNumber = Field(gt=0)
     minutes_decimals: int = Field(strict=True, ge=0, le=3)
+
+
+TravelMatrixProviderName = Literal["simulated", "google_routes"]
+MATRIX_PROVIDER_ENV = "ROADGUARD_TRAVEL_MATRIX_PROVIDER"
+
+
+class GoogleRoutesParameters(ContractModel):
+    provider: NonEmptyString
+    endpoint: NonEmptyString
+    # Name of the environment variable holding the key; the key itself is never in config.
+    api_key_env: NonEmptyString
+    travel_mode: Literal["DRIVE"]
+    routing_preference: Literal["TRAFFIC_UNAWARE", "TRAFFIC_AWARE", "TRAFFIC_AWARE_OPTIMAL"]
+    max_elements_per_request: PositiveInt = Field(le=625)
+    # Cost guard: depot + tasks; each uncached fetch bills nodes^2 elements.
+    max_nodes: PositiveInt = Field(ge=2)
+    timeout_seconds: FiniteNumber = Field(gt=0, le=120)
+    minutes_decimals: int = Field(strict=True, ge=0, le=3)
+    cache_entries: int = Field(strict=True, ge=0, le=256)
 
 
 class GAParameters(ContractModel):
@@ -45,7 +64,10 @@ class PlanningServiceConfig(ContractModel):
 
 class RoutingConfig(ContractModel):
     settings: PlanningSettings
+    # Which provider online recalculation uses. There is no automatic fallback between them.
+    travel_matrix_provider: TravelMatrixProviderName
     simulated_matrix: SimulatedMatrixParameters
+    google_routes: GoogleRoutesParameters
     ga: GAParameters
     planning_service: PlanningServiceConfig
     experiment: dict[str, Any]
@@ -67,7 +89,9 @@ def routing_config_path() -> Path:
     return path if path.is_absolute() else REPOSITORY_ROOT / path
 
 
-def load_routing_config(path: Path | None = None) -> RoutingConfig:
+def load_routing_config(path: Path | None = None, environ: Mapping[str, str] | None = None) -> RoutingConfig:
+    """ROADGUARD_TRAVEL_MATRIX_PROVIDER (simulated | google_routes) overrides the file's choice."""
+    environment = os.environ if environ is None else environ
     source = json.loads(Path(path or routing_config_path()).read_text(encoding="utf-8"),
                         object_pairs_hook=_reject_duplicates)
     objective = source["objective"]
@@ -85,6 +109,8 @@ def load_routing_config(path: Path | None = None) -> RoutingConfig:
         raise ValueError("elite_count must be smaller than population_size")
     return RoutingConfig(
         settings=settings,
+        travel_matrix_provider=environment.get(MATRIX_PROVIDER_ENV) or source["travel_matrix_provider"],
+        google_routes=GoogleRoutesParameters.model_validate(source["google_routes"]),
         simulated_matrix=SimulatedMatrixParameters.model_validate(source["simulated_matrix"]),
         ga=ga,
         planning_service=PlanningServiceConfig.model_validate(source["planning_service"]),

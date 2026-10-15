@@ -1,4 +1,4 @@
-"""Travel matrix providers. Only the clearly labelled simulated provider exists so far."""
+"""Simulated travel matrix provider and shared node ordering; Google lives in google_matrix.py."""
 
 from datetime import datetime, timezone
 import math
