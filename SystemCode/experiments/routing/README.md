@@ -51,7 +51,7 @@ BKS 是所有运行中最好的方案，**不保证是真正的最优**。离 BK
 python SystemCode/experiments/routing/evaluate_ga.py --output-dir SystemCode/experiments/routing/results/ga-evaluation-v1
 ```
 
-单机约 6～7 分钟。输出 `raw_runs.csv`、`summary.json`、`best_known.json`（含 BKS 路线）和 `run_metadata.json`。
+单机约 6～7 分钟。输出 `raw_runs.csv`、`summary.json`、`best_known.json`（含 BKS 路线）和 `run_metadata.json`。正式结果和分析见 [results/README.md](results/README.md) 第 7 节。
 
 ## 限制
 
