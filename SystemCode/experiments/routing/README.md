@@ -36,6 +36,23 @@ python SystemCode/experiments/routing/plot_results.py SystemCode/experiments/rou
 
 `diagnose_tight_capacity.py` 复现并诊断 Google 矩阵、480 分钟班次、15 个任务场景中纯 GA 漏排任务的原因，只读取已保存的矩阵并打印结果，见 [results/README.md](results/README.md) 6.6 节。
 
+## GA 评估（消融与离已知最好解的差距）
+
+`evaluate_ga.py` 回答“GA 本身表现如何”，不只看“是否优于 Greedy”。它直接读取 B6 保存的矩阵（核对哈希和节点顺序，不请求 Google），在 2 种矩阵 × 2 种班次 × 10/15/20 个任务共 12 个场景下比较：
+
+- `greedy`：基线；
+- `ga_pure`：实验用 GA，种子 1～10；
+- `ga_seeded`：在线用 GA（初始种群含 Greedy 解），种子 1～10；
+- `long_run`：大预算（种群 150、最多 1000 代、耐心 300 代），种子 101～120，纯 GA 和 Greedy 初始化交替。只用来寻找已知最好解（BKS）。
+
+BKS 是所有运行中最好的方案，**不保证是真正的最优**。离 BKS 的差距只在排进的任务和 BKS 一样多时才计算；排进更少的单独记为 `fewer_tasks_than_bks`。
+
+```powershell
+python SystemCode/experiments/routing/evaluate_ga.py --output-dir SystemCode/experiments/routing/results/ga-evaluation-v1
+```
+
+单机约 6～7 分钟。输出 `raw_runs.csv`、`summary.json`、`best_known.json`（含 BKS 路线）和 `run_metadata.json`。
+
 ## 限制
 
 - 行程为模拟值，不能据此宣称真实道路上的时间节省或费用节省。
