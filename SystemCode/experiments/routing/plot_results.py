@@ -9,6 +9,7 @@ Usage (repository root):
 
 import argparse
 import csv
+import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -27,6 +28,11 @@ def main() -> None:
     import matplotlib.pyplot as plt
 
     raw = read_rows(args.run_dir / "raw_runs.csv")
+    metadata = json.loads((args.run_dir / "run_metadata.json").read_text(encoding="utf-8"))
+    source = "Google Routes matrix" if metadata.get("matrix_provider") == "google_routes" else "simulated matrix"
+    shift = metadata.get("settings_overrides", {}).get("shift_limit") or metadata["routing_config"]["shift_limit"]
+    shift_label = "no shift limit" if shift["mode"] == "unlimited" else f"{shift['minutes']:g}-min shift"
+    context = f"Four crews, {source}, {shift_label}"
     counts = sorted({int(row["task_count"]) for row in raw})
     fig, axes = plt.subplots(1, 3, figsize=(13, 4))
     for axis, metric, label in zip(axes, ("objective_value", "makespan_minutes", "total_travel_minutes"),
@@ -40,23 +46,34 @@ def main() -> None:
         axis.set_title(label)
         axis.grid(axis="y", alpha=0.3)
     axes[0].legend(loc="upper left")
-    fig.suptitle("Four crews, simulated matrix: GA across seeds (box) vs Greedy (diamond)")
+    fig.suptitle(f"{context}: GA across seeds (box) vs Greedy (diamond)")
     fig.tight_layout()
     fig.savefig(args.run_dir / "ga_vs_greedy.png", dpi=150)
 
-    convergence = defaultdict(list)
+    # GA compares (unassigned P1, P2, P3, objective) lexicographically, so the objective can rise
+    # while more tasks get scheduled. Plot each seed only from the first generation whose unassigned
+    # counts equal its final ones; earlier objectives belong to plans that skip more tasks.
+    history = defaultdict(list)
     for row in read_rows(args.run_dir / "ga_convergence.csv"):
-        convergence[(int(row["task_count"]), int(row["seed"]))].append(float(row["best_objective"]))
+        skipped = (int(row["best_skipped_p1"]), int(row["best_skipped_p2"]), int(row["best_skipped_p3"]))
+        history[(int(row["task_count"]), int(row["seed"]))].append(
+            (int(row["generation"]), skipped, float(row["best_objective"])))
+    convergence = {}
+    for key, points in history.items():
+        final = points[-1][1]
+        start = next(i for i, (_, skipped, _) in enumerate(points) if skipped == final)
+        convergence[key] = ([g for g, _, _ in points[start:]], [o for _, _, o in points[start:]])
     fig, axes = plt.subplots(1, len(counts), figsize=(4.3 * len(counts), 3.6), squeeze=False)
     for axis, count in zip(axes[0], counts):
-        for (task_count, _), history in sorted(convergence.items()):
+        for (task_count, _), (generations, objectives) in sorted(convergence.items()):
             if task_count == count:
-                axis.plot(history, linewidth=0.9, alpha=0.7)
+                axis.plot(generations, objectives, linewidth=0.9, alpha=0.7)
         axis.set_title(f"{count} tasks")
         axis.set_xlabel("Generation")
         axis.grid(alpha=0.3)
     axes[0][0].set_ylabel("Best objective")
-    fig.suptitle("GA best-so-far objective per seed")
+    fig.suptitle(f"GA best-so-far objective per seed ({context})\n"
+                 "each line starts once its unassigned counts reach their final values")
     fig.tight_layout()
     fig.savefig(args.run_dir / "ga_convergence.png", dpi=150)
 
