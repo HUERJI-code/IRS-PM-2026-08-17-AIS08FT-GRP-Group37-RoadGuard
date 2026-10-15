@@ -1,6 +1,6 @@
 # B 路线模块：四队调度、模拟行程矩阵、Greedy 与 GA
 
-负责人：B。状态（2026-10-15）：已完成 B-1～B-5 和 B6。B-1～B-5 包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）；在线服务默认仍使用模拟矩阵。B6 完成了模拟矩阵和 Google 矩阵下 10/15/20 个任务的 GA 与 Greedy 对比实验（第 12 节）。尚未开始：B7（报告章节与视频素材）。
+负责人：B。状态（2026-10-15）：已完成 B-1～B-5 和 B6。B-1～B-5 包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）；在线服务默认仍使用模拟矩阵。B6 完成了模拟矩阵和 Google 矩阵下 10/15/20 个任务的 GA 与 Greedy 对比实验（第 12 节）。在线重算的 GA 从 Greedy 解出发，保证不比 Greedy 差，实验仍用纯 GA（第 13 节）。尚未开始：B7（报告章节与视频素材）。
 
 ## 1. 演示假设（集中配置）
 
@@ -46,7 +46,8 @@
 - **算子**：锦标赛选择（k=3）；`order` 用 OX 交叉，`owner` 用均匀交叉；变异随机选一种：交换、片段反转、换队、重定位。
 - **精英保留** 2 个；**停止条件**是 300 代，或连续 80 代没有改进。种群 60，交叉率 0.9，变异率 0.3。
 - **可复现**：所有随机数来自同一个 `random.Random(seed)`。实验默认使用种子 1～10。
-- `seed_with_greedy=false`：默认不把 Greedy 解放进初始种群，避免对比时偏向 GA。开启时 GA 不会比 Greedy 差（有测试覆盖），但这不能当作算法优势。
+- `ga.seed_with_greedy=false`：实验默认不把 Greedy 解放进初始种群，避免对比时偏向 GA。开启时 GA 不会比 Greedy 差（有测试覆盖），但这不能当作算法优势。
+- 在线重算另读 `planning_service.seed_with_greedy=true`，见第 13 节。
 
 ## 6. 使用
 
@@ -93,7 +94,7 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 
 **重算（[service.py](service.py)）**：
 1. 在同一个只读事务中读取任务快照和队伍状态，并核对 `expected_revision`。
-2. 退出事务后生成模拟矩阵，在同一输入上运行 Greedy 和 GA（种子 `planning_service.ga_seed=1`）。
+2. 退出事务后生成矩阵，在同一输入上运行 Greedy 和 GA（种子 `planning_service.ga_seed=1`；GA 从 Greedy 解出发，见第 13 节）。
 3. 在写事务中再次核对版本后同时保存两个方案；版本已变化就都不保存，返回 409。
 
 **过期判断**：读取时比较方案的 `input_revision` 与当前版本，不同即 `is_stale=true`。旧方案仍可以按 ID 查询，供前后比较。
@@ -164,6 +165,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 | [routing/service.py](service.py) | B-4 | 规划服务：一致快照读取 → 取矩阵 → Greedy/GA → 写事务内复核版本后保存；方案查询和过期判断 |
 | [routing/api.py](api.py) | B-4 | HTTP 接口 `POST /route-plans/recalculate`、`GET /route-plans/latest`、`GET /route-plans/{id}` |
 | [routing/google_matrix.py](google_matrix.py) | B-5 | Google Routes 行程矩阵：分块请求、下标映射、不可达记为 null、失败报错不回退、缓存与费用保护 |
+| [experiments/routing/diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) | B6 后续 | 诊断容量极紧场景中纯 GA 漏排任务的原因（读取已保存的 Google 矩阵，不调用 API、不写文件），见第 13 节 |
 | [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google 矩阵冒烟测试：建 3 个演示任务 → 重算 → 打印数据来源和各段时间 |
 | [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | 测试模型、模拟矩阵、评估器和 Greedy 的边界情况 |
 | [tests/test_routing_ga.py](../../../tests/test_routing_ga.py) | B-2 | 测试 GA 的合法性、可复现性，以及与 Greedy 约束一致 |
@@ -198,3 +200,22 @@ B-4 还修改了 A 的公共文件：`database.py`（v3 迁移）、`api/__init_
 
 B6 没有改动在线服务的代码和接口，只扩展了实验脚本、画图脚本和测试。
 
+## 13. 在线 GA 从 Greedy 解出发（B6 之后的优化）
+
+**问题**：B6 中有一个场景（Google 矩阵、480 分钟班次、15 个任务）纯 GA 有 5/10 个种子比 Greedy 少排一个 P3。用 [diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) 诊断后，结论如下（详见[结果页 6.6 节](../../../experiments/routing/results/README.md)）：
+
+- 15 个任务的维修时长合计正好是 4×480 分钟。加上路程最多排进 13 个，是一个极紧的装箱问题。
+- 失败种子在第 1～10 代就锁定在“排进 12 个”。剩余时间集中在一支队伍（60～79 分钟），放不下“60 分钟维修 + 往返路程”的 P3；直接插入的可行位置为 0。要多排一个，需要“先挪一个已排任务、再插入”的协同调整，而每次变异只做一个动作。
+- 把耐心代数加到 300、最大代数加到 1000，失败的仍是同样 5 个种子；改种群或变异率只是换了一批失败的种子。所以这是搜索方式的结构性问题，不是参数问题，因此不做调参。
+
+**处理**：在线服务追求结果好，实验追求比较公平，两者分开设置。
+
+| 场景 | 设置 | 效果 |
+| --- | --- | --- |
+| 在线重算（`POST /route-plans/recalculate`） | `planning_service.seed_with_greedy=true`：GA 初始种群包含 Greedy 解 | 精英保留使 GA 方案按 `(未分配 P1, P2, P3, 目标值)` 不比 Greedy 差。上述场景 10/10 个种子都排进 13 个任务，目标值 668.2～670.4（Greedy 为 682.9） |
+| 实验（`run_experiments.py`） | 仍读取 `ga.seed_with_greedy=false` | 纯 GA 与 Greedy 独立比较，B6 结果不变 |
+
+- 保存的 RoutePlan 在 `algorithm_parameters.seed_with_greedy` 中记录实际设置，报告和前端可以据此说明在线 GA 是“GA + Greedy 初始解”。
+- 接口字段、数据库和前端都没有变化；在线 GA 仍然输出 `algorithm="ga"` 的独立方案。
+- 测试：`test_routing_ga.py` 用已保存的矩阵复现失败场景（纯 GA 种子 2 漏排，Greedy 初始化后 10 个种子都不差于 Greedy）；`test_routing_api.py` 检查在线方案记录了该设置且不比 Greedy 差；`test_routing_core.py` 检查两处配置各自的取值。
+- 可选的后续改进：在 GA 中加入“挪动 + 插入”的修复步骤（memetic GA）。诊断显示它能修好 5 个失败种子中的 3 个。目前未实现。

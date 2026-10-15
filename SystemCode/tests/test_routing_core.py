@@ -62,6 +62,8 @@ def test_example_config_is_explicit_demo_with_chosen_policies():
     assert settings.return_to_depot is True
     assert settings.shift_limit == ShiftLimit(mode="limited", minutes=480.0)
     assert CONFIG.ga.seed_with_greedy is False
+    # Online recalculation starts GA from Greedy; experiments above stay unseeded.
+    assert CONFIG.planning_service.seed_with_greedy is True
     assert PROJECT["planning"]["return_to_depot"] is None   # A's project config stays undecided
 
 

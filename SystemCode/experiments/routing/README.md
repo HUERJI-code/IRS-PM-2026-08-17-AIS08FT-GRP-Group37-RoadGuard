@@ -34,6 +34,8 @@ python SystemCode/experiments/routing/plot_results.py SystemCode/experiments/rou
 
 `--matrix-provider google_routes` 会调用收费的 Google API（默认任务数下只请求一次 21×21 矩阵），`--unlimited-shift` 取消班次上限做敏感性对比，两者都会记录在 `run_metadata.json` 中。运行前工作区应保持干净（包括未提交的旧结果目录），否则元数据会记为 `working_tree_dirty=true`。
 
+`diagnose_tight_capacity.py` 复现并诊断 Google 矩阵、480 分钟班次、15 个任务场景中纯 GA 漏排任务的原因，只读取已保存的矩阵并打印结果，见 [results/README.md](results/README.md) 6.6 节。
+
 ## 限制
 
 - 行程为模拟值，不能据此宣称真实道路上的时间节省或费用节省。

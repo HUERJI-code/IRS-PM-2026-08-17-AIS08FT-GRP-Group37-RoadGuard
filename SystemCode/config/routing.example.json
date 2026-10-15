@@ -51,7 +51,8 @@
     "seed_with_greedy": false
   },
   "planning_service": {
-    "ga_seed": 1
+    "ga_seed": 1,
+    "seed_with_greedy": true
   },
   "experiment": {
     "planning_start_at": "2026-10-15T01:00:00Z",

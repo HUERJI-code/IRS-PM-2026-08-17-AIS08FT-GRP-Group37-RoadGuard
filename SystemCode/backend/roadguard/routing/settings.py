@@ -60,6 +60,10 @@ class GAParameters(ContractModel):
 class PlanningServiceConfig(ContractModel):
     # One fixed seed makes online recalculation reproducible for the same input.
     ga_seed: int = Field(strict=True)
+    # Online plans start GA from the Greedy solution, so the saved GA plan is never worse
+    # than Greedy (elitism keeps it). Experiments keep ga.seed_with_greedy=false so the
+    # GA/Greedy comparison stays independent; see routing/README.md section 13.
+    seed_with_greedy: bool
 
 
 class RoutingConfig(ContractModel):

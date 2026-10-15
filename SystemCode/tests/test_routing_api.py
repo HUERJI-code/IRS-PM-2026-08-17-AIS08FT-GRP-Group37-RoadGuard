@@ -210,3 +210,14 @@ def test_openapi_registers_fixed_paths_before_plan_id(client):
     paths = list(client.get("/openapi.json").json()["paths"])
     assert paths.index("/api/v1/route-plans/latest") < paths.index("/api/v1/route-plans/{plan_id}")
     assert paths.index("/api/v1/route-plans/recalculate") < paths.index("/api/v1/route-plans/{plan_id}")
+
+
+def test_online_ga_starts_from_greedy_and_is_never_worse(client):
+    for index in range(5):
+        create_task(client, index)
+    plans = {p["algorithm"]: p["plan_id"] for p in recalculate(client, revision(client)).json()["plans"]}
+    ga = client.get(f"/api/v1/route-plans/{plans['ga']}").json()
+    greedy = client.get(f"/api/v1/route-plans/{plans['greedy']}").json()
+    assert ga["algorithm_parameters"]["seed_with_greedy"] is True
+    key = lambda plan: (*plan["metrics"]["unassigned_by_priority"].values(), plan["metrics"]["objective_value"])  # noqa: E731
+    assert key(ga) <= key(greedy)

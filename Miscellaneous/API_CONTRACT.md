@@ -105,6 +105,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 
 - 队伍可用状态属于规划输入：实际改变时与 `input_revision` 在同一事务中递增；重复请求不会重复修改。队伍修改不会自动重算，调用方需要用返回的版本调用 recalculate。
 - 计算期间任务或队伍发生变化时，两个方案都不保存，返回 409。保存方案不递增 `input_revision`。
+- 在线 GA 方案从 Greedy 解出发（配置 `planning_service.seed_with_greedy=true`，记录在方案的 `algorithm_parameters.seed_with_greedy`），按“未分配 P1、P2、P3 数，再比目标值”的顺序不比同一次重算的 Greedy 方案差。字段没有变化。
 - 启用 Google 矩阵时，取不到行程（缺少密钥、HTTP/网络错误、响应不完整或元素错误）返回 503 `travel_matrix_unavailable`，`details` 含 `provider`、`reason`，HTTP 错误另含 `http_status`；两个方案都不保存，**不会**改用模拟矩阵。Google 判定无路线的点对记为不可达（null），不是 0 分钟。
 - 无方案时返回 404，而不是空的有效方案。每支队伍都会输出路线，停用的为 `unavailable`、无任务的为 `idle`；未分配任务都带原因。`geometry=null`，前端只能画标明示意的直线。
 
