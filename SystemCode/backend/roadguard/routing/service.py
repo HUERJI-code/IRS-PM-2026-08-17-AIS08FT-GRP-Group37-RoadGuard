@@ -8,10 +8,14 @@ Consistency rules (see Miscellaneous/BC_HANDOFF.md):
   raised, so an outdated result can never become the latest plan.
 - Saving plans never increments input_revision. is_stale is derived on read by
   comparing a plan's input_revision with the current one.
+- The travel matrix provider is chosen by configuration (simulated or google_routes).
+  A Google failure returns 503 travel_matrix_unavailable and saves nothing; it never
+  falls back to the simulated matrix (B-5).
 """
 
 from datetime import datetime, timezone
 from functools import wraps
+import logging
 import sqlite3
 import uuid
 from typing import Literal
@@ -24,13 +28,15 @@ from roadguard.errors import AppError
 from roadguard.schemas.common import ContractModel, NonEmptyString, NonNegativeInt, UTCTimestamp
 from roadguard.tasks import TaskQueryService
 
+from .google_matrix import GoogleRoutesMatrixProvider, TravelMatrixError
 from .matrix import simulated_travel_matrix
-from .models import Depot, NonNegativeMinutes, RoutePlan
+from .models import Depot, NonNegativeMinutes, PlanningInput, RoutePlan, TravelMatrix
 from .planner import plan_routes
 from .settings import RoutingConfig, build_planning_input
 
 
 Algorithm = Literal["ga", "greedy"]
+logger = logging.getLogger(__name__)
 
 
 class RecalculateRequest(ContractModel):
@@ -56,6 +62,8 @@ class RecalculationResult(ContractModel):
     task_count: NonNegativeInt
     matrix_provider: NonEmptyString
     matrix_is_simulated: bool
+    # For a cached Google matrix this is the original fetch time.
+    matrix_generated_at: UTCTimestamp
     plans: list[PlanSummary]
 
 
@@ -70,12 +78,28 @@ def _db_operation(method):
 
 
 class PlanningService:
-    def __init__(self, database: Database, config: RoutingConfig, depot: Depot, crews: CrewService) -> None:
+    def __init__(self, database: Database, config: RoutingConfig, depot: Depot, crews: CrewService,
+                 google_matrix: GoogleRoutesMatrixProvider | None = None) -> None:
         self.database = database
         self.crews = crews
         self.config = config
         self.depot = depot
         self.tasks = TaskQueryService(database)
+        self.google_matrix = google_matrix or GoogleRoutesMatrixProvider(config.google_routes)
+
+    def _travel_matrix(self, planning_input: PlanningInput) -> TravelMatrix:
+        if self.config.travel_matrix_provider == "simulated":
+            return simulated_travel_matrix(planning_input, self.config.simulated_matrix)
+        try:
+            return self.google_matrix.build(planning_input)
+        except TravelMatrixError as exc:
+            # Only the constant reason is logged; the key never reaches logs or responses.
+            logger.warning("Google travel matrix failed: %s", exc.reason)
+            details = {"provider": self.config.google_routes.provider, "reason": exc.reason}
+            if exc.http_status is not None:
+                details["http_status"] = exc.http_status
+            raise AppError("travel_matrix_unavailable",
+                           "Travel times could not be obtained. No route plan was saved.", 503, details) from None
 
     @_db_operation
     def recalculate(self, payload: RecalculateRequest) -> RecalculationResult:
@@ -84,7 +108,7 @@ class PlanningService:
             crews = self.crews.read_planning_crews(connection)
         start = payload.planning_start_at or datetime.now(timezone.utc).replace(microsecond=0)
         planning_input = build_planning_input(snapshot, crews, self.depot, self.config.settings, start)
-        matrix = simulated_travel_matrix(planning_input, self.config.simulated_matrix)
+        matrix = self._travel_matrix(planning_input)
         plans = [
             plan_routes(planning_input, matrix, "greedy", plan_id=f"plan-{uuid.uuid4().hex}")[0],
             plan_routes(planning_input, matrix, "ga", ga_parameters=self.config.ga,
@@ -100,6 +124,7 @@ class PlanningService:
         return RecalculationResult(
             input_revision=snapshot.input_revision, planning_start_at=start, task_count=snapshot.total,
             matrix_provider=matrix.provider, matrix_is_simulated=matrix.is_simulated,
+            matrix_generated_at=matrix.generated_at,
             plans=[PlanSummary(algorithm=p.algorithm, plan_id=p.plan_id,
                                assigned_task_count=p.metrics.assigned_task_count,
                                unassigned_task_count=p.metrics.unassigned_task_count,

@@ -28,7 +28,10 @@ def _queries(request: Request) -> RouteQueryService:
              summary="Plan all active tasks with Greedy and GA on the same input and matrix, then save both",
              description="expected_revision must equal the current input_revision. If tasks or crews change "
                          "during calculation, nothing is saved and 409 stale_input_revision is returned. "
-                         "Travel times come from the labelled simulated matrix, not road-network data.")
+                         "Travel times come from the configured provider: the labelled simulated matrix "
+                         "(matrix_is_simulated=true) or Google Routes computeRouteMatrix. If Google fails, "
+                         "503 travel_matrix_unavailable is returned, nothing is saved and there is no "
+                         "fallback to simulated times.")
 def recalculate(request: Request, payload: RecalculateRequest) -> RecalculationResult:
     return _planning(request).recalculate(payload)
 
