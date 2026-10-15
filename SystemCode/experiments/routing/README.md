@@ -30,7 +30,7 @@ python SystemCode/experiments/routing/plot_results.py SystemCode/experiments/rou
 
 ## 已保存的结果
 
-2026-10-15 在代码 `7651947` 上运行的两组模拟矩阵实验（480 分钟班次、不限班次），包括原始数据、矩阵、图和结论，见 [results/README.md](results/README.md)。
+2026-10-15 运行了四组实验：模拟矩阵（代码 `7651947`）和 Google 矩阵（代码 `06cb76b`），各有 480 分钟班次和不限班次两组。原始数据、矩阵、图和结论见 [results/README.md](results/README.md)。
 
 `--matrix-provider google_routes` 会调用收费的 Google API（默认任务数下只请求一次 21×21 矩阵），`--unlimited-shift` 取消班次上限做敏感性对比，两者都会记录在 `run_metadata.json` 中。运行前工作区应保持干净（包括未提交的旧结果目录），否则元数据会记为 `working_tree_dirty=true`。
 
