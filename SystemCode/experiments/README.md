@@ -1,6 +1,6 @@
 # Experiments - planned
 
-Routing (B): the runner, settings and instructions for generating simulated-matrix results are in [routing/](routing/README.md). Full experiment results are not included in this commit.
+Routing (B): the runner, settings and instructions for generating simulated-matrix results are in [routing/](routing/README.md). Simulated-matrix results (480-minute shift and an unlimited-shift sensitivity run) are saved with their analysis in [routing/results/](routing/results/README.md); a Google-matrix run has not been recorded yet.
 
 Primary scenario: four crews, one fictional shared depot and synthetic tasks within the defined Jurong study area.
 

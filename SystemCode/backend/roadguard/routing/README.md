@@ -66,7 +66,7 @@ ga_plan, ga_result = plan_routes(planning_input, matrix, "ga", ga_parameters=con
 
 `snapshot` 可以是 `TaskQueryService.snapshot()` 的结果，也可以是固定样例 `TaskSnapshot`。在线服务按[交接说明](../../../../Miscellaneous/BC_HANDOFF.md)的方式运行，见第 9 节。
 
-实验脚本、运行方式和输出说明见 [experiments/routing](../../../experiments/routing/README.md)；本次提交不包含完整实验结果。
+实验脚本、运行方式和输出说明见 [experiments/routing](../../../experiments/routing/README.md)；B6 的正式结果与分析见 [results/README.md](../../../experiments/routing/results/README.md)。
 
 ## 7. 测试
 
@@ -78,7 +78,7 @@ python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_rou
 
 ## 8. 已知限制与后续
 
-- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵目前只做过 3 个任务的冒烟测试；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。实验脚本仍只用模拟矩阵，Google 矩阵实验留给 B6。
+- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵目前只做过 3 个任务的冒烟测试；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。B6 已保存模拟矩阵实验结果；Google 矩阵版本的实验尚未运行。
 - 固定任务点只经过多边形校验，没有核验是否在可作业道路上。
 - 返基地、班次、目标权重和 GA 参数都是演示假设，需要 A 确认后才能作为正式口径。
 - B-4 修改了 A 的公共入口：`database.py`（v3 迁移）、`api/__init__.py`（路由注册）和 `main.py`（服务装配）。同时更新了 `test_backend.py`、`test_workflow.py` 中写死 v2 和接口列表的断言。
@@ -135,7 +135,7 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 - **冒烟测试（2026-10-15，B 本地真实密钥，`TRAFFIC_UNAWARE`）**：用 [google_smoke.py](../../../experiments/routing/google_smoke.py) 在 Jurong 建 3 个演示任务，计 16 个元素。重算返回 `matrix_is_simulated=false`；基地往返分别为 20.3/21.8、20.9/18.8、23.4/23.9 分钟，往返不对称，没有不可达；同一位置的模拟矩阵结果约 25～31 分钟，数量级一致。Greedy 与 GA 总行程都是 129.1 分钟。只是 3 个点的冒烟测试，不是正式的精度评估。
 - NUS-ISS 车辆入口：3 条首段都可达，时间也合理，初步检查未见异常，但**还没有正式核验**入口位置。Google 会把坐标吸附到最近道路；如果后续出现首段异常，应由 A/B 记录入口坐标并更新基地版本，GA/Greedy 继续共用同一坐标。
 - 不提供路线几何，`geometry` 仍为 null；前端只能画标明示意的直线（C）。
-- 实验脚本（B6）仍使用模拟矩阵；用 Google 矩阵做 10/15/20 实验时应保存矩阵原始结果，保证可追溯。
+- 实验脚本已支持 `--matrix-provider google_routes`，并会保存矩阵原始结果；Google 矩阵版本的 10/15/20 实验尚未运行。
 
 测试：`SystemCode/tests/test_routing_google_matrix.py`，全部用假传输层，并屏蔽真实网络调用。冒烟测试中发现总行程用 `sum()` 累加时结果依赖队伍顺序（同一组路线得到 129.1 和 129.10000000000002），已改为 `math.fsum` 并加了回归测试。
 
