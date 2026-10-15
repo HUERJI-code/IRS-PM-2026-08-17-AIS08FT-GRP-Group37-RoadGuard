@@ -165,6 +165,9 @@ python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 | [routing/service.py](service.py) | B-4 | 规划服务：一致快照读取 → 取矩阵 → Greedy/GA → 写事务内复核版本后保存；方案查询和过期判断 |
 | [routing/api.py](api.py) | B-4 | HTTP 接口 `POST /route-plans/recalculate`、`GET /route-plans/latest`、`GET /route-plans/{id}` |
 | [routing/google_matrix.py](google_matrix.py) | B-5 | Google Routes 行程矩阵：分块请求、下标映射、不可达记为 null、失败报错不回退、缓存与费用保护 |
+| [experiments/routing/evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) | B6 后续 | GA 评估：Greedy、纯 GA、在线 GA 的消融对比，以及离已知最好解的差距（读取已保存的矩阵，不调用 API），见第 14 节 |
+| [tests/test_routing_ga_evaluation.py](../../../tests/test_routing_ga_evaluation.py) | B6 后续 | 测试 GA 评估脚本：已知最好解不差于任何一次运行、在线 GA 不差于 Greedy、差距只在覆盖相同时计算、拒绝被篡改的矩阵和覆盖已有输出 |
+| `experiments/routing/results/ga-evaluation-v1/` | B6 后续 | GA 评估输出：原始运行、汇总、已知最好解路线和元数据 |
 | [experiments/routing/diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) | B6 后续 | 诊断容量极紧场景中纯 GA 漏排任务的原因（读取已保存的 Google 矩阵，不调用 API、不写文件），见第 13 节 |
 | [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google 矩阵冒烟测试：建 3 个演示任务 → 重算 → 打印数据来源和各段时间 |
 | [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | 测试模型、模拟矩阵、评估器和 Greedy 的边界情况 |
@@ -219,3 +222,17 @@ B6 没有改动在线服务的代码和接口，只扩展了实验脚本、画�
 - 接口字段、数据库和前端都没有变化；在线 GA 仍然输出 `algorithm="ga"` 的独立方案。
 - 测试：`test_routing_ga.py` 用已保存的矩阵复现失败场景（纯 GA 种子 2 漏排，Greedy 初始化后 10 个种子都不差于 Greedy）；`test_routing_api.py` 检查在线方案记录了该设置且不比 Greedy 差；`test_routing_core.py` 检查两处配置各自的取值。
 - 可选的后续改进：在 GA 中加入“挪动 + 插入”的修复步骤（memetic GA）。诊断显示它能修好 5 个失败种子中的 3 个。目前未实现。
+
+## 14. GA 评估（消融与离已知最好解的差距）
+
+在线 GA 从 Greedy 出发后必然不差于 Greedy，所以“GA 是否优于 Greedy”不足以评价 GA。[evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) 在 12 个场景（模拟 / Google 矩阵 × 480 分钟 / 不限班次 × 10/15/20 个任务）上比较 Greedy、纯 GA 和在线 GA，并用大预算运行找已知最好解（BKS）作参照。结果目录 `ga-evaluation-v1`（代码 `7bb1536`），完整分析见[结果页第 7 节](../../../experiments/routing/results/README.md)。
+
+| 评估角度 | 结果 |
+| --- | --- |
+| 离 BKS 的差距 | Greedy 1.2%～5.1%；在线 GA 0.2%～1.8%，把 Greedy 的差距缩小 63%～89% |
+| 相对 Greedy | 在线 GA 120/120 次优于 Greedy，目标值平均低 0.7%～3.6%，没有一次少排任务 |
+| 消融（有无 Greedy 初始解） | 10、15 个任务时在线 GA 更接近 BKS；部分 20 个任务场景两者持平或纯 GA 略好。纯 GA 在容量极紧场景有 5/10 次少排任务，在线 GA 没有 |
+| 稳定性 | 在线 GA 的种子间波动在 8/12 个场景小于纯 GA |
+| 速度 | 默认参数 0.1～0.4 秒；约 10 倍预算（0.7～5.4 秒）的平均结果与在线 GA 相差在 ±0.8% 以内 |
+
+局限：BKS 不保证最优，差距是下限估计；只有一组合成任务和 B6 的两份矩阵；10 个种子未做显著性检验。

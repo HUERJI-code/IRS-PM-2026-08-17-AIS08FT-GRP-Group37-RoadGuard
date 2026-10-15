@@ -1,0 +1,605 @@
+{
+  "scenarios": {
+    "simulated/limited/10": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "55b98599d179a657506d9d3667e6b1c5c278bd45b539250ff9e9e2a0f7be0839",
+      "bks_objective": 594.1863495711376,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 601.1433545681527,
+        "gap_to_bks_percent": 1.170845644979298
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 8,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 2,
+        "reached_bks": 1,
+        "runtime_ms_mean": 120.88957999985723,
+        "gap_to_bks_percent": {
+          "mean": 0.684364270359194,
+          "max": 1.483800042918005,
+          "min": 0.0,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 112.06187999996473,
+        "gap_to_bks_percent": {
+          "mean": 0.42942314187149827,
+          "max": 0.9692310349018134,
+          "min": 0.1940956751133254,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 0.7328420538358855
+    },
+    "simulated/limited/15": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "3479649d352aaef4a973afd6214bd942df0dd49444bf5a92660e2b2149ad596a",
+      "bks_objective": 678.860087093125,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        2,
+        1
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          2,
+          1
+        ],
+        "objective": 688.948006382763,
+        "gap_to_bks_percent": 1.4860086019837135
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 282.73518000023614,
+        "gap_to_bks_percent": {
+          "mean": 0.4928493365926651,
+          "max": 0.7085655305434124,
+          "min": 0.3064540701656448,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 200.2076799995848,
+        "gap_to_bks_percent": {
+          "mean": 0.22621537831117572,
+          "max": 0.23482481348008205,
+          "min": 0.19177763763555047,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 1.2413467048579077
+    },
+    "simulated/limited/20": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "0d60d4d482822b59f87a7c051bad793e48a4058f7650aa690b7e09705dbc2f05",
+      "bks_objective": 659.8696411415144,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        6,
+        2
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          6,
+          2
+        ],
+        "objective": 688.1633941703574,
+        "gap_to_bks_percent": 4.287779171034045
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 286.2728600000992,
+        "gap_to_bks_percent": {
+          "mean": 0.7266812156383897,
+          "max": 1.2902124712622127,
+          "min": 0.22847515670535945,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 269.78606000011496,
+        "gap_to_bks_percent": {
+          "mean": 1.0734037316017198,
+          "max": 2.080851533900977,
+          "min": 0.4056306080716195,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 3.082216789908514
+    },
+    "simulated/unlimited/10": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "55b98599d179a657506d9d3667e6b1c5c278bd45b539250ff9e9e2a0f7be0839",
+      "bks_objective": 594.1863495711376,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 601.1433545681527,
+        "gap_to_bks_percent": 1.170845644979298
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 6,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 4,
+        "reached_bks": 0,
+        "runtime_ms_mean": 114.09209000012197,
+        "gap_to_bks_percent": {
+          "mean": 0.973985331732452,
+          "max": 1.7276570668678721,
+          "min": 0.1940956751133254,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 1,
+        "runtime_ms_mean": 104.59851999949024,
+        "gap_to_bks_percent": {
+          "mean": 0.3325000383813169,
+          "max": 0.3913630885874805,
+          "min": 0.0,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 0.8286434706099394
+    },
+    "simulated/unlimited/15": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "3479649d352aaef4a973afd6214bd942df0dd49444bf5a92660e2b2149ad596a",
+      "bks_objective": 759.5772939132858,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 774.9502834531505,
+        "gap_to_bks_percent": 2.0238874520148253
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 1,
+        "runtime_ms_mean": 149.99338000015996,
+        "gap_to_bks_percent": {
+          "mean": 0.874157696257585,
+          "max": 1.38765736125045,
+          "min": 0.0,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 147.3278900000878,
+        "gap_to_bks_percent": {
+          "mean": 0.7493630345121309,
+          "max": 0.7929396505304607,
+          "min": 0.35717349034716317,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 1.2492411819752949
+    },
+    "simulated/unlimited/20": {
+      "matrix_run": "simulated-shift480-v1",
+      "matrix_sha256": "0d60d4d482822b59f87a7c051bad793e48a4058f7650aa690b7e09705dbc2f05",
+      "bks_objective": 960.0384856629773,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 1001.0103340758702,
+        "gap_to_bks_percent": 4.267729786332348
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 247.60186999956204,
+        "gap_to_bks_percent": {
+          "mean": 2.4566861047982522,
+          "max": 4.1571274248015415,
+          "min": 1.5510271086980467,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 279.72755000082543,
+        "gap_to_bks_percent": {
+          "mean": 0.4971476420037729,
+          "max": 1.571838731012016,
+          "min": 0.0010595464515192226,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 3.616250350952621
+    },
+    "google_routes/limited/10": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "2cdb0e431d4cb6edd25face1151fcf03858ef5b8691aa8a5450a01e9b52be6e2",
+      "bks_objective": 580.5093778866626,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 592.6302905465212,
+        "gap_to_bks_percent": 2.0879787858009555
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 151.14936999962083,
+        "gap_to_bks_percent": {
+          "mean": 0.8938644438444652,
+          "max": 1.717806991129322,
+          "min": 0.23757025600320492,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 139.96474000086891,
+        "gap_to_bks_percent": {
+          "mean": 0.6696357520118543,
+          "max": 0.9256614700974848,
+          "min": 0.15078270128240676,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 1.3893340338974105
+    },
+    "google_routes/limited/15": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "b9bf12c24cb5262df81d281638aa4f98f65ef53f49cc76875e69f1e329aa48ab",
+      "bks_objective": 668.1982753065657,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        2,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          2,
+          0
+        ],
+        "objective": 682.8581268788789,
+        "gap_to_bks_percent": 2.1939373557328214
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 5,
+        "better_than_greedy": 5,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 5,
+        "reached_bks": 0,
+        "runtime_ms_mean": 223.79514999920502,
+        "gap_to_bks_percent": {
+          "mean": 0.8460965839664517,
+          "max": 1.298381010243547,
+          "min": 0.23950367101742517,
+          "runs": 5
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 1,
+        "runtime_ms_mean": 147.01573999918764,
+        "gap_to_bks_percent": {
+          "mean": 0.231468498564452,
+          "max": 0.32334228346484223,
+          "min": 0.0,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 1.9203378477698707
+    },
+    "google_routes/limited/20": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "4f3dee06d1b0cb5c1bc3762e37c72b28e675bdc287d8da3a0dedf5ee802003a4",
+      "bks_objective": 661.7273911669212,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        6,
+        2
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          6,
+          2
+        ],
+        "objective": 685.077096158795,
+        "gap_to_bks_percent": 3.528598831415743
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 341.1554599999363,
+        "gap_to_bks_percent": {
+          "mean": 0.9027544988529359,
+          "max": 1.2262206145509138,
+          "min": 0.16693230678948598,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 361.9080299999041,
+        "gap_to_bks_percent": {
+          "mean": 0.9277772681807719,
+          "max": 1.7712695147732267,
+          "min": 0.38422581883401985,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 2.5121769178679854
+    },
+    "google_routes/unlimited/10": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "2cdb0e431d4cb6edd25face1151fcf03858ef5b8691aa8a5450a01e9b52be6e2",
+      "bks_objective": 580.5093778866626,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 592.6302905465212,
+        "gap_to_bks_percent": 2.0879787858009555
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 145.9985300007247,
+        "gap_to_bks_percent": {
+          "mean": 1.0768599369029586,
+          "max": 1.5743140032926477,
+          "min": 0.402997802004447,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 137.02046999969753,
+        "gap_to_bks_percent": {
+          "mean": 0.5705374108763082,
+          "max": 0.9256614700974848,
+          "min": 0.14039192864826128,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 1.48640554252574
+    },
+    "google_routes/unlimited/15": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "b9bf12c24cb5262df81d281638aa4f98f65ef53f49cc76875e69f1e329aa48ab",
+      "bks_objective": 751.6236187100681,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 774.2785798451109,
+        "gap_to_bks_percent": 3.0141364069856103
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 9,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 1,
+        "reached_bks": 1,
+        "runtime_ms_mean": 208.3830499996111,
+        "gap_to_bks_percent": {
+          "mean": 2.087128321555768,
+          "max": 4.1623697306493845,
+          "min": 0.0,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 151.52688000016497,
+        "gap_to_bks_percent": {
+          "mean": 0.9374759291021093,
+          "max": 1.1387010903146335,
+          "min": 0.9151175778562732,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 2.0158985458841143
+    },
+    "google_routes/unlimited/20": {
+      "matrix_run": "google-shift480-v1",
+      "matrix_sha256": "4f3dee06d1b0cb5c1bc3762e37c72b28e675bdc287d8da3a0dedf5ee802003a4",
+      "bks_objective": 980.3966587544525,
+      "bks_unassigned_p1_p2_p3": [
+        0,
+        0,
+        0
+      ],
+      "greedy": {
+        "unassigned_p1_p2_p3": [
+          0,
+          0,
+          0
+        ],
+        "objective": 1030.3788936846256,
+        "gap_to_bks_percent": 5.098164552465245
+      },
+      "ga_pure": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 253.28835000000254,
+        "gap_to_bks_percent": {
+          "mean": 1.7691226179090322,
+          "max": 2.5499655101924374,
+          "min": 0.42187622567219635,
+          "runs": 10
+        }
+      },
+      "ga_seeded": {
+        "runs": 10,
+        "fewer_tasks_than_bks": 0,
+        "better_than_greedy": 10,
+        "equal_to_greedy": 0,
+        "worse_than_greedy": 0,
+        "reached_bks": 0,
+        "runtime_ms_mean": 214.9264999992738,
+        "gap_to_bks_percent": {
+          "mean": 1.8181329723705946,
+          "max": 2.6928192520478245,
+          "min": 0.7935453075479896,
+          "runs": 10
+        }
+      },
+      "ga_seeded_improvement_over_greedy_percent": 3.1209218486943713
+    }
+  },
+  "is_demo": true
+}

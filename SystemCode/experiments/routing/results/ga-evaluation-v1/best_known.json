@@ -1,0 +1,401 @@
+{
+  "simulated/limited/10": {
+    "found_by": "ga_pure",
+    "seed": 5,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 594.1863495711376,
+    "routes_task_ids": [
+      [
+        "fixture-task-009",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-004",
+        "fixture-task-003",
+        "fixture-task-005"
+      ],
+      [
+        "fixture-task-007",
+        "fixture-task-002",
+        "fixture-task-001"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-006"
+      ]
+    ]
+  },
+  "simulated/limited/15": {
+    "found_by": "long_run",
+    "seed": 112,
+    "unassigned_p1_p2_p3": [
+      0,
+      2,
+      1
+    ],
+    "objective": 678.860087093125,
+    "routes_task_ids": [
+      [
+        "fixture-task-010",
+        "fixture-task-009",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-015",
+        "fixture-task-011",
+        "fixture-task-014"
+      ],
+      [
+        "fixture-task-004",
+        "fixture-task-003",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-013",
+        "fixture-task-007",
+        "fixture-task-002"
+      ]
+    ]
+  },
+  "simulated/limited/20": {
+    "found_by": "long_run",
+    "seed": 112,
+    "unassigned_p1_p2_p3": [
+      0,
+      6,
+      2
+    ],
+    "objective": 659.8696411415144,
+    "routes_task_ids": [
+      [
+        "fixture-task-018",
+        "fixture-task-009",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-020",
+        "fixture-task-019",
+        "fixture-task-016"
+      ],
+      [
+        "fixture-task-017",
+        "fixture-task-013",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-015",
+        "fixture-task-011",
+        "fixture-task-014"
+      ]
+    ]
+  },
+  "simulated/unlimited/10": {
+    "found_by": "ga_seeded",
+    "seed": 6,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 594.1863495711376,
+    "routes_task_ids": [
+      [
+        "fixture-task-010",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-009",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-004",
+        "fixture-task-003",
+        "fixture-task-005"
+      ],
+      [
+        "fixture-task-007",
+        "fixture-task-002",
+        "fixture-task-001"
+      ]
+    ]
+  },
+  "simulated/unlimited/15": {
+    "found_by": "ga_pure",
+    "seed": 10,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 759.5772939132858,
+    "routes_task_ids": [
+      [
+        "fixture-task-013",
+        "fixture-task-005",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-004",
+        "fixture-task-003",
+        "fixture-task-009",
+        "fixture-task-014"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-012",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-015",
+        "fixture-task-007",
+        "fixture-task-001",
+        "fixture-task-002",
+        "fixture-task-011"
+      ]
+    ]
+  },
+  "simulated/unlimited/20": {
+    "found_by": "long_run",
+    "seed": 120,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 960.0384856629773,
+    "routes_task_ids": [
+      [
+        "fixture-task-019",
+        "fixture-task-015",
+        "fixture-task-013",
+        "fixture-task-018",
+        "fixture-task-016"
+      ],
+      [
+        "fixture-task-020",
+        "fixture-task-017",
+        "fixture-task-007",
+        "fixture-task-010",
+        "fixture-task-014"
+      ],
+      [
+        "fixture-task-009",
+        "fixture-task-005",
+        "fixture-task-003",
+        "fixture-task-004",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-011",
+        "fixture-task-012",
+        "fixture-task-002",
+        "fixture-task-001",
+        "fixture-task-008"
+      ]
+    ]
+  },
+  "google_routes/limited/10": {
+    "found_by": "long_run",
+    "seed": 119,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 580.5093778866626,
+    "routes_task_ids": [
+      [
+        "fixture-task-005",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-002",
+        "fixture-task-004",
+        "fixture-task-003"
+      ],
+      [
+        "fixture-task-009",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-007",
+        "fixture-task-001"
+      ]
+    ]
+  },
+  "google_routes/limited/15": {
+    "found_by": "ga_seeded",
+    "seed": 4,
+    "unassigned_p1_p2_p3": [
+      0,
+      2,
+      0
+    ],
+    "objective": 668.1982753065657,
+    "routes_task_ids": [
+      [
+        "fixture-task-012",
+        "fixture-task-009",
+        "fixture-task-014"
+      ],
+      [
+        "fixture-task-001",
+        "fixture-task-002",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-003",
+        "fixture-task-004",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-013",
+        "fixture-task-007",
+        "fixture-task-011"
+      ]
+    ]
+  },
+  "google_routes/limited/20": {
+    "found_by": "long_run",
+    "seed": 108,
+    "unassigned_p1_p2_p3": [
+      0,
+      6,
+      2
+    ],
+    "objective": 661.7273911669212,
+    "routes_task_ids": [
+      [
+        "fixture-task-020",
+        "fixture-task-019",
+        "fixture-task-014"
+      ],
+      [
+        "fixture-task-015",
+        "fixture-task-017",
+        "fixture-task-016"
+      ],
+      [
+        "fixture-task-001",
+        "fixture-task-002",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-011",
+        "fixture-task-006"
+      ]
+    ]
+  },
+  "google_routes/unlimited/10": {
+    "found_by": "long_run",
+    "seed": 117,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 580.5093778866626,
+    "routes_task_ids": [
+      [
+        "fixture-task-009",
+        "fixture-task-006"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-007",
+        "fixture-task-001"
+      ],
+      [
+        "fixture-task-005",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-002",
+        "fixture-task-004",
+        "fixture-task-003"
+      ]
+    ]
+  },
+  "google_routes/unlimited/15": {
+    "found_by": "ga_pure",
+    "seed": 5,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 751.6236187100681,
+    "routes_task_ids": [
+      [
+        "fixture-task-012",
+        "fixture-task-006",
+        "fixture-task-004"
+      ],
+      [
+        "fixture-task-010",
+        "fixture-task-013",
+        "fixture-task-015",
+        "fixture-task-007"
+      ],
+      [
+        "fixture-task-001",
+        "fixture-task-002",
+        "fixture-task-003",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-005",
+        "fixture-task-009",
+        "fixture-task-011",
+        "fixture-task-014"
+      ]
+    ]
+  },
+  "google_routes/unlimited/20": {
+    "found_by": "long_run",
+    "seed": 103,
+    "unassigned_p1_p2_p3": [
+      0,
+      0,
+      0
+    ],
+    "objective": 980.3966587544525,
+    "routes_task_ids": [
+      [
+        "fixture-task-013",
+        "fixture-task-011",
+        "fixture-task-014",
+        "fixture-task-016"
+      ],
+      [
+        "fixture-task-002",
+        "fixture-task-004",
+        "fixture-task-005",
+        "fixture-task-012",
+        "fixture-task-009",
+        "fixture-task-017"
+      ],
+      [
+        "fixture-task-019",
+        "fixture-task-018",
+        "fixture-task-006",
+        "fixture-task-008"
+      ],
+      [
+        "fixture-task-020",
+        "fixture-task-015",
+        "fixture-task-010",
+        "fixture-task-007",
+        "fixture-task-003",
+        "fixture-task-001"
+      ]
+    ]
+  }
+}
