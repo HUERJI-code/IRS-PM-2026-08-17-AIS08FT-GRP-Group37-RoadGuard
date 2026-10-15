@@ -101,3 +101,25 @@ def test_ga_with_default_parameters_keeps_every_p1_under_shift_limit(count):
     for seed in (1, 2):
         plan, _ = ga(planning_input, seed=seed, parameters=CONFIG.ga)
         assert_exact_cover(plan, planning_input.tasks)
+
+
+def test_greedy_seeding_fixes_the_diagnosed_tight_capacity_case():
+    """B6 Google run, 480-minute shift, 15 tasks: service time equals 4 x 480 minutes.
+
+    Pure GA seed 2 converges to a 12-task plan (one more P3 left out) than Greedy's 13.
+    The online setting (seed_with_greedy=true) must never schedule fewer or worse.
+    """
+    from pathlib import Path
+    from roadguard.routing.greedy import greedy_routes
+    from roadguard.routing.models import TravelMatrix
+
+    saved = (Path(__file__).resolve().parents[2]
+             / "SystemCode/experiments/routing/results/google-shift480-v1/matrix_15.json")
+    planning_input = make_input(15)
+    problem = RoutingProblem(planning_input, TravelMatrix.model_validate_json(saved.read_text(encoding="utf-8")))
+    greedy = problem.evaluate(greedy_routes(problem))
+    assert greedy.key[:3] == (0, 2, 0)
+    assert GeneticPlanner(problem, CONFIG.ga, 2).run().best.key[:3] == (0, 2, 1)
+    online = CONFIG.ga.model_copy(update={"seed_with_greedy": CONFIG.planning_service.seed_with_greedy})
+    for seed in range(1, 11):
+        assert GeneticPlanner(problem, online, seed).run().best.key <= greedy.key

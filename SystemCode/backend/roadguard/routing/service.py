@@ -109,9 +109,13 @@ class PlanningService:
         start = payload.planning_start_at or datetime.now(timezone.utc).replace(microsecond=0)
         planning_input = build_planning_input(snapshot, crews, self.depot, self.config.settings, start)
         matrix = self._travel_matrix(planning_input)
+        # The online GA may start from the Greedy solution (planning_service.seed_with_greedy);
+        # the plan's algorithm_parameters record which setting produced it.
+        online_ga = self.config.ga.model_copy(
+            update={"seed_with_greedy": self.config.planning_service.seed_with_greedy})
         plans = [
             plan_routes(planning_input, matrix, "greedy", plan_id=f"plan-{uuid.uuid4().hex}")[0],
-            plan_routes(planning_input, matrix, "ga", ga_parameters=self.config.ga,
+            plan_routes(planning_input, matrix, "ga", ga_parameters=online_ga,
                         random_seed=self.config.planning_service.ga_seed, plan_id=f"plan-{uuid.uuid4().hex}")[0],
         ]
         created_at = datetime.now(timezone.utc).isoformat()
