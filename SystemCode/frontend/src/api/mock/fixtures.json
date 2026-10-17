@@ -1,0 +1,1206 @@
+{
+  "normal": {
+    "/health": {
+      "input_revision": 1,
+      "status": "ok",
+      "database": "ok",
+      "api_version": "v1"
+    },
+    "/inspections": {
+      "items": [
+        {
+          "inspection_id": "fc4b7aaf832244dc870491127bfcb605",
+          "image_url": "/api/v1/inspections/fc4b7aaf832244dc870491127bfcb605/image",
+          "annotated_image_url": null,
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "detections": [
+            {
+              "detection_id": "demo-high_confidence-01",
+              "class_id": 6,
+              "label": "pothole",
+              "confidence": 0.96,
+              "bbox_xyxy": [
+                120.0,
+                90.0,
+                340.0,
+                260.0
+              ],
+              "image_width": 640,
+              "image_height": 480,
+              "model_version": "demo-detector-v1",
+              "is_demo": true
+            }
+          ],
+          "selected_detection_id": "demo-high_confidence-01",
+          "status": "accepted",
+          "task_id": "3f269127fb73444cabcb8be083771c35",
+          "decision_trace": [
+            {
+              "code": "demo_assumptions",
+              "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "confidence_gate_passed",
+              "message": "All confidences meet or exceed the demo threshold 0.6.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "rule_mapping",
+              "message": "demo-high_confidence-01 (pothole): Project demonstration assumes medium severity, P2 and 120 minutes; not a measured engineering assessment.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "candidate_selected",
+              "message": "Choose one demo candidate by P1/P2/P3 priority, high/medium/low severity, longest known service time (unknown last), highest confidence, then ascending detection_id. This assessment does not create or accept a task.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "demo_task_created",
+              "message": "The eligible candidate was accepted and a single demo business task was created after declared-road and Jurong boundary validation. No route plan was calculated.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            }
+          ],
+          "is_demo": true,
+          "created_at": "2026-10-15T15:12:22.751318Z",
+          "updated_at": "2026-10-15T15:12:22.751318Z",
+          "record_version": 1,
+          "mode": "demo",
+          "demo_scenario_id": "high_confidence",
+          "model_version": "demo-detector-v1",
+          "model_weights_sha256": null,
+          "model_manifest_version": null,
+          "primary_suggestion": null,
+          "auto_acceptance": null,
+          "image_width": 640,
+          "image_height": 480,
+          "scope_version": "jurong-je-jw-mp2025-v1",
+          "road_type": "public_motor_road",
+          "road_type_source": "user_declared",
+          "review_history": []
+        },
+        {
+          "inspection_id": "6ed75111a813424a9045c14691a9f13d",
+          "image_url": "/api/v1/inspections/6ed75111a813424a9045c14691a9f13d/image",
+          "annotated_image_url": null,
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "detections": [
+            {
+              "detection_id": "demo-low_confidence-01",
+              "class_id": 6,
+              "label": "pothole",
+              "confidence": 0.42,
+              "bbox_xyxy": [
+                120.0,
+                90.0,
+                340.0,
+                260.0
+              ],
+              "image_width": 640,
+              "image_height": 480,
+              "model_version": "demo-detector-v1",
+              "is_demo": true
+            }
+          ],
+          "selected_detection_id": null,
+          "status": "pending_review",
+          "task_id": null,
+          "decision_trace": [
+            {
+              "code": "demo_assumptions",
+              "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "confidence_review_required",
+              "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            }
+          ],
+          "is_demo": true,
+          "created_at": "2026-10-15T15:12:22.758079Z",
+          "updated_at": "2026-10-15T15:12:22.758079Z",
+          "record_version": 1,
+          "mode": "demo",
+          "demo_scenario_id": "low_confidence",
+          "model_version": "demo-detector-v1",
+          "model_weights_sha256": null,
+          "model_manifest_version": null,
+          "primary_suggestion": null,
+          "auto_acceptance": null,
+          "image_width": 640,
+          "image_height": 480,
+          "scope_version": "jurong-je-jw-mp2025-v1",
+          "road_type": "public_motor_road",
+          "road_type_source": "user_declared",
+          "review_history": []
+        },
+        {
+          "inspection_id": "da8883288a114d209937d2dd16f8f235",
+          "image_url": "/api/v1/inspections/da8883288a114d209937d2dd16f8f235/image",
+          "annotated_image_url": null,
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "detections": [],
+          "selected_detection_id": null,
+          "status": "no_detection",
+          "task_id": null,
+          "decision_trace": [
+            {
+              "code": "demo_assumptions",
+              "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            },
+            {
+              "code": "no_detection",
+              "message": "No detections; no task candidate is produced.",
+              "rule_version": "demo-rules-v2",
+              "is_demo": true
+            }
+          ],
+          "is_demo": true,
+          "created_at": "2026-10-15T15:12:22.763395Z",
+          "updated_at": "2026-10-15T15:12:22.763395Z",
+          "record_version": 1,
+          "mode": "demo",
+          "demo_scenario_id": "no_detection",
+          "model_version": "demo-detector-v1",
+          "model_weights_sha256": null,
+          "model_manifest_version": null,
+          "primary_suggestion": null,
+          "auto_acceptance": null,
+          "image_width": 640,
+          "image_height": 480,
+          "scope_version": "jurong-je-jw-mp2025-v1",
+          "road_type": "public_motor_road",
+          "road_type_source": "user_declared",
+          "review_history": []
+        }
+      ],
+      "total": 3,
+      "limit": 50,
+      "offset": 0
+    },
+    "/tasks": {
+      "items": [
+        {
+          "task_id": "3f269127fb73444cabcb8be083771c35",
+          "inspection_id": "fc4b7aaf832244dc870491127bfcb605",
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "damage_label": "pothole",
+          "severity": "medium",
+          "priority": "P2",
+          "service_minutes": 120.0,
+          "created_at": "2026-10-15T15:12:22.751318Z",
+          "due_at": null,
+          "status": "active",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true,
+          "updated_at": "2026-10-15T15:12:22.751318Z",
+          "record_version": 1,
+          "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+          "history": [
+            {
+              "request_id": "fixture_0",
+              "action": "created",
+              "recorded_at": "2026-10-15T15:12:22.751318Z",
+              "changed_fields": [
+                "status",
+                "latitude",
+                "longitude",
+                "damage_label",
+                "severity",
+                "priority",
+                "service_minutes",
+                "rule_version"
+              ],
+              "before": null,
+              "after": {
+                "status": "active",
+                "latitude": 1.3405,
+                "longitude": 103.706,
+                "damage_label": "pothole",
+                "severity": "medium",
+                "priority": "P2",
+                "service_minutes": 120.0,
+                "rule_version": "demo-rules-v2"
+              },
+              "actor_source": "system_demo_rules"
+            }
+          ]
+        }
+      ],
+      "total": 1,
+      "limit": 50,
+      "offset": 0,
+      "input_revision": 1
+    },
+    "/tasks/snapshot": {
+      "contract_version": "a-task-query-v1",
+      "source": "persisted_workflow",
+      "input_revision": 1,
+      "tasks": [
+        {
+          "task_id": "3f269127fb73444cabcb8be083771c35",
+          "inspection_id": "fc4b7aaf832244dc870491127bfcb605",
+          "latitude": 1.3405,
+          "longitude": 103.706,
+          "damage_label": "pothole",
+          "severity": "medium",
+          "priority": "P2",
+          "service_minutes": 120.0,
+          "created_at": "2026-10-15T15:12:22.751318Z",
+          "due_at": null,
+          "status": "active",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "total": 1,
+      "is_demo": true
+    },
+    "/crews": {
+      "contract_version": "b-crew-v1",
+      "crews": [
+        {
+          "crew_id": "crew-01",
+          "name": "Crew 01",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-02",
+          "name": "Crew 02",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-03",
+          "name": "Crew 03",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-04",
+          "name": "Crew 04",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        }
+      ],
+      "input_revision": 1
+    },
+    "/demo/scenarios": {
+      "is_demo": true,
+      "model_version": "demo-detector-v1",
+      "image_width": 640,
+      "image_height": 480,
+      "scenarios": [
+        {
+          "scenario_id": "high_confidence",
+          "description": "演示：单个高置信度坑洞；固定合成结果，不读取图片。"
+        },
+        {
+          "scenario_id": "low_confidence",
+          "description": "演示：单个低置信度坑洞，供人工复核分流测试。"
+        },
+        {
+          "scenario_id": "no_detection",
+          "description": "演示：没有检测结果，不代表实际图片未发现损坏。"
+        },
+        {
+          "scenario_id": "multiple_detections",
+          "description": "演示：纵向裂缝 0.98 与深坑洞 0.90，用于验证业务选取不只看最高置信度。"
+        },
+        {
+          "scenario_id": "mixed_confidence",
+          "description": "演示：高置信度坑洞与低置信度深坑洞，供整次巡检待复核测试。"
+        },
+        {
+          "scenario_id": "threshold_boundary",
+          "description": "演示：置信度恰好为演示阈值候选 0.60；该值不是正式批准阈值。"
+        },
+        {
+          "scenario_id": "below_threshold",
+          "description": "演示：置信度 0.5999，供演示阈值候选 0.60 下方的边界测试。"
+        }
+      ]
+    },
+    "/route-plans/plan-5041c72622e244df956765c107c59e59": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-5041c72622e244df956765c107c59e59",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "greedy",
+      "planning_start_at": "2026-10-15T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "3f269127fb73444cabcb8be083771c35",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 0.06791704799979925
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": null,
+      "algorithm_parameters": {
+        "rule": "earliest_free_crew_highest_priority_then_nearest"
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "/route-plans/latest?algorithm=greedy": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-5041c72622e244df956765c107c59e59",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "greedy",
+      "planning_start_at": "2026-10-15T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "3f269127fb73444cabcb8be083771c35",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 0.06791704799979925
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": null,
+      "algorithm_parameters": {
+        "rule": "earliest_free_crew_highest_priority_then_nearest"
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "/route-plans/plan-583e82dbd4984db9a6a3c63219e77f69": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-583e82dbd4984db9a6a3c63219e77f69",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "ga",
+      "planning_start_at": "2026-10-15T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "3f269127fb73444cabcb8be083771c35",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 18.56004196451977
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": 1,
+      "algorithm_parameters": {
+        "population_size": 60,
+        "max_generations": 300,
+        "patience_generations": 80,
+        "crossover_rate": 0.9,
+        "mutation_rate": 0.3,
+        "tournament_size": 3,
+        "elite_count": 2,
+        "seed_with_greedy": true,
+        "generations_run": 80,
+        "unique_evaluations": 4
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "/route-plans/latest?algorithm=ga": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-583e82dbd4984db9a6a3c63219e77f69",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "ga",
+      "planning_start_at": "2026-10-15T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "3f269127fb73444cabcb8be083771c35",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 18.56004196451977
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": 1,
+      "algorithm_parameters": {
+        "population_size": 60,
+        "max_generations": 300,
+        "patience_generations": 80,
+        "crossover_rate": 0.9,
+        "mutation_rate": 0.3,
+        "tournament_size": 3,
+        "elite_count": 2,
+        "seed_with_greedy": true,
+        "generations_run": 80,
+        "unique_evaluations": 4
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "/inspections/fc4b7aaf832244dc870491127bfcb605": {
+      "inspection_id": "fc4b7aaf832244dc870491127bfcb605",
+      "image_url": "/api/v1/inspections/fc4b7aaf832244dc870491127bfcb605/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [
+        {
+          "detection_id": "demo-high_confidence-01",
+          "class_id": 6,
+          "label": "pothole",
+          "confidence": 0.96,
+          "bbox_xyxy": [
+            120.0,
+            90.0,
+            340.0,
+            260.0
+          ],
+          "image_width": 640,
+          "image_height": 480,
+          "model_version": "demo-detector-v1",
+          "is_demo": true
+        }
+      ],
+      "selected_detection_id": "demo-high_confidence-01",
+      "status": "accepted",
+      "task_id": "3f269127fb73444cabcb8be083771c35",
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "confidence_gate_passed",
+          "message": "All confidences meet or exceed the demo threshold 0.6.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "rule_mapping",
+          "message": "demo-high_confidence-01 (pothole): Project demonstration assumes medium severity, P2 and 120 minutes; not a measured engineering assessment.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "candidate_selected",
+          "message": "Choose one demo candidate by P1/P2/P3 priority, high/medium/low severity, longest known service time (unknown last), highest confidence, then ascending detection_id. This assessment does not create or accept a task.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "demo_task_created",
+          "message": "The eligible candidate was accepted and a single demo business task was created after declared-road and Jurong boundary validation. No route plan was calculated.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-15T15:12:22.751318Z",
+      "updated_at": "2026-10-15T15:12:22.751318Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "high_confidence",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "/inspections/6ed75111a813424a9045c14691a9f13d": {
+      "inspection_id": "6ed75111a813424a9045c14691a9f13d",
+      "image_url": "/api/v1/inspections/6ed75111a813424a9045c14691a9f13d/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [
+        {
+          "detection_id": "demo-low_confidence-01",
+          "class_id": 6,
+          "label": "pothole",
+          "confidence": 0.42,
+          "bbox_xyxy": [
+            120.0,
+            90.0,
+            340.0,
+            260.0
+          ],
+          "image_width": 640,
+          "image_height": 480,
+          "model_version": "demo-detector-v1",
+          "is_demo": true
+        }
+      ],
+      "selected_detection_id": null,
+      "status": "pending_review",
+      "task_id": null,
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "confidence_review_required",
+          "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-15T15:12:22.758079Z",
+      "updated_at": "2026-10-15T15:12:22.758079Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "low_confidence",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "/inspections/da8883288a114d209937d2dd16f8f235": {
+      "inspection_id": "da8883288a114d209937d2dd16f8f235",
+      "image_url": "/api/v1/inspections/da8883288a114d209937d2dd16f8f235/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [],
+      "selected_detection_id": null,
+      "status": "no_detection",
+      "task_id": null,
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "no_detection",
+          "message": "No detections; no task candidate is produced.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-15T15:12:22.763395Z",
+      "updated_at": "2026-10-15T15:12:22.763395Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "no_detection",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "/tasks/3f269127fb73444cabcb8be083771c35": {
+      "task_id": "3f269127fb73444cabcb8be083771c35",
+      "inspection_id": "fc4b7aaf832244dc870491127bfcb605",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-15T15:12:22.751318Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-15T15:12:22.751318Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "fixture_0",
+          "action": "created",
+          "recorded_at": "2026-10-15T15:12:22.751318Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    }
+  },
+  "empty": {
+    "/health": {
+      "input_revision": 0,
+      "status": "ok",
+      "database": "ok",
+      "api_version": "v1"
+    },
+    "/inspections": {
+      "items": [],
+      "total": 0,
+      "limit": 50,
+      "offset": 0
+    },
+    "/tasks": {
+      "items": [],
+      "total": 0,
+      "limit": 50,
+      "offset": 0,
+      "input_revision": 0
+    },
+    "/tasks/snapshot": {
+      "contract_version": "a-task-query-v1",
+      "source": "persisted_workflow",
+      "input_revision": 0,
+      "tasks": [],
+      "total": 0,
+      "is_demo": true
+    },
+    "/crews": {
+      "contract_version": "b-crew-v1",
+      "crews": [
+        {
+          "crew_id": "crew-01",
+          "name": "Crew 01",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-02",
+          "name": "Crew 02",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-03",
+          "name": "Crew 03",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        },
+        {
+          "crew_id": "crew-04",
+          "name": "Crew 04",
+          "available": true,
+          "depot_id": "depot-nus-iss",
+          "record_version": 1,
+          "updated_at": null
+        }
+      ],
+      "input_revision": 0
+    },
+    "/demo/scenarios": {
+      "is_demo": true,
+      "model_version": "demo-detector-v1",
+      "image_width": 640,
+      "image_height": 480,
+      "scenarios": [
+        {
+          "scenario_id": "high_confidence",
+          "description": "演示：单个高置信度坑洞；固定合成结果，不读取图片。"
+        },
+        {
+          "scenario_id": "low_confidence",
+          "description": "演示：单个低置信度坑洞，供人工复核分流测试。"
+        },
+        {
+          "scenario_id": "no_detection",
+          "description": "演示：没有检测结果，不代表实际图片未发现损坏。"
+        },
+        {
+          "scenario_id": "multiple_detections",
+          "description": "演示：纵向裂缝 0.98 与深坑洞 0.90，用于验证业务选取不只看最高置信度。"
+        },
+        {
+          "scenario_id": "mixed_confidence",
+          "description": "演示：高置信度坑洞与低置信度深坑洞，供整次巡检待复核测试。"
+        },
+        {
+          "scenario_id": "threshold_boundary",
+          "description": "演示：置信度恰好为演示阈值候选 0.60；该值不是正式批准阈值。"
+        },
+        {
+          "scenario_id": "below_threshold",
+          "description": "演示：置信度 0.5999，供演示阈值候选 0.60 下方的边界测试。"
+        }
+      ]
+    }
+  }
+}

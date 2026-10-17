@@ -1,0 +1,888 @@
+{
+  "confirm": {
+    "before": {
+      "inspection_id": "d66636faec944050b4c2913b0defc6ae",
+      "image_url": "/api/v1/inspections/d66636faec944050b4c2913b0defc6ae/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [
+        {
+          "detection_id": "demo-low_confidence-01",
+          "class_id": 6,
+          "label": "pothole",
+          "confidence": 0.42,
+          "bbox_xyxy": [
+            120.0,
+            90.0,
+            340.0,
+            260.0
+          ],
+          "image_width": 640,
+          "image_height": 480,
+          "model_version": "demo-detector-v1",
+          "is_demo": true
+        }
+      ],
+      "selected_detection_id": null,
+      "status": "pending_review",
+      "task_id": null,
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "confidence_review_required",
+          "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-16T06:45:45.407926Z",
+      "updated_at": "2026-10-16T06:45:45.407926Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "low_confidence",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "request": {
+      "request_id": "review_confirm",
+      "expected_version": 1,
+      "action": "confirm",
+      "note": "Synthetic review test.",
+      "detection_id": "demo-low_confidence-01"
+    },
+    "response": {
+      "inspection": {
+        "inspection_id": "d66636faec944050b4c2913b0defc6ae",
+        "image_url": "/api/v1/inspections/d66636faec944050b4c2913b0defc6ae/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": "demo-low_confidence-01",
+        "status": "accepted",
+        "task_id": "6ac07f41027744f7962ad8b86848bfef",
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "reviewed_rule_mapping",
+            "message": "User-declared review (identity is unverified). Project demonstration assumes medium severity, P2 and 120 minutes; not a measured engineering assessment.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.407926Z",
+        "updated_at": "2026-10-16T06:45:45.410918Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_confirm",
+            "action": "confirm",
+            "recorded_at": "2026-10-16T06:45:45.410918Z",
+            "detection_id": "demo-low_confidence-01",
+            "original_damage_label": "pothole",
+            "corrected_damage_label": null,
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": {
+        "task_id": "6ac07f41027744f7962ad8b86848bfef",
+        "inspection_id": "d66636faec944050b4c2913b0defc6ae",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:45:45.410918Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:45:45.410918Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "review_confirm",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:45:45.410918Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 1,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "inspection": {
+        "inspection_id": "d66636faec944050b4c2913b0defc6ae",
+        "image_url": "/api/v1/inspections/d66636faec944050b4c2913b0defc6ae/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": "demo-low_confidence-01",
+        "status": "accepted",
+        "task_id": "6ac07f41027744f7962ad8b86848bfef",
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "reviewed_rule_mapping",
+            "message": "User-declared review (identity is unverified). Project demonstration assumes medium severity, P2 and 120 minutes; not a measured engineering assessment.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.407926Z",
+        "updated_at": "2026-10-16T06:45:45.410918Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_confirm",
+            "action": "confirm",
+            "recorded_at": "2026-10-16T06:45:45.410918Z",
+            "detection_id": "demo-low_confidence-01",
+            "original_damage_label": "pothole",
+            "corrected_damage_label": null,
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": {
+        "task_id": "6ac07f41027744f7962ad8b86848bfef",
+        "inspection_id": "d66636faec944050b4c2913b0defc6ae",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:45:45.410918Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:45:45.410918Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "review_confirm",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:45:45.410918Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 1,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "correct": {
+    "before": {
+      "inspection_id": "4e6433b372404bb5bca63df6b2e52b8f",
+      "image_url": "/api/v1/inspections/4e6433b372404bb5bca63df6b2e52b8f/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [
+        {
+          "detection_id": "demo-low_confidence-01",
+          "class_id": 6,
+          "label": "pothole",
+          "confidence": 0.42,
+          "bbox_xyxy": [
+            120.0,
+            90.0,
+            340.0,
+            260.0
+          ],
+          "image_width": 640,
+          "image_height": 480,
+          "model_version": "demo-detector-v1",
+          "is_demo": true
+        }
+      ],
+      "selected_detection_id": null,
+      "status": "pending_review",
+      "task_id": null,
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "confidence_review_required",
+          "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-16T06:45:45.414747Z",
+      "updated_at": "2026-10-16T06:45:45.414747Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "low_confidence",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "request": {
+      "request_id": "review_correct",
+      "expected_version": 1,
+      "action": "correct",
+      "note": "Synthetic review test.",
+      "detection_id": "demo-low_confidence-01",
+      "damage_label": "pothole_deep"
+    },
+    "response": {
+      "inspection": {
+        "inspection_id": "4e6433b372404bb5bca63df6b2e52b8f",
+        "image_url": "/api/v1/inspections/4e6433b372404bb5bca63df6b2e52b8f/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": "demo-low_confidence-01",
+        "status": "accepted",
+        "task_id": "1fb6f3ce15cf4a60b14ff63995e71082",
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "reviewed_rule_mapping",
+            "message": "User-declared review (identity is unverified). Project demonstration assumes high severity, P1 and 240 minutes; visual label is not a measured depth.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.414747Z",
+        "updated_at": "2026-10-16T06:45:45.417165Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_correct",
+            "action": "correct",
+            "recorded_at": "2026-10-16T06:45:45.417165Z",
+            "detection_id": "demo-low_confidence-01",
+            "original_damage_label": "pothole",
+            "corrected_damage_label": "pothole_deep",
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": {
+        "task_id": "1fb6f3ce15cf4a60b14ff63995e71082",
+        "inspection_id": "4e6433b372404bb5bca63df6b2e52b8f",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole_deep",
+        "severity": "high",
+        "priority": "P1",
+        "service_minutes": 240.0,
+        "created_at": "2026-10-16T06:45:45.417165Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:45:45.417165Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "review_correct",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:45:45.417165Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole_deep",
+              "severity": "high",
+              "priority": "P1",
+              "service_minutes": 240.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 2,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "inspection": {
+        "inspection_id": "4e6433b372404bb5bca63df6b2e52b8f",
+        "image_url": "/api/v1/inspections/4e6433b372404bb5bca63df6b2e52b8f/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": "demo-low_confidence-01",
+        "status": "accepted",
+        "task_id": "1fb6f3ce15cf4a60b14ff63995e71082",
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "reviewed_rule_mapping",
+            "message": "User-declared review (identity is unverified). Project demonstration assumes high severity, P1 and 240 minutes; visual label is not a measured depth.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.414747Z",
+        "updated_at": "2026-10-16T06:45:45.417165Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_correct",
+            "action": "correct",
+            "recorded_at": "2026-10-16T06:45:45.417165Z",
+            "detection_id": "demo-low_confidence-01",
+            "original_damage_label": "pothole",
+            "corrected_damage_label": "pothole_deep",
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": {
+        "task_id": "1fb6f3ce15cf4a60b14ff63995e71082",
+        "inspection_id": "4e6433b372404bb5bca63df6b2e52b8f",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole_deep",
+        "severity": "high",
+        "priority": "P1",
+        "service_minutes": 240.0,
+        "created_at": "2026-10-16T06:45:45.417165Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:45:45.417165Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "review_correct",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:45:45.417165Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole_deep",
+              "severity": "high",
+              "priority": "P1",
+              "service_minutes": 240.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 2,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "dismiss": {
+    "before": {
+      "inspection_id": "3d54d600d9ef4fbf8985ab1ae45ae20a",
+      "image_url": "/api/v1/inspections/3d54d600d9ef4fbf8985ab1ae45ae20a/image",
+      "annotated_image_url": null,
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "detections": [
+        {
+          "detection_id": "demo-low_confidence-01",
+          "class_id": 6,
+          "label": "pothole",
+          "confidence": 0.42,
+          "bbox_xyxy": [
+            120.0,
+            90.0,
+            340.0,
+            260.0
+          ],
+          "image_width": 640,
+          "image_height": 480,
+          "model_version": "demo-detector-v1",
+          "is_demo": true
+        }
+      ],
+      "selected_detection_id": null,
+      "status": "pending_review",
+      "task_id": null,
+      "decision_trace": [
+        {
+          "code": "demo_assumptions",
+          "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        },
+        {
+          "code": "confidence_review_required",
+          "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+          "rule_version": "demo-rules-v2",
+          "is_demo": true
+        }
+      ],
+      "is_demo": true,
+      "created_at": "2026-10-16T06:45:45.420897Z",
+      "updated_at": "2026-10-16T06:45:45.420897Z",
+      "record_version": 1,
+      "mode": "demo",
+      "demo_scenario_id": "low_confidence",
+      "model_version": "demo-detector-v1",
+      "model_weights_sha256": null,
+      "model_manifest_version": null,
+      "primary_suggestion": null,
+      "auto_acceptance": null,
+      "image_width": 640,
+      "image_height": 480,
+      "scope_version": "jurong-je-jw-mp2025-v1",
+      "road_type": "public_motor_road",
+      "road_type_source": "user_declared",
+      "review_history": []
+    },
+    "request": {
+      "request_id": "review_dismiss",
+      "expected_version": 1,
+      "action": "dismiss",
+      "note": "Synthetic review test."
+    },
+    "response": {
+      "inspection": {
+        "inspection_id": "3d54d600d9ef4fbf8985ab1ae45ae20a",
+        "image_url": "/api/v1/inspections/3d54d600d9ef4fbf8985ab1ae45ae20a/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": null,
+        "status": "rejected",
+        "task_id": null,
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "review_dismissed",
+            "message": "User-declared review (identity is unverified). No task is created after the declared dismissal.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.420897Z",
+        "updated_at": "2026-10-16T06:45:45.423118Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_dismiss",
+            "action": "dismiss",
+            "recorded_at": "2026-10-16T06:45:45.423118Z",
+            "detection_id": null,
+            "original_damage_label": null,
+            "corrected_damage_label": null,
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": null,
+      "input_revision": 2,
+      "planning_input_changed": false,
+      "replayed": false
+    },
+    "replay": {
+      "inspection": {
+        "inspection_id": "3d54d600d9ef4fbf8985ab1ae45ae20a",
+        "image_url": "/api/v1/inspections/3d54d600d9ef4fbf8985ab1ae45ae20a/image",
+        "annotated_image_url": null,
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "detections": [
+          {
+            "detection_id": "demo-low_confidence-01",
+            "class_id": 6,
+            "label": "pothole",
+            "confidence": 0.42,
+            "bbox_xyxy": [
+              120.0,
+              90.0,
+              340.0,
+              260.0
+            ],
+            "image_width": 640,
+            "image_height": 480,
+            "model_version": "demo-detector-v1",
+            "is_demo": true
+          }
+        ],
+        "selected_detection_id": null,
+        "status": "rejected",
+        "task_id": null,
+        "decision_trace": [
+          {
+            "code": "demo_assumptions",
+            "message": "Demo-only project assumptions: confidence threshold, severity, priority and service time are not engineering measurements or validated production rules.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "confidence_review_required",
+            "message": "At least one confidence is below the demo threshold 0.6; all detections remain available for review and no candidate is produced.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          },
+          {
+            "code": "review_dismissed",
+            "message": "User-declared review (identity is unverified). No task is created after the declared dismissal.",
+            "rule_version": "demo-rules-v2",
+            "is_demo": true
+          }
+        ],
+        "is_demo": true,
+        "created_at": "2026-10-16T06:45:45.420897Z",
+        "updated_at": "2026-10-16T06:45:45.423118Z",
+        "record_version": 2,
+        "mode": "demo",
+        "demo_scenario_id": "low_confidence",
+        "model_version": "demo-detector-v1",
+        "model_weights_sha256": null,
+        "model_manifest_version": null,
+        "primary_suggestion": null,
+        "auto_acceptance": null,
+        "image_width": 640,
+        "image_height": 480,
+        "scope_version": "jurong-je-jw-mp2025-v1",
+        "road_type": "public_motor_road",
+        "road_type_source": "user_declared",
+        "review_history": [
+          {
+            "request_id": "review_dismiss",
+            "action": "dismiss",
+            "recorded_at": "2026-10-16T06:45:45.423118Z",
+            "detection_id": null,
+            "original_damage_label": null,
+            "corrected_damage_label": null,
+            "note": "Synthetic review test.",
+            "rule_version": "demo-rules-v2",
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "task": null,
+      "input_revision": 2,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  }
+}
