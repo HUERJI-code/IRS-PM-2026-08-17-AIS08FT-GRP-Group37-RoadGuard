@@ -1,0 +1,1032 @@
+{
+  "completed": {
+    "before": {
+      "task_id": "5cd864e81ba44b3091ecaa000b1237c2",
+      "inspection_id": "bb40e23a9e3b451a8039559ad51fc6dc",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-16T06:56:08.674581Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-16T06:56:08.674581Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "upload_completed",
+          "action": "created",
+          "recorded_at": "2026-10-16T06:56:08.674581Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    },
+    "request": {
+      "request_id": "task_completed",
+      "expected_version": 1,
+      "status": "completed"
+    },
+    "response": {
+      "task": {
+        "task_id": "5cd864e81ba44b3091ecaa000b1237c2",
+        "inspection_id": "bb40e23a9e3b451a8039559ad51fc6dc",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.674581Z",
+        "due_at": null,
+        "status": "completed",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.678425Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_completed",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.674581Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_completed",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.678425Z",
+            "changed_fields": [
+              "status"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "completed",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 2,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "task": {
+        "task_id": "5cd864e81ba44b3091ecaa000b1237c2",
+        "inspection_id": "bb40e23a9e3b451a8039559ad51fc6dc",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.674581Z",
+        "due_at": null,
+        "status": "completed",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.678425Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_completed",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.674581Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_completed",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.678425Z",
+            "changed_fields": [
+              "status"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "completed",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 2,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "cancelled": {
+    "before": {
+      "task_id": "b6c55cb16f024baeb88cb02db2d80041",
+      "inspection_id": "db4a1c48bfe94799839bbf2192d40477",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-16T06:56:08.683055Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-16T06:56:08.683055Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "upload_cancelled",
+          "action": "created",
+          "recorded_at": "2026-10-16T06:56:08.683055Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    },
+    "request": {
+      "request_id": "task_cancelled",
+      "expected_version": 1,
+      "status": "cancelled"
+    },
+    "response": {
+      "task": {
+        "task_id": "b6c55cb16f024baeb88cb02db2d80041",
+        "inspection_id": "db4a1c48bfe94799839bbf2192d40477",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.683055Z",
+        "due_at": null,
+        "status": "cancelled",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.686183Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_cancelled",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.683055Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_cancelled",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.686183Z",
+            "changed_fields": [
+              "status"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "cancelled",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 4,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "task": {
+        "task_id": "b6c55cb16f024baeb88cb02db2d80041",
+        "inspection_id": "db4a1c48bfe94799839bbf2192d40477",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.683055Z",
+        "due_at": null,
+        "status": "cancelled",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.686183Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_cancelled",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.683055Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_cancelled",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.686183Z",
+            "changed_fields": [
+              "status"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "cancelled",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 4,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "label": {
+    "before": {
+      "task_id": "a388203a9005459aadaed8248d5276db",
+      "inspection_id": "7a5af9f6696c40c29fc66df05f653b1e",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-16T06:56:08.690735Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-16T06:56:08.690735Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "upload_label",
+          "action": "created",
+          "recorded_at": "2026-10-16T06:56:08.690735Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    },
+    "request": {
+      "request_id": "task_label",
+      "expected_version": 1,
+      "damage_label": "pothole_deep"
+    },
+    "response": {
+      "task": {
+        "task_id": "a388203a9005459aadaed8248d5276db",
+        "inspection_id": "7a5af9f6696c40c29fc66df05f653b1e",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole_deep",
+        "severity": "high",
+        "priority": "P1",
+        "service_minutes": 240.0,
+        "created_at": "2026-10-16T06:56:08.690735Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.693575Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_label",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.690735Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_label",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.693575Z",
+            "changed_fields": [
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole_deep",
+              "severity": "high",
+              "priority": "P1",
+              "service_minutes": 240.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 6,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "task": {
+        "task_id": "a388203a9005459aadaed8248d5276db",
+        "inspection_id": "7a5af9f6696c40c29fc66df05f653b1e",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole_deep",
+        "severity": "high",
+        "priority": "P1",
+        "service_minutes": 240.0,
+        "created_at": "2026-10-16T06:56:08.690735Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.693575Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_label",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.690735Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_label",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.693575Z",
+            "changed_fields": [
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole_deep",
+              "severity": "high",
+              "priority": "P1",
+              "service_minutes": 240.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 6,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "location": {
+    "before": {
+      "task_id": "beed937668e8456daebaf80883b73a9d",
+      "inspection_id": "f4a8b4cc46a244c688f05362c34529b8",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-16T06:56:08.696973Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-16T06:56:08.696973Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "upload_location",
+          "action": "created",
+          "recorded_at": "2026-10-16T06:56:08.696973Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    },
+    "request": {
+      "request_id": "task_location",
+      "expected_version": 1,
+      "latitude": 1.3406,
+      "longitude": 103.706,
+      "road_type": "public_motor_road"
+    },
+    "response": {
+      "task": {
+        "task_id": "beed937668e8456daebaf80883b73a9d",
+        "inspection_id": "f4a8b4cc46a244c688f05362c34529b8",
+        "latitude": 1.3406,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.696973Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.699879Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_location",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.696973Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_location",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.699879Z",
+            "changed_fields": [
+              "latitude"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "active",
+              "latitude": 1.3406,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 8,
+      "planning_input_changed": true,
+      "replayed": false
+    },
+    "replay": {
+      "task": {
+        "task_id": "beed937668e8456daebaf80883b73a9d",
+        "inspection_id": "f4a8b4cc46a244c688f05362c34529b8",
+        "latitude": 1.3406,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.696973Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.699879Z",
+        "record_version": 2,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_location",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.696973Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          },
+          {
+            "request_id": "task_location",
+            "action": "updated",
+            "recorded_at": "2026-10-16T06:56:08.699879Z",
+            "changed_fields": [
+              "latitude"
+            ],
+            "before": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "after": {
+              "status": "active",
+              "latitude": 1.3406,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "user_declared_unverified"
+          }
+        ]
+      },
+      "input_revision": 8,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  },
+  "noop": {
+    "before": {
+      "task_id": "a1965862c39c404095e9c6a56ba455df",
+      "inspection_id": "0fef7a2084b241b9bfb47248a0ff947e",
+      "latitude": 1.3405,
+      "longitude": 103.706,
+      "damage_label": "pothole",
+      "severity": "medium",
+      "priority": "P2",
+      "service_minutes": 120.0,
+      "created_at": "2026-10-16T06:56:08.703384Z",
+      "due_at": null,
+      "status": "active",
+      "rule_version": "demo-rules-v2",
+      "is_demo": true,
+      "updated_at": "2026-10-16T06:56:08.703384Z",
+      "record_version": 1,
+      "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+      "history": [
+        {
+          "request_id": "upload_noop",
+          "action": "created",
+          "recorded_at": "2026-10-16T06:56:08.703384Z",
+          "changed_fields": [
+            "status",
+            "latitude",
+            "longitude",
+            "damage_label",
+            "severity",
+            "priority",
+            "service_minutes",
+            "rule_version"
+          ],
+          "before": null,
+          "after": {
+            "status": "active",
+            "latitude": 1.3405,
+            "longitude": 103.706,
+            "damage_label": "pothole",
+            "severity": "medium",
+            "priority": "P2",
+            "service_minutes": 120.0,
+            "rule_version": "demo-rules-v2"
+          },
+          "actor_source": "system_demo_rules"
+        }
+      ]
+    },
+    "request": {
+      "request_id": "task_noop",
+      "expected_version": 1,
+      "damage_label": "pothole"
+    },
+    "response": {
+      "task": {
+        "task_id": "a1965862c39c404095e9c6a56ba455df",
+        "inspection_id": "0fef7a2084b241b9bfb47248a0ff947e",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.703384Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.703384Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_noop",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.703384Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          }
+        ]
+      },
+      "input_revision": 9,
+      "planning_input_changed": false,
+      "replayed": false
+    },
+    "replay": {
+      "task": {
+        "task_id": "a1965862c39c404095e9c6a56ba455df",
+        "inspection_id": "0fef7a2084b241b9bfb47248a0ff947e",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T06:56:08.703384Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true,
+        "updated_at": "2026-10-16T06:56:08.703384Z",
+        "record_version": 1,
+        "repair_recommendation": "Demo suggestion: inspect and assess a pothole repair method.",
+        "history": [
+          {
+            "request_id": "upload_noop",
+            "action": "created",
+            "recorded_at": "2026-10-16T06:56:08.703384Z",
+            "changed_fields": [
+              "status",
+              "latitude",
+              "longitude",
+              "damage_label",
+              "severity",
+              "priority",
+              "service_minutes",
+              "rule_version"
+            ],
+            "before": null,
+            "after": {
+              "status": "active",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "damage_label": "pothole",
+              "severity": "medium",
+              "priority": "P2",
+              "service_minutes": 120.0,
+              "rule_version": "demo-rules-v2"
+            },
+            "actor_source": "system_demo_rules"
+          }
+        ]
+      },
+      "input_revision": 9,
+      "planning_input_changed": false,
+      "replayed": true
+    }
+  }
+}

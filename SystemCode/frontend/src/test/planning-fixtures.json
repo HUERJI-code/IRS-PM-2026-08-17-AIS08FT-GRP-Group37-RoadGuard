@@ -1,0 +1,993 @@
+{
+  "crews": {
+    "contract_version": "b-crew-v1",
+    "crews": [
+      {
+        "crew_id": "crew-01",
+        "name": "Crew 01",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-02",
+        "name": "Crew 02",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-03",
+        "name": "Crew 03",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-04",
+        "name": "Crew 04",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      }
+    ],
+    "input_revision": 1
+  },
+  "snapshot": {
+    "contract_version": "a-task-query-v1",
+    "source": "persisted_workflow",
+    "input_revision": 1,
+    "tasks": [
+      {
+        "task_id": "389a115994534705b5e931e07c10f94f",
+        "inspection_id": "3fd76780ab694c88af122893d83781fc",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T15:32:35.481898Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true
+      }
+    ],
+    "total": 1,
+    "is_demo": true
+  },
+  "mutation": {
+    "contract_version": "b-crew-v1",
+    "crew": {
+      "crew_id": "crew-01",
+      "name": "Crew 01",
+      "available": false,
+      "depot_id": "depot-nus-iss",
+      "record_version": 2,
+      "updated_at": "2026-10-16T15:32:35.502138Z"
+    },
+    "input_revision": 2,
+    "planning_input_changed": true,
+    "replayed": false
+  },
+  "replay": {
+    "contract_version": "b-crew-v1",
+    "crew": {
+      "crew_id": "crew-01",
+      "name": "Crew 01",
+      "available": false,
+      "depot_id": "depot-nus-iss",
+      "record_version": 2,
+      "updated_at": "2026-10-16T15:32:35.502138Z"
+    },
+    "input_revision": 2,
+    "planning_input_changed": false,
+    "replayed": true
+  },
+  "after_crews": {
+    "contract_version": "b-crew-v1",
+    "crews": [
+      {
+        "crew_id": "crew-01",
+        "name": "Crew 01",
+        "available": false,
+        "depot_id": "depot-nus-iss",
+        "record_version": 2,
+        "updated_at": "2026-10-16T15:32:35.502138Z"
+      },
+      {
+        "crew_id": "crew-02",
+        "name": "Crew 02",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-03",
+        "name": "Crew 03",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-04",
+        "name": "Crew 04",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      }
+    ],
+    "input_revision": 2
+  },
+  "after_snapshot": {
+    "contract_version": "a-task-query-v1",
+    "source": "persisted_workflow",
+    "input_revision": 2,
+    "tasks": [
+      {
+        "task_id": "389a115994534705b5e931e07c10f94f",
+        "inspection_id": "3fd76780ab694c88af122893d83781fc",
+        "latitude": 1.3405,
+        "longitude": 103.706,
+        "damage_label": "pothole",
+        "severity": "medium",
+        "priority": "P2",
+        "service_minutes": 120.0,
+        "created_at": "2026-10-16T15:32:35.481898Z",
+        "due_at": null,
+        "status": "active",
+        "rule_version": "demo-rules-v2",
+        "is_demo": true
+      }
+    ],
+    "total": 1,
+    "is_demo": true
+  },
+  "stale": {
+    "greedy": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-eb7e26c0ff224647ac24cd42a40e7bff",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "greedy",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "389a115994534705b5e931e07c10f94f",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 0.053875031881034374
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": null,
+      "algorithm_parameters": {
+        "rule": "earliest_free_crew_highest_priority_then_nearest"
+      },
+      "is_stale": true,
+      "is_demo": true
+    },
+    "ga": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-ba6af2be7dff45d3b475eab25b5b26a4",
+      "input_revision": 1,
+      "task_source": "persisted_workflow",
+      "algorithm": "ga",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "389a115994534705b5e931e07c10f94f",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 73.35235170054196,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 288.30617585027096,
+        "algorithm_runtime_ms": 12.950750067830086
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": 1,
+      "algorithm_parameters": {
+        "population_size": 60,
+        "max_generations": 300,
+        "patience_generations": 80,
+        "crossover_rate": 0.9,
+        "mutation_rate": 0.3,
+        "tournament_size": 3,
+        "elite_count": 2,
+        "seed_with_greedy": true,
+        "generations_run": 80,
+        "unique_evaluations": 4
+      },
+      "is_stale": true,
+      "is_demo": true
+    }
+  },
+  "calculation": {
+    "contract_version": "b-recalculation-v1",
+    "status": "completed",
+    "input_revision": 2,
+    "planning_start_at": "2026-10-16T01:00:00Z",
+    "task_count": 1,
+    "matrix_provider": "simulated_haversine_v1",
+    "matrix_is_simulated": true,
+    "matrix_generated_at": "2026-10-16T15:32:35.507242Z",
+    "plans": [
+      {
+        "algorithm": "greedy",
+        "plan_id": "plan-cf9d96a7e26447ec9d1ace4b3ba65e0e",
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "objective_value": 291.55796291100035
+      },
+      {
+        "algorithm": "ga",
+        "plan_id": "plan-40971e8ba2bf43948539a8b516aba372",
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "objective_value": 291.55796291100035
+      }
+    ]
+  },
+  "plans": {
+    "greedy": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-cf9d96a7e26447ec9d1ace4b3ba65e0e",
+      "input_revision": 2,
+      "task_source": "persisted_workflow",
+      "algorithm": "greedy",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "389a115994534705b5e931e07c10f94f",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 79.85592582200077,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 291.55796291100035,
+        "algorithm_runtime_ms": 0.03320805262774229
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": null,
+      "algorithm_parameters": {
+        "rule": "earliest_free_crew_highest_priority_then_nearest"
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "ga": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-40971e8ba2bf43948539a8b516aba372",
+      "input_revision": 2,
+      "task_source": "persisted_workflow",
+      "algorithm": "ga",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": true,
+          "status": "assigned",
+          "stops": [
+            {
+              "sequence": 1,
+              "task_id": "389a115994534705b5e931e07c10f94f",
+              "latitude": 1.3405,
+              "longitude": 103.706,
+              "priority": "P2",
+              "travel_minutes_from_previous": 24.7,
+              "arrival_minute": 24.7,
+              "service_minutes": 120.0,
+              "completion_minute": 144.7
+            }
+          ],
+          "travel_minutes": 49.4,
+          "return_travel_minutes": 24.7,
+          "service_minutes": 120.0,
+          "total_work_minutes": 169.4,
+          "end_minute": 169.4,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": true,
+          "status": "idle",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [],
+      "metrics": {
+        "assigned_task_count": 1,
+        "unassigned_task_count": 0,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "total_travel_minutes": 49.4,
+        "total_service_minutes": 120.0,
+        "makespan_minutes": 169.4,
+        "workload_std_minutes": 79.85592582200077,
+        "priority_weighted_completion_minutes": 144.7,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 291.55796291100035,
+        "algorithm_runtime_ms": 12.828875100240111
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": 1,
+      "algorithm_parameters": {
+        "population_size": 60,
+        "max_generations": 300,
+        "patience_generations": 80,
+        "crossover_rate": 0.9,
+        "mutation_rate": 0.3,
+        "tournament_size": 3,
+        "elite_count": 2,
+        "seed_with_greedy": true,
+        "generations_run": 80,
+        "unique_evaluations": 3
+      },
+      "is_stale": false,
+      "is_demo": true
+    }
+  },
+  "all_off": {
+    "contract_version": "b-recalculation-v1",
+    "status": "completed",
+    "input_revision": 5,
+    "planning_start_at": "2026-10-16T01:00:00Z",
+    "task_count": 1,
+    "matrix_provider": "simulated_haversine_v1",
+    "matrix_is_simulated": true,
+    "matrix_generated_at": "2026-10-16T15:32:35.525395Z",
+    "plans": [
+      {
+        "algorithm": "greedy",
+        "plan_id": "plan-d51f4f73f8474daaa4603988e6385eb3",
+        "assigned_task_count": 0,
+        "unassigned_task_count": 1,
+        "objective_value": 0.0
+      },
+      {
+        "algorithm": "ga",
+        "plan_id": "plan-61e3768cbe3e41cfb986196610d33c25",
+        "assigned_task_count": 0,
+        "unassigned_task_count": 1,
+        "objective_value": 0.0
+      }
+    ]
+  },
+  "all_off_plans": {
+    "greedy": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-d51f4f73f8474daaa4603988e6385eb3",
+      "input_revision": 5,
+      "task_source": "persisted_workflow",
+      "algorithm": "greedy",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [
+        {
+          "task_id": "389a115994534705b5e931e07c10f94f",
+          "reason": "no_available_crew"
+        }
+      ],
+      "metrics": {
+        "assigned_task_count": 0,
+        "unassigned_task_count": 1,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 1,
+          "P3": 0
+        },
+        "total_travel_minutes": 0.0,
+        "total_service_minutes": 0.0,
+        "makespan_minutes": 0.0,
+        "workload_std_minutes": null,
+        "priority_weighted_completion_minutes": null,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 0.0,
+        "algorithm_runtime_ms": 0.005917041562497616
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": null,
+      "algorithm_parameters": {
+        "rule": "earliest_free_crew_highest_priority_then_nearest"
+      },
+      "is_stale": false,
+      "is_demo": true
+    },
+    "ga": {
+      "contract_version": "b-route-plan-v1-draft",
+      "plan_id": "plan-61e3768cbe3e41cfb986196610d33c25",
+      "input_revision": 5,
+      "task_source": "persisted_workflow",
+      "algorithm": "ga",
+      "planning_start_at": "2026-10-16T01:00:00Z",
+      "depot": {
+        "depot_id": "depot-nus-iss",
+        "latitude": 1.292149,
+        "longitude": 103.776551
+      },
+      "crew_routes": [
+        {
+          "crew_id": "crew-01",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-02",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-03",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        },
+        {
+          "crew_id": "crew-04",
+          "available": false,
+          "status": "unavailable",
+          "stops": [],
+          "travel_minutes": 0.0,
+          "return_travel_minutes": null,
+          "service_minutes": 0.0,
+          "total_work_minutes": 0.0,
+          "end_minute": 0.0,
+          "geometry": null,
+          "geometry_note": "no_road_geometry_straight_lines_are_illustrative_only"
+        }
+      ],
+      "unassigned_tasks": [
+        {
+          "task_id": "389a115994534705b5e931e07c10f94f",
+          "reason": "no_available_crew"
+        }
+      ],
+      "metrics": {
+        "assigned_task_count": 0,
+        "unassigned_task_count": 1,
+        "unassigned_by_priority": {
+          "P1": 0,
+          "P2": 1,
+          "P3": 0
+        },
+        "total_travel_minutes": 0.0,
+        "total_service_minutes": 0.0,
+        "makespan_minutes": 0.0,
+        "workload_std_minutes": null,
+        "priority_weighted_completion_minutes": null,
+        "tasks_with_due_at": 0,
+        "total_lateness_minutes": null,
+        "late_task_count": null,
+        "objective_value": 0.0,
+        "algorithm_runtime_ms": 0.012625008821487427
+      },
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "settings": {
+        "config_version": "b-routing-demo-v1",
+        "is_demo": true,
+        "return_to_depot": true,
+        "shift_limit": {
+          "mode": "limited",
+          "minutes": 480.0
+        },
+        "objective_version": "b-objective-v1",
+        "weights": {
+          "makespan_minutes": 1.0,
+          "total_travel_minutes": 0.2,
+          "workload_std_minutes": 0.5,
+          "priority_weighted_completion_minutes": 0.5
+        },
+        "priority_weights": {
+          "P1": 3.0,
+          "P2": 2.0,
+          "P3": 1.0
+        }
+      },
+      "random_seed": 1,
+      "algorithm_parameters": {
+        "population_size": 60,
+        "max_generations": 300,
+        "patience_generations": 80,
+        "crossover_rate": 0.9,
+        "mutation_rate": 0.3,
+        "tournament_size": 3,
+        "elite_count": 2,
+        "seed_with_greedy": true,
+        "generations_run": 0,
+        "unique_evaluations": 1
+      },
+      "is_stale": false,
+      "is_demo": true
+    }
+  }
+}

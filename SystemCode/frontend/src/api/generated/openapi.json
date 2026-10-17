@@ -1,0 +1,3905 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RoadGuard API",
+    "description": "Persisted inspections using explicit demo scenarios or the locally installed released detector. Inspection responses contain at most one box; raw evidence is retained internally. Uploads return only inspection_id, status, detection and task_id; details are queried separately. Real primary detections meeting the configured confidence threshold (default 0.60) create one task. Lower-confidence detections require review; business rules and tasks remain demo assumptions. Road type is user-declared. Four-crew Greedy/GA route plans use the configured travel matrix (labelled simulated by default, or Google Routes when enabled) and demo shift/objective assumptions; recalculation is explicit and never automatic. The separate /demo endpoints remain stateless previews.",
+    "version": "0.8.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Infrastructure"
+        ],
+        "summary": "Check application and SQLite infrastructure",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Infrastructure database is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/scenarios": {
+      "get": {
+        "tags": [
+          "Demonstration"
+        ],
+        "summary": "List fixed synthetic scenarios (no image inference)",
+        "operationId": "list_demo_scenarios_api_v1_demo_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoScenarioCatalogue"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/assessments": {
+      "post": {
+        "tags": [
+          "Demonstration"
+        ],
+        "summary": "Run a synthetic detector and demo rules without saving tasks",
+        "operationId": "assess_demo_api_v1_demo_assessments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoAssessmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoAssessmentResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/inspections": {
+      "post": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Upload an image, return one primary box and automatically create an eligible task",
+        "description": "Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200.",
+        "operationId": "create_inspection_api_v1_inspections_post",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$",
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionUploadResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionUploadResponse"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Gateway"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image",
+                  "metadata"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "One JPEG or PNG, at most 8 MiB and 20 megapixels."
+                  },
+                  "metadata": {
+                    "type": "string",
+                    "description": "JSON UploadMetadata; road type is a user declaration, not a verified road classification.",
+                    "example": "{\"mode\":\"real\",\"latitude\":1.3405,\"longitude\":103.706,\"road_type\":\"public_motor_road\"}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "List Inspections",
+        "operationId": "list_inspections_api_v1_inspections_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "no_detection",
+                "pending_review",
+                "accepted",
+                "rejected",
+                "all"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Get Inspection",
+        "operationId": "get_inspection_api_v1_inspections__inspection_id__get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "title": "Inspection Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/image": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Get Inspection Image",
+        "operationId": "get_inspection_image_api_v1_inspections__inspection_id__image_get",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "title": "Inspection Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/inspections/{inspection_id}/review": {
+      "post": {
+        "tags": [
+          "Inspections"
+        ],
+        "summary": "Review Inspection",
+        "operationId": "review_inspection_api_v1_inspections__inspection_id__review_post",
+        "parameters": [
+          {
+            "name": "inspection_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "title": "Inspection Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionMutationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tasks": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "List Tasks",
+        "operationId": "list_tasks_api_v1_tasks_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "active",
+                "completed",
+                "cancelled",
+                "all"
+              ],
+              "type": "string",
+              "default": "active",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskList"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/snapshot": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Read every active task and the shared revision in one snapshot",
+        "operationId": "get_task_snapshot_api_v1_tasks_snapshot_get",
+        "parameters": [
+          {
+            "name": "expected_revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expected Revision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskSnapshot"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tasks/{task_id}": {
+      "get": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Get Task",
+        "operationId": "get_task_api_v1_tasks__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRecord"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Tasks"
+        ],
+        "summary": "Update Task",
+        "operationId": "update_task_api_v1_tasks__task_id__patch",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskMutation"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/crews": {
+      "get": {
+        "tags": [
+          "Crews"
+        ],
+        "summary": "List all configured crews, including unavailable ones, with the current input revision",
+        "operationId": "list_crews_api_v1_crews_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crews/{crew_id}": {
+      "patch": {
+        "tags": [
+          "Crews"
+        ],
+        "summary": "Change crew availability; increments input_revision and marks existing plans stale",
+        "description": "Does not compute a new plan. Call POST /route-plans/recalculate with the returned input_revision. Retrying with the same request_id replays the stored outcome.",
+        "operationId": "update_crew_api_v1_crews__crew_id__patch",
+        "parameters": [
+          {
+            "name": "crew_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{1,32}$",
+              "title": "Crew Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrewPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewMutation"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/route-plans/recalculate": {
+      "post": {
+        "tags": [
+          "Route plans"
+        ],
+        "summary": "Plan all active tasks with Greedy and GA on the same input and matrix, then save both",
+        "description": "expected_revision must equal the current input_revision. If tasks or crews change during calculation, nothing is saved and 409 stale_input_revision is returned. Travel times come from the configured provider: the labelled simulated matrix (matrix_is_simulated=true) or Google Routes computeRouteMatrix. If Google fails, 503 travel_matrix_unavailable is returned, nothing is saved and there is no fallback to simulated times.",
+        "operationId": "recalculate_api_v1_route_plans_recalculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecalculateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecalculationResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/route-plans/latest": {
+      "get": {
+        "tags": [
+          "Route plans"
+        ],
+        "summary": "Latest saved plan for one algorithm; is_stale=true if inputs changed since it was computed",
+        "description": "Returns 404 route_plan_not_found when no plan has been saved yet.",
+        "operationId": "latest_plan_api_v1_route_plans_latest_get",
+        "parameters": [
+          {
+            "name": "algorithm",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "ga",
+                "greedy"
+              ],
+              "type": "string",
+              "title": "Algorithm"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoutePlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/route-plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "Route plans"
+        ],
+        "summary": "A saved plan by ID, for display, explanation and before/after comparison",
+        "operationId": "get_plan_api_v1_route_plans__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^plan-[0-9a-f]{32}$",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoutePlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AutoAcceptance": {
+        "properties": {
+          "policy_version": {
+            "type": "string",
+            "const": "single-primary-auto-v1",
+            "title": "Policy Version",
+            "default": "single-primary-auto-v1"
+          },
+          "confidence_threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence Threshold"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "confidence_threshold"
+        ],
+        "title": "AutoAcceptance"
+      },
+      "CrewList": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "b-crew-v1",
+            "title": "Contract Version",
+            "default": "b-crew-v1"
+          },
+          "crews": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRecord"
+            },
+            "type": "array",
+            "title": "Crews"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crews",
+          "input_revision"
+        ],
+        "title": "CrewList"
+      },
+      "CrewMutation": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "b-crew-v1",
+            "title": "Contract Version",
+            "default": "b-crew-v1"
+          },
+          "crew": {
+            "$ref": "#/components/schemas/CrewRecord"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "planning_input_changed": {
+            "type": "boolean",
+            "title": "Planning Input Changed"
+          },
+          "replayed": {
+            "type": "boolean",
+            "title": "Replayed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crew",
+          "input_revision",
+          "planning_input_changed",
+          "replayed"
+        ],
+        "title": "CrewMutation"
+      },
+      "CrewPatch": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "expected_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Expected Version"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "expected_version",
+          "available"
+        ],
+        "title": "CrewPatch",
+        "description": "Only availability is editable in the first version (assistant scope is the same)."
+      },
+      "CrewRecord": {
+        "properties": {
+          "crew_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Crew Id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "depot_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Depot Id"
+          },
+          "record_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Record Version"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crew_id",
+          "name",
+          "available",
+          "depot_id",
+          "record_version",
+          "updated_at"
+        ],
+        "title": "CrewRecord"
+      },
+      "CrewRoute": {
+        "properties": {
+          "crew_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Crew Id"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "assigned",
+              "idle",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "type": "array",
+            "title": "Stops"
+          },
+          "travel_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Travel Minutes"
+          },
+          "return_travel_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Travel Minutes"
+          },
+          "service_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Service Minutes"
+          },
+          "total_work_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Total Work Minutes"
+          },
+          "end_minute": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "End Minute"
+          },
+          "geometry": {
+            "type": "null",
+            "title": "Geometry"
+          },
+          "geometry_note": {
+            "type": "string",
+            "const": "no_road_geometry_straight_lines_are_illustrative_only",
+            "title": "Geometry Note",
+            "default": "no_road_geometry_straight_lines_are_illustrative_only"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crew_id",
+          "available",
+          "status",
+          "stops",
+          "travel_minutes",
+          "return_travel_minutes",
+          "service_minutes",
+          "total_work_minutes",
+          "end_minute"
+        ],
+        "title": "CrewRoute"
+      },
+      "DecisionTrace": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Message"
+          },
+          "rule_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "rule_version",
+          "is_demo"
+        ],
+        "title": "DecisionTrace"
+      },
+      "DemoAssessmentRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Scenario Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id"
+        ],
+        "title": "DemoAssessmentRequest"
+      },
+      "DemoAssessmentResponse": {
+        "properties": {
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          },
+          "scenario_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Scenario Id"
+          },
+          "model_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "image_width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Width"
+          },
+          "image_height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Height"
+          },
+          "confidence_threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence Threshold"
+          },
+          "assessment": {
+            "$ref": "#/components/schemas/RuleAssessment"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "model_version",
+          "image_width",
+          "image_height",
+          "confidence_threshold",
+          "assessment"
+        ],
+        "title": "DemoAssessmentResponse"
+      },
+      "DemoScenarioCatalogue": {
+        "properties": {
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          },
+          "model_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "image_width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Width"
+          },
+          "image_height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Height"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/DemoScenarioInfo"
+            },
+            "type": "array",
+            "title": "Scenarios"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "model_version",
+          "image_width",
+          "image_height",
+          "scenarios"
+        ],
+        "title": "DemoScenarioCatalogue"
+      },
+      "DemoScenarioInfo": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Scenario Id"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "description"
+        ],
+        "title": "DemoScenarioInfo"
+      },
+      "Depot": {
+        "properties": {
+          "depot_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Depot Id"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "depot_id",
+          "latitude",
+          "longitude"
+        ],
+        "title": "Depot"
+      },
+      "Detection": {
+        "properties": {
+          "detection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Detection Id"
+          },
+          "class_id": {
+            "type": "integer",
+            "maximum": 7.0,
+            "minimum": 0.0,
+            "title": "Class Id"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "bbox_xyxy": {
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox Xyxy"
+          },
+          "image_width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Width"
+          },
+          "image_height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Height"
+          },
+          "model_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "detection_id",
+          "class_id",
+          "label",
+          "confidence",
+          "bbox_xyxy",
+          "image_width",
+          "image_height",
+          "model_version",
+          "is_demo"
+        ],
+        "title": "Detection"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Message"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorResponse"
+      },
+      "HealthResponse": {
+        "properties": {
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "database": {
+            "type": "string",
+            "const": "ok",
+            "title": "Database"
+          },
+          "api_version": {
+            "type": "string",
+            "const": "v1",
+            "title": "Api Version",
+            "default": "v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input_revision",
+          "status",
+          "database"
+        ],
+        "title": "HealthResponse"
+      },
+      "InspectionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InspectionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "InspectionListResponse"
+      },
+      "InspectionMutationResponse": {
+        "properties": {
+          "inspection": {
+            "$ref": "#/components/schemas/InspectionResponse"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TaskRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "planning_input_changed": {
+            "type": "boolean",
+            "title": "Planning Input Changed"
+          },
+          "replayed": {
+            "type": "boolean",
+            "title": "Replayed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "inspection",
+          "task",
+          "input_revision",
+          "planning_input_changed",
+          "replayed"
+        ],
+        "title": "InspectionMutationResponse"
+      },
+      "InspectionResponse": {
+        "properties": {
+          "inspection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Inspection Id"
+          },
+          "image_url": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Image Url"
+          },
+          "annotated_image_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annotated Image Url"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/Detection"
+            },
+            "type": "array",
+            "maxItems": 1,
+            "title": "Detections"
+          },
+          "selected_detection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Detection Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "no_detection",
+              "pending_review",
+              "accepted",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "task_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task Id"
+          },
+          "decision_trace": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionTrace"
+            },
+            "type": "array",
+            "title": "Decision Trace"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "record_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Record Version"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "demo",
+              "real"
+            ],
+            "title": "Mode"
+          },
+          "demo_scenario_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demo Scenario Id"
+          },
+          "model_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Model Version"
+          },
+          "model_weights_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Weights Sha256"
+          },
+          "model_manifest_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "roadguard-model-v1"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Manifest Version"
+          },
+          "primary_suggestion": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PrimarySuggestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "auto_acceptance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutoAcceptance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "image_width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Width"
+          },
+          "image_height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Height"
+          },
+          "scope_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Scope Version"
+          },
+          "road_type": {
+            "type": "string",
+            "const": "public_motor_road",
+            "title": "Road Type"
+          },
+          "road_type_source": {
+            "type": "string",
+            "const": "user_declared",
+            "title": "Road Type Source",
+            "default": "user_declared"
+          },
+          "review_history": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewHistoryEntry"
+            },
+            "type": "array",
+            "title": "Review History"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "inspection_id",
+          "image_url",
+          "annotated_image_url",
+          "latitude",
+          "longitude",
+          "detections",
+          "selected_detection_id",
+          "status",
+          "task_id",
+          "decision_trace",
+          "created_at",
+          "updated_at",
+          "record_version",
+          "mode",
+          "demo_scenario_id",
+          "model_version",
+          "image_width",
+          "image_height",
+          "scope_version",
+          "road_type",
+          "review_history"
+        ],
+        "title": "InspectionResponse",
+        "description": "HTTP view; competing IDs may refer to retained, non-returned evidence."
+      },
+      "InspectionUploadResponse": {
+        "properties": {
+          "inspection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Inspection Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "no_detection",
+              "pending_review",
+              "accepted",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "detection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UploadDetection"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "task_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "inspection_id",
+          "status",
+          "detection",
+          "task_id"
+        ],
+        "title": "InspectionUploadResponse"
+      },
+      "JsonValue": {},
+      "ObjectiveWeights": {
+        "properties": {
+          "makespan_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Makespan Minutes"
+          },
+          "total_travel_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Total Travel Minutes"
+          },
+          "workload_std_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Workload Std Minutes"
+          },
+          "priority_weighted_completion_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Priority Weighted Completion Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "makespan_minutes",
+          "total_travel_minutes",
+          "workload_std_minutes",
+          "priority_weighted_completion_minutes"
+        ],
+        "title": "ObjectiveWeights"
+      },
+      "PlanMetrics": {
+        "properties": {
+          "assigned_task_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Assigned Task Count"
+          },
+          "unassigned_task_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Unassigned Task Count"
+          },
+          "unassigned_by_priority": {
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0.0
+            },
+            "propertyNames": {
+              "enum": [
+                "P1",
+                "P2",
+                "P3"
+              ]
+            },
+            "type": "object",
+            "title": "Unassigned By Priority"
+          },
+          "total_travel_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Total Travel Minutes"
+          },
+          "total_service_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Total Service Minutes"
+          },
+          "makespan_minutes": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Makespan Minutes"
+          },
+          "workload_std_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workload Std Minutes"
+          },
+          "priority_weighted_completion_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority Weighted Completion Minutes"
+          },
+          "tasks_with_due_at": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Tasks With Due At"
+          },
+          "total_lateness_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Lateness Minutes"
+          },
+          "late_task_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Late Task Count"
+          },
+          "objective_value": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Objective Value"
+          },
+          "algorithm_runtime_ms": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Algorithm Runtime Ms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "assigned_task_count",
+          "unassigned_task_count",
+          "unassigned_by_priority",
+          "total_travel_minutes",
+          "total_service_minutes",
+          "makespan_minutes",
+          "workload_std_minutes",
+          "priority_weighted_completion_minutes",
+          "tasks_with_due_at",
+          "total_lateness_minutes",
+          "late_task_count",
+          "objective_value",
+          "algorithm_runtime_ms"
+        ],
+        "title": "PlanMetrics"
+      },
+      "PlanSummary": {
+        "properties": {
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "ga",
+              "greedy"
+            ],
+            "title": "Algorithm"
+          },
+          "plan_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Plan Id"
+          },
+          "assigned_task_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Assigned Task Count"
+          },
+          "unassigned_task_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Unassigned Task Count"
+          },
+          "objective_value": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Objective Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "algorithm",
+          "plan_id",
+          "assigned_task_count",
+          "unassigned_task_count",
+          "objective_value"
+        ],
+        "title": "PlanSummary"
+      },
+      "PlanningSettings": {
+        "properties": {
+          "config_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Config Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          },
+          "return_to_depot": {
+            "type": "boolean",
+            "title": "Return To Depot"
+          },
+          "shift_limit": {
+            "$ref": "#/components/schemas/ShiftLimit"
+          },
+          "objective_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Objective Version"
+          },
+          "weights": {
+            "$ref": "#/components/schemas/ObjectiveWeights"
+          },
+          "priority_weights": {
+            "additionalProperties": {
+              "type": "number",
+              "exclusiveMinimum": 0.0
+            },
+            "propertyNames": {
+              "enum": [
+                "P1",
+                "P2",
+                "P3"
+              ]
+            },
+            "type": "object",
+            "title": "Priority Weights"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "config_version",
+          "is_demo",
+          "return_to_depot",
+          "shift_limit",
+          "objective_version",
+          "weights",
+          "priority_weights"
+        ],
+        "title": "PlanningSettings"
+      },
+      "PrimarySuggestion": {
+        "properties": {
+          "policy_version": {
+            "type": "string",
+            "const": "single-damage-v1",
+            "title": "Policy Version"
+          },
+          "strategy": {
+            "type": "string",
+            "enum": [
+              "confidence",
+              "area_quarter",
+              "area_half",
+              "centrality"
+            ],
+            "title": "Strategy"
+          },
+          "threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Threshold"
+          },
+          "detection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detection Id"
+          },
+          "ranking_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ranking Score"
+          },
+          "ambiguous": {
+            "type": "boolean",
+            "title": "Ambiguous"
+          },
+          "competing_detection_ids": {
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Competing Detection Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "policy_version",
+          "strategy",
+          "threshold",
+          "detection_id",
+          "ranking_score",
+          "ambiguous",
+          "competing_detection_ids"
+        ],
+        "title": "PrimarySuggestion"
+      },
+      "RecalculateRequest": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Revision"
+          },
+          "planning_start_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planning Start At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_revision"
+        ],
+        "title": "RecalculateRequest"
+      },
+      "RecalculationResult": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "b-recalculation-v1",
+            "title": "Contract Version",
+            "default": "b-recalculation-v1"
+          },
+          "status": {
+            "type": "string",
+            "const": "completed",
+            "title": "Status",
+            "default": "completed"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "planning_start_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Planning Start At"
+          },
+          "task_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Task Count"
+          },
+          "matrix_provider": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Matrix Provider"
+          },
+          "matrix_is_simulated": {
+            "type": "boolean",
+            "title": "Matrix Is Simulated"
+          },
+          "matrix_generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Matrix Generated At"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanSummary"
+            },
+            "type": "array",
+            "title": "Plans"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input_revision",
+          "planning_start_at",
+          "task_count",
+          "matrix_provider",
+          "matrix_is_simulated",
+          "matrix_generated_at",
+          "plans"
+        ],
+        "title": "RecalculationResult"
+      },
+      "ReviewHistoryEntry": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "confirm",
+              "correct",
+              "dismiss"
+            ],
+            "title": "Action"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          },
+          "detection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detection Id"
+          },
+          "original_damage_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Damage Label"
+          },
+          "corrected_damage_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corrected Damage Label"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "actor_source": {
+            "type": "string",
+            "const": "user_declared_unverified",
+            "title": "Actor Source",
+            "default": "user_declared_unverified"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "action",
+          "recorded_at",
+          "detection_id",
+          "original_damage_label",
+          "corrected_damage_label",
+          "note",
+          "rule_version"
+        ],
+        "title": "ReviewHistoryEntry"
+      },
+      "ReviewRequest": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "expected_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Expected Version"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "confirm",
+              "correct",
+              "dismiss"
+            ],
+            "title": "Action"
+          },
+          "detection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detection Id"
+          },
+          "damage_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Label"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "expected_version",
+          "action"
+        ],
+        "title": "ReviewRequest"
+      },
+      "RoutePlan": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "b-route-plan-v1-draft",
+            "title": "Contract Version",
+            "default": "b-route-plan-v1-draft"
+          },
+          "plan_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Plan Id"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "task_source": {
+            "type": "string",
+            "enum": [
+              "persisted_workflow",
+              "synthetic_fixture"
+            ],
+            "title": "Task Source"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "ga",
+              "greedy"
+            ],
+            "title": "Algorithm"
+          },
+          "planning_start_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Planning Start At"
+          },
+          "depot": {
+            "$ref": "#/components/schemas/Depot"
+          },
+          "crew_routes": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRoute"
+            },
+            "type": "array",
+            "title": "Crew Routes"
+          },
+          "unassigned_tasks": {
+            "items": {
+              "$ref": "#/components/schemas/UnassignedTask"
+            },
+            "type": "array",
+            "title": "Unassigned Tasks"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/PlanMetrics"
+          },
+          "matrix_provider": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Matrix Provider"
+          },
+          "matrix_is_simulated": {
+            "type": "boolean",
+            "title": "Matrix Is Simulated"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/PlanningSettings"
+          },
+          "random_seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Random Seed"
+          },
+          "algorithm_parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Algorithm Parameters"
+          },
+          "is_stale": {
+            "type": "boolean",
+            "title": "Is Stale",
+            "default": false
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan_id",
+          "input_revision",
+          "task_source",
+          "algorithm",
+          "planning_start_at",
+          "depot",
+          "crew_routes",
+          "unassigned_tasks",
+          "metrics",
+          "matrix_provider",
+          "matrix_is_simulated",
+          "settings",
+          "random_seed",
+          "algorithm_parameters"
+        ],
+        "title": "RoutePlan"
+      },
+      "RuleAssessment": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "no_detection",
+              "pending_review",
+              "ready_for_task"
+            ],
+            "title": "Status"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/Detection"
+            },
+            "type": "array",
+            "title": "Detections"
+          },
+          "selected_detection_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Detection Id"
+          },
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RuleCandidate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decision_trace": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionTrace"
+            },
+            "type": "array",
+            "title": "Decision Trace"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "detections",
+          "selected_detection_id",
+          "candidate",
+          "decision_trace",
+          "rule_version"
+        ],
+        "title": "RuleAssessment"
+      },
+      "RuleCandidate": {
+        "properties": {
+          "detection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Detection Id"
+          },
+          "damage_label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Damage Label"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority"
+          },
+          "service_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Minutes"
+          },
+          "repair_recommendation": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Repair Recommendation"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "detection_id",
+          "damage_label",
+          "severity",
+          "priority",
+          "service_minutes",
+          "repair_recommendation",
+          "rule_version"
+        ],
+        "title": "RuleCandidate"
+      },
+      "ShiftLimit": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "unlimited",
+              "limited"
+            ],
+            "title": "Mode"
+          },
+          "minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "ShiftLimit",
+        "description": "Explicit policy; an absent limit must be chosen as mode=unlimited, never inferred."
+      },
+      "Stop": {
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Task Id"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority"
+          },
+          "travel_minutes_from_previous": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Travel Minutes From Previous"
+          },
+          "arrival_minute": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Arrival Minute"
+          },
+          "service_minutes": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Service Minutes"
+          },
+          "completion_minute": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Completion Minute"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sequence",
+          "task_id",
+          "latitude",
+          "longitude",
+          "priority",
+          "travel_minutes_from_previous",
+          "arrival_minute",
+          "service_minutes",
+          "completion_minute"
+        ],
+        "title": "Stop"
+      },
+      "Task": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Task Id"
+          },
+          "inspection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Inspection Id"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "damage_label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Damage Label"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority"
+          },
+          "service_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Minutes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "task_id",
+          "inspection_id",
+          "latitude",
+          "longitude",
+          "damage_label",
+          "severity",
+          "priority",
+          "service_minutes",
+          "created_at",
+          "due_at",
+          "status",
+          "rule_version",
+          "is_demo"
+        ],
+        "title": "Task"
+      },
+      "TaskAuditValues": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "damage_label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Damage Label"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority"
+          },
+          "service_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Minutes"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "latitude",
+          "longitude",
+          "damage_label",
+          "severity",
+          "priority",
+          "service_minutes",
+          "rule_version"
+        ],
+        "title": "TaskAuditValues"
+      },
+      "TaskHistoryEntry": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated"
+            ],
+            "title": "Action"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          },
+          "changed_fields": {
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Changed Fields"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TaskAuditValues"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "after": {
+            "$ref": "#/components/schemas/TaskAuditValues"
+          },
+          "actor_source": {
+            "type": "string",
+            "enum": [
+              "system_demo_rules",
+              "system_confidence_policy",
+              "user_declared_unverified"
+            ],
+            "title": "Actor Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "action",
+          "recorded_at",
+          "changed_fields",
+          "before",
+          "after",
+          "actor_source"
+        ],
+        "title": "TaskHistoryEntry"
+      },
+      "TaskList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TaskRecord"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Offset"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "input_revision"
+        ],
+        "title": "TaskList"
+      },
+      "TaskMutation": {
+        "properties": {
+          "task": {
+            "$ref": "#/components/schemas/TaskRecord"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "planning_input_changed": {
+            "type": "boolean",
+            "title": "Planning Input Changed"
+          },
+          "replayed": {
+            "type": "boolean",
+            "title": "Replayed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "task",
+          "input_revision",
+          "planning_input_changed",
+          "replayed"
+        ],
+        "title": "TaskMutation"
+      },
+      "TaskPatch": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "expected_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Expected Version"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "cancelled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 90.0,
+                "minimum": -90.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 180.0,
+                "minimum": -180.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "road_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "public_motor_road"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road Type"
+          },
+          "damage_label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Label"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "expected_version"
+        ],
+        "title": "TaskPatch"
+      },
+      "TaskRecord": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Task Id"
+          },
+          "inspection_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Inspection Id"
+          },
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude"
+          },
+          "damage_label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Damage Label"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Severity"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ],
+            "title": "Priority"
+          },
+          "service_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Minutes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "rule_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rule Version"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "record_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Record Version"
+          },
+          "repair_recommendation": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Repair Recommendation"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/TaskHistoryEntry"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "task_id",
+          "inspection_id",
+          "latitude",
+          "longitude",
+          "damage_label",
+          "severity",
+          "priority",
+          "service_minutes",
+          "created_at",
+          "due_at",
+          "status",
+          "rule_version",
+          "updated_at",
+          "record_version",
+          "repair_recommendation",
+          "history"
+        ],
+        "title": "TaskRecord"
+      },
+      "TaskSnapshot": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "a-task-query-v1",
+            "title": "Contract Version",
+            "default": "a-task-query-v1"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "persisted_workflow",
+              "synthetic_fixture"
+            ],
+            "title": "Source"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/Task"
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "const": true,
+            "title": "Is Demo",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "input_revision",
+          "tasks",
+          "total"
+        ],
+        "title": "TaskSnapshot"
+      },
+      "UnassignedTask": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Task Id"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "unknown_service_minutes",
+              "unreachable_from_depot",
+              "unreachable_to_depot",
+              "no_available_crew",
+              "exceeds_shift_limit",
+              "no_feasible_route_position"
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "task_id",
+          "reason"
+        ],
+        "title": "UnassignedTask"
+      },
+      "UploadDetection": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Label"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "bbox_xyxy": {
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox Xyxy"
+          },
+          "image_width": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Width"
+          },
+          "image_height": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Image Height"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "confidence",
+          "bbox_xyxy",
+          "image_width",
+          "image_height"
+        ],
+        "title": "UploadDetection",
+        "description": "Only the values needed to display the uploaded image's primary damage."
+      }
+    }
+  }
+}
