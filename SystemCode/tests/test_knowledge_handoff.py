@@ -43,7 +43,7 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v7"
+    assert MANIFEST["package_version"] == "a-knowledge-v8"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
     assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"

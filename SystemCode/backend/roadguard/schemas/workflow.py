@@ -95,7 +95,7 @@ class ReviewHistoryEntry(ContractModel):
     corrected_damage_label: NonEmptyString | None
     note: Note | None
     rule_version: NonEmptyString
-    actor_source: Literal["user_declared_unverified"] = "user_declared_unverified"
+    actor_source: Literal["user_declared_unverified", "authenticated_user"] = "user_declared_unverified"
 
 
 class TaskAuditValues(ContractModel):
@@ -116,7 +116,7 @@ class TaskHistoryEntry(ContractModel):
     changed_fields: list[NonEmptyString]
     before: TaskAuditValues | None
     after: TaskAuditValues
-    actor_source: Literal["system_demo_rules", "system_confidence_policy", "user_declared_unverified"]
+    actor_source: Literal["system_demo_rules", "system_confidence_policy", "user_declared_unverified", "authenticated_user"]
 
 
 class AutoAcceptance(ContractModel):

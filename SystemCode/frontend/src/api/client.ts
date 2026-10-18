@@ -50,6 +50,7 @@ export function resolveImageUrl(
 export function createApiClient(
   transport: Transport = (url, init) => fetch(url, init),
   timeoutMs = 8000,
+  auth?: { csrfToken: () => string | undefined; onUnauthorized: () => void },
 ) {
   async function request<K extends keyof Schemas>(
     path: string,
@@ -73,10 +74,16 @@ export function createApiClient(
       if (controller.signal.aborted)
         throw new DOMException('Aborted', 'AbortError')
       dispatched = true
+      const headers = new Headers(init.headers)
+      const csrf = auth?.csrfToken()
+      if (method !== 'GET' && csrf) headers.set('X-CSRF-Token', csrf)
       const response = await transport(`/api/v1${path}`, {
         ...init,
+        headers,
+        credentials: 'same-origin',
         signal: controller.signal,
       })
+      if (response.status === 401) auth?.onUnauthorized()
       let data: unknown
       try {
         data = await response.json()
@@ -164,6 +171,10 @@ export function createApiClient(
     return params.size ? `?${params}` : ''
   }
   return {
+    session: (o?: RequestOptions) => request('/auth/session', 'SessionResponse', {}, o),
+    login: (username: string, password: string, o?: RequestOptions) => request('/auth/login', 'SessionResponse', json('POST', { username, password }), o),
+    logout: (o?: RequestOptions) => request('/auth/logout', 'LogoutResponse', json('POST', {}), o),
+    crewWorkspace: (o?: RequestOptions) => request('/crew/workspace', 'CrewWorkspaceResponse', {}, o),
     health: (o?: RequestOptions) => request('/health', 'HealthResponse', {}, o),
     demoScenarios: (o?: RequestOptions) =>
       request('/demo/scenarios', 'DemoScenarioCatalogue', {}, o),

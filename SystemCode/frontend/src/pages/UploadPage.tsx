@@ -130,6 +130,7 @@ export default function UploadPage() {
           demo 模式。
         </p>
       )}
+      <div className="upload-workspace">
       <form onSubmit={(event) => void submit(event)} className="upload-form">
         <fieldset disabled={locked || source !== 'live'}>
           <legend>1. 检测来源与照片</legend>
@@ -146,7 +147,7 @@ export default function UploadPage() {
             <option value="demo">模拟检测（固定合成结果）</option>
           </select>
           <p className="field-note">
-            真实推理仍使用课程演示业务规则；模拟检测不分析图片内容，也会保存演示巡检记录。
+            真实推理按当前业务规则处理；模拟检测不分析图片内容，也会保存巡检记录。
           </p>
           {mode === 'demo' && (
             <div>
@@ -180,6 +181,8 @@ export default function UploadPage() {
               )}
             </div>
           )}
+          <div className="photo-picker">
+          <span className="photo-symbol" aria-hidden="true">＋</span>
           <label htmlFor="photo">道路照片</label>
           <input
             id="photo"
@@ -195,6 +198,7 @@ export default function UploadPage() {
               已选：{file.name} · {(file.size / 1024 / 1024).toFixed(2)} MiB
             </p>
           )}
+          </div>
         </fieldset>
         <fieldset disabled={locked || source !== 'live'}>
           <legend>2. 拍摄位置与道路声明</legend>
@@ -222,7 +226,7 @@ export default function UploadPage() {
           </div>
           <p className="field-note">
             使用 WGS84 坐标。任务限 Jurong East /
-            West；后端校验冻结边界。本步采用坐标输入，地图选点将在地图步骤接入。
+            West；后端校验冻结边界。请填写照片拍摄位置，当前使用坐标输入。
           </p>
           <label className="checkbox-label">
             <input
@@ -261,6 +265,17 @@ export default function UploadPage() {
           </p>
         )}
       </form>
+      <aside className="upload-help">
+        <p className="eyebrow">提交前准备</p>
+        <h2>一张照片，一处主要损伤</h2>
+        <p>拍摄时让损伤和周边路面都清晰可见，避免遮挡、模糊或距离过远。</p>
+        <ol className="help-checklist"><li><strong>选择照片</strong><span>JPEG 或 PNG，最大 8 MiB。</span></li><li><strong>填写实际拍摄坐标</strong><span>服务范围为 Jurong East 与 West。</span></li><li><strong>确认道路声明</strong><span>仅允许范围内的公共机动车道路。</span></li></ol>
+        <div className="help-divider" />
+        <h3>提交后会发生什么？</h3>
+        <p>后端返回一个主要检测框，并告知是已创建任务、需要审核，还是没有检测到损伤。</p>
+        <p className="field-note">真实推理使用实验模型，检测结果仍需结合照片判断。模拟模式使用固定结果，不分析照片。</p>
+      </aside>
+      </div>
     </>
   )
 }

@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from roadguard.config import REPOSITORY_ROOT, load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.schemas.common import LABELS_BY_ID
 from test_real_vision import FakeDetector, metadata, png
 
@@ -78,7 +78,7 @@ def test_v2_eight_class_durations_reach_task_detail_and_snapshot(tmp_path, class
         assert task["rule_version"] == "demo-rules-v2" and task["due_at"] is None and task["is_demo"]
         assert task["history"][0]["after"]["service_minutes"] == minutes
         assert task["history"][0]["actor_source"] == (
-            "system_confidence_policy" if acceptance == "automatic" else "user_declared_unverified"
+            "system_confidence_policy" if acceptance == "automatic" else "authenticated_user"
         )
         assert client.get(detail_url).json()["detections"] == [raw_detection]
         snapshot = client.get("/api/v1/tasks/snapshot").json()

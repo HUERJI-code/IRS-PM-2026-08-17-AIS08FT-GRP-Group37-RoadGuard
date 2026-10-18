@@ -16,6 +16,11 @@ export class ApiError extends Error {
 }
 
 const messages: Record<string, string> = {
+  authentication_required: '登录已失效，请重新登录。',
+  forbidden: '当前账号没有此操作权限，请联系调度员。',
+  csrf_failed: '登录状态已变化，请刷新页面后重试。',
+  route_changed: '调度已更新路线，请刷新工作台后核对。',
+  task_unavailable: '记录不存在或已不可访问，请刷新工作台。',
   stale_record_version: '记录已被修改。请刷新并重新检查，再提交新操作。',
   stale_input_revision: '任务或队伍已变化。请刷新输入版本，再重新规划。',
   idempotency_conflict: '此请求标识已用于不同内容。请核对操作并创建新请求。',

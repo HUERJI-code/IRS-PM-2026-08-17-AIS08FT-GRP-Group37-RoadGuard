@@ -6,16 +6,7 @@ import App from '../App'
 
 afterEach(() => vi.unstubAllGlobals())
 it('switches explicitly between live, normal, empty and failed sources without network fallback', async () => {
-  const network = vi.fn().mockResolvedValue(
-    new Response(
-      JSON.stringify({
-        status: 'ok',
-        database: 'ok',
-        api_version: 'v1',
-        input_revision: 5,
-      }),
-    ),
-  )
+  const network = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>().mockImplementation(async (url) => new Response(JSON.stringify(url.endsWith('/auth/session') ? { user: { user_id: 'c', username: 'c', display_name: 'C', role: 'dispatcher', crew_id: null }, csrf_token: 'test', expires_at: Math.floor(Date.now()/1000)+3600 } : { status: 'ok', database: 'ok', api_version: 'v1', input_revision: 5 })))
   vi.stubGlobal('fetch', network)
   const user = userEvent.setup()
   render(
@@ -53,5 +44,9 @@ it('switches explicitly between live, normal, empty and failed sources without n
       'alert',
     ),
   ).toHaveTextContent('数据库暂不可用')
-  expect(network).toHaveBeenCalledTimes(2)
+  // The initial task read may start before the source switch; switching aborts it.
+  const initialTasks = network.mock.calls.filter(([url]) => url.startsWith('/api/v1/tasks?'))
+  for (const [, init] of initialTasks) expect(init?.signal?.aborted).toBe(true)
+  expect(network.mock.calls.filter(([url]) => !url.startsWith('/api/v1/tasks?')).map(([url]) => url))
+    .toEqual(['/api/v1/auth/session', '/api/v1/health'])
 })

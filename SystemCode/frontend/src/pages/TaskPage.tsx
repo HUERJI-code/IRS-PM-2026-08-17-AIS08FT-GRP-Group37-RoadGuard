@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import labels from '../../../model/label_schema.json'
 import { useApi } from '../api/context'
@@ -26,10 +26,12 @@ function TaskRecord({
   id,
   onSaved,
   onLock,
+  onReady,
 }: {
   id: string
   onSaved: () => void
   onLock: (value: boolean) => void
+  onReady: () => void
 }) {
   const { api, mode } = useApi()
   const [task, setTask] = useState<Model<'TaskRecord'> | null>(null)
@@ -90,6 +92,9 @@ function TaskRecord({
       controller.abort()
     }
   }, [api, id, attempt])
+  useEffect(() => {
+    if (!loading) onReady()
+  }, [loading, onReady])
   function reload() {
     operation.current = null
     setTask(null)
@@ -203,12 +208,13 @@ function TaskRecord({
     )
   return (
     <section className="review-record" aria-label="选中任务">
-      <h2>任务详情</h2>
-      <Link to="/routes">核对队伍与重算路线</Link>
+      <div className="record-heading"><div><p className="eyebrow">已选任务</p><h2>任务详情</h2></div><span className={`status-badge priority-${task.priority.toLowerCase()}`}>{task.priority} · {statuses[task.status]}</span></div>
+      <h3 className="record-title">{labelName(task.damage_label)}</h3>
+      <Link className="inline-link" to="/routes">核对队伍与重算路线 →</Link>
       <p className="record-id">
         {task.task_id} · 记录版本 {task.record_version}
       </p>
-      <p>状态：{statuses[task.status]} · 课程演示业务规则</p>
+      <p>状态：{statuses[task.status]}</p>
       <dl className="task-facts">
         <div>
           <dt>损伤标签</dt>
@@ -395,8 +401,8 @@ function TaskRecord({
       >
         重新读取并检查
       </button>
-      <section>
-        <h3>任务历史</h3>
+      <details className="record-history">
+        <summary><h3>任务历史</h3></summary>
         <ul className="task-history">
           {task.history.map((item) => (
             <li key={item.request_id}>
@@ -420,7 +426,7 @@ function TaskRecord({
             </li>
           ))}
         </ul>
-      </section>
+      </details>
     </section>
   )
 }
@@ -429,6 +435,24 @@ export default function TaskPage() {
   const { api } = useApi()
   const [params, setParams] = useSearchParams()
   const selected = params.get('task') ?? ''
+  const detailRef = useRef<HTMLDivElement>(null)
+  const selectionToReveal = useRef(selected)
+  useEffect(() => {
+    selectionToReveal.current = selected
+    if (selected && window.matchMedia?.('(max-width: 760px)').matches) {
+      detailRef.current?.focus({ preventScroll: true })
+    }
+  }, [selected])
+  const revealSelection = useCallback(() => {
+    // Wait for the full record height: scrolling a short loading pane is clamped.
+    // Reveal each selection once, without jumping again after save/retry reads.
+    if (!selected || selectionToReveal.current !== selected) return
+    selectionToReveal.current = ''
+    if (window.matchMedia?.('(max-width: 760px)').matches) {
+      detailRef.current?.focus({ preventScroll: true })
+      detailRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' })
+    }
+  }, [selected])
   const [status, setStatus] = useState<keyof typeof statuses | 'all'>('active')
   const [offset, setOffset] = useState(0)
   const [locked, setLocked] = useState(false)
@@ -469,16 +493,21 @@ export default function TaskPage() {
     setOffset(next)
   }
   return (
-    <>
+    <div className="review-workspace task-workspace">
       <div className="page-heading">
+        <div>
         <p className="eyebrow">维修 / 03</p>
         <h1>任务工作区</h1>
         <p className="description">
           查看维修任务、规则依据与历史，完成、取消或纠正活动任务。
         </p>
+        </div>
+        <div className="page-actions"><Link className="button" to="/routes">安排四队路线 <span aria-hidden="true">→</span></Link></div>
       </div>
+      <div className="queue-workspace">
       <section className="review-queue" aria-label="任务列表">
-        <h2>维修任务</h2>
+        <div className="queue-heading"><h2>维修任务</h2><span className="queue-count">{!loading && !error && list ? list.total : '—'}</span></div>
+        <div className="queue-toolbar">
         <label htmlFor="task-filter">状态筛选</label>
         <select
           id="task-filter"
@@ -497,6 +526,7 @@ export default function TaskPage() {
         <button className="text-button" disabled={loading} onClick={refresh}>
           刷新任务列表
         </button>
+        </div>
         {loading && <LoadingState />}
         {error !== null && (
           <>
@@ -506,7 +536,7 @@ export default function TaskPage() {
         )}
         {list && (
           <>
-            <p>
+            <p className="queue-meta">
               共 {list.total} 条 · 本页输入版本 {list.input_revision}
               （分页期间数据可能变化）
             </p>
@@ -523,25 +553,18 @@ export default function TaskPage() {
               {list.items.map((item) => (
                 <li key={item.task_id}>
                   <button
-                    className="text-button"
+                    className="queue-item-button"
+                    aria-label={`${labelName(item.damage_label)}，${item.priority}，${statuses[item.status]}，任务 ${item.task_id}`}
                     disabled={locked}
                     aria-current={
                       selected === item.task_id ? 'true' : undefined
                     }
                     onClick={() => setParams({ task: item.task_id })}
                   >
-                    {item.task_id}
+                    <span className="queue-item-title"><strong>{labelName(item.damage_label)}</strong><span className={`status-badge priority-${item.priority.toLowerCase()}`}>{item.priority}</span></span>
+                    <span className="queue-item-meta">{statuses[item.status]} · {item.service_minutes == null ? '时长未知' : formatMinutes(item.service_minutes)}</span>
+                    <span className="queue-item-id" title={item.task_id}>#{item.task_id.slice(0, 8)} <span aria-hidden="true">↗</span></span>
                   </button>
-                  <span>
-                    {statuses[item.status]} · {labelName(item.damage_label)} ·{' '}
-                    {item.priority} ·{' '}
-                    {item.service_minutes == null
-                      ? '时长未知'
-                      : formatMinutes(item.service_minutes)}
-                  </span>
-                  <span>
-                    位置 {item.latitude}, {item.longitude}
-                  </span>
                 </li>
               ))}
             </ul>
@@ -563,18 +586,20 @@ export default function TaskPage() {
           </>
         )}
       </section>
+      <div className="record-pane" ref={detailRef} tabIndex={-1} aria-label="任务详情工作区">
       {selected ? (
         <TaskRecord
           key={selected}
           id={selected}
           onSaved={refresh}
           onLock={setLocked}
+          onReady={revealSelection}
         />
       ) : (
-        <p className="notice">
-          选择任务查看最新详情；已完成和取消的任务保留在对应筛选中。
-        </p>
+        <div className="selection-empty"><span className="selection-icon" aria-hidden="true">▤</span><p className="eyebrow">维修任务</p><h2>选择一项任务，开始处理</h2><p>选择任务查看最新详情；已完成和取消的任务保留在对应筛选中。</p><div className="selection-steps"><span>01 · 查看损伤与工时</span><span>02 · 更新状态或纠正信息</span><span>03 · 前往四队路线重新规划</span></div><p className="field-note">巡查员上传后，已接受的损伤会进入任务列表。</p></div>
       )}
-    </>
+      </div>
+      </div>
+    </div>
   )
 }

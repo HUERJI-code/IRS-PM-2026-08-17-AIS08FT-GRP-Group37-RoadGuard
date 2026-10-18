@@ -89,7 +89,7 @@ curl.exe -X POST "http://127.0.0.1:8000/api/v1/inspections" -H "Idempotency-Key:
 - `correct` 必须同时提供 detection_id 和中央标签字典中的 damage_label。
 - `dismiss` 不得提供选择或纠正字段；三种操作均可携带最多 500 字符的 note。
 - 仅 `pending_review` 可以发生新的审核。多框情况下，审核者明确选择代表检测，其他原始框继续保留；这是对整条巡检的明确审核决定。
-- 当前不实现登录/身份认证，因此 audit 的 `actor_source` 表明它是未经身份核验的调用者操作，不能把记录描述为认证人员签名。
+- 2026-10-18 接入账号权限，新人工审核/任务修改的 `actor_source` 为 `authenticated_user`，真实账号留在 auth_audit；旧 `user_declared_unverified` 保持不变。账号身份不代表工程资质认证。
 
 ### 修改任务
 
@@ -124,3 +124,7 @@ curl.exe -X POST "http://127.0.0.1:8000/api/v1/inspections" -H "Idempotency-Key:
 验证入口仍是 `python -m pytest SystemCode/tests -q`，覆盖七个案例、图片与范围边界、审核原始证据保留、任务状态、幂等与并发、事务回滚、规则快照、迁移和重启。测试图片在临时目录生成，不提交上传图片或真实巡检数据库。
 
 第 7 步已交付[完整 B/C 对接资料](BC_HANDOFF.md)，包括一致任务快照、固定输入与知识来源；第 8 步准备训练并接真实模型。四队调度、助手、网页与完整系统联调仍按原分工推进。
+
+## 账号权限增量（2026-10-18）
+
+本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。

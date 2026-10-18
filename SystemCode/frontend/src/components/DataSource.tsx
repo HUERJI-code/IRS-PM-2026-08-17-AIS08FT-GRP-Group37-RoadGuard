@@ -43,7 +43,8 @@ export default function DataSource() {
     }
   }
   return (
-    <section className="data-source" aria-label="数据来源">
+    <section className={`data-source ${mode !== 'live' ? 'mock-source' : ''}`} aria-label="数据来源">
+      <div className="source-selector">
       <label htmlFor="data-mode">数据来源</label>
       <select
         id="data-mode"
@@ -56,13 +57,12 @@ export default function DataSource() {
         <option value="failure">模拟 · 服务失败</option>
         <option value="conflict">模拟 · 版本冲突</option>
       </select>
-      <p>
-        {mode === 'live'
-          ? '读取本机后端；服务失败不会自动切换模拟数据。'
-          : '模拟数据 · 固定只读快照，不代表实际业务；修改操作被阻止，不会发送到后端。'}
-      </p>
+      </div>
+      {mode !== 'live' && <p className="source-warning">模拟数据 · 固定只读快照，不代表实际业务；修改操作被阻止，不会发送到后端。</p>}
       <details>
         <summary>检查数据接入</summary>
+        <div className="diagnostic-panel">
+        <p>读取当前所选来源；服务失败不会自动切换模拟数据。</p>
         <p>只读检查活动任务数量与 GA 方案是否存在，不会创建或重新规划。</p>
         <button
           className="text-button"
@@ -83,6 +83,7 @@ export default function DataSource() {
             {state.plan ? <p>方案：{state.plan}</p> : <NoPlanState />}
           </>
         )}
+        </div>
       </details>
     </section>
   )

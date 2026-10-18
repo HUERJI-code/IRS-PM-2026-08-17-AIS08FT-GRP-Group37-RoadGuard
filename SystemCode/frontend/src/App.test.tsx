@@ -6,6 +6,7 @@ import App from './App'
 import planning from './test/planning-fixtures.json'
 import HealthStatus from './components/HealthStatus'
 
+const session = { user: { user_id: 'dispatcher-1', username: 'c', display_name: 'Dispatcher C', role: 'dispatcher', crew_id: null }, csrf_token: 'csrf-test', expires_at: Math.floor(Date.now() / 1000) + 3600 }
 const health = {
   status: 'ok',
   database: 'ok',
@@ -23,7 +24,7 @@ function open(path = '/') {
 
 beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock)
-  fetchMock.mockResolvedValue(new Response(JSON.stringify(health)))
+  fetchMock.mockImplementation(async (url) => new Response(JSON.stringify(String(url).endsWith('/auth/session') ? session : health)))
 })
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -32,6 +33,36 @@ afterEach(() => {
 })
 
 describe('workspace navigation', () => {
+  it('opens the workspace menu and closes it after an authorized destination is selected', async () => {
+    const user = userEvent.setup()
+    open('/tasks')
+    const menu = await screen.findByRole('button', { name: '菜单 ☰' })
+    expect(menu).toHaveAttribute('aria-expanded', 'false')
+    expect(menu).toHaveAttribute('aria-controls', 'workspace-navigation')
+    await user.click(menu)
+    expect(menu).toHaveAttribute('aria-expanded', 'true')
+    const navigation = screen.getByRole('navigation', { name: '主要导航' })
+    expect(within(navigation).queryByRole('link', { name: /上传巡检|施工队工作台/ })).not.toBeInTheDocument()
+    await user.click(within(navigation).getByRole('link', { name: /四队路线/ }))
+    expect(screen.getByRole('heading', { name: '四队路线', level: 1 })).toBeVisible()
+    expect(menu).toHaveAttribute('aria-expanded', 'false')
+    expect(fetchMock.mock.calls.every(([, options]) => !options?.method || options.method === 'GET')).toBe(true)
+  })
+
+  it('explains automatic acceptance and manual review, and navigates without writes', async () => {
+    open('/tasks')
+    const user = userEvent.setup()
+    await user.click(await screen.findByText('操作说明与流程'))
+    expect(await screen.findByRole('complementary', { name: '当前步骤指引' })).toHaveTextContent('这里管理要做什么')
+    await user.click(screen.getByText('查看完整流程'))
+    const guide = screen.getByRole('complementary', { name: '当前步骤指引' })
+    expect(within(guide).getByText(/自动接受的巡检可直接进入任务/)).toBeVisible()
+    expect(within(guide).queryByRole('link', { name: '上传巡检' })).not.toBeInTheDocument()
+    await user.click(within(guide).getByRole('link', { name: '处理待审' }))
+    expect(screen.getByRole('heading', { level: 1, name: '人工审核' })).toBeVisible()
+    expect(fetchMock.mock.calls.every(([, options]) => !options?.method || options.method === 'GET')).toBe(true)
+  })
+
   it('opens the task workspace and reads tasks without business writes', async () => {
     open()
     expect(
@@ -55,12 +86,11 @@ describe('workspace navigation', () => {
     ).toBe(true)
   })
 
-  it('supports all six navigation destinations without issuing business writes', async () => {
+  it('supports all five dispatcher navigation destinations without issuing business writes', async () => {
     const user = userEvent.setup()
     open('/tasks')
     await screen.findByText(/输入版本 7/)
     for (const [label, heading] of [
-      ['上传巡检', '上传与结果'],
       ['人工审核', '人工审核'],
       ['维修任务', '任务工作区'],
       ['四队路线', '四队路线'],
@@ -68,7 +98,7 @@ describe('workspace navigation', () => {
       ['路线助手', '路线助手'],
     ]) {
       await user.click(
-        within(screen.getByRole('navigation')).getByRole('link', {
+        within(screen.getByRole('navigation', { name: '主要导航' })).getByRole('link', {
           name: new RegExp(label),
         }),
       )
@@ -76,7 +106,7 @@ describe('workspace navigation', () => {
         screen.getByRole('heading', { name: heading, level: 1 }),
       ).toBeVisible()
       expect(
-        within(screen.getByRole('navigation')).getByRole('link', {
+        within(screen.getByRole('navigation', { name: '主要导航' })).getByRole('link', {
           name: new RegExp(label),
         }),
       ).toHaveAttribute('aria-current', 'page')
@@ -93,12 +123,12 @@ describe('workspace navigation', () => {
   it('handles a direct page URL and an unknown URL with a return link', async () => {
     const first = open('/comparison')
     expect(
-      screen.getByRole('heading', { name: '算法比较', level: 1 }),
+      await screen.findByRole('heading', { name: '算法比较', level: 1 }),
     ).toBeVisible()
     first.unmount()
     open('/missing')
-    expect(screen.getByRole('heading', { name: '页面不存在' })).toBeVisible()
-    await userEvent.click(screen.getByRole('link', { name: '返回任务工作区' }))
+    expect(await screen.findByRole('heading', { name: '页面不存在' })).toBeVisible()
+    await userEvent.click(screen.getByRole('link', { name: '返回工作区' }))
     expect(
       screen.getByRole('heading', { name: '任务工作区', level: 1 }),
     ).toBeVisible()
@@ -167,7 +197,7 @@ describe('service connection', () => {
 it('preserves the actual recalculation pair across navigation and clears it on source change', async () => {
   fetchMock.mockImplementation(async (url, init) => {
     const path = String(url)
-    const body = path.endsWith('/health') ? { ...health, input_revision: planning.calculation.input_revision }
+    const body = path.endsWith('/auth/session') ? session : path.endsWith('/health') ? { ...health, input_revision: planning.calculation.input_revision }
       : path.endsWith('/crews') ? planning.after_crews
       : path.includes('/tasks/snapshot') ? planning.after_snapshot
       : init?.method === 'POST' ? planning.calculation
@@ -182,8 +212,8 @@ it('preserves the actual recalculation pair across navigation and clears it on s
   await user.click(calculate)
   await user.click(await screen.findByRole('link', { name: '比较本次 GA 与 Greedy' }))
   await screen.findByText('同轮方案已核对')
-  await user.click(within(screen.getByRole('navigation')).getByRole('link', { name: /路线助手/ }))
-  await user.click(within(screen.getByRole('navigation')).getByRole('link', { name: /算法比较/ }))
+  await user.click(within(screen.getByRole('navigation', { name: '主要导航' })).getByRole('link', { name: /路线助手/ }))
+  await user.click(within(screen.getByRole('navigation', { name: '主要导航' })).getByRole('link', { name: /算法比较/ }))
   await screen.findByText('同轮方案已核对')
   expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1)
   await user.selectOptions(screen.getByRole('combobox', { name: '数据来源' }), 'normal')

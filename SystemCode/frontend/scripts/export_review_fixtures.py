@@ -10,7 +10,9 @@ sys.path.insert(0, str(FRONTEND.parents[1] / 'SystemCode/backend'))
 from fastapi.testclient import TestClient
 from PIL import Image
 from roadguard.config import load_settings
-from roadguard.main import create_app
+# Explicit isolated fixture identities; production never installs this override.
+sys.path.insert(0, str(FRONTEND.parents[1] / 'SystemCode/tests'))
+from auth_test_support import create_app
 
 with tempfile.TemporaryDirectory(prefix='roadguard-review-') as temp:
     settings = load_settings({'ROADGUARD_DB_PATH': str(Path(temp) / 'review.sqlite3'), 'ROADGUARD_VISION_MANIFEST_PATH': 'disabled'})

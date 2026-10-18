@@ -8,7 +8,7 @@ from PIL import Image
 import pytest
 
 from roadguard.config import load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.schemas import Task, TaskSnapshot
 
 

@@ -8,7 +8,7 @@ import sys
 from fastapi.testclient import TestClient
 
 from roadguard.config import load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "examples" / "handoff_demo.py"

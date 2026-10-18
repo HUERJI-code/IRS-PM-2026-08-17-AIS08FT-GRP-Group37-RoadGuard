@@ -24,15 +24,15 @@ export default function WorkspacePage({
       </div>
       <section className="workspace-panel" aria-labelledby="workspace-status">
         <div className="panel-top">
-          <span className="badge">页面准备中</span>
-          <span>业务页面待接入</span>
+          <span className="badge">开发中</span>
+          <span>助手服务尚未接入</span>
         </div>
         <div className="empty-state">
           <div className="placeholder-symbol" aria-hidden="true">
             ＋
           </div>
-          <h2 id="workspace-status">工作区已建立，业务功能尚未接入</h2>
-          <p>本工作区的业务界面尚未接入。可使用上方数据来源检查接口状态。</p>
+          <h2 id="workspace-status">路线助手尚未开放</h2>
+          <p>当前可以使用巡检、审核、任务与四队路线；此页面暂不提供问答或队伍调整。</p>
         </div>
         <div className="planned-areas" aria-label="后续功能区域">
           {areas.map((area, index) => (
@@ -46,8 +46,8 @@ export default function WorkspacePage({
       <section className="workflow-note">
         <div>
           <p className="eyebrow">流程衔接</p>
-          <h2>查看下一工作区</h2>
-          <p>目前可浏览页面结构；导航不会触发上传、审核或重新规划。</p>
+          <h2>继续使用已接入的工作区</h2>
+          <p>从道路照片开始完成巡检。页面导航不会触发上传、审核或重新规划。</p>
         </div>
         <Link className="button" to={next.path}>
           {next.label}

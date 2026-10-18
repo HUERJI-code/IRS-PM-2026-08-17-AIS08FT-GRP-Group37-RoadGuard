@@ -151,3 +151,7 @@ Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP �
 B 读取 Task 时必须识别 null 时长/null 期限以及 is_demo，不凭 label 猜规则；共同输入版本以 PlanningRevision 表示。C 展示 status、selected_detection_id、decision_trace 和演示来源，不自行推定严重度或分流阈值；前端模拟响应直接使用 contracts/examples 文件并保持标记。后台失败时不能用这些样例冒充真实成功响应。
 
 `SystemCode/tests/test_contracts.py` 继续验证固定 DTO。第 6 步的 test_workflow、test_workflow_api、test_geography 和 test_images 覆盖持久化流程、真实 HTTP、地理边界、上传及回归。训练、真实检测、路线和完整项目端到端验证仍未完成。
+
+## 账号权限增量（2026-10-18）
+
+本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。

@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -56,6 +57,29 @@ beforeEach(() => {
   })
 })
 afterEach(() => vi.unstubAllGlobals())
+
+it('scrolls mobile review detail after loading and does not jump again on retry', async () => {
+  vi.stubGlobal('matchMedia', () => ({ matches: true }))
+  let resolveDetail!: (value: Response) => void
+  const deferred = new Promise<Response>((resolve) => { resolveDetail = resolve })
+  const queue = { items: [fixture.before], total: 1, limit: 20, offset: 0 }
+  transport.mockImplementation(async (url) => url.includes('?') ? reply(queue) : deferred)
+  mount('')
+  const pane = screen.getByLabelText('审核详情工作区')
+  const scroll = vi.fn()
+  Object.defineProperty(pane, 'scrollIntoView', { value: scroll })
+  await userEvent.click(await screen.findByRole('button', { name: new RegExp(`待审核.*${fixture.before.inspection_id}`) }))
+  expect(pane).toHaveFocus()
+  expect(scroll).not.toHaveBeenCalled()
+  await act(async () => resolveDetail(reply(fixture.before)))
+  expect(await screen.findByRole('heading', { name: '巡检详情' })).toBeVisible()
+  expect(scroll).toHaveBeenCalledExactlyOnceWith({ block: 'start', behavior: 'instant' })
+  transport.mockImplementation(async (url) => reply(url.includes('?') ? queue : fixture.before))
+  await userEvent.click(screen.getByRole('button', { name: '重新读取并检查' }))
+  await screen.findByRole('heading', { name: '巡检详情' })
+  expect(scroll).toHaveBeenCalledTimes(1)
+  expect(transport.mock.calls.some(([, init]) => init.method === 'POST')).toBe(false)
+})
 
 it('validates all backend-generated review and replay fixtures', () => {
   for (const value of Object.values(fixtures)) {

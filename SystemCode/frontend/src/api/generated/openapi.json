@@ -3,7 +3,7 @@
   "info": {
     "title": "RoadGuard API",
     "description": "Persisted inspections using explicit demo scenarios or the locally installed released detector. Inspection responses contain at most one box; raw evidence is retained internally. Uploads return only inspection_id, status, detection and task_id; details are queried separately. Real primary detections meeting the configured confidence threshold (default 0.60) create one task. Lower-confidence detections require review; business rules and tasks remain demo assumptions. Road type is user-declared. Four-crew Greedy/GA route plans use the configured travel matrix (labelled simulated by default, or Google Routes when enabled) and demo shift/objective assumptions; recalculation is explicit and never automatic. The separate /demo endpoints remain stateless previews.",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "paths": {
     "/api/v1/health": {
@@ -37,6 +37,340 @@
         }
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/session": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Session",
+        "operationId": "session_api_v1_auth_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crew/workspace": {
+      "get": {
+        "tags": [
+          "Crew workspace"
+        ],
+        "summary": "The authenticated crew's latest GA route and current tasks only",
+        "operationId": "workspace_api_v1_crew_workspace_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrewWorkspaceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/demo/scenarios": {
       "get": {
         "tags": [
@@ -44,6 +378,31 @@
         ],
         "summary": "List fixed synthetic scenarios (no image inference)",
         "operationId": "list_demo_scenarios_api_v1_demo_scenarios_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -55,12 +414,28 @@
               }
             }
           },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "503": {
-            "description": "Service Unavailable",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -75,15 +450,40 @@
         ],
         "summary": "Run a synthetic detector and demo rules without saving tasks",
         "operationId": "assess_demo_api_v1_demo_assessments_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/DemoAssessmentRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -96,35 +496,41 @@
               }
             }
           },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
-            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Not Found"
           },
           "422": {
-            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Unprocessable Entity"
           },
           "503": {
-            "description": "Service Unavailable",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Service Unavailable"
           }
         }
       }
@@ -137,6 +543,11 @@
         "summary": "Upload an image, return one primary box and automatically create an eligible task",
         "description": "Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200.",
         "operationId": "create_inspection_api_v1_inspections_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "idempotency-key",
@@ -147,6 +558,24 @@
               "pattern": "^[A-Za-z0-9_-]{1,64}$",
               "title": "Idempotency-Key"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -159,6 +588,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -274,6 +709,11 @@
         ],
         "summary": "List Inspections",
         "operationId": "list_inspections_api_v1_inspections_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "status",
@@ -314,6 +754,24 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -326,6 +784,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -377,6 +841,11 @@
         ],
         "summary": "Get Inspection",
         "operationId": "get_inspection_api_v1_inspections__inspection_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "inspection_id",
@@ -387,6 +856,24 @@
               "pattern": "^[0-9a-f]{32}$",
               "title": "Inspection Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -399,6 +886,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -450,6 +943,11 @@
         ],
         "summary": "Get Inspection Image",
         "operationId": "get_inspection_image_api_v1_inspections__inspection_id__image_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "inspection_id",
@@ -460,6 +958,24 @@
               "pattern": "^[0-9a-f]{32}$",
               "title": "Inspection Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -473,6 +989,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -524,6 +1046,11 @@
         ],
         "summary": "Review Inspection",
         "operationId": "review_inspection_api_v1_inspections__inspection_id__review_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "inspection_id",
@@ -534,6 +1061,24 @@
               "pattern": "^[0-9a-f]{32}$",
               "title": "Inspection Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "requestBody": {
@@ -556,6 +1101,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -607,6 +1158,11 @@
         ],
         "summary": "List Tasks",
         "operationId": "list_tasks_api_v1_tasks_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "status",
@@ -646,6 +1202,24 @@
               "default": 0,
               "title": "Offset"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -658,6 +1232,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -709,6 +1289,11 @@
         ],
         "summary": "Read every active task and the shared revision in one snapshot",
         "operationId": "get_task_snapshot_api_v1_tasks_snapshot_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "expected_revision",
@@ -726,6 +1311,24 @@
               ],
               "title": "Expected Revision"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -738,6 +1341,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -789,6 +1398,11 @@
         ],
         "summary": "Get Task",
         "operationId": "get_task_api_v1_tasks__task_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "task_id",
@@ -799,6 +1413,24 @@
               "pattern": "^[0-9a-f]{32}$",
               "title": "Task Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -811,6 +1443,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -860,6 +1498,11 @@
         ],
         "summary": "Update Task",
         "operationId": "update_task_api_v1_tasks__task_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "task_id",
@@ -870,6 +1513,24 @@
               "pattern": "^[0-9a-f]{32}$",
               "title": "Task Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "requestBody": {
@@ -892,6 +1553,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -943,6 +1610,31 @@
         ],
         "summary": "List all configured crews, including unavailable ones, with the current input revision",
         "operationId": "list_crews_api_v1_crews_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -954,45 +1646,51 @@
               }
             }
           },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
-            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Not Found"
           },
           "409": {
-            "description": "Conflict",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Conflict"
           },
           "422": {
-            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Unprocessable Entity"
           },
           "503": {
-            "description": "Service Unavailable",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Service Unavailable"
           }
         }
       }
@@ -1005,6 +1703,11 @@
         "summary": "Change crew availability; increments input_revision and marks existing plans stale",
         "description": "Does not compute a new plan. Call POST /route-plans/recalculate with the returned input_revision. Retrying with the same request_id replays the stored outcome.",
         "operationId": "update_crew_api_v1_crews__crew_id__patch",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "crew_id",
@@ -1015,6 +1718,24 @@
               "pattern": "^[a-z0-9-]{1,32}$",
               "title": "Crew Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "requestBody": {
@@ -1037,6 +1758,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -1089,15 +1816,40 @@
         "summary": "Plan all active tasks with Greedy and GA on the same input and matrix, then save both",
         "description": "expected_revision must equal the current input_revision. If tasks or crews change during calculation, nothing is saved and 409 stale_input_revision is returned. Travel times come from the configured provider: the labelled simulated matrix (matrix_is_simulated=true) or Google Routes computeRouteMatrix. If Google fails, 503 travel_matrix_unavailable is returned, nothing is saved and there is no fallback to simulated times.",
         "operationId": "recalculate_api_v1_route_plans_recalculate_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RecalculateRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1110,45 +1862,51 @@
               }
             }
           },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
-            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Not Found"
           },
           "409": {
-            "description": "Conflict",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Conflict"
           },
           "422": {
-            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Unprocessable Entity"
           },
           "503": {
-            "description": "Service Unavailable",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
-            }
+            },
+            "description": "Service Unavailable"
           }
         }
       }
@@ -1161,6 +1919,11 @@
         "summary": "Latest saved plan for one algorithm; is_stale=true if inputs changed since it was computed",
         "description": "Returns 404 route_plan_not_found when no plan has been saved yet.",
         "operationId": "latest_plan_api_v1_route_plans_latest_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "algorithm",
@@ -1174,6 +1937,24 @@
               "type": "string",
               "title": "Algorithm"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -1186,6 +1967,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -1237,6 +2024,11 @@
         ],
         "summary": "A saved plan by ID, for display, explanation and before/after comparison",
         "operationId": "get_plan_api_v1_route_plans__plan_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
         "parameters": [
           {
             "name": "plan_id",
@@ -1247,6 +2039,24 @@
               "pattern": "^plan-[0-9a-f]{32}$",
               "title": "Plan Id"
             }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
           }
         ],
         "responses": {
@@ -1259,6 +2069,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "content": {
@@ -1306,6 +2122,52 @@
   },
   "components": {
     "schemas": {
+      "Account": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "inspector",
+              "crew",
+              "dispatcher"
+            ],
+            "title": "Role"
+          },
+          "crew_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crew Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "display_name",
+          "role",
+          "crew_id"
+        ],
+        "title": "Account"
+      },
       "AutoAcceptance": {
         "properties": {
           "policy_version": {
@@ -1554,6 +2416,106 @@
           "end_minute"
         ],
         "title": "CrewRoute"
+      },
+      "CrewWorkspacePlan": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id"
+          },
+          "algorithm": {
+            "type": "string",
+            "const": "ga",
+            "title": "Algorithm"
+          },
+          "input_revision": {
+            "type": "integer",
+            "title": "Input Revision"
+          },
+          "is_stale": {
+            "type": "boolean",
+            "title": "Is Stale"
+          },
+          "planning_start_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Planning Start At"
+          },
+          "depot": {
+            "$ref": "#/components/schemas/Depot"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/PlanningSettings"
+          },
+          "matrix_provider": {
+            "type": "string",
+            "title": "Matrix Provider"
+          },
+          "matrix_is_simulated": {
+            "type": "boolean",
+            "title": "Matrix Is Simulated"
+          },
+          "crew_routes": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRoute"
+            },
+            "type": "array",
+            "title": "Crew Routes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan_id",
+          "algorithm",
+          "input_revision",
+          "is_stale",
+          "planning_start_at",
+          "depot",
+          "settings",
+          "matrix_provider",
+          "matrix_is_simulated",
+          "crew_routes"
+        ],
+        "title": "CrewWorkspacePlan",
+        "description": "Only the account's crew route; no other crews, matrix or global metrics."
+      },
+      "CrewWorkspaceResponse": {
+        "properties": {
+          "crew": {
+            "$ref": "#/components/schemas/CrewRecord"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CrewWorkspacePlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/TaskRecord"
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "input_revision": {
+            "type": "integer",
+            "title": "Input Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "crew",
+          "plan",
+          "tasks",
+          "input_revision"
+        ],
+        "title": "CrewWorkspaceResponse"
       },
       "DecisionTrace": {
         "properties": {
@@ -1870,6 +2832,19 @@
           "message"
         ],
         "title": "ErrorResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
       },
       "HealthResponse": {
         "properties": {
@@ -2268,6 +3243,45 @@
         "title": "InspectionUploadResponse"
       },
       "JsonValue": {},
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "format": "password",
+            "title": "Password",
+            "writeOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "LogoutResponse": {
+        "properties": {
+          "logged_out": {
+            "type": "boolean",
+            "const": true,
+            "title": "Logged Out",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "LogoutResponse"
+      },
       "ObjectiveWeights": {
         "properties": {
           "makespan_minutes": {
@@ -2764,7 +3778,10 @@
           },
           "actor_source": {
             "type": "string",
-            "const": "user_declared_unverified",
+            "enum": [
+              "user_declared_unverified",
+              "authenticated_user"
+            ],
             "title": "Actor Source",
             "default": "user_declared_unverified"
           }
@@ -3112,6 +4129,29 @@
         ],
         "title": "RuleCandidate"
       },
+      "SessionResponse": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/Account"
+          },
+          "csrf_token": {
+            "type": "string",
+            "title": "Csrf Token"
+          },
+          "expires_at": {
+            "type": "integer",
+            "title": "Expires At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user",
+          "csrf_token",
+          "expires_at"
+        ],
+        "title": "SessionResponse"
+      },
       "ShiftLimit": {
         "properties": {
           "mode": {
@@ -3450,7 +4490,8 @@
             "enum": [
               "system_demo_rules",
               "system_confidence_policy",
-              "user_declared_unverified"
+              "user_declared_unverified",
+              "authenticated_user"
             ],
             "title": "Actor Source"
           }
@@ -3899,6 +4940,53 @@
         ],
         "title": "UploadDetection",
         "description": "Only the values needed to display the uploaded image's primary damage."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "roadguard_session"
       }
     }
   }

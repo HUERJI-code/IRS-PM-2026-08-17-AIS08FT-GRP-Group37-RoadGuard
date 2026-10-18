@@ -64,6 +64,10 @@ class Settings:
     demo_rules_path: Path = DEFAULT_DEMO_RULES_PATH
     upload_path: Path | None = None
     vision_manifest_path: Path | None = None
+    auth_cookie_secure: bool = False
+    auth_allowed_origins: tuple[str, ...] = tuple(
+        f"http://{host}:{port}" for host in ("127.0.0.1", "localhost") for port in (5173, 4173, 8000, 8001)
+    )
 
     def __post_init__(self) -> None:
         if not isinstance(self.project, Mapping):
@@ -75,6 +79,11 @@ class Settings:
             raise ConfigurationError("Project configuration requires scenario and planning objects.")
         if type(self.database_busy_timeout_ms) is not int or self.database_busy_timeout_ms <= 0:
             raise ConfigurationError("Database busy timeout must be a positive integer.")
+        if type(self.auth_cookie_secure) is not bool or not self.auth_allowed_origins or any(
+            not isinstance(origin, str) or not origin.startswith(("http://", "https://")) or "*" in origin
+            for origin in self.auth_allowed_origins
+        ):
+            raise ConfigurationError("Authentication cookie/origin settings are invalid.")
         object.__setattr__(self, "config_path", _resolve_path(self.config_path))
         object.__setattr__(self, "database_path", _resolve_path(self.database_path))
         # A DB override also isolates uploads unless an explicit storage override is given.
@@ -90,6 +99,9 @@ class Settings:
 def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
     """Relative overrides resolve against the repository, never the process cwd."""
     environment = os.environ if environ is None else environ
+    secure = environment.get("ROADGUARD_AUTH_COOKIE_SECURE", "false").lower()
+    if secure not in {"true", "false"}:
+        raise ConfigurationError("Authentication cookie setting must be true or false.")
     config_path = _resolve_path(environment.get("ROADGUARD_CONFIG_PATH", DEFAULT_CONFIG_PATH))
     database_path = _resolve_path(environment.get("ROADGUARD_DB_PATH", DEFAULT_DB_PATH))
     demo_rules_path = _resolve_path(environment.get("ROADGUARD_DEMO_RULES_PATH", DEFAULT_DEMO_RULES_PATH))
@@ -107,4 +119,6 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
         upload_path=environment.get("ROADGUARD_UPLOAD_PATH"),
         vision_manifest_path=(None if environment.get("ROADGUARD_VISION_MANIFEST_PATH") == "disabled"
                               else environment.get("ROADGUARD_VISION_MANIFEST_PATH", DEFAULT_VISION_MANIFEST_PATH)),
+        auth_cookie_secure=secure == "true",
+        auth_allowed_origins=tuple(value.strip() for value in environment.get("ROADGUARD_AUTH_ALLOWED_ORIGINS", ",".join(Settings.auth_allowed_origins)).split(",") if value.strip()),
     )
