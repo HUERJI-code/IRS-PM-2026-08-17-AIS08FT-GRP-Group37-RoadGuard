@@ -1,14 +1,14 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v6",
+  "package_version": "a-knowledge-v7",
   "language": "zh-CN",
   "owner": "A",
   "review_basis": "repository_consistency_review",
   "review": {
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
-    "reviewed_on": "2026-10-14",
-    "note": "Repository source/config consistency check only; not engineering approval, road permission or experiment validation."
+    "reviewed_on": "2026-10-18",
+    "note": "Targeted v7 maintenance: upload decoder source digest and qa-03 real-confidence gate correction. Document versions retained; B/C stage descriptions still need review before assistant ingestion. Not engineering approval, road permission or model-quality validation."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -81,8 +81,8 @@
     {
       "source_id": "src-images-code",
       "path": "SystemCode/backend/roadguard/images.py",
-      "version": "image-normalization-v1",
-      "sha256": "94014ff335effd59ef11ee50061ecd5498031f2d51454c6d5f66e7887ed10a75"
+      "version": "image-normalization-v1.1",
+      "sha256": "0594933d1b8a6d2e8af81285fff656c7f9bd32d9d718c0d62c800d5fd287a233"
     }
   ],
   "context_sources": [
@@ -345,11 +345,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "da0955108b2fc866c95bf573dd4d9f3e284fc2a4705125db6e83fc29255a512d",
+    "sha256": "3299c145f8e22cf6ae8674dcbf1500ec6d6ead7fa2bd962d5b95bf85c0027db4",
     "case_count": 10
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "2d952ec97d946ddfa69afd1b7c0fe312c5f05dbfb870438df972d90e2c8f6a42"
+    "sha256": "fe83dea5b0d9cac0dfb56d3a35bd17f3bb55c4020cb08a7fd8a4ff06be8b026b"
   }
 }

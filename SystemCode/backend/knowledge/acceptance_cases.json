@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v6",
+  "package_version": "a-knowledge-v7",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -83,9 +83,9 @@
       ],
       "expected_grounded_points": [
         "演示阈值为 0.60，等号达标，0.5999 低于阈值。",
-        "任一低置信度使整条巡检 pending_review，保留所有检测且确认前没有任务。",
+        "demo 模式任一低置信度使整条巡检 pending_review；数据库保留原始检测，HTTP 最多返回一个框，确认前没有任务。",
         "人工确认/纠正独立保存审核历史，不把原置信度变为 1.0，也不覆盖原始标签。",
-        "real 模式尚未校准，所有非空真实检测一律先审核，不能套用 demo 自动接受阈值。"
+        "real 模式按主框原始置信度分流：达到配置阈值 0.60 自动创建一个任务，低于阈值待审核，无检测不建任务；这是项目策略，不是已校准的正确率保证。"
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
