@@ -14,6 +14,12 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from roadguard.errors import AppError
 
 
+# This module loads before the lazy YOLO adapter imports Ultralytics. Keep the
+# Pillow decoder for uploads: Ultralytics replaces Image.open with a HEIF fallback
+# that can import an uninstalled plugin on malformed PNG/JPEG input. Upload
+# validation must retain its 422/413 errors independently of model initialization.
+_open_upload_image = Image.open
+
 MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 MAX_IMAGE_PIXELS = 20_000_000
 _ID = re.compile(r"[0-9a-f]{32}\Z")
@@ -59,7 +65,7 @@ class ImageStore:
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("error", Image.DecompressionBombWarning)
-                with Image.open(BytesIO(data)) as source:
+                with _open_upload_image(BytesIO(data)) as source:
                     if source.format not in ("PNG", "JPEG"):
                         raise AppError("unsupported_image_type", "Only PNG and JPEG images are supported.", 415)
                     if source.width * source.height > MAX_IMAGE_PIXELS:
@@ -67,7 +73,7 @@ class ImageStore:
                     if getattr(source, "is_animated", False) or getattr(source, "n_frames", 1) != 1:
                         raise AppError("invalid_image", "Animated images are not supported.", 422)
                     source.verify()
-                with Image.open(BytesIO(data)) as source:
+                with _open_upload_image(BytesIO(data)) as source:
                     source.load()
                     oriented = ImageOps.exif_transpose(source).convert("RGB")
                     clean = Image.new("RGB", oriented.size)

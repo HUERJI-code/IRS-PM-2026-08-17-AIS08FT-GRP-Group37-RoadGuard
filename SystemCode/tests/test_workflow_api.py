@@ -42,6 +42,30 @@ def upload(client, png, scenario="low_confidence", key="upload-1", **changes):
                        data={"metadata": json.dumps(metadata(scenario, **changes))})
 
 
+def test_upload_validation_survives_lazy_vision_decoder_patch(client, png, settings, monkeypatch):
+    # Ultralytics 8.4.176 replaces Image.open on lazy model import. Its fallback
+    # imports optional pi_heif after *any* decode error, including corrupt PNGs.
+    # Exercise that interaction without installing vision dependencies in CI.
+    pillow_open = Image.open
+
+    def optional_format_fallback(*args, **kwargs):
+        try:
+            return pillow_open(*args, **kwargs)
+        except Exception:
+            raise ModuleNotFoundError("No module named 'pi_heif'") from None
+
+    monkeypatch.setattr(Image, "open", optional_format_fallback)
+    for index, data in enumerate((b"not a PNG image", png[:32])):
+        response = upload(client, data, key=f"invalid-after-vision-{index}")
+        assert response.status_code == 422, response.text
+        assert response.json()["code"] == "invalid_image"
+    assert client.get("/api/v1/inspections").json()["total"] == 0
+    assert client.get("/api/v1/tasks/snapshot").json()["total"] == 0
+    assert client.get("/api/v1/health").json()["input_revision"] == 0
+    assert not settings.upload_path.exists() or not list(settings.upload_path.iterdir())
+    assert upload(client, png, key="valid-after-vision").status_code == 201
+
+
 def test_upload_review_correction_task_completion_and_replay(client, png):
     response = upload(client, png)
     assert response.status_code == 201, response.text

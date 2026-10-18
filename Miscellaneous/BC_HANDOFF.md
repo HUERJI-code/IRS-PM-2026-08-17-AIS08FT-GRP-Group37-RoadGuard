@@ -141,4 +141,4 @@ python -m pytest SystemCode/tests -q
 
 测试覆盖完整查询（含超过 100 条）、原 Task 字段投影、未知值保留、终态过滤、输入版本冲突、并发一致性、外部连接生命周期、损坏数据失败、固定输入可复现、知识来源一致性，以及 HTTP 对接示例。没有执行真实模型训练、Google 行程获取、规划、GPT 调用或前端演示。
 
-第 8 步当前实现与实际数据/模型验收见[视觉验收记录](STEP8_VISION_ACCEPTANCE.md)。C 须更新 a-workflow-v5 巡检 schema（detections 最多一框；新增可空 auto_acceptance；主框 ≥ 0.60 自动建任务）和 a-knowledge-v6 知识索引，安装说明见[模型发布](MODEL_RELEASE_AND_BACKEND.md)；真实检测与演示业务标志须分别展示。B 可使用任务快照/固定输入开发调度；C 可使用现有 HTTP、知识包与引用验收案例开发界面和助手。组员接入后的跨模块联调仍是第 9 步。
+第 8 步当前实现与实际数据/模型验收见[视觉验收记录](STEP8_VISION_ACCEPTANCE.md)。C 须使用 a-workflow-v5 巡检 schema（detections 最多一框；新增可空 auto_acceptance；主框 ≥ 0.60 自动建任务）和 a-knowledge-v7 知识资料（v7 修正 qa-03 并同步解码源码摘要），安装说明见[模型发布](MODEL_RELEASE_AND_BACKEND.md)；真实检测与演示业务标志须分别展示。2026-10-18 已进行 A/B/C 现有模块联调，见[验收记录](INTEGRATION_ACCEPTANCE_20261018.md)；助手尚未实现，知识包中 B/C 阶段表述仍需在助手摄取前核对。

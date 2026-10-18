@@ -1,5 +1,7 @@
 # RoadGuard 联调验收清单与 A 模块准备验收
 
+2026-10-18 更新：A/B/C 现有模块已进行独立数据库的前后端联调，实际通过项、解码修复及助手/Google 未验收边界见[本次验收记录](INTEGRATION_ACCEPTANCE_20261018.md)。下文保留 2026-10-14 的 A 阶段基线，不能将当时的 B/C 未就绪描述当作当前进度。
+
 日期：2026-10-14；清单版本：`integration-checklist-v1`；负责人：A。
 
 规则依据：[业务规则定稿](BUSINESS_RULES_BASELINE.md)。接口依据：[API 契约](API_CONTRACT.md)与[返回字段说明](INSPECTION_RESPONSE_FIELDS.md)。当前范围：验收 A 的规则/工作流和交付样例；**B/C 尚未就绪，跨模块整合暂不执行**。清单中的预期不是已经完成的系统结果。
