@@ -15,6 +15,7 @@ from pydantic import TypeAdapter
 
 from roadguard.database import Database, DatabaseStateError, increment_revision, read_revision
 from roadguard.errors import AppError
+from roadguard.auth.access import active_actor, audit, check_inspection, check_task, denied
 from roadguard.geography import JurongScope
 from roadguard.images import ImageStore, PreparedImage
 from roadguard.rules import RulePolicy, RuleService
@@ -215,7 +216,7 @@ class WorkflowService:
                            (inspection.status, inspection.record_version, inspection.model_dump_json(), inspection.inspection_id))
 
     @_db_operation
-    def create(self, metadata: UploadMetadata, image: PreparedImage, idempotency_key: str) -> InspectionMutation:
+    def create(self, metadata: UploadMetadata, image: PreparedImage, idempotency_key: str, *, actor=None) -> InspectionMutation:
         metadata = _validated(UploadMetadata, metadata)
         try:
             key = TypeAdapter(RequestId).validate_python(idempotency_key)
@@ -228,13 +229,17 @@ class WorkflowService:
         except (TypeError, ValueError):
             raise AppError("validation_error", "Upload request validation failed.", 422) from None
         fingerprint = _hash({"metadata": metadata.model_dump(mode="json"), "source_sha256": image.source_sha256})
-        with self._create_key_lock(key):
-            return self._create_prepared(metadata, image, key, fingerprint)
+        key_scope = "create" if actor is None else "create:" + actor.user_id
+        with self._create_key_lock(key_scope + ":" + key):
+            return self._create_prepared(metadata, image, key, fingerprint, actor, key_scope)
 
-    def _create_prepared(self, metadata, image, key, fingerprint):
+    def _create_prepared(self, metadata, image, key, fingerprint, actor=None, key_scope="create"):
         # Replay is independent of model availability and never invokes inference.
         with self.database.connect() as connection:
-            replay_id = self._lookup_key(connection, "create", key, fingerprint)
+            if actor:
+                active_actor(connection, actor)
+                if actor.role != "inspector": denied()
+            replay_id = self._lookup_key(connection, key_scope, key, fingerprint)
             if replay_id:
                 return self._inspection_result(connection, replay_id, replayed=True)
         self.scope.validate(metadata.latitude, metadata.longitude, metadata.road_type)
@@ -243,7 +248,9 @@ class WorkflowService:
         saved_image_id = None
         try:
             with self.database.transaction() as connection:
-                replay_id = self._lookup_key(connection, "create", key, fingerprint)
+                if actor:
+                    active_actor(connection, actor)
+                replay_id = self._lookup_key(connection, key_scope, key, fingerprint)
                 if replay_id:
                     return self._inspection_result(connection, replay_id, replayed=True)
                 now, inspection_id = _now(), uuid4().hex
@@ -276,11 +283,14 @@ class WorkflowService:
                                    (inspection_id, inspection.status, 1, now.isoformat(), inspection.model_dump_json(),
                                     self.rules.policy.model_dump_json()))
                 if candidate is not None:
-                    actor = "system_confidence_policy" if metadata.mode == "real" else "system_demo_rules"
-                    task = self._make_task(inspection, candidate, key, actor, now)
+                    task_source = "system_confidence_policy" if metadata.mode == "real" else "system_demo_rules"
+                    task = self._make_task(inspection, candidate, key, task_source, now)
                     self._insert_task(connection, task)
                     increment_revision(connection)
-                self._save_key(connection, "create", key, fingerprint, inspection_id)
+                if actor:
+                    connection.execute("INSERT INTO inspection_owners VALUES (?,?)", (inspection_id, actor.user_id))
+                    audit(connection, actor, "inspection.created", inspection_id, key)
+                self._save_key(connection, key_scope, key, fingerprint, inspection_id)
                 result = self._inspection_result(connection, inspection_id, changed=candidate is not None)
             return result
         except BaseException:
@@ -293,23 +303,29 @@ class WorkflowService:
             raise
 
     @_db_operation
-    def get_inspection(self, inspection_id: str) -> InspectionRecord:
+    def get_inspection(self, inspection_id: str, *, actor=None) -> InspectionRecord:
         inspection_id = self._resource_id(inspection_id)
         with self.database.connect() as connection:
+            if actor: check_inspection(connection, actor, inspection_id)
             return self._inspection(connection, inspection_id)
 
     @_db_operation
-    def get_task(self, task_id: str) -> TaskRecord:
+    def get_task(self, task_id: str, *, actor=None) -> TaskRecord:
         task_id = self._resource_id(task_id)
         with self.database.connect() as connection:
+            if actor: check_task(connection, actor, task_id)
             return self._task(connection, task_id)
 
     @_db_operation
-    def review(self, inspection_id: str, payload: ReviewRequest) -> InspectionMutation:
+    def review(self, inspection_id: str, payload: ReviewRequest, *, actor=None) -> InspectionMutation:
         inspection_id = self._resource_id(inspection_id)
         payload = _validated(ReviewRequest, payload)
         key_scope, fingerprint = "review:" + inspection_id, _hash(payload.model_dump(mode="json"))
+        if actor: key_scope += ":" + actor.user_id
         with self.database.transaction() as connection:
+            if actor:
+                active_actor(connection, actor)
+                if actor.role != "dispatcher": denied()
             replay_id = self._lookup_key(connection, key_scope, payload.request_id, fingerprint)
             if replay_id:
                 return self._inspection_result(connection, replay_id, replayed=True)
@@ -332,28 +348,35 @@ class WorkflowService:
                 detection_id=payload.detection_id, original_damage_label=selected.label if selected else None,
                 corrected_damage_label=payload.damage_label, note=payload.note,
                 rule_version=rules.policy.rule_version,
+                actor_source="authenticated_user" if actor else "user_declared_unverified",
             ))
             reason = "No task is created after the declared dismissal." if candidate is None else rules.policy.rules[candidate.damage_label].reason
             data["decision_trace"].append(DecisionTrace(
                 code="review_dismissed" if candidate is None else "reviewed_rule_mapping",
-                message="User-declared review (identity is unverified). " + reason,
+                message=("Authenticated review. " if actor else "User-declared review (identity is unverified). ") + reason,
                 rule_version=rules.policy.rule_version, is_demo=True,
             ))
             inspection = InspectionRecord.model_validate(data)
             self._write_inspection(connection, inspection)
             if candidate is not None:
-                self._insert_task(connection, self._make_task(inspection, candidate, payload.request_id, "user_declared_unverified", now))
+                self._insert_task(connection, self._make_task(inspection, candidate, payload.request_id, "authenticated_user" if actor else "user_declared_unverified", now))
                 increment_revision(connection)
             self._save_key(connection, key_scope, payload.request_id, fingerprint, inspection_id)
+            if actor: audit(connection, actor, "inspection.reviewed", inspection_id, payload.request_id)
             return self._inspection_result(connection, inspection_id, changed=candidate is not None)
 
     @_db_operation
-    def update_task(self, task_id: str, payload: TaskPatch) -> TaskMutation:
+    def update_task(self, task_id: str, payload: TaskPatch, *, actor=None) -> TaskMutation:
         task_id = self._resource_id(task_id)
         payload = _validated(TaskPatch, payload, patch=True)
         key_scope, fingerprint = "task:" + task_id, _hash(payload.model_dump(mode="json", exclude_unset=True))
+        if actor:
+            key_scope += ":" + actor.user_id
+            if actor.role == "crew" and (payload.status != "completed" or payload.model_fields_set - {"request_id", "expected_version", "status"}):
+                denied()
         with self.database.transaction() as connection:
             replay_id = self._lookup_key(connection, key_scope, payload.request_id, fingerprint)
+            plan_id = check_task(connection, actor, task_id, writing=True, replay=bool(replay_id)) if actor else None
             if replay_id:
                 return self._task_result(connection, replay_id, replayed=True)
             task = self._task(connection, task_id)
@@ -381,13 +404,14 @@ class WorkflowService:
                 data.update(updated_at=now, record_version=task.record_version + 1)
                 data["history"].append(TaskHistoryEntry(
                     request_id=payload.request_id, action="updated", recorded_at=now, changed_fields=changed_fields,
-                    before=self._audit(task), after=after, actor_source="user_declared_unverified",
+                    before=self._audit(task), after=after, actor_source="authenticated_user" if actor else "user_declared_unverified",
                 ))
                 task = TaskRecord.model_validate(data)
                 connection.execute("UPDATE tasks SET status=?,record_version=?,record_json=? WHERE task_id=?",
                                    (task.status, task.record_version, task.model_dump_json(), task_id))
                 increment_revision(connection)
             self._save_key(connection, key_scope, payload.request_id, fingerprint, task_id)
+            if actor: audit(connection, actor, "task.completed" if payload.status == "completed" else "task.updated", task_id, payload.request_id, plan_id)
             return self._task_result(connection, task_id, changed=changed)
 
     def _list(self, table, model, status, limit, offset):

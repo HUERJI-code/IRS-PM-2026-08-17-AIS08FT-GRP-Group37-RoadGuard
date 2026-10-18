@@ -1,6 +1,6 @@
 # A → C 知识资料包
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v7`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v8`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
 
 先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
 
@@ -15,3 +15,5 @@ sha256 使用文件原始 UTF-8 字节；仓库通过 .gitattributes 固定 LF�
 [acceptance_cases.json](acceptance_cases.json) 提供十个未来助手验收题。`supported` 表示有静态依据支持所列解释，不表示已经执行修改；`insufficient_data` 表示问题需要包中没有的运行事实/实验/道路权限证据，须承认不足并指出缺少的材料。期望要点是验收要求，不是伪造的助手测试结果。
 
 文档完整性测试为 `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`，验证来源摘要、引用 anchor、标签/演示映射与十个验收题。C 后续自行实现检索与引用，并以 B 的持久化方案事实回答动态路线问题。
+
+2026-10-18 v8 定向更新：人工操作身份与工作流来源哈希同步账号权限实现；旧记录不改写。角色与 CLI 见[账号角色规范](../../../Miscellaneous/ACCOUNT_ROLES.md)。其余尚待助手接入核验的阶段描述保持原限制。

@@ -21,7 +21,7 @@ python -m pip install -r SystemCode/backend/requirements-ci.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
-本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，OpenAPI `/openapi.json`。当前还声明巡检上传/查询/图片/审核和任务查询/修改。`roadguard.main.create_app(settings=None)` 创建可隔离应用；工厂不初始化数据库。lifespan 验证配置、演示规则与冻结地理资料后，执行数据库迁移。配置、目录权限或数据库结构错误使启动失败，不静默重建已有业务数据。此步面向本地开发，未新增身份认证或公开部署。
+本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，OpenAPI `/openapi.json`。当前还声明巡检上传/查询/图片/审核和任务查询/修改。`roadguard.main.create_app(settings=None)` 创建可隔离应用；工厂不初始化数据库。lifespan 验证配置、演示规则与冻结地理资料后，执行数据库迁移。配置、目录权限或数据库结构错误使启动失败，不静默重建已有业务数据。业务 API 已启用三类账号与会话鉴权；首次使用请按[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)创建巡查员、固定队伍账号和中央调度员。当前仍面向本地开发，未公开部署。
 
 健康响应：
 
@@ -111,3 +111,7 @@ python -m pytest SystemCode/tests -q
 ```
 
 基础测试覆盖配置、实际响应/OpenAPI、迁移、持久化、回滚和并发。vision/rules/demo API 验证固定案例、演示映射和预览不写库。第 6 步加入 geography/images/workflow/API 测试，覆盖图片/坐标、审核、任务状态、幂等、资源版本和历史规则快照。测试使用临时数据库和图片；它们不代表真实模型、道路网络核验、四队规划或完整系统已完成。
+
+## 账号接口（2026-10-18）
+
+`POST /api/v1/auth/login` 设置会话 Cookie，`GET /api/v1/auth/session` 返回当前账号，写请求需要 `X-CSRF-Token`。施工队使用 `GET /api/v1/crew/workspace` 读取本队快照；禁止匿名业务访问。Schema v4 增量迁移保留现有数据。账号开通、Swagger 测试及部署配置见[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)。

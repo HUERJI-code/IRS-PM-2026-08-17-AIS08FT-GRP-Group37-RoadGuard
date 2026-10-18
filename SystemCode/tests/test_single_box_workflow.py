@@ -9,7 +9,7 @@ import pytest
 
 from roadguard.config import load_settings
 from roadguard.errors import AppError
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.schemas.workflow import InspectionRecord, InspectionResponse, ReviewRequest
 from roadguard.tasks import TaskQueryService
 from roadguard.vision.primary import PrimaryPolicy

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -57,6 +57,33 @@ it('validates generated task mutations and replays', () => {
     expect(() => parseModel('TaskRecord', value.before)).not.toThrow()
     expect(() => parseModel('TaskMutation', value.response)).not.toThrow()
     expect(() => parseModel('TaskMutation', value.replay)).not.toThrow()
+  }
+})
+it('reveals a mobile selection after its asynchronous detail loads, only once', async () => {
+  vi.stubGlobal('matchMedia', () => ({ matches: true }))
+  try {
+    let resolveDetail!: (value: Response) => void
+    const deferred = new Promise<Response>((resolve) => { resolveDetail = resolve })
+    transport.mockImplementation(async (url) => url.includes('?') ? reply(list) : deferred)
+    mount('')
+    const pane = screen.getByLabelText('任务详情工作区')
+    const scroll = vi.fn()
+    Object.defineProperty(pane, 'scrollIntoView', { value: scroll })
+    const button = await screen.findByRole('button', { name: new RegExp(`P[123].*活动.*${fixture.before.task_id}`) })
+    await userEvent.click(button)
+    expect(pane).toHaveFocus()
+    expect(scroll).not.toHaveBeenCalled()
+    await act(async () => resolveDetail(reply(fixture.before)))
+    expect(await screen.findByRole('heading', { name: '任务详情' })).toBeVisible()
+    expect(scroll).toHaveBeenCalledExactlyOnceWith({ block: 'start', behavior: 'instant' })
+    expect(button).toHaveAttribute('aria-current', 'true')
+    transport.mockImplementation(async (url) => reply(url.includes('?') ? list : fixture.before))
+    await userEvent.click(screen.getByRole('button', { name: '重新读取并检查' }))
+    await screen.findByRole('heading', { name: '任务详情' })
+    expect(scroll).toHaveBeenCalledTimes(1)
+    expect(writes()).toHaveLength(0)
+  } finally {
+    vi.unstubAllGlobals()
   }
 })
 it.each(['completed', 'cancelled', 'label', 'location'] as const)(

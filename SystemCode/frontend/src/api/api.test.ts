@@ -94,7 +94,8 @@ describe('requests and failures', () => {
     )
     const [url, request] = transport.mock.calls[0]
     expect(url).toBe('/api/v1/inspections')
-    expect(request.headers).toEqual({ 'Idempotency-Key': 'upload_1' })
+    expect(new Headers(request.headers).get('Idempotency-Key')).toBe('upload_1')
+    expect(new Headers(request.headers).has('Content-Type')).toBe(false)
     const form = request.body as FormData
     expect([...form.keys()]).toEqual(['image', 'metadata'])
     expect(JSON.parse(form.get('metadata') as string)).not.toHaveProperty(

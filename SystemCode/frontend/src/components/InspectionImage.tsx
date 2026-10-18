@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApi } from '../api/context'
 import type { Model } from '../api/contracts'
 import { ErrorState } from './RequestState'
+import labels from '../../../model/label_schema.json'
 
 export default function InspectionImage({
   inspection,
@@ -17,6 +18,7 @@ export default function InspectionImage({
     return <ErrorState error={error} />
   }
   const detection = inspection.detections[0]
+  const labelName = labels.classes.find((item) => item.label_key === detection?.label)?.display_name_zh ?? detection?.label
   return (
     <section aria-label="巡检图片与检测框">
       {mode !== 'live' && (
@@ -58,10 +60,7 @@ export default function InspectionImage({
         <p role="alert">图片读取失败，检测记录仍可查看。可刷新详情重试。</p>
       )}
       {detection && (
-        <p>
-          检测标签：<strong>{detection.label}</strong> · 置信度{' '}
-          {(detection.confidence * 100).toFixed(1)}%（不代表准确率保证）
-        </p>
+        <div className="detection-caption"><div><span>主要检测结果</span><strong>{labelName}</strong><small>{detection.label}</small></div><div><span>模型置信度</span><strong>{(detection.confidence * 100).toFixed(1)}%</strong><small>不代表准确率保证</small></div></div>
       )}
     </section>
   )

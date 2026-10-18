@@ -19,7 +19,7 @@ from roadguard.errors import AppError
 from roadguard.geography import JurongScope
 from roadguard.images import ImageStore
 from roadguard.inspections import WorkflowService
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.rules import RuleService, load_rule_policy
 from roadguard.schemas import Detection
 from roadguard.schemas.workflow import InspectionRecord, ReviewRequest, UploadMetadata

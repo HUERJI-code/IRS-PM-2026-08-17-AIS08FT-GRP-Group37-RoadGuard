@@ -1,0 +1,13 @@
+.login-shell{min-height:100dvh;display:grid;grid-template-columns:1fr 1fr;background:#f6f8fa;color:#152b39}
+.login-intro{background:#112d38;color:#eef6f6;padding:clamp(32px,6vw,96px);display:flex;flex-direction:column;justify-content:space-between;gap:64px;background-image:radial-gradient(ellipse at bottom left,#245463,transparent 70%)}
+.login-brand{color:inherit;font-size:26px;font-weight:750;text-decoration:none;letter-spacing:-1px}
+.login-intro h1{font-size:clamp(36px,4vw,60px);line-height:1.35;letter-spacing:-2px;margin:24px 0}
+.login-intro p:not(.eyebrow){color:#c1d6db;line-height:1.9;max-width:28em}.login-intro .eyebrow,.login-intro>span{color:#a5ced2}
+.login-panel{display:flex;align-items:center;justify-content:center;padding:48px 32px}.login-panel form{width:min(100%,420px)}
+.login-panel h2{font-size:32px;margin:12px 0}.login-description{color:#61737f;margin-bottom:32px}
+.login-panel label{display:block;font-weight:650;margin:18px 0 8px}.login-panel input{width:100%;min-height:48px;border:1px solid #ccd8de;border-radius:8px;background:white;padding:12px;font:inherit}
+.login-submit{width:100%;min-height:50px;margin:28px 0}.login-error{color:#a42735;background:#ffedef;padding:12px;border-radius:8px}
+.login-roles{border-top:1px solid #dae3e7;padding-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;font-weight:650;font-size:13px}.login-roles small{display:block;font-weight:400;color:#687d89;line-height:1.6;margin-top:8px}
+.auth-loading{min-height:100dvh;display:grid;place-items:center;color:#345462}.account-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.account-controls small{display:block;color:#627582;font-size:11px}.account-controls button{min-height:40px}.account-error{color:#9d2833;margin:8px 24px}
+.bound-crew{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.bound-crew span{color:#687c87;font-size:13px}
+@media(max-width:760px){.login-shell{grid-template-columns:1fr}.login-intro{padding:28px;gap:28px}.login-intro h1{font-size:32px;letter-spacing:-1px;margin:12px 0}.login-intro>span{display:none}.login-intro p:not(.eyebrow){margin-bottom:0}.login-panel{padding:32px 24px}.login-panel h2{font-size:27px}.login-roles{gap:12px}.topbar{gap:12px;align-items:flex-start}.account-controls{margin-left:auto;font-size:12px;gap:8px}.account-controls button{padding:8px}.foundation-label{display:none}}

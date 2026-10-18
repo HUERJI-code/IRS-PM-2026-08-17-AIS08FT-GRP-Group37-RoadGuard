@@ -37,7 +37,7 @@ export default function HealthStatus() {
   }, [attempt, api])
 
   return (
-    <section className="connection" aria-label="服务连接">
+    <section className={`connection connection-${state.kind}`} aria-label="服务连接">
       <div role="status" aria-live="polite">
         <span className={`status-dot ${state.kind}`} aria-hidden="true" />
         {state.kind === 'loading' && '正在检查服务…'}
@@ -49,9 +49,9 @@ export default function HealthStatus() {
           </>
         )}
       </div>
-      <p>
+      <details className="connection-details"><summary>连接说明</summary><p>
         连接状态是最近一次检查的快照，不代表模型、路线服务或助手已就绪；业务修改后可重新检查。
-      </p>
+      </p></details>
       <button
         className="text-button"
         disabled={state.kind === 'loading'}

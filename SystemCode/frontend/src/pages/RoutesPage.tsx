@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { usePlanningRun } from '../planning/runContext'
 import RouteMap from '../components/RouteMap'
@@ -8,6 +8,7 @@ import type { Model } from '../api/contracts'
 import { ApiError } from '../api/errors'
 import { formatSingaporeTime } from '../api/format'
 import { ErrorState, LoadingState } from '../components/RequestState'
+import { crewColor } from '../map/geography'
 
 type CrewOperation = {
   id: string
@@ -276,6 +277,9 @@ export default function RoutesPage() {
           管理全部配置队伍，核对活动任务后显式重算，并查看保存方案的路线顺序。
         </p>
       </div>
+      <nav className="section-links" aria-label="调度页面区域"><a href="#dispatch-map">查看路线地图 ↓</a><a href="#dispatch-controls">队伍与重算 ↓</a></nav>
+      <div className="dispatch-board">
+      <div className="dispatch-controls" id="dispatch-controls" tabIndex={-1}>
       {mode !== 'live' && (
         <p className="notice">当前为只读模拟快照，不能保存队伍或发起重算。</p>
       )}
@@ -295,29 +299,27 @@ export default function RoutesPage() {
         </p>
       )}
       {inputs && (
-        <>
-          <section className="review-queue" aria-label="工程队管理">
+        <div className="planning-console">
+          <section className="review-queue crew-management" aria-label="工程队管理">
             <h2>工程队可用状态</h2>
             <p>
               配置队伍共 {inputs.crews.crews.length}{' '}
               支。停用队伍仍保留显示；可用不等于已获分配。
             </p>
-            <ul className="review-list">
-              {inputs.crews.crews.map((crew) => (
-                <li key={crew.crew_id}>
+            <ul className="crew-grid">
+              {inputs.crews.crews.map((crew, index) => (
+                <li key={crew.crew_id} className={`crew-card ${crew.available ? '' : 'crew-unavailable'}`} style={{ '--crew': crewColor(crew.crew_id) } as CSSProperties}>
+                  <span className="crew-avatar" aria-hidden="true">0{index + 1}</span>
                   <strong>
-                    {crew.name} · {crew.crew_id}
+                    {crew.name}
                   </strong>
-                  <span>
-                    {crew.available ? '可用' : '停用'} · 记录版本{' '}
-                    {crew.record_version} · 基地 {crew.depot_id}
-                  </span>
-                  <span>
+                  <span className={`status-badge ${crew.available ? 'status-ready' : ''}`}>{crew.available ? '可用' : '停用'}</span>
+                  <details><summary>队伍记录</summary><p>{crew.crew_id} · 记录版本 {crew.record_version} · 基地 {crew.depot_id}</p><p>
                     更新：
                     {crew.updated_at
                       ? formatSingaporeTime(crew.updated_at)
                       : '配置初始状态'}
-                  </span>
+                  </p></details>
                   <button
                     disabled={locked || !ready || mode !== 'live'}
                     onClick={() => void changeCrew(crew)}
@@ -328,15 +330,14 @@ export default function RoutesPage() {
               ))}
             </ul>
           </section>
-          <section className="review-record" aria-label="重算控制">
+          <section className="review-record planning-control" aria-label="重算控制">
             <h2>核对规划输入</h2>
-            <p>
+            <p className="planning-task-count">
               活动任务 {inputs.snapshot.total} 项 · 输入版本{' '}
               {inputs.snapshot.input_revision}
             </p>
-            <p>
-              来源：{inputs.snapshot.source} ·
-              课程模拟业务。完成和取消的任务不进入此快照。
+            <p className="field-note">
+              来源：{inputs.snapshot.source}。完成和取消的任务不进入此快照。
             </p>
             <details>
               <summary>查看本次活动任务</summary>
@@ -351,7 +352,7 @@ export default function RoutesPage() {
                 ))}
               </ul>
             </details>
-            <p>
+            <p className="field-note">
               开始时刻由后端在本次计算开始时确定；GA 与 Greedy
               使用同一输入与矩阵。矩阵来源由后端配置决定；Google
               服务失败不会切换模拟矩阵。
@@ -370,7 +371,7 @@ export default function RoutesPage() {
               重算 GA 与 Greedy
             </button>
           </section>
-        </>
+        </div>
       )}
       {crewResult && (
         <section className="notice" aria-label="队伍保存结果">
@@ -450,6 +451,8 @@ export default function RoutesPage() {
           <Link className="button" to="/comparison">比较本次 GA 与 Greedy</Link>
         </section>
       )}
+      </div>
+      <div className="dispatch-map" id="dispatch-map" tabIndex={-1}>
       <div className="map-controls">
         <label htmlFor="map-algorithm">地图方案</label>
         <select
@@ -470,6 +473,8 @@ export default function RoutesPage() {
         currentRevision={inputs?.crews.input_revision}
         readFailed={planError !== null}
       />
+      </div>
+      </div>
       <section className="review-record" aria-label="已保存方案">
         <h2>已保存方案快照</h2>
         {planError !== null && (
@@ -480,6 +485,8 @@ export default function RoutesPage() {
             </p>
           </>
         )}
+        <details className="saved-plans-details"><summary>展开 GA / Greedy 的方案编号、状态与未分配原因</summary>
+        <div className="comparison-plans">
         {algorithms.map((algorithm) => {
           const plan = plans[algorithm]
           return (
@@ -533,6 +540,8 @@ export default function RoutesPage() {
             </section>
           )
         })}
+        </div>
+        </details>
       </section>
     </>
   )

@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v7",
+  "package_version": "a-knowledge-v8",
   "language": "zh-CN",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-18",
-    "note": "Targeted v7 maintenance: upload decoder source digest and qa-03 real-confidence gate correction. Document versions retained; B/C stage descriptions still need review before assistant ingestion. Not engineering approval, road permission or model-quality validation."
+    "note": "Targeted v8 maintenance: authenticated human actions and workflow schema/service source digests. Existing records remain unchanged. Other stage descriptions still require review before assistant ingestion. Account authentication is not engineering accreditation."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -64,13 +64,13 @@
       "source_id": "src-workflow-schema",
       "path": "SystemCode/backend/roadguard/schemas/workflow.py",
       "version": "a-workflow-v5",
-      "sha256": "b7a9ea0df526a7563902524494cfa4c42e18a0b603f0c721a096d3011d5750cb"
+      "sha256": "fa0a27c874b408406fa13c884b82b71882a36febf0655b976b01d72b7c93041f"
     },
     {
       "source_id": "src-workflow-service",
       "path": "SystemCode/backend/roadguard/inspections/service.py",
       "version": "a-workflow-v5",
-      "sha256": "66442237a522e18df9ccddb6439962daafc912fafe508dbcf77d0bf7a66e3a7c"
+      "sha256": "54aa78e74b3dca1b73695cf32e002fbc3a237723568ea30569b3c33b9c11f41d"
     },
     {
       "source_id": "src-geography-code",
@@ -223,7 +223,7 @@
       "document_version": "5",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "f1260f6d718f5f140517acffc91e9260c10d1e63dfa67e907f2deb38058b8dc0",
+      "sha256": "a120b824cd953a6bb4e5621da74f8d4bde4f9090bc0830c74d8601d2d4bad0cf",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -345,11 +345,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "3299c145f8e22cf6ae8674dcbf1500ec6d6ead7fa2bd962d5b95bf85c0027db4",
+    "sha256": "b6cba9f14d0a0ddc18afb4ba37c91f3a8dd78741fdb4178864f401fe4d3bef24",
     "case_count": 10
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "fe83dea5b0d9cac0dfb56d3a35bd17f3bb55c4020cb08a7fd8a4ff06be8b026b"
+    "sha256": "262d78191f24e759fb59661e436ca1fb2ffb654ed934f39ceb7c410712c8fbb9"
   }
 }

@@ -77,17 +77,24 @@ export default function RouteMap({
       )}
       {stale && <p role="status">当前地图方案已过期，不能作为最新调度结果。</p>}
       {plan ? (
-        <p>
-          {plan.algorithm.toUpperCase()} · 方案{' '}
+        <details className="map-provenance">
+          <summary>{plan.algorithm.toUpperCase()} · 输入版本 {plan.input_revision} · {plan.matrix_is_simulated ? '模拟行程矩阵' : '外部行程数据'} · 查看来源</summary>
+          <p>方案{' '}
           <span className="record-id">{plan.plan_id}</span> · 输入版本{' '}
           {plan.input_revision} · 开始{' '}
           {formatSingaporeTime(plan.planning_start_at)} ·{' '}
           {plan.matrix_is_simulated ? '模拟行程矩阵' : '外部行程数据'}（
           {plan.matrix_provider}）
-        </p>
+          </p>
+        </details>
       ) : (
         <p>尚无可展示方案；仅显示冻结服务区域和基地，不虚构任务或路线。</p>
       )}
+      {plan && <div className="plan-at-a-glance" aria-label="所选方案概览">
+        <div><span>已分配任务</span><strong>{plan.metrics.assigned_task_count}<small> 项</small></strong></div>
+        <div><span>未分配任务</span><strong>{plan.metrics.unassigned_task_count}<small> 项</small></strong></div>
+        <div><span>总行程</span><strong>{formatMinutes(plan.metrics.total_travel_minutes)}</strong></div>
+      </div>}
       <div className="map-controls" aria-label="地图视野控制">
         <button
           onClick={() => setZoom((value) => Math.min(8, value * 1.5))}
@@ -318,7 +325,7 @@ export default function RouteMap({
         北 ↑ · 绿色区域：Jurong East /
         West；菱形：基地；彩色圆点：队伍停靠序号；灰色方点：未分配任务。重合点可用下方任务列表逐一选择。
       </p>
-      <p>
+      <details className="map-provenance"><summary>地图范围、基地与数据来源</summary><p>
         边界：URA Master Plan 2025，冻结版本 jurong-je-jw-mp2025-v1，获取于
         2026-10-12。
         <a href="https://data.gov.sg/datasets/d_2cc750190544007400b2cfd5d7f53209/view">
@@ -330,7 +337,7 @@ export default function RouteMap({
         </a>
         。规划边界不代表道路维修权限。基地为 NUS-ISS
         建筑参考点，模拟调度用途，不是已验证驾驶入口。
-      </p>
+      </p></details>
       <div className="map-legend" aria-label="队伍图例">
         {routes.map((route) => (
           <button

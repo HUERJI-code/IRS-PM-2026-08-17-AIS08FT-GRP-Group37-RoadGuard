@@ -20,6 +20,7 @@ from roadguard.tasks import TaskQueryService
 from roadguard.crews import CrewService
 from roadguard.routing.service import PlanningService, RouteQueryService
 from roadguard.routing.settings import depot_from_project, load_routing_config
+from roadguard.auth.service import AuthService
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -46,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         database.initialize()
         application.state.settings = active_settings
         application.state.database = database
+        application.state.auth_service = AuthService(database, crew_ids)
         application.state.rule_service = rule_service
         application.state.demo_detector = DemoDetector()
         application.state.real_detector = LocalVisionDetector(active_settings.vision_manifest_path)
@@ -63,6 +65,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         finally:
             # Connections belong to operation contexts; there is no global connection.
             application.state.database = None
+            application.state.auth_service = None
             application.state.rule_service = None
             application.state.demo_detector = None
             application.state.real_detector = None
@@ -74,7 +77,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     application = FastAPI(
         title="RoadGuard API",
-        version="0.8.0",
+        version="0.9.0",
         description=(
             "Persisted inspections using explicit demo scenarios or the locally installed released detector. "
             "Inspection responses contain at most one box; raw evidence is retained internally. "
@@ -89,6 +92,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
     install_error_handlers(application)
+    @application.middleware("http")
+    async def private_responses(request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
     application.include_router(create_api_router())
     return application
 

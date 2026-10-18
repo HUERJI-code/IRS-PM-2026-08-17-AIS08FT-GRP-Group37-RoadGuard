@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import labels from '../../../model/label_schema.json'
 import { useApi } from '../api/context'
@@ -19,10 +19,12 @@ function ReviewRecord({
   id,
   onReviewed,
   onLockChange,
+  onReady,
 }: {
   id: string
   onReviewed: () => void
   onLockChange: (locked: boolean) => void
+  onReady: () => void
 }) {
   const { api, mode } = useApi()
   const [attempt, setAttempt] = useState(0)
@@ -76,6 +78,9 @@ function ReviewRecord({
       controller.abort()
     }
   }, [api, id, attempt])
+  useEffect(() => {
+    if (!loading) onReady()
+  }, [loading, onReady])
   useEffect(() => {
     if (!busy && !uncertain) return
     const warn = (event: BeforeUnloadEvent) => event.preventDefault()
@@ -183,20 +188,16 @@ function ReviewRecord({
   const pending = inspection.status === 'pending_review'
   return (
     <section className="review-record" aria-label="选中巡检">
-      <h2>巡检详情</h2>
-      <p className="record-id">
-        {inspection.inspection_id} · 记录版本 {inspection.record_version}
-      </p>
-      <p>
-        推理来源：
-        {inspection.mode === 'real' ? '真实图片 · 实验模型' : '固定模拟检测'} ·
-        业务规则：课程演示
-      </p>
-      <p>
-        模型：{inspection.model_version} ·{' '}
-        {formatSingaporeTime(inspection.created_at)}
-      </p>
+      <div className="record-heading"><div><p className="eyebrow">#{inspection.inspection_id.slice(0, 8)} · {formatSingaporeTime(inspection.created_at)}</p><h2>巡检详情</h2></div><span className="status-badge">{pending ? '待审核' : '已处理'}</span></div>
+      <div className="review-body">
+      <div className="review-evidence">
       <InspectionImage key={`${id}-${attempt}`} inspection={inspection} />
+      <details className="review-provenance">
+        <summary>检测来源与记录</summary>
+        <p>推理来源：{inspection.mode === 'real' ? '真实图片 · 实验模型' : '固定模拟检测'}</p>
+        <p>模型：{inspection.model_version}</p>
+        <p className="record-id">{inspection.inspection_id} · 记录版本 {inspection.record_version}</p>
+      </details>
       <details>
         <summary>查看规则依据</summary>
         <ul>
@@ -265,6 +266,7 @@ function ReviewRecord({
           </ul>
         </section>
       )}
+      </div>
       {pending && (
         <form
           onSubmit={(event) => void submit(event)}
@@ -275,6 +277,7 @@ function ReviewRecord({
           )}
           <fieldset disabled={busy || uncertain || conflict || mode !== 'live'}>
             <legend>人工审核决定</legend>
+            <p className="review-instruction">核对照片中的损伤，再选择处理方式。</p>
             <label htmlFor="review-action">操作</label>
             <select
               id="review-action"
@@ -317,9 +320,7 @@ function ReviewRecord({
               value={note}
               onChange={(event) => setNote(event.target.value)}
             />
-            <p className="field-note">
-              确认/纠正仅选用接口返回的唯一检测对象；原始检测与审核记录由后端保留。
-            </p>
+            <p className="field-note review-outcome">{action === 'dismiss' ? '驳回后保留巡检记录，不创建维修任务。' : '接受后创建维修任务，原始检测与审核记录保留。'}</p>
           </fieldset>
           {error !== null && <ErrorState error={error} />}
           {conflict && (
@@ -353,6 +354,7 @@ function ReviewRecord({
           {busy && <p role="status">正在保存，请勿离开当前记录。</p>}
         </form>
       )}
+      </div>
       <div className="workflow-note">
         <button
           className="text-button"
@@ -371,6 +373,24 @@ export default function ReviewPage() {
   const { api } = useApi()
   const [params, setParams] = useSearchParams()
   const selected = params.get('inspection') ?? ''
+  const detailRef = useRef<HTMLDivElement>(null)
+  const selectionToReveal = useRef(selected)
+  useEffect(() => {
+    selectionToReveal.current = selected
+    if (selected && window.matchMedia?.('(max-width: 760px)').matches) {
+      detailRef.current?.focus({ preventScroll: true })
+    }
+  }, [selected])
+  const revealSelection = useCallback(() => {
+    // The loaded record must exist before scrolling, including direct-link entry.
+    // Do not interrupt an operator again after a save or explicit retry.
+    if (!selected || selectionToReveal.current !== selected) return
+    selectionToReveal.current = ''
+    if (window.matchMedia?.('(max-width: 760px)').matches) {
+      detailRef.current?.focus({ preventScroll: true })
+      detailRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' })
+    }
+  }, [selected])
   const [offset, setOffset] = useState(0)
   const [recordLocked, setRecordLocked] = useState(false)
   const [attempt, setAttempt] = useState(0)
@@ -415,16 +435,20 @@ export default function ReviewPage() {
     setOffset(next)
   }
   return (
-    <>
+    <div className="review-workspace">
       <div className="page-heading">
-        <p className="eyebrow">巡检 / 02</p>
+        <div>
+        <p className="eyebrow">巡检复核</p>
         <h1>人工审核</h1>
         <p className="description">
-          检查待审照片，确认、纠正或驳回；业务结论由后端保存。
+          核对损伤照片，让需要维修的问题进入任务队列。
         </p>
+        </div>
+        <Link className="button secondary" to="/tasks">查看已接受任务 →</Link>
       </div>
+      <div className="queue-workspace">
       <section className="review-queue" aria-label="待审队列">
-        <h2>待审核巡检</h2>
+        <div className="queue-heading"><h2>待审核巡检</h2><span className="queue-count">{!loading && !error && queue ? queue.total : '—'}</span></div>
         <button className="text-button" disabled={loading} onClick={refresh}>
           刷新待审队列
         </button>
@@ -437,7 +461,7 @@ export default function ReviewPage() {
         )}
         {queue && (
           <>
-            <p>共 {queue.total} 条待审记录</p>
+            <p className="queue-meta">共 {queue.total} 条待审记录 · 按提交时间排列</p>
             {!loading && !error && !queue.items.length && (
               <EmptyState
                 message={
@@ -451,7 +475,8 @@ export default function ReviewPage() {
               {queue.items.map((item) => (
                 <li key={item.inspection_id}>
                   <button
-                    className="text-button"
+                    className="queue-item-button"
+                    aria-label={`${labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? '无检测'}，待审核，巡检 ${item.inspection_id}`}
                     disabled={recordLocked}
                     aria-current={
                       selected === item.inspection_id ? 'true' : undefined
@@ -460,10 +485,11 @@ export default function ReviewPage() {
                       setParams({ inspection: item.inspection_id })
                     }
                   >
-                    {item.inspection_id}
+                    <span className="queue-item-title"><strong>{labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? '无检测'}</strong><span className="status-badge">待审核</span></span>
+                    <span className="queue-item-meta">{item.detections[0] ? `${(item.detections[0].confidence * 100).toFixed(1)}% 置信度` : '无检测框'} · {item.mode === 'real' ? '真实推理' : '模拟检测'}</span>
+                    <span className="queue-item-id" title={item.inspection_id}>#{item.inspection_id.slice(0, 8)} <span aria-hidden="true">↗</span></span>
                   </button>
                   <span>
-                    {item.detections[0]?.label ?? '无检测'} ·{' '}
                     {formatSingaporeTime(item.created_at)}
                   </span>
                 </li>
@@ -487,16 +513,20 @@ export default function ReviewPage() {
           </>
         )}
       </section>
+      <div className="record-pane" ref={detailRef} tabIndex={-1} aria-label="审核详情工作区">
       {selected ? (
         <ReviewRecord
           key={selected}
           id={selected}
           onReviewed={refresh}
           onLockChange={setRecordLocked}
+          onReady={revealSelection}
         />
       ) : (
-        <p className="notice">选择一条待审核巡检查看最新检测与记录版本。</p>
+        <div className="selection-empty"><span className="selection-icon" aria-hidden="true">{!loading && !error && queue?.total === 0 ? '✓' : '↖'}</span><h2>{!loading && !error && queue?.total === 0 ? '待审队列已清空' : '选择一条巡检，开始审核'}</h2><p>{!loading && !error && queue?.total === 0 ? '新的待审巡检会在这里出现。已接受的巡检可在维修任务中查看。' : '先核对照片与模型判断，再确认、纠正或驳回。'}</p><div className="selection-steps"><span><strong>确认</strong> 损伤类型判断正确</span><span><strong>纠正</strong> 修改类型后接受</span><span><strong>驳回</strong> 保留记录，不创建任务</span></div></div>
       )}
-    </>
+      </div>
+      </div>
+    </div>
   )
 }

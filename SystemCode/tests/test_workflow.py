@@ -384,7 +384,7 @@ def test_v1_migration_preserves_revision_and_repeated_v2_initialization_preserve
     database.initialize()
     with database.connect() as connection:
         assert read_revision(connection) == 7
-        assert connection.execute("SELECT schema_version FROM infra_metadata").fetchone()[0] == 3
+        assert connection.execute("SELECT schema_version FROM infra_metadata").fetchone()[0] == 4
     first = create(service, image)
     service.database.initialize()
     assert service.get_task(first.task.task_id) == first.task

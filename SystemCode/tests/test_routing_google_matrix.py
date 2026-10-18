@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from roadguard.config import load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.routing import google_matrix
 from roadguard.routing.google_matrix import GoogleRoutesMatrixProvider, TravelMatrixError, urllib_transport
 from roadguard.routing.models import Depot

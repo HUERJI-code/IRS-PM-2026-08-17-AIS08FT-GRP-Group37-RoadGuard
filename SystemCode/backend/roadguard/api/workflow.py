@@ -113,7 +113,7 @@ async def create_inspection(
     service = _service(request)
     metadata, data = await _upload(request)
     image = await run_in_threadpool(service.images.prepare, data)
-    result = await run_in_threadpool(service.create, metadata, image, idempotency_key)
+    result = await run_in_threadpool(service.create, metadata, image, idempotency_key, actor=request.state.account)
     response.status_code = 200 if result.replayed else 201
     return InspectionUploadResponse.from_record(result.inspection)
 
@@ -127,7 +127,7 @@ def list_inspections(request: Request, status: InspectionStatus = "all", limit: 
 
 @router.get("/inspections/{inspection_id}", response_model=InspectionResponse, responses=ERRORS, tags=["Inspections"])
 def get_inspection(request: Request, inspection_id: ResourceID) -> InspectionResponse:
-    return InspectionResponse.from_record(_service(request).get_inspection(inspection_id))
+    return InspectionResponse.from_record(_service(request).get_inspection(inspection_id, actor=request.state.account))
 
 
 @router.get("/inspections/{inspection_id}/image", response_class=FileResponse,
@@ -135,7 +135,7 @@ def get_inspection(request: Request, inspection_id: ResourceID) -> InspectionRes
             tags=["Inspections"])
 def get_inspection_image(request: Request, inspection_id: ResourceID) -> FileResponse:
     service = _service(request)
-    service.get_inspection(inspection_id)  # Never expose orphaned files without a DB record.
+    service.get_inspection(inspection_id, actor=request.state.account)
     return FileResponse(service.images.path(inspection_id), media_type="image/png",
                         headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "no-store"})
 
@@ -143,7 +143,7 @@ def get_inspection_image(request: Request, inspection_id: ResourceID) -> FileRes
 @router.post("/inspections/{inspection_id}/review", response_model=InspectionMutationResponse,
              responses=ERRORS, tags=["Inspections"])
 def review_inspection(request: Request, inspection_id: ResourceID, payload: ReviewRequest) -> InspectionMutationResponse:
-    return InspectionMutationResponse.from_result(_service(request).review(inspection_id, payload))
+    return InspectionMutationResponse.from_result(_service(request).review(inspection_id, payload, actor=request.state.account))
 
 
 @router.get("/tasks", response_model=TaskList, responses=ERRORS, tags=["Tasks"])
@@ -165,9 +165,9 @@ def get_task_snapshot(
 
 @router.get("/tasks/{task_id}", response_model=TaskRecord, responses=ERRORS, tags=["Tasks"])
 def get_task(request: Request, task_id: ResourceID) -> TaskRecord:
-    return _service(request).get_task(task_id)
+    return _service(request).get_task(task_id, actor=request.state.account)
 
 
 @router.patch("/tasks/{task_id}", response_model=TaskMutation, responses=ERRORS, tags=["Tasks"])
 def update_task(request: Request, task_id: ResourceID, payload: TaskPatch) -> TaskMutation:
-    return _service(request).update_task(task_id, payload)
+    return _service(request).update_task(task_id, payload, actor=request.state.account)

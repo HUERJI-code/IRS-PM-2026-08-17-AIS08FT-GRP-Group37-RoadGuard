@@ -5,6 +5,7 @@ import { ApiError } from '../api/errors'
 import { formatSingaporeTime, stopTime } from '../api/format'
 import { ErrorState, LoadingState } from '../components/RequestState'
 import { usePlanningRun } from '../planning/runContext'
+import { unassignedReasons } from '../map/geography'
 import { assessPair, numberText, percentageChange, priorities, type Pair, type Plan } from '../planning/comparison'
 
 type MetricRow = { label: string; unit: string; read: (plan: Plan) => number | null; percent?: boolean; note?: string }
@@ -84,6 +85,10 @@ export default function ComparisonPage() {
         <p>{stale ? '方案已过期，仅供历史比较；当前安排需要重新规划。' : '状态以本次读取为准，不保证此后输入未变化。'} 最近读取输入版本：{data.revision}。</p>
         {check.comparable && !check.sameCoverage && <p>两方案分配的任务集合不同：保留任务数量差异，时间和目标值仅展示原值，不计算百分比。</p>}
       </section>
+      {ga && greedy && <div className="comparison-overview" aria-label="两种方案概览">
+        <div><p className="eyebrow">01 / 任务覆盖</p><h3>先确认哪些任务得到安排</h3><p><strong>GA {ga.metrics.assigned_task_count}</strong><span>Greedy {greedy.metrics.assigned_task_count}</span></p><small>已分配任务数；未分配原因见下方详情。</small></div>
+        <div><p className="eyebrow">02 / 行程时间</p><h3>再看队伍需要行驶多久</h3><p><strong>GA {numberText(ga.metrics.total_travel_minutes)}</strong><span>Greedy {numberText(greedy.metrics.total_travel_minutes)}</span></p><small>单位：分钟。分配任务集合不同时不作比例比较。</small></div>
+      </div>}
       {ga && greedy && <section className="review-record comparison-panel" aria-label="指标比较">
         <h2>指标对照</h2>
         <p className="comparison-mobile-hint">窄屏可左右滑动表格，查看两种算法和变化列。</p>
@@ -115,15 +120,15 @@ function PlanDetails({ plan }: { plan: Plan }) {
   const seeded = plan.algorithm_parameters.seed_with_greedy
   return <>
     <p className="record-id">{plan.plan_id}</p>
-    <p>输入版本 {plan.input_revision} · {plan.is_demo ? '课程模拟规划' : '规划结果'} · 任务来源 {plan.task_source}</p>
+    <p>输入版本 {plan.input_revision} · 规划结果 · 任务来源 {plan.task_source}</p>
     <p>行程来源：{plan.matrix_provider}（{plan.matrix_is_simulated ? '模拟矩阵' : '外部行程数据'}）</p>
     <p>开始：{formatSingaporeTime(plan.planning_start_at)}<br />最晚收工：{stopTime(plan.planning_start_at, plan.metrics.makespan_minutes)}</p>
     {plan.algorithm === 'ga' && <p>{seeded === true ? 'GA + Greedy 初始解' : seeded === false ? 'GA 未使用 Greedy 初始解' : '未提供是否使用 Greedy 初始解'}；随机种子 {plan.random_seed ?? '未提供'}。在线设置不能与纯 GA 历史实验混用。</p>}
-    <p>返基地：{plan.settings.return_to_depot ? '是' : '否'}；班次：{plan.settings.shift_limit.mode === 'limited' ? `${plan.settings.shift_limit.minutes} 分钟` : '明确不限时'}。保存配置 {plan.settings.config_version}（{plan.settings.is_demo ? '演示假设' : '配置'}）。</p>
+    <p>返基地：{plan.settings.return_to_depot ? '是' : '否'}；班次：{plan.settings.shift_limit.mode === 'limited' ? `${plan.settings.shift_limit.minutes} 分钟` : '明确不限时'}。保存配置：{plan.settings.config_version}。</p>
     <h3>队伍工作量</h3>
     <ul>{plan.crew_routes.map((route) => <li key={route.crew_id}>{route.crew_id} · {{ assigned: '已分配', idle: '闲置', unavailable: '停用' }[route.status]} · {route.stops.length} 项任务 · {numberText(route.total_work_minutes)} 分钟</li>)}</ul>
     <h3>未分配任务与原因</h3>
-    {plan.unassigned_tasks.length === 0 ? <p>未分配 0 项。</p> : <ul>{plan.unassigned_tasks.map((task) => <li key={task.task_id}><Link to={`/tasks?task=${encodeURIComponent(task.task_id)}`}>{task.task_id}</Link> · {task.reason}</li>)}</ul>}
+    {plan.unassigned_tasks.length === 0 ? <p>未分配 0 项。</p> : <ul>{plan.unassigned_tasks.map((task) => <li key={task.task_id}><Link to={`/tasks?task=${encodeURIComponent(task.task_id)}`}>{task.task_id}</Link> · {unassignedReasons[task.reason] ?? task.reason}<details><summary>原因代码</summary><code>{task.reason}</code></details></li>)}</ul>}
     <details><summary>保存的目标权重与算法参数</summary><pre>{JSON.stringify({ settings: plan.settings, algorithm_parameters: plan.algorithm_parameters, random_seed: plan.random_seed }, null, 2)}</pre></details>
   </>
 }

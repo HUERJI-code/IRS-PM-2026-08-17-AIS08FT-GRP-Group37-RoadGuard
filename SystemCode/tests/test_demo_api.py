@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from roadguard.config import ConfigurationError, REPOSITORY_ROOT, load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 
 
 @pytest.fixture

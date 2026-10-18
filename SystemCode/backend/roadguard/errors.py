@@ -49,6 +49,15 @@ def _response(status: int, code: str, message: str, details: Any = None) -> JSON
 
 
 def install_error_handlers(app: FastAPI) -> None:
+    import sqlite3
+    from roadguard.database import DatabaseStateError
+
+    async def database_error_handler(request: Request, exc: Exception) -> JSONResponse:
+        return _response(503, "database_unavailable", "The infrastructure database is unavailable.")
+
+    app.add_exception_handler(sqlite3.Error, database_error_handler)
+    app.add_exception_handler(DatabaseStateError, database_error_handler)
+
     @app.exception_handler(AppError)
     async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
         return _response(exc.status_code, exc.code, exc.message, exc.details)

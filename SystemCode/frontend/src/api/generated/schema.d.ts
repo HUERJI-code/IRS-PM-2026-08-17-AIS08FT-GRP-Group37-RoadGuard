@@ -21,6 +21,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Session */
+        get: operations["session_api_v1_auth_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/crew/workspace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The authenticated crew's latest GA route and current tasks only */
+        get: operations["workspace_api_v1_crew_workspace_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/demo/scenarios": {
         parameters: {
             query?: never;
@@ -277,6 +345,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Account */
+        Account: {
+            /** User Id */
+            user_id: string;
+            /** Username */
+            username: string;
+            /** Display Name */
+            display_name: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "inspector" | "crew" | "dispatcher";
+            /** Crew Id */
+            crew_id: string | null;
+        };
         /** AutoAcceptance */
         AutoAcceptance: {
             /**
@@ -375,6 +459,45 @@ export interface components {
              * @constant
              */
             geometry_note: "no_road_geometry_straight_lines_are_illustrative_only";
+        };
+        /**
+         * CrewWorkspacePlan
+         * @description Only the account's crew route; no other crews, matrix or global metrics.
+         */
+        CrewWorkspacePlan: {
+            /** Plan Id */
+            plan_id: string;
+            /**
+             * Algorithm
+             * @constant
+             */
+            algorithm: "ga";
+            /** Input Revision */
+            input_revision: number;
+            /** Is Stale */
+            is_stale: boolean;
+            /**
+             * Planning Start At
+             * Format: date-time
+             */
+            planning_start_at: string;
+            depot: components["schemas"]["Depot"];
+            settings: components["schemas"]["PlanningSettings"];
+            /** Matrix Provider */
+            matrix_provider: string;
+            /** Matrix Is Simulated */
+            matrix_is_simulated: boolean;
+            /** Crew Routes */
+            crew_routes: components["schemas"]["CrewRoute"][];
+        };
+        /** CrewWorkspaceResponse */
+        CrewWorkspaceResponse: {
+            crew: components["schemas"]["CrewRecord"];
+            plan: components["schemas"]["CrewWorkspacePlan"] | null;
+            /** Tasks */
+            tasks: components["schemas"]["TaskRecord"][];
+            /** Input Revision */
+            input_revision: number;
         };
         /** DecisionTrace */
         DecisionTrace: {
@@ -481,6 +604,11 @@ export interface components {
             details?: components["schemas"]["JsonValue"][] | {
                 [key: string]: components["schemas"]["JsonValue"];
             } | null;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** HealthResponse */
         HealthResponse: {
@@ -620,6 +748,25 @@ export interface components {
             task_id: string | null;
         };
         JsonValue: unknown;
+        /** LoginRequest */
+        LoginRequest: {
+            /** Username */
+            username: string;
+            /**
+             * Password
+             * Format: password
+             */
+            password: string;
+        };
+        /** LogoutResponse */
+        LogoutResponse: {
+            /**
+             * Logged Out
+             * @default true
+             * @constant
+             */
+            logged_out: true;
+        };
         /** ObjectiveWeights */
         ObjectiveWeights: {
             /** Makespan Minutes */
@@ -787,9 +934,9 @@ export interface components {
             /**
              * Actor Source
              * @default user_declared_unverified
-             * @constant
+             * @enum {string}
              */
-            actor_source: "user_declared_unverified";
+            actor_source: "user_declared_unverified" | "authenticated_user";
         };
         /** ReviewRequest */
         ReviewRequest: {
@@ -916,6 +1063,14 @@ export interface components {
              * @constant
              */
             is_demo: true;
+        };
+        /** SessionResponse */
+        SessionResponse: {
+            user: components["schemas"]["Account"];
+            /** Csrf Token */
+            csrf_token: string;
+            /** Expires At */
+            expires_at: number;
         };
         /**
          * ShiftLimit
@@ -1045,7 +1200,7 @@ export interface components {
              * Actor Source
              * @enum {string}
              */
-            actor_source: "system_demo_rules" | "system_confidence_policy" | "user_declared_unverified";
+            actor_source: "system_demo_rules" | "system_confidence_policy" | "user_declared_unverified" | "authenticated_user";
         };
         /** TaskList */
         TaskList: {
@@ -1200,6 +1355,19 @@ export interface components {
             /** Image Height */
             image_height: number;
         };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
+        };
     };
     responses: never;
     parameters: never;
@@ -1238,7 +1406,76 @@ export interface operations {
             };
         };
     };
-    list_demo_scenarios_api_v1_demo_scenarios_get: {
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    session_api_v1_auth_session_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -1253,7 +1490,225 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    logout_api_v1_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LogoutResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    workspace_api_v1_crew_workspace_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrewWorkspaceResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_demo_scenarios_api_v1_demo_scenarios_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "application/json": components["schemas"]["DemoScenarioCatalogue"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
             /** @description Service Unavailable */
@@ -1270,7 +1725,10 @@ export interface operations {
     assess_demo_api_v1_demo_assessments_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1288,6 +1746,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DemoAssessmentResponse"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1325,7 +1797,10 @@ export interface operations {
                 limit?: number;
                 offset?: number;
             };
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1339,6 +1814,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InspectionListResponse"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1383,6 +1872,8 @@ export interface operations {
             query?: never;
             header: {
                 "idempotency-key": string;
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
             };
             path?: never;
             cookie?: never;
@@ -1421,6 +1912,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InspectionUploadResponse"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1490,7 +1995,10 @@ export interface operations {
     get_inspection_api_v1_inspections__inspection_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 inspection_id: string;
             };
@@ -1506,6 +2014,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InspectionResponse"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1548,7 +2070,10 @@ export interface operations {
     get_inspection_image_api_v1_inspections__inspection_id__image_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 inspection_id: string;
             };
@@ -1564,6 +2089,20 @@ export interface operations {
                 content: {
                     "image/png": string;
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1606,7 +2145,10 @@ export interface operations {
     review_inspection_api_v1_inspections__inspection_id__review_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 inspection_id: string;
             };
@@ -1626,6 +2168,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InspectionMutationResponse"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1672,7 +2228,10 @@ export interface operations {
                 limit?: number;
                 offset?: number;
             };
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1686,6 +2245,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TaskList"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1730,7 +2303,10 @@ export interface operations {
             query?: {
                 expected_revision?: number | null;
             };
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1744,6 +2320,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TaskSnapshot"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1786,7 +2376,10 @@ export interface operations {
     get_task_api_v1_tasks__task_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 task_id: string;
             };
@@ -1802,6 +2395,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TaskRecord"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1844,7 +2451,10 @@ export interface operations {
     update_task_api_v1_tasks__task_id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 task_id: string;
             };
@@ -1864,6 +2474,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TaskMutation"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1906,7 +2530,10 @@ export interface operations {
     list_crews_api_v1_crews_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1920,6 +2547,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CrewList"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -1962,7 +2603,10 @@ export interface operations {
     update_crew_api_v1_crews__crew_id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 crew_id: string;
             };
@@ -1982,6 +2626,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CrewMutation"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -2024,7 +2682,10 @@ export interface operations {
     recalculate_api_v1_route_plans_recalculate_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2042,6 +2703,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RecalculationResult"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -2086,7 +2761,10 @@ export interface operations {
             query: {
                 algorithm: "ga" | "greedy";
             };
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2100,6 +2778,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RoutePlan"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {
@@ -2142,7 +2834,10 @@ export interface operations {
     get_plan_api_v1_route_plans__plan_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
             path: {
                 plan_id: string;
             };
@@ -2158,6 +2853,20 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RoutePlan"];
                 };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Not Found */
             404: {

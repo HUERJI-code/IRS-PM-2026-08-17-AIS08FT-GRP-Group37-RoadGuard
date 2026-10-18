@@ -8,7 +8,7 @@ from PIL import Image
 import pytest
 
 from roadguard.config import load_settings
-from roadguard.main import create_app
+from auth_test_support import create_app
 from roadguard.schemas import Task, TaskSnapshot
 
 
@@ -38,7 +38,10 @@ def test_empty_snapshot_is_read_only_and_static_route_wins(client):
     assert snapshot.source == "persisted_workflow" and snapshot.is_demo
     assert client.get("/api/v1/health").json()["input_revision"] == 0
     schema = client.get("/openapi.json").json()["paths"]["/api/v1/tasks/snapshot"]["get"]
-    assert {item["name"] for item in schema["parameters"]} == {"expected_revision"}
+    assert {item["name"] for item in schema["parameters"] if item["in"] == "query"} == {"expected_revision"}
+    # Shared authentication declares this header, but read-only requests never require it.
+    csrf = next(item for item in schema["parameters"] if item["name"] == "X-CSRF-Token")
+    assert csrf["in"] == "header" and not csrf["required"]
 
 
 def test_snapshot_projects_active_tasks_without_audit_fields(client):

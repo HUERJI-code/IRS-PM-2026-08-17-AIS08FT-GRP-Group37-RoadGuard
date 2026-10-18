@@ -195,12 +195,17 @@ it('keeps stale and failed read warnings next to the map', () => {
   expect(screen.getByRole('alert')).toHaveTextContent('未经重新验证')
   expect(screen.getByRole('status')).toHaveTextContent('已过期')
 })
-it('distinguishes simulated matrix from external travel data even though both lack road geometry', () => {
+it('distinguishes external travel data in the collapsed summary and preserves full provenance', async () => {
   const value = plan()
   value.matrix_is_simulated = false
   value.matrix_provider = 'google_routes'
   mount(value)
-  expect(screen.getByText(/外部行程数据/)).toHaveTextContent('google_routes')
+  const source = screen.getByText(/外部行程数据.*查看来源/)
+  expect(source).toBeVisible()
+  expect(screen.getByText(/google_routes/)).not.toBeVisible()
+  await userEvent.click(source)
+  expect(screen.getByText(/google_routes/)).toBeVisible()
+  expect(screen.getByText(value.plan_id)).toBeVisible()
   expect(screen.getByText(/非道路导航/)).toBeVisible()
 })
 it('displays null return time as unknown and zero as zero minutes', async () => {
