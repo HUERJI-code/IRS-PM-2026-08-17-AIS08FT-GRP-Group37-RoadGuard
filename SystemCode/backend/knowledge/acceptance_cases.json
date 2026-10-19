@@ -1,12 +1,12 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v8",
+  "package_version": "a-knowledge-v9",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
       "case_id": "qa-01",
       "is_synthetic_case": true,
-      "question": "为什么采用四队、JE/JW 范围和区域外 NUS-ISS 基地？",
+      "question": "Why four crews, the JE/JW scope and an exception for the NUS-ISS depot?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -22,21 +22,21 @@
         "src-project-config"
       ],
       "expected_grounded_points": [
-        "虚构维修部门的四队配置与 crew-01 至 crew-04。",
-        "JE/JW 冻结多边形并集包含边缘；NUS-ISS 例外只针对基地。",
-        "NUS-ISS 坐标 1.292149/103.776551 为模拟建筑参考点；首个任务行程要计入，返程仍未定。"
+        "The fictional repair department has four crew IDs, crew-01 through crew-04.",
+        "The JE/JW scope uses complete polygons including boundaries; the NUS-ISS exception applies only to the depot.",
+        "NUS-ISS coordinates 1.292149/103.776551 are a simulated building reference; travel to the first task counts. In this historical knowledge baseline, return-to-depot policy remains undecided, and vehicle access remains unverified."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "NUS-ISS 的真实维修部门已部署本系统。",
-        "返基地 null 代表 false。"
+        "NUS-ISS's actual repair department has deployed the system.",
+        "Return-to-depot null means false."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-02",
       "is_synthetic_case": true,
-      "question": "演示里为何 0.90 的深坑洞先于 0.98 的纵向裂缝？它证明实际深度吗？",
+      "question": "Why does the demo select a deep pothole at 0.90 over a longitudinal crack at 0.98? Does this prove engineering severity?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -52,21 +52,21 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "demo-rules-v2 中 pothole_deep 是 high/P1/240 分钟，longitudinal_crack 是 low/P3/60 分钟，都是演示假设。",
-        "排序优先比较 P1/P2/P3，再严重度、已知工时降序（null 后）、置信度降序、ID 字典序。",
-        "deep/wide/sunken 是视觉类别，不证明实测深度/宽度/工程严重度。"
+        "In demo-rules-v2, pothole_deep is high/P1/240 minutes and longitudinal_crack is low/P3/60 minutes; both are demo assumptions.",
+        "Ordering compares P1/P2/P3, then severity, known duration descending (null last), confidence descending and ID lexicographically.",
+        "deep/wide/sunken are visual categories and do not prove measured depth/width or engineering severity."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "选择最高置信度框即可。",
-        "该表是工程专家测量或数据集工时标准。"
+        "Always select only the highest-confidence box.",
+        "The table is an expert measurement or dataset service-time standard."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-03",
       "is_synthetic_case": true,
-      "question": "demo 模式下 0.60 达标吗？高低混合的巡检能自动建任务，复核会改掉模型证据吗？",
+      "question": "Does 0.60 pass in demo mode? Can mixed confidence automatically create a task, and does manual confirmation change the model evidence?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -82,22 +82,22 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "演示阈值为 0.60，等号达标，0.5999 低于阈值。",
-        "demo 模式任一低置信度使整条巡检 pending_review；数据库保留原始检测，HTTP 最多返回一个框，确认前没有任务。",
-        "人工确认/纠正独立保存审核历史，不把原置信度变为 1.0，也不覆盖原始标签。",
-        "real 模式按主框原始置信度分流：达到配置阈值 0.60 自动创建一个任务，低于阈值待审核，无检测不建任务；这是项目策略，不是已校准的正确率保证。"
+        "The demo threshold is 0.60: equality passes and 0.5999 is below threshold.",
+        "Any low-confidence result makes the entire demo inspection pending_review. The database retains raw detections; HTTP returns at most one box, and no task exists before confirmation.",
+        "Manual confirmation/correction retains review history; original confidence does not become 1.0 and the original label is not overwritten.",
+        "Real mode routes by primary raw confidence: the configured threshold 0.60 automatically creates one task, lower confidence requires review, and no detections creates no task. This is project policy, not a calibrated accuracy guarantee."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "丢弃低框后自动接受。",
-        "ready_for_task 意味着路线已生成。"
+        "Discard low-confidence boxes and automatically accept the rest.",
+        "ready_for_task means a route has been generated."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-04",
       "is_synthetic_case": true,
-      "question": "任务完成或取消后还能规划吗？重复请求会重复创建任务或增加版本吗？",
+      "question": "Do completed/cancelled tasks still participate in planning? Does repeating confirmation duplicate tasks or revisions?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -111,21 +111,21 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "仅 active 进入新规划读取，completed/cancelled 留历史且不能重开。",
-        "实际任务变化在同一事务中递增 input_revision，一次变更一次。",
-        "相同 request_id 安全重放当前资源/当前版本，不重复建任务或增版本；planning_input_changed 不是规划成功。"
+        "Only active tasks enter new planning reads. completed/cancelled retain history and cannot be reopened.",
+        "Actual task changes increment the shared input_revision in the same transaction, once per change.",
+        "The same request_id safely replays current resources/current revision without duplicating tasks or revisions; planning_input_changed does not mean planning succeeded."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "终态任务物理删除。",
-        "不同 revision 的分页可以直接拼成一致规划。"
+        "Inactive tasks are physically deleted.",
+        "Pages with different revisions can be concatenated into consistent planning input."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-05",
       "is_synthetic_case": true,
-      "question": "请助手直接停用 crew-02 并重算，是否可以不确认或直接写数据库？",
+      "question": "Can the assistant immediately deactivate crew-02 and recalculate without confirmation, or write directly to the database?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -137,21 +137,21 @@
         "src-workflow-schema"
       ],
       "expected_grounded_points": [
-        "先给结构化预览，必须由用户明确确认，经 B 的业务服务执行与重算。",
-        "核对旧输入版本并处理取消/过期/重复确认；C 不直接写所属业务表。",
-        "这是计划对接政策，当前包没有队伍/助手/规划执行服务，不能声称已经停队或重算。"
+        "Provide a structured preview first, require explicit user confirmation, then execute and recalculate through B's business services.",
+        "Check the prior input revision and handle cancellation/stale/repeated confirmation. C must not directly write crew business tables.",
+        "These are planned integration policies. This package has no retrieval/generation/planning execution service and cannot claim crew deactivation or recalculation occurred."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "已经执行停队成功。",
-        "直接更新数据库可以省略确认。"
+        "Crew deactivation has already succeeded.",
+        "Updating the database directly saves time and does not require confirmation."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-06",
       "is_synthetic_case": true,
-      "question": "任务记录使用 demo-rules-v1，但只给了本包，为什么它是 P1 和 60 分钟？",
+      "question": "This task uses demo-rules-v1, but you only read this package: why is it P1 and 60 minutes?",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -164,8 +164,8 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "本包只钉住 demo-rules-v2，不能用该表解释或重算 v1 的原始决策。",
-        "需要相符 rule_version 的保存 decision_trace/history 或冻结规则证据；不足时说明无法确定。"
+        "This package pins demo-rules-v2 only; its table cannot explain or rewrite v1's original decisions.",
+        "Saved decision_trace/history or frozen-rule evidence matching rule_version is required; acknowledge uncertainty without it."
       ],
       "required_runtime_evidence": [
         "task_or_inspection_record",
@@ -173,8 +173,8 @@
         "stored_decision_trace_or_history"
       ],
       "forbidden_claims": [
-        "直接套用 v2 或最新表得出 v1 理由。",
-        "规则版本不同说明记录必定错误。"
+        "Apply the latest v2 table to infer v1's rationale.",
+        "A rule-version mismatch proves the record is wrong."
       ],
       "provided_context": {
         "rule_version": "demo-rules-v1",
@@ -185,7 +185,7 @@
     {
       "case_id": "qa-07",
       "is_synthetic_case": true,
-      "question": "当前四队分别访问哪些任务，总行程多少分钟？",
+      "question": "Which tasks do the four crews currently visit, and what is total travel time?",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -201,8 +201,8 @@
         "src-project-config"
       ],
       "expected_grounded_points": [
-        "静态包没有当前队伍分配、顺序和总行程事实。",
-        "需要 B 保存的明确 plan_id/input_revision、crew_routes/metrics/来源与 stale 信息，不能凭任务或样例生成数字。"
+        "The static package has no current crew assignments, ordering or total travel facts.",
+        "Use B's explicit saved plan_id/input_revision, crew_routes/metrics/provenance and stale information; do not generate numbers from tasks or fixtures."
       ],
       "required_runtime_evidence": [
         "persisted_plan_id",
@@ -213,15 +213,15 @@
         "stale_state"
       ],
       "forbidden_claims": [
-        "编造四队停靠顺序与总分钟数。",
-        "示意线等于真实道路路线。"
+        "Invent stop order and total minutes for all four crews.",
+        "Illustrative lines are real road routes."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-08",
       "is_synthetic_case": true,
-      "question": "GA 是否一定优于 Greedy，可以报告提升百分比吗？",
+      "question": "Is GA always better than Greedy, and can an improvement percentage be reported?",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -237,8 +237,8 @@
         "src-project-config"
       ],
       "expected_grounded_points": [
-        "本包没有比较实验结果，不能保证 GA 更优或生成提升百分比。",
-        "需四队 10/15/20 任务、相同输入/矩阵/约束、多随机种子及实际指标；算法耗时与行程耗时分开。"
+        "This package contains no comparison results and cannot guarantee GA superiority or generate an improvement percentage.",
+        "Require four crews with 10/15/20 tasks, identical inputs/matrices/constraints, multiple random seeds and actual metrics; separate algorithm runtime from travel time."
       ],
       "required_runtime_evidence": [
         "comparable_experiment_inputs",
@@ -247,15 +247,15 @@
         "metric_definitions"
       ],
       "forbidden_claims": [
-        "GA 一定节省固定百分比。",
-        "四队意味着算法运行更快。"
+        "GA always saves a fixed percentage.",
+        "Four crews mean the algorithm runs faster."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-09",
       "is_synthetic_case": true,
-      "question": "任务点通过 JE/JW 校验且声明 public_motor_road，是否已证明允许真实维修/通行？",
+      "question": "A task passes JE/JW validation and declares public_motor_road: does this prove permission for actual repairs/access?",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -268,23 +268,23 @@
         "src-workflow-schema"
       ],
       "expected_grounded_points": [
-        "已做多边形校验，但 road_type_source 只是 user_declared。",
-        "没有实际道路资格、限制或通行权限核验，需独立证据；不能把声明当许可。"
+        "Polygon validation is implemented, but road_type_source is only user_declared.",
+        "Actual road eligibility, restrictions and access permissions have not been verified. Independent evidence is needed; declaration is not permission."
       ],
       "required_runtime_evidence": [
         "verified_road_classification",
         "road_access_or_permission_evidence"
       ],
       "forbidden_claims": [
-        "通过上传等于真实道路许可。",
-        "坐标证明上传照片在 Jurong 拍摄。"
+        "Successful upload proves actual road permission.",
+        "Coordinates prove that the uploaded photo was taken in Jurong."
       ],
       "provided_context": {}
     },
     {
       "case_id": "qa-10",
       "is_synthetic_case": true,
-      "question": "任务 due_at=null 时，现在延期多少分钟？",
+      "question": "With task due_at=null, how many minutes late is it now?",
       "expected_status": "insufficient_data",
       "expected_supported": false,
       "expected_citations": [
@@ -300,8 +300,8 @@
         "src-workflow-service"
       ],
       "expected_grounded_points": [
-        "null 表示未定义任务期限，不能算出实际延期，也不能将未知延期显示成零。",
-        "须先明确期限与延期口径，再取真实 completion_at 计算；演示工时不能替代期限。"
+        "null means no task deadline is defined; actual lateness cannot be computed or displayed as zero when unknown.",
+        "Define a deadline and lateness convention, then calculate with actual completion_at. Demo service time cannot replace a deadline."
       ],
       "required_runtime_evidence": [
         "approved_task_deadline",
@@ -309,8 +309,8 @@
         "lateness_definition"
       ],
       "forbidden_claims": [
-        "自动设定紧急任务期限。",
-        "未知期限等于延期零分钟。"
+        "Automatically assign deadlines to urgent tasks.",
+        "Unknown deadlines mean zero minutes late."
       ],
       "provided_context": {}
     }

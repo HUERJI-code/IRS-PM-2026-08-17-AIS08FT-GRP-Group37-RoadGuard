@@ -69,7 +69,7 @@ const writes = (method: string) =>
   transport.mock.calls.filter(([, init]) => init.method === method)
 async function loaded() {
   await waitFor(() =>
-    expect(screen.getByRole('button', { name: '停用 Crew 02' })).toBeEnabled(),
+    expect(screen.getByRole('button', { name: 'Disable Crew 02' })).toBeEnabled(),
   )
 }
 it('validates actual backend fixtures', () => {
@@ -85,7 +85,7 @@ it('shows all configured crews and checks a complete task snapshot without write
   mount()
   await loaded()
   expect(
-    within(screen.getByRole('region', { name: '工程队管理' })).getAllByRole(
+    within(screen.getByRole('region', { name: 'Crew management' })).getAllByRole(
       'button',
     ),
   ).toHaveLength(4)
@@ -103,11 +103,11 @@ it('saves availability then explicitly recalculates using the returned revision'
   mount()
   await loaded()
   const user = userEvent.setup()
-  await user.click(screen.getByRole('button', { name: '停用 Crew 01' }))
-  await screen.findByText('队伍状态已保存')
+  await user.click(screen.getByRole('button', { name: 'Disable Crew 01' }))
+  await screen.findByText('Crew status saved')
   await waitFor(() =>
     expect(
-      screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+      screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
     ).toBeEnabled(),
   )
   expect(writes('POST')).toHaveLength(0)
@@ -116,12 +116,12 @@ it('saves availability then explicitly recalculates using the returned revision'
     expected_version: 1,
     available: false,
   })
-  await user.click(screen.getByRole('button', { name: '重算 GA 与 Greedy' }))
-  await screen.findByText('本次重算已完成')
+  await user.click(screen.getByRole('button', { name: 'Recalculate GA and Greedy' }))
+  await screen.findByText('Recalculation completed')
   expect(JSON.parse(writes('POST')[0][1].body as string)).toEqual({
     expected_revision: fixtures.mutation.input_revision,
   })
-  expect(screen.getByText(/以上两个方案 ID 来自同一次/)).toBeVisible()
+  expect(screen.getByText(/These two plan IDs come from the same/)).toBeVisible()
   await waitFor(() =>
     expect(
       transport.mock.calls.some(([url]) =>
@@ -140,17 +140,17 @@ it('retains saved availability when matrix fails and retry never repeats PATCH',
   mount()
   await loaded()
   const user = userEvent.setup()
-  await user.click(screen.getByRole('button', { name: '停用 Crew 01' }))
-  await screen.findByText('队伍状态已保存')
+  await user.click(screen.getByRole('button', { name: 'Disable Crew 01' }))
+  await screen.findByText('Crew status saved')
   await waitFor(() =>
     expect(
-      screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+      screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
     ).toBeEnabled(),
   )
-  await user.click(screen.getByRole('button', { name: '重算 GA 与 Greedy' }))
-  expect(await screen.findByRole('alert')).toHaveTextContent('行程数据暂不可用')
-  expect(screen.getByRole('button', { name: '启用 Crew 01' })).toBeEnabled()
-  await user.click(screen.getByRole('button', { name: '重算 GA 与 Greedy' }))
+  await user.click(screen.getByRole('button', { name: 'Recalculate GA and Greedy' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('Travel data is unavailable')
+  expect(screen.getByRole('button', { name: 'Enable Crew 01' })).toBeEnabled()
+  await user.click(screen.getByRole('button', { name: 'Recalculate GA and Greedy' }))
   expect(writes('PATCH')).toHaveLength(1)
   expect(writes('POST')).toHaveLength(2)
 })
@@ -171,15 +171,15 @@ it('retries an unknown crew write with the identical request and locks recalcula
   mount()
   await loaded()
   const user = userEvent.setup()
-  await user.click(screen.getByRole('button', { name: '停用 Crew 01' }))
+  await user.click(screen.getByRole('button', { name: 'Disable Crew 01' }))
   const retry = await screen.findByRole('button', {
-    name: '使用原请求重试队伍修改',
+    name: 'Retry crew change with original request',
   })
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
   await user.click(retry)
-  await screen.findByText('已恢复队伍修改结果')
+  await screen.findByText('Crew change result recovered')
   expect(writes('PATCH')[1][1].body).toBe(writes('PATCH')[0][1].body)
 })
 it('requires rereading after crew version conflict without automatic retry', async () => {
@@ -191,11 +191,11 @@ it('requires rereading after crew version conflict without automatic retry', asy
   )
   mount()
   await loaded()
-  await userEvent.click(screen.getByRole('button', { name: '停用 Crew 01' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Disable Crew 01' }))
   await screen.findByRole('alert')
-  expect(screen.getByRole('button', { name: '停用 Crew 01' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Disable Crew 01' })).toBeDisabled()
   expect(writes('PATCH')).toHaveLength(1)
-  await userEvent.click(screen.getByRole('button', { name: '刷新输入与方案' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Refresh inputs and plans' }))
   await loaded()
   expect(writes('PATCH')).toHaveLength(1)
 })
@@ -207,9 +207,9 @@ it('blocks recalculation when snapshot revision has changed', async () => {
       : base(url, init),
   )
   mount()
-  expect(await screen.findByRole('alert')).toHaveTextContent('任务或队伍已变化')
+  expect(await screen.findByRole('alert')).toHaveTextContent('Tasks or crews have changed')
   expect(
-    screen.queryByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.queryByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).not.toBeInTheDocument()
   expect(writes('POST')).toHaveLength(0)
 })
@@ -223,11 +223,11 @@ it('requires refresh after recalculation revision conflict', async () => {
   mount()
   await loaded()
   await userEvent.click(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   )
   await screen.findByRole('alert')
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
   expect(writes('POST')).toHaveLength(1)
 })
@@ -241,20 +241,20 @@ it('unknown recalculation requires a read-only check and explicit new-calculatio
   mount()
   await loaded()
   const user = userEvent.setup()
-  await user.click(screen.getByRole('button', { name: '重算 GA 与 Greedy' }))
-  await screen.findByText('重算结果尚不确定')
+  await user.click(screen.getByRole('button', { name: 'Recalculate GA and Greedy' }))
+  await screen.findByText('Recalculation outcome uncertain')
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
-  await user.click(screen.getByRole('button', { name: '核对输入与已保存方案' }))
+  await user.click(screen.getByRole('button', { name: 'Check inputs and saved plans' }))
   const checkbox = await screen.findByRole('checkbox')
   expect(writes('POST')).toHaveLength(1)
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
   await user.click(checkbox)
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeEnabled()
 })
 it('keeps successful calculation if detail read fails and query refresh does not POST', async () => {
@@ -268,14 +268,14 @@ it('keeps successful calculation if detail read fails and query refresh does not
   mount()
   await loaded()
   const user = userEvent.setup()
-  await user.click(screen.getByRole('button', { name: '重算 GA 与 Greedy' }))
-  await screen.findByText('本次重算已完成')
+  await user.click(screen.getByRole('button', { name: 'Recalculate GA and Greedy' }))
+  await screen.findByText('Recalculation completed')
   expect(
-    await within(screen.getByRole('region', { name: '已保存方案' })).findByText(
-      /方案读取失败/,
+    await within(screen.getByRole('region', { name: 'Saved plans' })).findByText(
+      /Plan loading failed/,
     ),
   ).toBeVisible()
-  await user.click(screen.getByRole('button', { name: '刷新输入与方案' }))
+  await user.click(screen.getByRole('button', { name: 'Refresh inputs and plans' }))
   expect(writes('POST')).toHaveLength(1)
 })
 it('prevents duplicate calculation while pending', async () => {
@@ -285,7 +285,7 @@ it('prevents duplicate calculation while pending', async () => {
   )
   mount()
   await loaded()
-  const button = screen.getByRole('button', { name: '重算 GA 与 Greedy' })
+  const button = screen.getByRole('button', { name: 'Recalculate GA and Greedy' })
   fireEvent.click(button)
   fireEvent.click(button)
   expect(writes('POST')).toHaveLength(1)
@@ -299,12 +299,12 @@ it('distinguishes missing plans from valid empty plans and prohibits mock writes
   )
   mount('normal')
   expect(
-    await screen.findAllByText('尚未生成方案（不等于空任务方案）。'),
+    await screen.findAllByText('No plan generated (different from an empty-task plan).'),
   ).toHaveLength(2)
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
-  expect(screen.getByRole('button', { name: '停用 Crew 01' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Disable Crew 01' })).toBeDisabled()
 })
 it('shows all stopped crews and backend unassigned reasons without inventing assignments', async () => {
   const base = transport.getMockImplementation()!
@@ -320,7 +320,7 @@ it('shows all stopped crews and backend unassigned reasons without inventing ass
   mount()
   await loaded()
   expect(await screen.findAllByText(/no_available_crew/)).toHaveLength(2)
-  expect(screen.getAllByText(/crew-01：停用/)).toHaveLength(2)
+  expect(screen.getAllByText(/crew-01: Unavailable/)).toHaveLength(2)
 })
 
 it('preserves crew save and blocks new actions if snapshot read after save fails', async () => {
@@ -332,12 +332,12 @@ it('preserves crew save and blocks new actions if snapshot read after save fails
   )
   mount()
   await loaded()
-  await userEvent.click(screen.getByRole('button', { name: '停用 Crew 01' }))
-  expect(await screen.findByText('队伍状态已保存')).toBeVisible()
-  expect(await screen.findByRole('alert')).toHaveTextContent('数据库暂不可用')
-  expect(screen.getByRole('button', { name: '启用 Crew 01' })).toBeDisabled()
+  await userEvent.click(screen.getByRole('button', { name: 'Disable Crew 01' }))
+  expect(await screen.findByText('Crew status saved')).toBeVisible()
+  expect(await screen.findByRole('alert')).toHaveTextContent('The database is temporarily unavailable')
+  expect(screen.getByRole('button', { name: 'Enable Crew 01' })).toBeDisabled()
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeDisabled()
   expect(writes('PATCH')).toHaveLength(1)
 })
@@ -350,9 +350,9 @@ it('does not fabricate tasks when the snapshot is empty', async () => {
   )
   mount()
   await loaded()
-  expect(screen.getByText(/活动任务 0 项/)).toBeVisible()
+  expect(screen.getByText(/Active tasks: 0/)).toBeVisible()
   expect(
-    screen.getByRole('button', { name: '重算 GA 与 Greedy' }),
+    screen.getByRole('button', { name: 'Recalculate GA and Greedy' }),
   ).toBeEnabled()
   expect(writes('POST')).toHaveLength(0)
 })
@@ -360,14 +360,14 @@ it('does not fabricate tasks when the snapshot is empty', async () => {
 it('switches map algorithms without mixing saved plan IDs or causing writes', async () => {
   mount()
   await loaded()
-  const map = screen.getByRole('region', { name: '路线地图与详情' })
+  const map = screen.getByRole('region', { name: 'Route map and details' })
   expect(map).toHaveTextContent(fixtures.stale.ga.plan_id)
-  await userEvent.selectOptions(screen.getByLabelText('地图方案'), 'greedy')
+  await userEvent.selectOptions(screen.getByLabelText('Map plan'), 'greedy')
   expect(
-    screen.getByRole('region', { name: '路线地图与详情' }),
+    screen.getByRole('region', { name: 'Route map and details' }),
   ).toHaveTextContent(fixtures.stale.greedy.plan_id)
   expect(
-    screen.getByRole('region', { name: '路线地图与详情' }),
+    screen.getByRole('region', { name: 'Route map and details' }),
   ).not.toHaveTextContent(fixtures.stale.ga.plan_id)
   expect(writes('PATCH')).toHaveLength(0)
   expect(writes('POST')).toHaveLength(0)

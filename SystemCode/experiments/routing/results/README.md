@@ -1,219 +1,219 @@
-# B6 路线实验结果：四队 GA 与 Greedy（模拟矩阵与 Google 矩阵）
+# B6 routing results: four-crew GA versus Greedy, simulated and Google matrices
 
-负责人：B。运行日期：2026-10-15。实验设计见[上级说明](../README.md)。本页数字全部取自同目录下保存的 `summary.json` 和 `raw_runs.csv`，没有手工改动。第 7 节是之后对 GA 本身的评估（消融与离已知最好解的差距），数据在 `ga-evaluation-v1/`。
+Owner: B. Run date: 2026-10-15. Design: [parent guide](../README.md). All numbers below come from saved `summary.json` and `raw_runs.csv`, without manual alteration. Section 7 later evaluates GA itself through ablation/BKS gaps, with data in `ga-evaluation-v1/`.
 
-## 1. 运行记录
+## 1. Run records
 
-| 项目 | `simulated-shift480-v1` | `simulated-unlimited-v1` |
+| Item | `simulated-shift480-v1` | `simulated-unlimited-v1` |
 | --- | --- | --- |
-| 用途 | 主实验：配置中的 480 分钟班次上限 | 敏感性实验：取消班次上限，所有任务都必须排进路线 |
-| 命令 | `run_experiments.py --output-dir .../simulated-shift480-v1` | 同左，加 `--unlimited-shift` |
-| 代码版本 | `7651947`，`working_tree_dirty=false` | 同左 |
-| 设置覆盖 | 无 | `shift_limit` 改为 `unlimited`（记录在 `run_metadata.json` 的 `settings_overrides`） |
-| 矩阵 | `simulated_haversine_v1`，没有不可达点对；矩阵全文见 `matrix_10/15/20.json` | 同左（矩阵相同） |
+| Purpose | Main experiment: configured 480-minute shift | Sensitivity: remove shift limit, requiring all tasks on routes |
+| Command | `run_experiments.py --output-dir .../simulated-shift480-v1` | Same, plus `--unlimited-shift` |
+| Code | `7651947`, `working_tree_dirty=false` | Same |
+| Override | None | `shift_limit=unlimited`, in metadata `settings_overrides` |
+| Matrix | `simulated_haversine_v1`, no unreachable pairs; full `matrix_10/15/20.json` | Identical matrices |
 
-共同条件：四队全部可用，共用 NUS-ISS 基地（`nus-iss-v1`），收工返基地；固定样例 `planning-synthetic-v2` 的 10/15/20 个任务；开始时刻 `2026-10-15T01:00:00Z`。Greedy 每个场景运行 1 次（确定性算法）。GA 使用种子 1～10，种群 60，最多 300 代，连续 80 代无改进即停止，不用 Greedy 解作初始种群。运行环境为 Python 3.11.9、Windows、单机。
+Shared conditions: four available crews, NUS-ISS depot (`nus-iss-v1`), return to depot; `planning-synthetic-v2` 10/15/20 tasks; start `2026-10-15T01:00:00Z`. Deterministic Greedy runs once per scenario. GA uses seeds 1-10, population 60, at most 300 generations, patience 80, without Greedy initialization. Environment: Python 3.11.9, Windows, one machine.
 
-每个目录包含：`raw_runs.csv`（每次运行一行，含 GA 不如 Greedy 的种子）、`ga_convergence.csv`（每代最优值）、`summary.json`（汇总）、`run_metadata.json`（配置全文、哈希、代码版本、环境）、`matrix_*.json`（行程矩阵），以及 `plot_results.py` 生成的 `ga_vs_greedy.png`、`ga_convergence.png`。
+Each directory contains `raw_runs.csv` (one row per run, including GA underperformance), `ga_convergence.csv` (generation best), `summary.json`, `run_metadata.json` (full configuration, hashes, code/environment), `matrix_*.json`, and `ga_vs_greedy.png`/`ga_convergence.png` from `plot_results.py`.
 
-复现：检出 `7651947`，在仓库根目录用上表中的命令输出到新目录。除运行耗时外，各项指标应完全一致。
+Reproduce by checking out `7651947`, running the table commands from repository root into a new directory. All metrics except runtime should match exactly.
 
-## 2. 主实验：480 分钟班次
+## 2. Main experiment: 480-minute shifts
 
-GA 列为 10 个种子的均值 ± 标准差（总体标准差），方括号内为最小值和最大值。单位：分钟（运行耗时为毫秒）。
+GA columns give ten-seed mean +/- population standard deviation; brackets give minimum/maximum. Units: minutes, except runtime in milliseconds.
 
-| 指标 | 10 个任务：Greedy | 10 个任务：GA | 15 个任务：Greedy | 15 个任务：GA | 20 个任务：Greedy | 20 个任务：GA |
+| Metric | 10 tasks: Greedy | 10 tasks: GA | 15 tasks: Greedy | 15 tasks: GA | 20 tasks: Greedy | 20 tasks: GA |
 | --- | --- | --- | --- | --- | --- | --- |
-| 未分配任务（P1/P2/P3） | 0 | 0 | 3（0/2/1） | 3（0/2/1） | 8（0/6/2） | 8（0/6/2） |
-| 总行程 | 224.3 | 231.6 ± 5.8 [223.3, 239.6] | 208.5 | 216.2 ± 5.3 [207.5, 222.4] | 194.9 | 186.5 ± 4.3 [180.1, 194.2] |
-| 完工时间 makespan | 413.0 | 412.9 ± 1.6 | 477.9 | 478.1 ± 0.2 | 477.9 | 473.4 ± 1.3 |
-| 工作量标准差 | 24.6 | 23.5 ± 1.2 | 23.6 | 24.9 ± 1.5 | 9.3 | 6.8 ± 1.1 |
-| 优先级加权完工时间 | 262.0 | 254.7 ± 1.6 | 315.1 | 296.9 ± 1.5 | 333.2 | 301.1 ± 1.0 |
-| 目标值 | 601.1 | 598.3 ± 2.7 [594.2, 603.0] | 688.9 | 682.2 ± 0.8 [680.9, 683.7] | 688.2 | 664.7 ± 1.9 [661.4, 668.4] |
-| GA 优于／等于／劣于 Greedy 的种子数 | — | 8 / 0 / 2 | — | 10 / 0 / 0 | — | 10 / 0 / 0 |
-| 算法运行耗时（ms） | 0.2 | 117 ± 11 | 0.1 | 233 ± 55 | 0.2 | 321 ± 62 |
-| GA 停止代数 | — | 88～108 | — | 101～211 | — | 107～184 |
+| Unassigned tasks (P1/P2/P3) | 0 | 0 | 3（0/2/1） | 3（0/2/1） | 8（0/6/2） | 8（0/6/2） |
+| Total travel | 224.3 | 231.6 ± 5.8 [223.3, 239.6] | 208.5 | 216.2 ± 5.3 [207.5, 222.4] | 194.9 | 186.5 ± 4.3 [180.1, 194.2] |
+| Makespan | 413.0 | 412.9 ± 1.6 | 477.9 | 478.1 ± 0.2 | 477.9 | 473.4 ± 1.3 |
+| Workload standard deviation | 24.6 | 23.5 ± 1.2 | 23.6 | 24.9 ± 1.5 | 9.3 | 6.8 ± 1.1 |
+| Priority-weighted completion | 262.0 | 254.7 ± 1.6 | 315.1 | 296.9 ± 1.5 | 333.2 | 301.1 ± 1.0 |
+| Objective | 601.1 | 598.3 ± 2.7 [594.2, 603.0] | 688.9 | 682.2 ± 0.8 [680.9, 683.7] | 688.2 | 664.7 ± 1.9 [661.4, 668.4] |
+| GA seeds better/equal/worse than Greedy | — | 8 / 0 / 2 | — | 10 / 0 / 0 | — | 10 / 0 / 0 |
+| Algorithm runtime (ms) | 0.2 | 117 ± 11 | 0.1 | 233 ± 55 | 0.2 | 321 ± 62 |
+| GA stopping generation | — | 88～108 | — | 101～211 | — | 107～184 |
 
-![主实验：GA 与 Greedy](simulated-shift480-v1/ga_vs_greedy.png)
+![Main experiment: GA versus Greedy](simulated-shift480-v1/ga_vs_greedy.png)
 
-![主实验：GA 收敛](simulated-shift480-v1/ga_convergence.png)
+![Main experiment: GA convergence](simulated-shift480-v1/ga_convergence.png)
 
-## 3. 敏感性实验：不限班次
+## 3. Sensitivity: unlimited shifts
 
-| 指标 | 10 个任务：Greedy | 10 个任务：GA | 15 个任务：Greedy | 15 个任务：GA | 20 个任务：Greedy | 20 个任务：GA |
+| Metric | 10 tasks: Greedy | 10 tasks: GA | 15 tasks: Greedy | 15 tasks: GA | 20 tasks: Greedy | 20 tasks: GA |
 | --- | --- | --- | --- | --- | --- | --- |
-| 未分配任务 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 总行程 | 224.3 | 233.5 ± 5.1 | 234.1 | 239.5 ± 7.7 | 227.8 | 242.6 ± 5.0 |
-| 完工时间 makespan | 413.0 | 414.1 ± 2.0 | 547.3 | 548.6 ± 2.2 | 722.1 | 721.1 ± 5.9 |
-| 工作量标准差 | 24.6 | 23.9 ± 1.2 | 9.9 | 6.7 ± 2.3 | 27.8 | 25.8 ± 3.6 |
-| 优先级加权完工时间 | 262.0 | 254.5 ± 1.3 | 351.8 | 332.6 ± 2.7 | 438.9 | 402.2 ± 4.2 |
-| 目标值 | 601.1 | 600.0 ± 3.0 [595.3, 604.5] | 775.0 | 766.2 ± 3.5 [759.6, 770.1] | 1001.0 | 983.6 ± 7.6 [974.9, 999.9] |
-| GA 优于／等于／劣于 Greedy 的种子数 | — | 6 / 0 / 4 | — | 10 / 0 / 0 | — | 10 / 0 / 0 |
-| 算法运行耗时（ms） | 0.2 | 113 ± 17 | 0.2 | 150 ± 19 | 0.2 | 205 ± 39 |
+| Unassigned tasks | 0 | 0 | 0 | 0 | 0 | 0 |
+| Total travel | 224.3 | 233.5 ± 5.1 | 234.1 | 239.5 ± 7.7 | 227.8 | 242.6 ± 5.0 |
+| Makespan | 413.0 | 414.1 ± 2.0 | 547.3 | 548.6 ± 2.2 | 722.1 | 721.1 ± 5.9 |
+| Workload standard deviation | 24.6 | 23.9 ± 1.2 | 9.9 | 6.7 ± 2.3 | 27.8 | 25.8 ± 3.6 |
+| Priority-weighted completion | 262.0 | 254.5 ± 1.3 | 351.8 | 332.6 ± 2.7 | 438.9 | 402.2 ± 4.2 |
+| Objective | 601.1 | 600.0 ± 3.0 [595.3, 604.5] | 775.0 | 766.2 ± 3.5 [759.6, 770.1] | 1001.0 | 983.6 ± 7.6 [974.9, 999.9] |
+| GA seeds better/equal/worse than Greedy | — | 6 / 0 / 4 | — | 10 / 0 / 0 | — | 10 / 0 / 0 |
+| Algorithm runtime (ms) | 0.2 | 113 ± 17 | 0.2 | 150 ± 19 | 0.2 | 205 ± 39 |
 
-![敏感性实验：GA 与 Greedy](simulated-unlimited-v1/ga_vs_greedy.png)
+![Sensitivity: GA versus Greedy](simulated-unlimited-v1/ga_vs_greedy.png)
 
-## 4. 结论（限于本实验条件）
+## 4. Conclusions within these conditions
 
-1. **班次容量是 15 和 20 个任务时的主要瓶颈。** 在 480 分钟班次下，两种算法未分配的任务完全相同（15 个任务时 3 个，20 个任务时 8 个），原因都是 `exceeds_shift_limit`，且 P1 全部排上。不限班次时，20 个任务的 makespan 约为 722 分钟。这说明四队在一个班次内处理不完 20 个此类任务，靠调度算法无法解决。
-2. **GA 的目标值在 15、20 个任务时所有种子都优于 Greedy；10 个任务时只是略好**（主实验 8/10 个种子，敏感性实验 6/10 个种子），均值差约 1～3，与种子间波动相当。
-3. **GA 的优势主要来自优先级加权完工时间**，即更早完成高优先级任务：降低约 7～37 分钟，降幅随任务数增加。makespan 两者基本持平。
-4. **GA 并非各项都更好。** 除主实验的 20 个任务场景外，GA 的平均总行程都比 Greedy 长 5～15 分钟，这是目标权重下的取舍：总行程权重 0.2，优先级加权完工时间权重 0.5。工作量标准差有升有降，没有一致的方向。
-5. **运行耗时**：GA 约 0.1～0.4 秒，Greedy 不到 1 毫秒。两者对四队、20 个任务的规模都足够快。这里是单机墙钟时间，模拟矩阵的准备时间单独记录，不计入算法耗时。
+1. **Shift capacity is the main bottleneck at 15/20 tasks.** At 480 minutes, both algorithms leave identical tasks unassigned (3 at 15, 8 at 20), all `exceeds_shift_limit`, retaining every P1. Unlimited 20-task makespan is about 722 minutes. Four crews cannot finish these 20 tasks in one shift; scheduling alone cannot solve that.
+2. **GA objectives beat Greedy for all seeds at 15/20 tasks, but only slightly at 10** (8/10 main, 6/10 sensitivity). Mean differences about 1-3 are comparable to seed variation.
+3. **GA mainly improves priority-weighted completion**, finishing urgent tasks earlier by about 7-37 minutes, increasing with task count. Makespans are similar.
+4. **GA does not improve every metric.** Except main 20-task input, mean travel is 5-15 minutes longer. This reflects weights 0.2 for travel versus 0.5 for priority-weighted completion. Workload standard deviation rises or falls without a consistent direction.
+5. **Runtime**: GA about 0.1-0.4 seconds, Greedy under 1 ms. Both are fast enough for four crews/20 tasks. Local wall-clock algorithm time excludes separately recorded simulated-matrix preparation.
 
-## 5. 局限
+## 5. Limitations
 
-- 第 1～4 节的行程来自模拟矩阵（直线距离 × 1.3 ÷ 30 km/h），不代表真实道路时间，不能据此宣称节省了真实时间或费用。Google 矩阵的结果见第 6 节，它同样有局限。
-- 只用了一组固定的合成任务（10/15 个是 20 个的前缀），任务点只经过多边形校验，没有核验是否在可作业道路上。结论可能随任务分布变化。
-- 样例中的任务都没有期限（`due_at` 全部为 null），因此不报告延误。优先级加权完工时间不是延误。
-- 班次 480 分钟、收工返基地、目标权重和 GA 参数都是 B 的演示假设，待 A 确认；GA 参数没有在独立数据上调优。
-- “优于”按算法实际优化的字典序 `(未分配 P1, P2, P3, 目标值)` 判定。每个场景只有 10 个种子，没有做统计显著性检验。
+- Sections 1-4 use simulated travel (straight-line distance x1.3 /30 km/h), not actual road times or evidence of real time/cost savings. Google results in section 6 have limitations too.
+- One fixed synthetic task set only (10/15 prefixes of 20), with polygon-validated but unverified work-road positions. Different distributions may change conclusions.
+- All `due_at=null`; no lateness is reported. Priority-weighted completion is not lateness.
+- 480-minute shifts, depot return, weights and GA parameters are B's demo assumptions pending A confirmation, without independent-data GA tuning.
+- Better means the actual lexicographic `(unassigned P1, P2, P3, objective)` order. Ten seeds per scenario, without statistical significance tests.
 
-## 6. Google 矩阵实验
+## 6. Google matrix experiments
 
-2026-10-15 在代码 `06cb76b` 上运行（工作区干净；与 `7651947` 相比只多了结果和文档，代码相同）。设置与第 1 节相同，只把行程矩阵换成 Google Routes `computeRouteMatrix`（驾车，`TRAFFIC_UNAWARE`，不含实时路况）。
+Ran on 2026-10-15 at clean code `06cb76b`; versus `7651947` only results/docs were added, with identical code. Section 1 settings remain, replacing travel with Google Routes `computeRouteMatrix`, driving/`TRAFFIC_UNAWARE` without live traffic.
 
-| 项目 | `google-shift480-v1` | `google-unlimited-v1` |
+| Item | `google-shift480-v1` | `google-unlimited-v1` |
 | --- | --- | --- |
-| 命令 | `run_experiments.py --matrix-provider google_routes --output-dir ...` | 同左，加 `--unlimited-shift` |
-| Google 请求 | 1 次，21×21＝441 个元素；10/15 个任务的矩阵从中截取（`matrix_source=sliced_from_20`） | 同左，单独请求一次，441 个元素 |
-| API 等待时间 | 412 ms（`matrix_preparation_ms`，不计入算法耗时） | 150 ms |
-| 不可达点对 | 0 | 0 |
+| Command | `run_experiments.py --matrix-provider google_routes --output-dir ...` | Same plus `--unlimited-shift` |
+| Google requests | One 21x21=441-element request; slice 10/15 matrices (`matrix_source=sliced_from_20`) | Separate identical-size request, 441 elements |
+| API waiting | 412 ms (`matrix_preparation_ms`, excluded from algorithm time) | 150 ms |
+| Unreachable pairs | 0 | 0 |
 
-两次请求得到的 20 个任务矩阵完全相同。两组实验共计费 882 个元素。
+Both requests returned identical 20-task matrices; 882 elements were billed total.
 
-### 6.1 Google 与模拟行程的差别
+### 6.1 Google versus simulated travel
 
-以下数字由两份 `matrix_20.json` 直接计算（420 个有向点对）：
+Directly computed from two `matrix_20.json` files, 420 directed pairs:
 
-- Google/模拟的比值中位数为 1.32（范围 0.47～6.92）。Jurong 内部的短距离行程，Google 普遍比模拟矩阵长；基地到远端任务的长行程（走高速），Google 反而更短。
-- 基地出发的首段：Google 为 9.8～23.4 分钟，模拟矩阵为 6.4～31.3 分钟。
-- Google 矩阵不对称：同一对点的往返时间平均相差 2.0 分钟，最大相差 7.5 分钟。模拟矩阵是对称的。
+- Median Google/simulated ratio 1.32, range 0.47-6.92. Short Jurong trips are generally longer with Google; long depot trips to distant tasks via expressways are shorter.
+- Depot first legs: Google 9.8-23.4 minutes; simulation 6.4-31.3.
+- Google is asymmetric: opposite directions differ by 2.0 minutes on average, maximum 7.5. Simulated matrices are symmetric.
 
-### 6.2 结果（480 分钟班次）
+### 6.2 Results: 480-minute shifts
 
-| 指标 | 10 个任务：Greedy | 10 个任务：GA | 15 个任务：Greedy | 15 个任务：GA | 20 个任务：Greedy | 20 个任务：GA |
+| Metric | 10 tasks: Greedy | 10 tasks: GA | 15 tasks: Greedy | 15 tasks: GA | 20 tasks: Greedy | 20 tasks: GA |
 | --- | --- | --- | --- | --- | --- | --- |
-| 未分配任务（P1/P2/P3） | 0 | 0 | **2（0/2/0）** | **5 个种子 2（0/2/0），5 个种子 3（0/2/1）** | 8（0/6/2） | 8（0/6/2） |
-| 总行程 | 207.3 | 206.5 ± 4.1 | 215.5 | 209.4 ± 9.5 | 194.1 | 193.8 ± 5.9 |
-| 完工时间 makespan | 409.0 | 406.6 ± 1.9 | 477.6 | 475.9 ± 2.0 | 477.1 | 473.3 ± 1.4 |
-| 工作量标准差 | 24.6 | 23.3 ± 1.3 | 3.6 | 15.3 ± 11.9 | 6.4 | 4.5 ± 1.2 |
-| 优先级加权完工时间 | 259.8 | 252.3 ± 0.6 | 320.7 | 301.0 ± 3.7 | 331.9 | 306.8 ± 1.7 |
-| 目标值 | 592.6 | 585.7 ± 2.8 | 682.9 | 675.9 ± 3.3 | 685.1 | 667.7 ± 2.3 |
-| GA 优于／等于／劣于 Greedy 的种子数 | — | 10 / 0 / 0 | — | **5 / 0 / 5** | — | 10 / 0 / 0 |
-| 算法运行耗时（ms） | 0.2 | 119 ± 14 | 0.1 | 213 ± 24 | 0.1 | 283 ± 45 |
+| Unassigned tasks (P1/P2/P3) | 0 | 0 | **2（0/2/0）** | **5 seeds: 2 (0/2/0), 5 seeds: 3 (0/2/1)** | 8（0/6/2） | 8（0/6/2） |
+| Total travel | 207.3 | 206.5 ± 4.1 | 215.5 | 209.4 ± 9.5 | 194.1 | 193.8 ± 5.9 |
+| Makespan | 409.0 | 406.6 ± 1.9 | 477.6 | 475.9 ± 2.0 | 477.1 | 473.3 ± 1.4 |
+| Workload standard deviation | 24.6 | 23.3 ± 1.3 | 3.6 | 15.3 ± 11.9 | 6.4 | 4.5 ± 1.2 |
+| Priority-weighted completion | 259.8 | 252.3 ± 0.6 | 320.7 | 301.0 ± 3.7 | 331.9 | 306.8 ± 1.7 |
+| Objective | 592.6 | 585.7 ± 2.8 | 682.9 | 675.9 ± 3.3 | 685.1 | 667.7 ± 2.3 |
+| GA seeds better/equal/worse than Greedy | — | 10 / 0 / 0 | — | **5 / 0 / 5** | — | 10 / 0 / 0 |
+| Algorithm runtime (ms) | 0.2 | 119 ± 14 | 0.1 | 213 ± 24 | 0.1 | 283 ± 45 |
 
-15 个任务一栏中，GA 各指标的均值混合了“排进 13 个任务”和“排进 12 个任务”两类方案，不能直接与 Greedy 比较。判断优劣请以种子数一行为准。
+At 15 tasks, GA means mix 13-assignment and 12-assignment plans and cannot directly compare with Greedy. Use the better/equal/worse seed-count row.
 
-![Google 矩阵：GA 与 Greedy（480 分钟班次）](google-shift480-v1/ga_vs_greedy.png)
+![Google: GA versus Greedy, 480-minute shifts](google-shift480-v1/ga_vs_greedy.png)
 
-### 6.3 结果（不限班次）
+### 6.3 Results: unlimited shifts
 
-| 指标 | 10 个任务：Greedy | 10 个任务：GA | 15 个任务：Greedy | 15 个任务：GA | 20 个任务：Greedy | 20 个任务：GA |
+| Metric | 10 tasks: Greedy | 10 tasks: GA | 15 tasks: Greedy | 15 tasks: GA | 20 tasks: Greedy | 20 tasks: GA |
 | --- | --- | --- | --- | --- | --- | --- |
-| 总行程 | 207.3 | 205.6 ± 5.0 | 245.7 | 239.6 ± 8.8 | 282.9 | 270.3 ± 8.6 |
-| 完工时间 makespan | 409.0 | 407.4 ± 1.4 | 546.5 | 548.3 ± 4.5 | 736.6 | 725.9 ± 4.5 |
-| 工作量标准差 | 24.6 | 23.9 ± 1.3 | 3.7 | 6.7 ± 3.0 | 32.8 | 25.8 ± 2.8 |
-| 优先级加权完工时间 | 259.8 | 252.5 ± 1.2 | 353.6 | 335.6 ± 3.0 | 441.6 | 409.8 ± 3.6 |
-| 目标值 | 592.6 | 586.8 ± 1.8 | 774.3 | 767.3 ± 7.6 | 1030.4 | 997.7 ± 6.4 |
-| GA 优于／等于／劣于 Greedy 的种子数 | — | 10 / 0 / 0 | — | 9 / 0 / 1 | — | 10 / 0 / 0 |
+| Total travel | 207.3 | 205.6 ± 5.0 | 245.7 | 239.6 ± 8.8 | 282.9 | 270.3 ± 8.6 |
+| Makespan | 409.0 | 407.4 ± 1.4 | 546.5 | 548.3 ± 4.5 | 736.6 | 725.9 ± 4.5 |
+| Workload standard deviation | 24.6 | 23.9 ± 1.3 | 3.7 | 6.7 ± 3.0 | 32.8 | 25.8 ± 2.8 |
+| Priority-weighted completion | 259.8 | 252.5 ± 1.2 | 353.6 | 335.6 ± 3.0 | 441.6 | 409.8 ± 3.6 |
+| Objective | 592.6 | 586.8 ± 1.8 | 774.3 | 767.3 ± 7.6 | 1030.4 | 997.7 ± 6.4 |
+| GA seeds better/equal/worse than Greedy | — | 10 / 0 / 0 | — | 9 / 0 / 1 | — | 10 / 0 / 0 |
 
-所有任务都已分配。
+All tasks are assigned.
 
-![Google 矩阵：GA 与 Greedy（不限班次）](google-unlimited-v1/ga_vs_greedy.png)
+![Google: GA versus Greedy, unlimited shifts](google-unlimited-v1/ga_vs_greedy.png)
 
-### 6.4 结论（Google 矩阵）
+### 6.4 Google conclusions
 
-1. **GA 不总是优于 Greedy。** 在 Google 矩阵、480 分钟班次、15 个任务时，Greedy 排进 13 个任务（只剩 2 个 P2）。10 个 GA 种子中有 5 个只排进 12 个，多漏了 1 个 P3，按字典序判定为劣于 Greedy。原因是 GA 默认不以 Greedy 解作为初始种群（`seed_with_greedy=false`，为了公平对比），在 80 代无改进后停止，没有找到容量最优的方案。这类结果都保留在 `raw_runs.csv` 中，没有剔除。
-2. **其余 5 个场景中，GA 在 9～10 个种子上优于 Greedy。** 优势仍主要来自优先级加权完工时间（降低 7～32 分钟）。与模拟矩阵不同的是，在 Google 矩阵上 GA 的平均总行程也不比 Greedy 长，基本持平或更短。
-3. **数据源会改变容量结论。** 15 个任务、480 分钟班次时，Greedy 在模拟矩阵下漏排 3 个任务，在 Google 矩阵下只漏排 2 个，因为远端任务走高速更快。只看模拟矩阵，会低估一天能完成的任务量。
-4. **运行耗时**：GA 0.1～0.4 秒，Greedy 不到 1 毫秒。Google 取一次矩阵的等待时间为 0.15～0.41 秒，单独记录，不计入算法耗时。
-5. 第 1 条中失败的原因见 6.6 节。
+1. **GA does not always beat Greedy.** Google/480/15 Greedy assigns 13 tasks (two P2 unassigned). Five of ten GA seeds assign 12, missing an extra P3 and losing lexicographically. For fair comparison, `seed_with_greedy=false`; after 80 generations without improvement, GA stops without capacity-optimal coverage. Every such run remains in `raw_runs.csv`.
+2. **GA beats Greedy in 9-10 seeds in the other five scenarios.** Gains still mainly come from priority-weighted completion (7-32 minutes lower). Unlike simulation, Google GA mean travel is equal or shorter than Greedy.
+3. **Source changes capacity conclusions.** At 15/480, Greedy misses three tasks with simulation but two with Google because expressways speed distant trips. Simulation alone underestimates daily capacity here.
+4. **Runtime**: GA 0.1-0.4 seconds, Greedy under 1 ms. Google fetching takes 0.15-0.41 seconds, separately recorded outside algorithm runtime.
+5. Section 6.6 diagnoses the first conclusion's failures.
 
-### 6.5 Google 实验的局限
+### 6.5 Google limitations
 
-- 是不考虑实时路况（`TRAFFIC_UNAWARE`）的单次取数，不代表不同时段的行程分布。
-- 基地仍用 NUS-ISS 建筑参考点（`nus-iss-v1`）。车辆入口只做过初步检查，没有正式核验。
-- 第 5 节中关于任务样例、期限、演示假设和统计检验的局限同样适用。
+- Single fetches with `TRAFFIC_UNAWARE`, not time-of-day travel distributions.
+- Depot remains NUS-ISS building reference `nus-iss-v1`; entrance has preliminary checks only, without formal verification.
+- Section 5 limitations for synthetic tasks, deadlines, demo assumptions and statistical tests also apply.
 
-### 6.6 失败场景诊断（Google 矩阵、480 分钟班次、15 个任务）
+### 6.6 Failure diagnosis: Google, 480-minute shifts, 15 tasks
 
-复现命令：`python SystemCode/experiments/routing/diagnose_tight_capacity.py`。脚本读取本目录 `google-shift480-v1/matrix_15.json`，不调用 Google，也不写任何文件。以下数字来自该脚本的输出。
+Reproduce: `python SystemCode/experiments/routing/diagnose_tight_capacity.py`. It reads `google-shift480-v1/matrix_15.json`, without Google calls or file writes. Numbers below come from its output.
 
-| 观察 | 数据 |
+| Observation | Data |
 | --- | --- |
-| 容量 | 15 个任务维修时长合计 1920 分钟，正好等于 4×480 分钟；加上路程最多排进 13 个。Greedy 排进 13 个，各队剩余时间只有 2.4～11.3 分钟 |
-| 失败种子（2、4、5、7、10） | 只排进 12 个，多漏 1 个 P3。剩余时间集中在一支队伍（60.0～79.4 分钟），放不下“60 分钟维修 + 往返路程”的 P3，其他队伍只剩 3.6～16.8 分钟 |
-| 能否直接插入 | 5 个失败种子中，把漏排任务直接插到任何队伍、任何位置的可行方案都是 0 种 |
-| 两步调整 | 种子 4、7、10：先把一个已排任务挪到另一队，再插入 P3，即可排进 13 个。种子 2、5：两步调整也不够 |
-| 何时锁定 | 失败种子在第 1～10 代就锁定在 12 个，之后 100 多代没有再改善覆盖数 |
-| 加大预算 | 耐心代数 300、最大代数 1000：失败种子仍为 2、4、5、7、10 |
-| 改其他参数 | 种群 120：失败种子变为 1、3、10；变异率 0.6：失败种子变为 4、5、8、9 |
-| Greedy 初始化 | 10/10 个种子排进 13 个任务，目标值 668.2～670.4（Greedy 为 682.9，纯 GA 最好为 669.8） |
+| Capacity | 15 tasks total 1920 service minutes, exactly 4x480; travel reduces maximum coverage to 13. Greedy assigns 13, leaving 2.4-11.3 minutes per crew. |
+| Failed seeds (2,4,5,7,10) | Assign 12, missing one extra P3. Spare capacity concentrates in one crew (60.0-79.4), insufficient for 60-minute P3 plus depot legs; other crews retain 3.6-16.8 minutes. |
+| Direct insertion | No feasible insertion at any crew/position for any of five failed seeds. |
+| Two-step moves | Seeds 4,7,10 can relocate one assigned task to another crew then insert P3, reaching 13. Seeds 2,5 need more than two steps. |
+| Lock-in | Failed seeds reach 12 assignments in generations 1-10, with no coverage improvement for over 100 more. |
+| Larger budget | Patience 300/generations 1000 still fail seeds 2,4,5,7,10. |
+| Other parameters | Population 120 fails seeds 1,3,10; mutation 0.6 fails 4,5,8,9. |
+| Greedy initialization | All 10 seeds assign 13; objective 668.2-670.4, versus Greedy 682.9 and best pure GA 669.8. |
 
-**结论**：这是 GA 在容量极紧、目标按字典序比较时的结构性弱点。要多排一个任务，需要“挪一个 + 插一个”的协同调整；单次变异只做一个动作，中间状态的目标值变差，在选择中被淘汰，种群于是过早收敛。增加搜索预算或调整参数都解决不了，因此没有做调参。
+**Conclusion**: tight capacity with lexicographic objectives exposes a structural GA weakness. Extra coverage requires coordinated relocation+insertion; one-action mutation produces worse intermediate states eliminated by selection, causing premature convergence. More search budget/parameter changes did not solve it, so tuning was not pursued.
 
-**处理**：在线重算的 GA 改为从 Greedy 解出发，保证不比 Greedy 差；本页所有实验仍是纯 GA，与 Greedy 独立比较，结果不变。说明见[路线模块 README 第 13 节](../../../backend/roadguard/routing/README.md)。可选的进一步改进是加入“挪动 + 插入”的修复步骤，目前未实现。
+**Action**: online GA now starts from Greedy to guarantee no worse output. All experiments here remain independent pure-GA comparisons, with unchanged results. See [routing section 13](../../../backend/roadguard/routing/README.md). Relocation+insertion repair is an optional future improvement, not implemented.
 
-## 7. GA 评估：消融与离已知最好解的差距
+## 7. GA evaluation: ablation and best-known gaps
 
-第 2～6 节只回答“GA 是否优于 Greedy”。在线 GA 从 Greedy 解出发后必然不差于 Greedy（6.6 节），这个问题就不再有信息量。本节改问：GA 离能找到的最好方案还有多远，各部分起了什么作用，结果稳不稳定，代价是多少。
+Sections 2-6 ask whether GA beats Greedy. Online Greedy initialization guarantees a result no worse than Greedy (6.6), so a win/loss comparison alone is insufficient. Instead assess distance from the best findable plan, contributions of components, stability and computational cost.
 
-### 7.1 方法
+### 7.1 Method
 
-| 项目 | 内容 |
+| Item | Content |
 | --- | --- |
-| 命令 | `python SystemCode/experiments/routing/evaluate_ga.py --output-dir SystemCode/experiments/routing/results/ga-evaluation-v1` |
-| 代码版本 | `7bb1536`，`working_tree_dirty=false`；运行时间 2026-10-15T07:30Z，Python 3.11.9、Windows、单机 |
-| 场景 | 模拟矩阵 / Google 矩阵 × 480 分钟班次 / 不限班次 × 10/15/20 个任务，共 12 个。矩阵直接读取 B6 保存的 `simulated-shift480-v1`、`google-shift480-v1`，运行前核对 SHA-256 和节点顺序，没有请求 Google |
-| `greedy` | 基线，每个场景 1 次 |
-| `ga_pure` | 实验用 GA（不含 Greedy 初始解），默认参数，种子 1～10。与 B6 的 GA 设置相同，所以第 2、3、6 节的 GA 数字在这里重现 |
-| `ga_seeded` | 在线用 GA（初始种群含 Greedy 解），默认参数，种子 1～10 |
-| `long_run` | 大预算 GA：种群 150、最多 1000 代、连续 300 代无改进才停止，种子 101～120，纯 GA 与 Greedy 初始化交替。只用来寻找已知最好解 |
-| 已知最好解（BKS） | 每个场景所有 41 次运行（Greedy 1 次、纯 GA 10 次、在线 GA 10 次、`long_run` 20 次）中最好的方案（按 `(未分配 P1, P2, P3, 目标值)` 比较），路线保存在 `best_known.json`。**它不是经过证明的最优解** |
-| 离 BKS 的差距 | （目标值 − BKS 目标值）÷ BKS 目标值。只对排进任务数与 BKS 相同的运行计算；排进更少的运行单独计数（“少排”），不混进百分比 |
+| Command | `python SystemCode/experiments/routing/evaluate_ga.py --output-dir SystemCode/experiments/routing/results/ga-evaluation-v1` |
+| Code | `7bb1536`, `working_tree_dirty=false`; 2026-10-15T07:30Z, Python 3.11.9, Windows, one machine |
+| Scenarios | Simulated/Google x 480-minute/unlimited x10/15/20 tasks =12. Read saved B6 `simulated-shift480-v1`/`google-shift480-v1` matrices, checking SHA-256/node order; no Google requests. |
+| `greedy` | One baseline run per scenario |
+| `ga_pure` | Default experimental GA, no Greedy initialization, seeds 1-10. Same as B6, reproducing sections 2/3/6 GA numbers. |
+| `ga_seeded` | Default online GA with Greedy initialization, seeds 1-10 |
+| `long_run` | Population 150, maximum 1000 generations, patience 300, seeds 101-120, alternating pure/Greedy-initialized GA; BKS search only. |
+| Best-known solution (BKS) | Best of 41 runs per scenario: Greedy 1, pure GA 10, online GA 10, long_run 20, ordered by `(unassigned P1,P2,P3,objective)`. Routes in `best_known.json`. **Not a proven optimum.** |
+| BKS gap | (objective - BKS objective) / BKS objective, only with equal assignment count. Fewer assignments are counted separately, never mixed into percentages. |
 
-输出：`raw_runs.csv`（492 次运行，每次一行）、`summary.json`、`best_known.json`、`run_metadata.json`。
+Outputs: `raw_runs.csv` (492 rows/runs), `summary.json`, `best_known.json`, `run_metadata.json`.
 
-### 7.2 结果
+### 7.2 Results
 
-差距单位为 %，GA 列为 10 个种子的均值，方括号内为最小值和最大值。“缩小比例”= 1 − 在线 GA 平均差距 ÷ Greedy 差距。
+Gaps are percent. GA gives ten-seed means with min/max brackets. Gap reduction = 1 - online-GA mean gap / Greedy gap.
 
-| 场景 | BKS 目标值 | Greedy 差距 | 纯 GA 差距 | 纯 GA 少排 | 在线 GA 差距 | 在线 GA 优于 Greedy | 缩小比例 |
+| Scenario | BKS objective | Greedy gap | Pure GA gap | Pure GA fewer assignments | Online GA gap | Online GA beats Greedy | Gap reduction |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 模拟 / 480 / 10 | 594.2 | 1.17 | 0.68 [0.00, 1.48] | 0 | 0.43 [0.19, 0.97] | 10/10 | 63% |
-| 模拟 / 480 / 15 | 678.9 | 1.49 | 0.49 [0.31, 0.71] | 0 | 0.23 [0.19, 0.23] | 10/10 | 85% |
-| 模拟 / 480 / 20 | 659.9 | 4.29 | 0.73 [0.23, 1.29] | 0 | 1.07 [0.41, 2.08] | 10/10 | 75% |
-| 模拟 / 不限 / 10 | 594.2 | 1.17 | 0.97 [0.19, 1.73] | 0 | 0.33 [0.00, 0.39] | 10/10 | 72% |
-| 模拟 / 不限 / 15 | 759.6 | 2.02 | 0.87 [0.00, 1.39] | 0 | 0.75 [0.36, 0.79] | 10/10 | 63% |
-| 模拟 / 不限 / 20 | 960.0 | 4.27 | 2.46 [1.55, 4.16] | 0 | 0.50 [0.00, 1.57] | 10/10 | 88% |
+| Simulated / 480 / 10 | 594.2 | 1.17 | 0.68 [0.00, 1.48] | 0 | 0.43 [0.19, 0.97] | 10/10 | 63% |
+| Simulated / 480 / 15 | 678.9 | 1.49 | 0.49 [0.31, 0.71] | 0 | 0.23 [0.19, 0.23] | 10/10 | 85% |
+| Simulated / 480 / 20 | 659.9 | 4.29 | 0.73 [0.23, 1.29] | 0 | 1.07 [0.41, 2.08] | 10/10 | 75% |
+| Simulated / Unlimited / 10 | 594.2 | 1.17 | 0.97 [0.19, 1.73] | 0 | 0.33 [0.00, 0.39] | 10/10 | 72% |
+| Simulated / Unlimited / 15 | 759.6 | 2.02 | 0.87 [0.00, 1.39] | 0 | 0.75 [0.36, 0.79] | 10/10 | 63% |
+| Simulated / Unlimited / 20 | 960.0 | 4.27 | 2.46 [1.55, 4.16] | 0 | 0.50 [0.00, 1.57] | 10/10 | 88% |
 | Google / 480 / 10 | 580.5 | 2.09 | 0.89 [0.24, 1.72] | 0 | 0.67 [0.15, 0.93] | 10/10 | 68% |
-| Google / 480 / 15 | 668.2 | 2.19 | 0.85 [0.24, 1.30]（5 次） | **5** | 0.23 [0.00, 0.32] | 10/10 | 89% |
+| Google / 480 / 15 | 668.2 | 2.19 | 0.85 [0.24, 1.30](5 runs) | **5** | 0.23 [0.00, 0.32] | 10/10 | 89% |
 | Google / 480 / 20 | 661.7 | 3.53 | 0.90 [0.17, 1.23] | 0 | 0.93 [0.38, 1.77] | 10/10 | 74% |
-| Google / 不限 / 10 | 580.5 | 2.09 | 1.08 [0.40, 1.57] | 0 | 0.57 [0.14, 0.93] | 10/10 | 73% |
-| Google / 不限 / 15 | 751.6 | 3.01 | 2.09 [0.00, 4.16] | 0 | 0.94 [0.92, 1.14] | 10/10 | 69% |
-| Google / 不限 / 20 | 980.4 | 5.10 | 1.77 [0.42, 2.55] | 0 | 1.82 [0.79, 2.69] | 10/10 | 64% |
+| Google / Unlimited / 10 | 580.5 | 2.09 | 1.08 [0.40, 1.57] | 0 | 0.57 [0.14, 0.93] | 10/10 | 73% |
+| Google / Unlimited / 15 | 751.6 | 3.01 | 2.09 [0.00, 4.16] | 0 | 0.94 [0.92, 1.14] | 10/10 | 69% |
+| Google / Unlimited / 20 | 980.4 | 5.10 | 1.77 [0.42, 2.55] | 0 | 1.82 [0.79, 2.69] | 10/10 | 64% |
 
-- 每个场景 Greedy 排进的任务数都与 BKS 相同，所以 Greedy 差距都能计算。
-- BKS 的来源：`long_run` 7 个场景，`ga_pure` 3 个，`ga_seeded` 2 个。默认预算的 240 次运行中，只有 5 次正好达到 BKS（纯 GA 3 次，在线 GA 2 次）。
-- 稳定性（目标值的标准差）：在线 GA 在 8/12 个场景比纯 GA 小，例如 Google / 不限 / 15 为 0.50 对 7.62，Google / 480 / 15 为 0.56 对 3.32；在 4 个场景略大，其中 3 个是 20 个任务的场景（模拟 / 480 / 20 为 3.88 对 1.89）。
-- 运行耗时（每次的均值）：纯 GA 114～341 ms，在线 GA 105～362 ms，Greedy 不到 1 ms；`long_run` 每次 0.7～5.4 秒。
+- Greedy coverage equals BKS in every scenario, so all Greedy gaps are defined.
+- BKS originates from long_run in seven scenarios, ga_pure in three and ga_seeded in two. Of 240 default-budget runs, five exactly reach BKS (pure three, online two).
+- Objective standard deviation: online GA is lower in 8/12 scenarios, e.g. Google/unlimited/15 0.50 versus 7.62 and Google/480/15 0.56 versus 3.32. Four scenarios are slightly higher; three have 20 tasks (simulated/480/20 3.88 versus 1.89).
+- Mean runtimes: pure GA 114-341 ms, online 105-362 ms, Greedy under 1 ms; long_run 0.7-5.4 seconds.
 
-### 7.3 结论（限于本实验条件）
+### 7.3 Conclusions within these conditions
 
-1. **Greedy 离 BKS 1.2%～5.1%，任务越多差距越大**（10 个任务 1.2%～2.1%，20 个任务 3.5%～5.1%）。
-2. **在线 GA 离 BKS 0.2%～1.8%，把 Greedy 的差距缩小了 63%～89%。** 120 次运行全部优于 Greedy，没有一次少排任务；目标值比 Greedy 平均低 0.7%～3.6%（`ga_seeded_improvement_over_greedy_percent`）。
-3. **消融：Greedy 初始解的作用主要是“保底”，不是在每个场景都提高质量。**
-   - 10、15 个任务的 8 个场景中，在线 GA 的平均差距都小于纯 GA；模拟 / 不限 / 20 也明显更小（0.50% 对 2.46%）。
-   - 但 480 分钟班次的两个 20 任务场景和 Google / 不限 / 20 中，在线 GA 与纯 GA 持平或略差（1.07% 对 0.73%，0.93% 对 0.90%，1.82% 对 1.77%）。一种可能的解释是 Greedy 解较早占据种群、减少了多样性，本实验没有验证。
-   - 纯 GA 在 Google / 480 / 15 有 5/10 次少排一个 P3（6.6 节的结构性问题），在线 GA 没有。这是在线服务采用 Greedy 初始解的主要理由。
-4. **继续加大预算的收益很小。** `long_run` 的预算约为默认的 10 倍，每次耗时 0.7～5.4 秒，但 20 次的平均目标值与在线 GA 相差在 ±0.8% 以内，6 个场景反而更差（其中一半运行是纯 GA）。大预算的价值在于多次运行中偶尔找到更好的方案，用来确定 BKS。默认参数（0.1～0.4 秒）对在线重算是合适的折中。
-5. **百分比看起来小，部分是因为目标值中有算法改不了的部分。** 目标值以 makespan 为主，而 makespan 包含维修时长本身。按绝对值算，在线 GA 离 BKS 约 1.5～18 分钟加权成本，Greedy 约 7～50 分钟。各分项的差异见第 2、3、6 节。
+1. **Greedy is 1.2%-5.1% from BKS, increasing with task count**: 1.2%-2.1% at ten tasks, 3.5%-5.1% at twenty.
+2. **Online GA is 0.2%-1.8% from BKS, reducing Greedy's gap by 63%-89%.** All 120 runs beat Greedy without fewer assignments; mean objectives improve 0.7%-3.6% (`ga_seeded_improvement_over_greedy_percent`).
+3. **Ablation: Greedy initialization mainly guarantees a floor, rather than improving every scenario.**
+   - Online mean gaps are smaller in all eight 10/15-task scenarios; simulated/unlimited/20 also improves clearly (0.50% versus 2.46%).
+   - Both 480-minute/20-task scenarios and Google/unlimited/20 tie or slightly favor pure GA (1.07% versus 0.73%, 0.93% versus 0.90%, 1.82% versus 1.77%). Earlier Greedy dominance reducing diversity is a possible, untested explanation.
+   - Pure GA loses one P3 in 5/10 Google/480/15 runs (structural issue, 6.6); online never does. This is the main online rationale for Greedy initialization.
+4. **Larger budgets yield little additional mean benefit.** long_run uses about ten times the budget and 0.7-5.4 seconds, but its 20-run mean is within +/-0.8% of online GA and worse in six scenarios (half its runs are pure GA). Its value is occasionally finding better plans to establish BKS. Defaults at 0.1-0.4 seconds are a reasonable online compromise.
+5. **Small percentages partly reflect fixed objective components.** Makespan dominates and includes service time that algorithms cannot change. Absolute BKS gaps are about 1.5-18 weighted-cost minutes online versus 7-50 for Greedy. Component differences appear in sections 2/3/6.
 
-### 7.4 局限
+### 7.4 Limitations
 
-- BKS 只是这 41 次运行中最好的方案。没有用精确求解器或下界验证，所以“离 BKS 的差距”是离最优差距的**下限估计**，真实差距可能更大。
-- 部分场景的 BKS 就是由被评估的方法（纯 GA 或在线 GA 的某个种子）找到的，这些方法在该场景会有一次差距为 0。
-- 只有一组固定的合成任务（10/15 个是 20 个的前缀）和 B6 的两份矩阵，没有在随机生成的其他任务组上验证泛化。
-- 每种方法 10 个种子，没有做统计显著性检验；7.3 第 3 条中差别很小的场景（如 0.93% 对 0.90%）不能视为有差异。
-- 班次、返基地、目标权重和 GA 参数仍是 B 的演示假设，待 A 确认。
+- BKS is merely best among 41 runs, without exact solver/lower-bound verification. Its gap is a **lower-bound estimate** of optimality gap; actual gaps may be larger.
+- Evaluated pure/online methods themselves find BKS in some scenarios, giving one zero-gap run there.
+- One fixed synthetic set (10/15 prefixes of 20) and two B6 matrices; no generalization validation on other random task sets.
+- Ten seeds per method without significance testing; tiny section-7.3 differences such as 0.93% versus 0.90% cannot establish a real difference.
+- Shifts, return policy, objective weights and GA parameters remain B's demo assumptions pending A confirmation.

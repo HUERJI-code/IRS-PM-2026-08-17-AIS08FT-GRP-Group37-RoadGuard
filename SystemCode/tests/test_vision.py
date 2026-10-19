@@ -20,7 +20,7 @@ EXPECTED_DETECTIONS = {
 
 def test_scenario_catalog_is_complete_descriptive_and_read_only():
     assert set(SCENARIOS) == set(EXPECTED_DETECTIONS)
-    assert all(description.startswith("演示：") for description in SCENARIOS.values())
+    assert all(description.startswith("Demo:") for description in SCENARIOS.values())
     with pytest.raises(TypeError):
         SCENARIOS["high_confidence"] = "Changed by a caller"
 

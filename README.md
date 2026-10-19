@@ -6,9 +6,9 @@ Road damage assessment and maintenance planning for **Jurong, Singapore**, with 
 
 This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测，主框 ≥0.60 自动建任务，低于阈值复核；业务规则仍为课程模拟；道路类型声明及合成任务点不能替代道路核验。
+> Current geographic baseline: repair tasks are restricted to Jurong East and Jurong West, with four crews departing from the NUS-ISS simulated origin by default. A's Steps 3–7 delivered shared foundations, simulated workflows, consistent task snapshots and B/C handoff materials. Step 8 supports real detection: a primary box ≥0.60 automatically creates a task; lower confidence requires review. Business rules remain course simulations; road declarations and synthetic task points do not replace road verification.
 
-2026-10-14：[业务规则定稿](Miscellaneous/BUSINESS_RULES_BASELINE.md)采用 `demo-rules-v2`，P3/P2/P1＝60/120/240 分钟；[联调验收清单](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)覆盖 A 当前检查和 B/C 就绪后的场景。B/C 接入整合暂缓，已有记录保留旧规则。
+2026-10-14: The [finalized business rules](Miscellaneous/BUSINESS_RULES_BASELINE.md) use `demo-rules-v2`, with P3/P2/P1=60/120/240 minutes. The [integration acceptance checklist](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) covers A's current checks and scenarios after B/C are ready. B/C integration is deferred; existing records retain their old rules.
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -98,7 +98,7 @@ IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
 
 Start by reviewing the [project scope](Miscellaneous/PROJECT_SCOPE.md), [example configuration](SystemCode/config/project.example.json) and [implementation plan](Miscellaneous/IMPLEMENTATION_PLAN.md).
 
-All contributors and coding agents should first read the shared [project and agent collaboration rules (中文)](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
+All contributors and coding agents should first read the shared [project and agent collaboration rules](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
@@ -108,19 +108,19 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 
 ## SECTION 7 : MISCELLANEOUS
 
-- [Project and agent collaboration rules (中文)](AGENTS.md)
-- [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
+- [Project and agent collaboration rules](AGENTS.md)
+- [Feature branches, pull requests and CI](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
-- [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
-- [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
-- [Validation error analysis and 30-epoch model comparison (中文)](Miscellaneous/VISION_30_EPOCH_COMPARISON.md)
-- [Balanced Precision/Recall optimization and unmet 70% target (中文)](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md)
-- [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
-- [Run demo detection and business rules (中文)](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
-- [Upload, review and manage persisted tasks (中文)](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
-- [B/C task snapshots, fixed inputs and knowledge handoff (中文)](Miscellaneous/BC_HANDOFF.md)
+- [Jurong boundary and NUS-ISS simulated dispatch origin](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
+- [RDD2022ES version and eight-class label audit](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
+- [Validation error analysis and 30-epoch model comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md)
+- [Balanced Precision/Recall optimization and unmet 70% target](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md)
+- [Frozen initial API contracts and demo examples](Miscellaneous/API_CONTRACT.md)
+- [Run demo detection and business rules](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
+- [Upload, review and manage persisted tasks](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
+- [B/C task snapshots, fixed inputs and knowledge handoff](Miscellaneous/BC_HANDOFF.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
-- [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
+- [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)

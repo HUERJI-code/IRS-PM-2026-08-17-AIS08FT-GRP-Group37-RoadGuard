@@ -2,7 +2,7 @@
 
 Recorded: 2026-10-10. This records the current project decision, not the date of the teacher's feedback.
 
-Updated: 2026-10-14. The geographic baseline and user-selected dispatch origin are defined in [Jurong scope and NUS-ISS depot (中文)](JURONG_SCOPE_AND_DEPOT.md).
+Updated: 2026-10-14. The geographic baseline and user-selected dispatch origin are defined in [Jurong scope and NUS-ISS depot](JURONG_SCOPE_AND_DEPOT.md).
 
 ## Confirmed changes
 

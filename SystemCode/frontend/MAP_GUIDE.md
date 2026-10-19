@@ -1,43 +1,43 @@
-# C 第 8 步：Jurong 地图与四队路线展示
+# C step 8: Jurong map and four-crew routes
 
-2026-10-17，负责人 C。第七、八步现已写回原项目并完成浏览器验收，详见 BROWSER_ACCEPTANCE.md。
+2026-10-17; owner C. Steps 7–8 were restored to the original project and browser-verified; see BROWSER_ACCEPTANCE.md.
 
-## 功能
+## Features
 
-/routes 增加 GA / Greedy 地图选择器。使用仓库原始冻结 Jurong East / West GeoJSON 与 NUS-ISS 基地文件，没有在线下载替换边界、简化多边形或调用地图收费服务。
+/routes adds a GA/Greedy map selector using the repository’s frozen Jurong East/West GeoJSON and NUS-ISS depot file. No replacement boundary download, polygon simplification or paid map service is used.
 
-地图为北朝上的 SVG 地理示意图，支持放大、缩小、四向移动、全域与基地复位。默认视野包含完整区域、区域外基地和保存方案的停靠点。四队分别使用稳定蓝、橙、紫、绿颜色；同时提供文字与序号，不只依靠颜色辨认。
+The north-up SVG geographic diagram supports zoom, four-direction panning and full-area/depot reset. Default bounds include the whole service area, external depot and saved stops. Four crews use stable blue/orange/purple/green colours plus text/numbers, so colour is not the only cue.
 
-线路从保存方案的基地开始，按 stops.sequence 排序连接停靠点；保存设置要求返基地时连接末站与基地，不自行改变返程策略。原 stops 数组不变。停用或闲置队伍仍显示，无停靠点不虚构路线。
+Lines begin at the saved depot and connect stops sorted by stops.sequence. A return line is added only when saved settings require it; return policy and original stops arrays are unchanged. Idle/unavailable crews remain visible without invented routes.
 
-点击或用键盘选择图上点、队伍图例、停靠列表可联动详情；重合点可通过列表逐项选择。详情展示保存方案的坐标、优先级、上一段行程、维修分钟、到达/完成时刻，以及队伍总行程、返程与结束时刻。时间按 Asia/Singapore 展示，任务链接打开当前任务并说明它可能不同于历史方案。
+Map points, crew legends and stop lists support mouse/keyboard selection linked to details. Overlapping points can be selected individually from the list. Details show saved coordinates, priority, previous-leg travel, repair minutes, arrival/completion, crew total travel, return and finish time. Times use Asia/Singapore. Links open current tasks and explain that they may differ from the saved plan.
 
-未分配任务完整列出后端原因。当前契约未在未分配对象中保存坐标：只有活动任务快照 input_revision 与方案一致且找到该任务时才标点，否则明确显示位置不可用，不混用新旧坐标。
+All unassigned tasks retain backend reasons. The current contract does not save their coordinates: plot only when the active snapshot input_revision matches the plan and contains that task; otherwise show unavailable location without mixing old/new coordinates.
 
-没有方案时只显示区域与基地。旧方案或读取失败警告放在地图旁；地图切换不发起业务写入，也不暗示两个 latest 方案属于同一轮计算。GA / Greedy 比较属于下一步。
+Without a plan, show only area/depot. Stale/read-failure notices sit beside the map. Algorithm switching performs no writes and does not imply two latest plans share a run. GA/Greedy comparison was the next stage.
 
-## 地理来源与边界
+## Geography and provenance
 
-- 唯一边界：Miscellaneous/geography/jurong-boundary-mp2025.geojson，jurong-je-jw-mp2025-v1。
-- 基地参考：Miscellaneous/geography/nus-iss-depot.geojson。路线使用保存方案 depot 坐标；默认视野也保留冻结参考点。
-- GeoJSON 为 [longitude, latitude]，业务记录为 latitude / longitude。显示投影在小范围采用经度余弦修正；只用于画图，不用于业务范围判断或计算行程。
-- 页面保留 URA / data.gov.sg 来源、2026-10-12 获取日和 Singapore Open Data Licence 链接。规划边界不等于道路维修权限，基地为建筑地址参考点。
-- 当前 geometry 为 null。所有路线明确标为“路线顺序示意，非道路导航”，即使行程矩阵来自 Google 也不冒充真实道路路径。
+- Boundary: Miscellaneous/geography/jurong-boundary-mp2025.geojson, jurong-je-jw-mp2025-v1.
+- Depot: Miscellaneous/geography/nus-iss-depot.geojson. Routes use saved plan depot coordinates; default bounds retain the frozen reference point.
+- GeoJSON uses [longitude, latitude]; business records use latitude/longitude. A local cosine longitude correction is used only for drawing, never eligibility or travel calculation.
+- URA/data.gov.sg provenance, retrieval date 2026-10-12 and Singapore Open Data Licence links remain visible. Planning boundaries do not establish maintenance authority; the depot is a building-address reference.
+- geometry is currently null. Routes are explicitly stop-order diagrams, not road navigation, even when matrix data comes from Google.
 
-## 文件与依赖
+## Files and dependencies
 
-新增 src/map/geography.ts、src/components/RouteMap.tsx 和 RouteMap.test.tsx；更新 RoutesPage、调度集成测试、样式与文档。无新增依赖。Vite 与 Vitest 仅增加共享 geography 目录和既有标签文件的开发读取允许项，保持 strict 及默认敏感文件拒绝规则；未开放整个仓库。
+Added src/map/geography.ts, src/components/RouteMap.tsx and RouteMap.test.tsx; updated RoutesPage, integration tests, styles and docs. No new dependencies. Vite/Vitest allow only the shared geography directory and existing label file for development reads, retaining strict access and default sensitive-file blocks rather than exposing the repository.
 
-## 验证与限制
+## Validation and limitations
 
-新增 12 项地图测试及 1 项方案切换集成测试，覆盖全部边界顶点与基地的视野、经纬度方向、稳定颜色、按序绘线、返程、键盘与列表联动、终态队伍、未分配坐标版本、空方案、过期、失败与矩阵来源。最终测试/构建结果见下方。
+Twelve map tests and one algorithm-switch integration test cover all boundary/depot bounds, coordinate direction, stable colours, sorted lines, returns, keyboard/list interaction, final crew states, unassigned-coordinate revisions, absent plans, stale/failure notices and matrix source.
 
-浏览器与 390×844 手机视口验收已完成，详情见 BROWSER_ACCEPTANCE.md。未调用真实 Google、模型或其他付费服务；没有修改 A/B 文件、共享边界或真实业务数据。
+Browser and 390×844 checks completed (BROWSER_ACCEPTANCE.md). No real Google/model/paid-service calls, A/B changes, boundary edits or ordinary business-data changes.
 
-## 交付状态
+## Delivery
 
-第 2–8 步代码均已在原项目，未提交、未推送。旧累积补丁已应用，不应重复应用。第九步 GA / Greedy 同轮比较已完成，见 COMPARISON_GUIDE.md；后续为第十步知识检索。
+Steps 2–8 are in the original project, uncommitted/unpushed at this stage. The old accumulated patch was applied and must not be applied again. Step 9 same-run comparison is complete (COMPARISON_GUIDE.md); step 10 knowledge retrieval follows.
 
-## 最终检查结果
+## Final checks
 
-2026-10-17：npm run lint 通过；8 个测试文件共 100 项测试通过；npm run build 通过。JS 670.51 kB，gzip 179.93 kB；单包超过 500 kB 提示保留。工作副本的两份共享 GeoJSON 与原仓库逐字节一致。
+2026-10-17: lint, 100 tests in eight files and build passed. JS 670.51 kB, gzip 179.93 kB; >500 kB warning retained. The working copy’s two GeoJSON files matched the originals byte for byte.

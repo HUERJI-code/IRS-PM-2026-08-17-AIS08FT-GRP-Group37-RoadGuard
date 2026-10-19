@@ -57,9 +57,9 @@ it('keeps distinct stable colors for the four configured crews independent of or
 it('shows only boundaries and depot if no plan exists', () => {
   mount(null)
   expect(screen.getAllByTestId('boundary')).toHaveLength(2)
-  expect(screen.getByText(/仅显示冻结服务区域和基地/)).toBeVisible()
+  expect(screen.getByText(/Only the frozen service area and depot are shown/)).toBeVisible()
   expect(screen.queryByTestId('route-crew-01')).not.toBeInTheDocument()
-  expect(screen.getByText(/路线顺序示意，非道路导航/)).toBeVisible()
+  expect(screen.getByText(/Route order diagram, not road navigation/)).toBeVisible()
 })
 it('draws ordered depot-to-stops points and adds return only when saved settings require it', () => {
   const value = plan()
@@ -104,26 +104,26 @@ it('links a keyboard-selected map stop to saved timing, crew and current task de
   mount(value)
   fireEvent.keyDown(
     screen.getByRole('button', {
-      name: `${route.crew_id} 第 ${stop.sequence} 站 ${stop.task_id}`,
+      name: `${route.crew_id} Stop ${stop.sequence} ${stop.task_id}`,
     }),
     { key: 'Enter' },
   )
-  const detail = screen.getByRole('region', { name: '选中停靠点' })
-  expect(within(detail).getByText(/到达/)).toHaveTextContent('新加坡')
+  const detail = screen.getByRole('region', { name: 'Selected stop' })
+  expect(within(detail).getByText(/Arrival/)).toHaveTextContent('Singapore')
   expect(within(detail).getByRole('link')).toHaveAttribute(
     'href',
     `/tasks?task=${stop.task_id}`,
   )
-  expect(screen.getByRole('region', { name: '选中队伍' })).toHaveTextContent(
-    '返基地',
+  expect(screen.getByRole('region', { name: 'Selected crew' })).toHaveTextContent(
+    'Return to depot',
   )
-  await userEvent.click(screen.getByRole('button', { name: '定位所选停靠点' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Focus selected stop' }))
   expect(
-    screen.getByRole('group', { name: 'Jurong 地理示意图，北朝上' }),
+    screen.getByRole('group', { name: 'Jurong Geographic diagram, north up' }),
   ).not.toHaveAttribute('viewBox', '0 0 900 560')
-  await userEvent.click(screen.getByRole('button', { name: '全域与基地' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Full area and depot' }))
   expect(
-    screen.getByRole('group', { name: 'Jurong 地理示意图，北朝上' }),
+    screen.getByRole('group', { name: 'Jurong Geographic diagram, north up' }),
   ).toHaveAttribute('viewBox', '0 0 900 560')
 })
 it('lets list selection highlight a stop even when map points overlap', async () => {
@@ -132,16 +132,16 @@ it('lets list selection highlight a stop even when map points overlap', async ()
   const stop = route.stops[0]
   mount(value)
   await userEvent.click(
-    screen.getByRole('button', { name: `${route.crew_id} · 已分配` }),
+    screen.getByRole('button', { name: `${route.crew_id} · Assigned` }),
   )
   await userEvent.click(
     screen.getByRole('button', {
-      name: `第 ${stop.sequence} 站：${stop.task_id}`,
+      name: `Stop ${stop.sequence}: ${stop.task_id}`,
     }),
   )
   expect(
     screen.getByRole('button', {
-      name: `${route.crew_id} 第 ${stop.sequence} 站 ${stop.task_id}`,
+      name: `${route.crew_id} Stop ${stop.sequence} ${stop.task_id}`,
     }),
   ).toHaveAttribute('aria-pressed', 'true')
 })
@@ -153,9 +153,9 @@ it('retains unavailable and idle crews but draws no fictitious routes for them',
       screen.queryByTestId(`route-${route.crew_id}`),
     ).not.toBeInTheDocument()
   expect(
-    within(screen.getByLabelText('队伍图例')).getAllByRole('button'),
+    within(screen.getByLabelText('Crew legend')).getAllByRole('button'),
   ).toHaveLength(4)
-  expect(screen.getByRole('button', { name: 'crew-01 · 停用' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'crew-01 · Unavailable' })).toBeVisible()
 })
 it('lists all unassigned reasons without using coordinates from another revision', async () => {
   const value = parseModel('RoutePlan', fixtures.all_off_plans.ga)
@@ -166,15 +166,15 @@ it('lists all unassigned reasons without using coordinates from another revision
   )
   const id = value.unassigned_tasks[0].task_id
   expect(
-    screen.queryByRole('button', { name: `未分配 ${id}` }),
+    screen.queryByRole('button', { name: `Unassigned ${id}` }),
   ).not.toBeInTheDocument()
   expect(
-    screen.getByRole('region', { name: '地图未分配任务' }),
-  ).toHaveTextContent('无可用队伍')
+    screen.getByRole('region', { name: 'Unassigned map tasks' }),
+  ).toHaveTextContent('No available crews')
   await userEvent.click(screen.getByRole('button', { name: id }))
   expect(
-    screen.getByRole('region', { name: '选中未分配任务' }),
-  ).toHaveTextContent('缺少同版本位置')
+    screen.getByRole('region', { name: 'Selected unassigned task' }),
+  ).toHaveTextContent('No location from the same revision')
 })
 it('plots unassigned points only from a matching revision snapshot', () => {
   const value = parseModel('RoutePlan', fixtures.all_off_plans.ga)
@@ -185,38 +185,38 @@ it('plots unassigned points only from a matching revision snapshot', () => {
   mount(value, snapshot)
   expect(
     screen.getByRole('button', {
-      name: `未分配 ${value.unassigned_tasks[0].task_id}`,
+      name: `Unassigned ${value.unassigned_tasks[0].task_id}`,
     }),
   ).toBeVisible()
 })
 it('keeps stale and failed read warnings next to the map', () => {
   const value = plan()
   mount(value, undefined, value.input_revision + 1, true)
-  expect(screen.getByRole('alert')).toHaveTextContent('未经重新验证')
-  expect(screen.getByRole('status')).toHaveTextContent('已过期')
+  expect(screen.getByRole('alert')).toHaveTextContent('not been revalidated')
+  expect(screen.getByRole('status')).toHaveTextContent('stale')
 })
 it('distinguishes external travel data in the collapsed summary and preserves full provenance', async () => {
   const value = plan()
   value.matrix_is_simulated = false
   value.matrix_provider = 'google_routes'
   mount(value)
-  const source = screen.getByText(/外部行程数据.*查看来源/)
+  const source = screen.getByText(/External travel data.*View source/)
   expect(source).toBeVisible()
   expect(screen.getByText(/google_routes/)).not.toBeVisible()
   await userEvent.click(source)
   expect(screen.getByText(/google_routes/)).toBeVisible()
   expect(screen.getByText(value.plan_id)).toBeVisible()
-  expect(screen.getByText(/非道路导航/)).toBeVisible()
+  expect(screen.getByText(/not road navigation/)).toBeVisible()
 })
 it('displays null return time as unknown and zero as zero minutes', async () => {
   const value = plan()
   value.crew_routes[0].return_travel_minutes = null
   mount(value)
-  await userEvent.click(screen.getByRole('button', { name: 'crew-01 · 停用' }))
-  expect(screen.getByRole('region', { name: '选中队伍' })).toHaveTextContent(
-    '返程行驶 未提供',
+  await userEvent.click(screen.getByRole('button', { name: 'crew-01 · Unavailable' }))
+  expect(screen.getByRole('region', { name: 'Selected crew' })).toHaveTextContent(
+    'Return travel Not provided',
   )
-  expect(screen.getByRole('region', { name: '选中队伍' })).toHaveTextContent(
-    '行程 0 分钟',
+  expect(screen.getByRole('region', { name: 'Selected crew' })).toHaveTextContent(
+    'Travel 0 min',
   )
 })

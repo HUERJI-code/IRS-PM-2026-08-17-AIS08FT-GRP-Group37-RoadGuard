@@ -1,25 +1,25 @@
-# 未定选项与后续证据
+# Pending choices and further evidence
 
-document_id：`rg-kb-pending`；document_version：`4`；owner：`A`。
+document_id: `rg-kb-pending`; document_version: `5`; owner: `A`.
 
 <a id="pending-business"></a>
-## 业务与场景待确认
+## Business and scenario decisions pending
 
-classification：`pending_decision`。citation_id：`rg-kb-pending#pending-business`。
+classification: `pending_decision`. citation_id: `rg-kb-pending#pending-business`.
 
-2026-10-14 已定稿课程模拟规则 demo-rules-v2：保持八类的严重度/优先级映射，P3/P2/P1 的预计维修时长分别为 60/120/240 分钟。单主框 ≥ 0.60 自动建一个任务，低于阈值待审核。上述工时不是任务期限或测量值；正式工程规则与真实场景校准仍缺证据。待 A/B 确认班次长度、是否返基地、工程队能力假设、任务期限/延误定义及目标权重。NUS-ISS 建筑参考坐标仍需 B 核验车辆出入口，任务道路资格与真实矩阵来源另需证据。
+On 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. A/B must confirm shift length, return-to-depot policy, crew capability assumptions, task deadlines/lateness definitions and objective weights. B must verify vehicle access against the NUS-ISS building reference coordinates; task-road eligibility and real matrix sources also need evidence.
 
-due_at=null 时没有已定义的任务期限；return_to_depot=null 时没有已定义的返程策略。未知时长不是零，无可用方案不是空的有效方案，不可达行程不是零分钟。
+due_at=null means no defined task deadline; return_to_depot=null means no defined return policy. Unknown duration is not zero, no available plan is not a valid empty plan, and unreachable travel is not zero minutes.
 
-来源：[src-project-config](../../config/project.example.json)、[src-demo-rules](../../config/demo_rules.example.json)、[context-agents](../../../AGENTS.md)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。
+Sources: [src-project-config](../../config/project.example.json), [src-demo-rules](../../config/demo_rules.example.json), [context-agents](../../../AGENTS.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md).
 
 <a id="pending-evaluation"></a>
-## 算法、模型与联调证据
+## Algorithm, model and integration evidence
 
-classification：`pending_decision`。citation_id：`rg-kb-pending#pending-evaluation`。
+classification: `pending_decision`. citation_id: `rg-kb-pending#pending-evaluation`.
 
-主要比较场景为四队和 10/15/20 个任务；GA 与 Greedy 使用相同输入、行程矩阵和约束。编码、参数、停止条件、目标函数权重及多个随机种子仍需 B 交付，不预先宣称 GA 更优。报告算法运行时间、外部 API 等待、行程/维修时长时必须分开，不以更多队伍推断算法更快。
+The main comparison uses four crews and 10/15/20 tasks, with identical inputs, travel matrices and constraints for GA and Greedy. B must still deliver encoding, parameters, stopping conditions, objective weights and multiple random seeds; do not claim GA superiority beforehand. Report algorithm runtime, external API waiting and travel/service durations separately. More crews do not imply faster algorithm execution.
 
-完整数据内容验证、划分与真实模型训练/held-out 指标须引用第 8 步对应运行的实际记录。模型数值有效不等于达到业务准确率要求，实验模型不能被描述为已校准的自动接受系统。B 的持久化路线事实、C 的检索/引用/确认流程及端到端联调仍需实际成果。本知识包的完整性测试和验收题不能当作这些能力已经完成的证据。
+Full data-content verification, splits and real-model training/held-out metrics must cite actual records of the corresponding Step 8 run. Valid model numbers do not establish business accuracy acceptance; experimental models are not calibrated automatic-acceptance systems. B's persisted route facts, C's retrieval/citation/confirmation flow and end-to-end integration still require actual deliverables. Package integrity tests and acceptance questions do not prove those capabilities are complete.
 
-来源：[src-project-config](../../config/project.example.json)、[context-agents](../../../AGENTS.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。
+Sources: [src-project-config](../../config/project.example.json), [context-agents](../../../AGENTS.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md).

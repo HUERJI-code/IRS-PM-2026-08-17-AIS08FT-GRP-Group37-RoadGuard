@@ -81,7 +81,7 @@ export default function RoutesPage() {
   async function refresh() {
     if (running.current || pendingCrew) return
     running.current = true
-    setBusy('正在读取输入与已保存方案…')
+    setBusy('Loading inputs and saved plans…')
     setReady(false)
     setError(null)
     controller.current = new AbortController()
@@ -136,7 +136,7 @@ export default function RoutesPage() {
       }),
     }
     running.current = true
-    setBusy('正在保存队伍状态…')
+    setBusy('Saving crew status…')
     setError(null)
     setReady(false)
     controller.current = new AbortController()
@@ -188,7 +188,7 @@ export default function RoutesPage() {
     )
       return
     running.current = true
-    setBusy('正在计算 GA 与 Greedy…')
+    setBusy('Calculating GA and Greedy…')
     setError(null)
     setCalculation(null)
     setUnknownPlan(false)
@@ -271,40 +271,40 @@ export default function RoutesPage() {
   return (
     <>
       <div className="page-heading">
-        <p className="eyebrow">调度 / 04</p>
-        <h1>四队路线</h1>
+        <p className="eyebrow">DISPATCH / 04</p>
+        <h1>Four-crew routes</h1>
         <p className="description">
-          管理全部配置队伍，核对活动任务后显式重算，并查看保存方案的路线顺序。
+          Manage all configured crews, check active tasks and explicitly recalculate, then view the saved route order.
         </p>
       </div>
-      <nav className="section-links" aria-label="调度页面区域"><a href="#dispatch-map">查看路线地图 ↓</a><a href="#dispatch-controls">队伍与重算 ↓</a></nav>
+      <nav className="section-links" aria-label="Dispatch page sections"><a href="#dispatch-map">View route map ↓</a><a href="#dispatch-controls">Crews and recalculation ↓</a></nav>
       <div className="dispatch-board">
       <div className="dispatch-controls" id="dispatch-controls" tabIndex={-1}>
       {mode !== 'live' && (
-        <p className="notice">当前为只读模拟快照，不能保存队伍或发起重算。</p>
+        <p className="notice">This is a read-only mock snapshot. Crew changes and recalculation are unavailable.</p>
       )}
       <button
         className="button"
         disabled={!!busy || !!pendingCrew}
         onClick={() => void refresh()}
       >
-        {unknownPlan ? '核对输入与已保存方案' : '刷新输入与方案'}
+        {unknownPlan ? 'Check inputs and saved plans' : 'Refresh inputs and plans'}
       </button>
       {!!busy && <p role="status">{busy}</p>}
       {!inputs && !error && <LoadingState />}
       {error !== null && <ErrorState error={error} />}
       {!ready && inputs && (
         <p className="notice">
-          输入尚未重新核对，不能执行新修改或重算。请刷新并检查。
+          Inputs have not been rechecked. Refresh and check before making changes or recalculating.
         </p>
       )}
       {inputs && (
         <div className="planning-console">
-          <section className="review-queue crew-management" aria-label="工程队管理">
-            <h2>工程队可用状态</h2>
+          <section className="review-queue crew-management" aria-label="Crew management">
+            <h2>Crew availability</h2>
             <p>
-              配置队伍共 {inputs.crews.crews.length}{' '}
-              支。停用队伍仍保留显示；可用不等于已获分配。
+              Configured crews: {inputs.crews.crews.length}{' '}
+              . Unavailable crews remain visible; availability does not imply assignment.
             </p>
             <ul className="crew-grid">
               {inputs.crews.crews.map((crew, index) => (
@@ -313,34 +313,34 @@ export default function RoutesPage() {
                   <strong>
                     {crew.name}
                   </strong>
-                  <span className={`status-badge ${crew.available ? 'status-ready' : ''}`}>{crew.available ? '可用' : '停用'}</span>
-                  <details><summary>队伍记录</summary><p>{crew.crew_id} · 记录版本 {crew.record_version} · 基地 {crew.depot_id}</p><p>
-                    更新：
+                  <span className={`status-badge ${crew.available ? 'status-ready' : ''}`}>{crew.available ? 'Available' : 'Unavailable'}</span>
+                  <details><summary>Crew record</summary><p>{crew.crew_id} · Record version {crew.record_version} · Depot {crew.depot_id}</p><p>
+                    Updated:
                     {crew.updated_at
                       ? formatSingaporeTime(crew.updated_at)
-                      : '配置初始状态'}
+                      : 'Initial configured state'}
                   </p></details>
                   <button
                     disabled={locked || !ready || mode !== 'live'}
                     onClick={() => void changeCrew(crew)}
                   >
-                    {crew.available ? '停用' : '启用'} {crew.name}
+                    {crew.available ? 'Disable' : 'Enable'} {crew.name}
                   </button>
                 </li>
               ))}
             </ul>
           </section>
-          <section className="review-record planning-control" aria-label="重算控制">
-            <h2>核对规划输入</h2>
+          <section className="review-record planning-control" aria-label="Recalculation controls">
+            <h2>Check planning inputs</h2>
             <p className="planning-task-count">
-              活动任务 {inputs.snapshot.total} 项 · 输入版本{' '}
+              Active tasks: {inputs.snapshot.total} · Input revision{' '}
               {inputs.snapshot.input_revision}
             </p>
             <p className="field-note">
-              来源：{inputs.snapshot.source}。完成和取消的任务不进入此快照。
+              Source:{inputs.snapshot.source}. Completed and cancelled tasks are excluded from this snapshot.
             </p>
             <details>
-              <summary>查看本次活动任务</summary>
+              <summary>View active tasks for this run</summary>
               <ul>
                 {inputs.snapshot.tasks.map((task) => (
                   <li key={task.task_id}>
@@ -353,9 +353,9 @@ export default function RoutesPage() {
               </ul>
             </details>
             <p className="field-note">
-              开始时刻由后端在本次计算开始时确定；GA 与 Greedy
-              使用同一输入与矩阵。矩阵来源由后端配置决定；Google
-              服务失败不会切换模拟矩阵。
+              The backend sets the start time when calculation begins. GA and Greedy
+              use the same inputs and matrix. The matrix source follows backend configuration. Google
+              service failures never switch to a simulated matrix.
             </p>
             <button
               className="button"
@@ -368,30 +368,30 @@ export default function RoutesPage() {
               }
               onClick={() => void recalculate()}
             >
-              重算 GA 与 Greedy
+              Recalculate GA and Greedy
             </button>
           </section>
         </div>
       )}
       {crewResult && (
-        <section className="notice" aria-label="队伍保存结果">
+        <section className="notice" aria-label="Crew save result">
           <h3>
-            {crewResult.replayed ? '已恢复队伍修改结果' : '队伍状态已保存'}
+            {crewResult.replayed ? 'Crew change result recovered' : 'Crew status saved'}
           </h3>
           <p>
-            {crewResult.crew.name}：
-            {crewResult.crew.available ? '可用' : '停用'} · 保存时输入版本{' '}
+            {crewResult.crew.name}:
+            {crewResult.crew.available ? 'Available' : 'Unavailable'} · Input revision at save{' '}
             {crewResult.input_revision}
           </p>
           <p>
-            保存队伍状态不代表重算成功。已有方案需按当前输入版本核对；失败后重算不会重复保存队伍。
+            Saving crew status does not establish successful recalculation. Check saved plans against current inputs; retrying recalculation does not save the crew again.
           </p>
         </section>
       )}
       {pendingCrew && (
         <section className="notice">
           <p>
-            队伍保存结果未知。留在本页使用原请求重试，不要切换来源或刷新页面；重试标识仅保存在内存。
+            The crew save outcome is unknown. Stay here and retry the original request. Do not change sources or refresh; the retry ID is held in memory only.
           </p>
           <button
             disabled={!!busy}
@@ -402,15 +402,15 @@ export default function RoutesPage() {
               if (crew) void changeCrew(crew, pendingCrew)
             }}
           >
-            使用原请求重试队伍修改
+            Retry crew change with original request
           </button>
         </section>
       )}
       {unknownPlan && (
         <section className="notice">
-          <h3>重算结果尚不确定</h3>
+          <h3>Recalculation outcome uncertain</h3>
           <p>
-            后端可能仍在计算或已经保存。先核对输入与已保存方案；最新方案不能证明属于刚才那次请求。本接口没有幂等重算标识，不会自动重试。
+            The backend may still be calculating or may have saved results. Check inputs and saved plans first; latest plans alone cannot identify this request. This endpoint has no idempotent recalculation ID and does not retry automatically.
           </p>
           {checkedUnknown && (
             <label>
@@ -419,42 +419,42 @@ export default function RoutesPage() {
                 checked={acknowledged}
                 onChange={(event) => setAcknowledged(event.target.checked)}
               />
-              我已核对，仍要发起一次新的计算（可能重复计算）
+              I have checked and want to start a new calculation (may duplicate work)
             </label>
           )}
         </section>
       )}
       {calculation && (
-        <section className="notice" aria-label="重算结果">
-          <h2>本次重算已完成</h2>
+        <section className="notice" aria-label="Recalculation result">
+          <h2>Recalculation completed</h2>
           <p>
-            输入版本 {calculation.input_revision} · 任务{' '}
-            {calculation.task_count} 项 ·{' '}
+            Input revision {calculation.input_revision} · Task{' '}
+            Tasks: {calculation.task_count} ·{' '}
             {formatSingaporeTime(calculation.planning_start_at)}
           </p>
           <p>
-            行程来源：{calculation.matrix_provider}（
-            {calculation.matrix_is_simulated ? '模拟矩阵' : '外部行程数据'}
-            ），数据时间 {formatSingaporeTime(calculation.matrix_generated_at)}
+            Travel source:{calculation.matrix_provider} (
+            {calculation.matrix_is_simulated ? 'Simulated matrix' : 'External travel data'}
+            ), Data timestamp {formatSingaporeTime(calculation.matrix_generated_at)}
           </p>
           <ul>
             {calculation.plans.map((plan) => (
               <li key={plan.plan_id}>
-                {plan.algorithm.toUpperCase()} · {plan.plan_id} · 已分配{' '}
-                {plan.assigned_task_count} / 未分配 {plan.unassigned_task_count}
+                {plan.algorithm.toUpperCase()} · {plan.plan_id} · Assigned{' '}
+                {plan.assigned_task_count} / Unassigned {plan.unassigned_task_count}
               </li>
             ))}
           </ul>
           <p>
-            以上两个方案 ID 来自同一次重算响应。后续输入变化仍可能使它们过期。
+            These two plan IDs come from the same recalculation response. Later input changes may still make them stale.
           </p>
-          <Link className="button" to="/comparison">比较本次 GA 与 Greedy</Link>
+          <Link className="button" to="/comparison">Compare this GA and Greedy run</Link>
         </section>
       )}
       </div>
       <div className="dispatch-map" id="dispatch-map" tabIndex={-1}>
       <div className="map-controls">
-        <label htmlFor="map-algorithm">地图方案</label>
+        <label htmlFor="map-algorithm">Map plan</label>
         <select
           id="map-algorithm"
           value={mapAlgorithm}
@@ -475,17 +475,17 @@ export default function RoutesPage() {
       />
       </div>
       </div>
-      <section className="review-record" aria-label="已保存方案">
-        <h2>已保存方案快照</h2>
+      <section className="review-record" aria-label="Saved plans">
+        <h2>Saved plan snapshots</h2>
         {planError !== null && (
           <>
             <ErrorState error={planError} />
             <p>
-              方案读取失败，保留的旧结果未获重新验证。请刷新查询，不要因此重复计算。
+              Plan loading failed. Retained results have not been revalidated. Refresh the query instead of repeating the calculation.
             </p>
           </>
         )}
-        <details className="saved-plans-details"><summary>展开 GA / Greedy 的方案编号、状态与未分配原因</summary>
+        <details className="saved-plans-details"><summary>Expand GA / Greedy plan IDs, status and unassigned reasons</summary>
         <div className="comparison-plans">
         {algorithms.map((algorithm) => {
           const plan = plans[algorithm]
@@ -493,45 +493,45 @@ export default function RoutesPage() {
             <section key={algorithm}>
               <h3>{algorithm.toUpperCase()}</h3>
               {plan === undefined ? (
-                <p>尚未读取成功。</p>
+                <p>Not successfully loaded yet.</p>
               ) : plan === null ? (
-                <p>尚未生成方案（不等于空任务方案）。</p>
+                <p>No plan generated (different from an empty-task plan).</p>
               ) : (
                 <>
                   <p className="record-id">
-                    {plan.plan_id} · 输入版本 {plan.input_revision}
+                    {plan.plan_id} · Input revision {plan.input_revision}
                   </p>
                   <p>
                     {plan.is_stale ||
                     (inputs &&
                       plan.input_revision !== inputs.crews.input_revision)
-                      ? '方案已过期，需要重新规划。'
-                      : '此方案与最近读取的输入版本一致；不是实时状态保证。'}
+                      ? 'The plan is stale and requires replanning.'
+                      : 'This plan matches the latest read input revision; this is not a real-time guarantee.'}
                   </p>
                   <p>
-                    行程来源 {plan.matrix_provider} ·{' '}
-                    {plan.matrix_is_simulated ? '模拟矩阵' : '外部行程数据'}
+                    Travel source {plan.matrix_provider} ·{' '}
+                    {plan.matrix_is_simulated ? 'Simulated matrix' : 'External travel data'}
                   </p>
                   <ul>
                     {plan.crew_routes.map((route) => (
                       <li key={route.crew_id}>
-                        {route.crew_id}：
+                        {route.crew_id}:{' '}
                         {
                           {
-                            assigned: '已分配',
-                            idle: '闲置',
-                            unavailable: '停用',
+                            assigned: 'Assigned',
+                            idle: 'Idle',
+                            unavailable: 'Unavailable',
                           }[route.status]
                         }{' '}
-                        · {route.stops.length} 个任务
+                        · Tasks: {route.stops.length}
                       </li>
                     ))}
                   </ul>
-                  <p>未分配 {plan.unassigned_tasks.length} 项</p>
+                  <p>Unassigned tasks: {plan.unassigned_tasks.length}</p>
                   <ul>
                     {plan.unassigned_tasks.map((task) => (
                       <li key={task.task_id}>
-                        {task.task_id}：{task.reason}
+                        {task.task_id}: {task.reason}
                       </li>
                     ))}
                   </ul>

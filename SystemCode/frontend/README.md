@@ -1,38 +1,40 @@
-# RoadGuard 前端 · C 第 2–9 步
+# RoadGuard frontend · C steps 2–9
 
-2026-10-18：将已确认的审核页和施工队风格扩展至全站，包括登录、上传、巡检详情、任务、路线、比较与助手占位页。采用白/暖灰、深色文字与少量绿色，手机菜单按角色过滤，任务详情、地图区域跳转与横向比较表适配窄屏。保留现有账号权限和业务操作。页面范围、查看方式及最新 152 项测试和浏览器验收见[视觉预览说明](DESIGN_PREVIEW.md)。用户已批准按 PR/CI 流程交付这批前端改动及必需的认证后端；前后端须一起更新，各成员按[账号说明](../../Miscellaneous/ACCOUNT_ROLES.md)在自己的数据库创建账号，密码和运行数据不随 Git 同步。
+2026-10-18: The approved review and crew-workspace style now covers sign-in, upload, inspection details, tasks, routes, comparison and the assistant placeholder. White/warm-grey surfaces, dark text and restrained green accents are used throughout. Mobile navigation follows account permissions; task details, map section links and horizontal comparison tables support narrow screens. Existing permissions and business actions are preserved. See [visual preview](DESIGN_PREVIEW.md) for coverage, viewing instructions and the latest 152-test/browser acceptance record. The user approved delivery through PR/CI together with the required authentication backend. Update frontend and backend together. Each member creates accounts in their own database following [account roles](../../Miscellaneous/ACCOUNT_ROLES.md); passwords and runtime data are not synchronised through Git.
 
-初版体验优化保留现有写操作保护。按项目发起人要求，界面移除“课程演示”“课程模拟”等课程说明措辞；实际模拟数据、实验模型和路线示意的来源说明继续保留，后端规则及来源字段不变。下方旧阶段的测试、数据数量，以及其他阶段文档中的“未提交”均为当时记录；最新交付范围以本页首段和视觉预览说明为准。
+The initial usability refinements retain write-operation protections. At the project owner’s request, course-specific wording was removed from the interface. Actual mock-data, experimental-model and schematic-route provenance remains visible; backend rules and provenance fields are unchanged. Older test counts, data counts and “uncommitted” statements below and in stage documents describe those stages. The latest delivery scope is stated above and in the visual preview.
 
-## 当前工作台的使用顺序
+2026-10-19: Interface copy, accessibility names, tests, comments and frontend documentation have been translated into English. Document and numeric/date formatting locales use `en-SG`; times remain in `Asia/Singapore`. Stable API fields, identifiers and permissions are preserved.
 
-1. **上传巡检**：准备一张清晰照片、Jurong 拍摄坐标和道路声明。真实主框达到后端配置阈值（当前 60%）自动建任务，较低置信度进入人工审核；没有检测不建任务。模拟检测需显式选择。
-2. **人工审核**：只处理待审队列。选中照片后确认、纠正或驳回；确认/纠正后的任务可直接进入任务工作区。
-3. **维修任务**：从左侧队列选择任务，右侧核对损伤、优先级、工时和来源，再保存所需修改。完成/取消记录保留在对应筛选内。
-4. **四队路线**：核对队伍可用状态并主动重算。宽屏以地图与方案概览为主、队伍与重算控制为辅；窄屏按顺序排列。地图是停靠顺序示意，不能用作道路导航。
-5. **算法比较**：从本次重算结果进入比较，先看任务覆盖，再看时间指标。同轮证明、过期状态和未分配项均保留；刷新或切换来源后不凭时间推定为同轮。
-6. **施工队工作台**：按账号绑定的队伍读取最新 GA 安排，查看本队停靠顺序与最新任务，核对后标记完成。手机采用收起菜单、单列详情和大触控按钮，可通过路线快捷入口定位停靠顺序。完成后保留原路线并提示过期，调度端显式重算。使用与验收边界见[施工队工作台说明](CREW_GUIDE.md)。
+## Current workflow
 
-页面顶部通过可展开的说明入口提供当前步骤与完整流程。服务条按权限显示所选实时/模拟来源及最近一次连接检查结果，诊断细节可展开；连接成功不表示模型、Google 或助手已就绪。队列在桌面采用并排详情，在手机选中记录后定位详情。巡检结果使用共享字典的中文损伤名称，按角色显示后续入口，完整来源与后端原始规则记录可展开查看。助手明确标为开发中。
+1. **Upload inspection:** prepare a clear road photo, its Jurong coordinates and a road declaration. A real primary detection meeting the backend threshold (currently 60%) creates a task automatically; lower confidence enters review, and no detection creates no task. Mock detection requires explicit selection.
+2. **Manual review:** process only the pending queue. Check the selected photo and confirm, correct or reject it. Confirmed/corrected tasks enter the task workspace.
+3. **Repair tasks:** select a task in the queue, check damage, priority, duration and provenance, then save required changes. Completed/cancelled records remain under their filters.
+4. **Four-crew routes:** check crew availability and explicitly recalculate. Desktop prioritises the map and overview with crew/recalculation controls alongside; narrow screens stack sections. The map illustrates stop order and must not be used as road navigation.
+5. **Algorithm comparison:** enter from the current recalculation to compare task coverage before time metrics. Same-run evidence, stale status and unassigned tasks remain visible. Refreshing or changing sources does not infer a same-run match from timestamps.
+6. **Crew workspace:** use the account-bound crew’s latest saved GA schedule. Check stop order and current tasks, then record completion. Mobile provides a collapsed menu, single-column details, large controls and a route shortcut. Completion retains the saved route and flags it as stale; dispatch explicitly recalculates. See [crew guide](CREW_GUIDE.md).
 
-样式保留基础 `src/styles.css`、工作台布局 `src/workspace.css`，由最后导入的 `src/refined-workspace.css` 统一全站视觉与手机适配，不引入字体下载或额外依赖。队伍颜色复用地图的 `crewColor`，不会因卡片显示顺序另设颜色。
+Expandable page help provides the current step and complete workflow. The service bar shows permitted live/mock source controls and the last connection check; diagnostics are expandable. A successful check does not establish model, Google or assistant readiness. Queues and details sit side by side on desktop; selecting a mobile record focuses its details after loading. Inspection results use shared damage display names, role-specific next actions and expandable provenance/original backend rule records. The assistant is explicitly marked as in development.
 
-本地开发检查（2026-10-18，Node 22）：lint、130 项组件/客户端测试、TypeScript 与 Vite 构建通过；新增完整流程导航，以及任务/审核异步加载后窄屏定位且重读不重复滚动的测试。构建仍提示主 JS 包超过 500 kB，此次没有改动依赖或进行拆包。
+Styles retain `src/styles.css` and `src/workspace.css`; the last-imported `src/refined-workspace.css` unifies the site and mobile presentation. No font download or extra dependency is introduced. Crew colours reuse map `crewColor` rather than card order.
 
-主 agent 在独立联调库完成桌面浏览器验证：真实图片上传、低置信度进入审核、纠正为坑洞后创建 P2/120 分钟任务、完成任务并退出活动队列、20 项任务显式重算和同轮比较。新测试任务已完成，保留历史；活动队列为 20 项，四队可用，输入版本为 55。另在 390×844 视口验证上传、任务、调度、比较页无整页横向溢出，任务点选与审核深链接在详情加载后正确定位；显式模拟失败显示错误且不伪装为空数据，助手明确未开放。证据保存在本地忽略目录 `Dataset/acceptance/frontend-preview-20261018/`，没有调用真实 Google/GPT、启动训练或修改常用数据库。本机预览为 `http://127.0.0.1:5173`，代理到独立后端 8001；这不是生产部署或跨浏览器/真实手机设备验收。
+Local checks on 2026-10-18 with Node 22 passed lint, 130 component/client tests, TypeScript and Vite build. Added tests cover full workflow navigation and mobile focus after asynchronous task/review loading without repeated scrolling on reread. The main JS chunk still exceeds 500 kB; dependencies and chunk splitting were unchanged.
 
-负责人：C。当前实现 React + TypeScript 前端基础、七类页面导航、响应式布局、可访问性基础和真实健康检查。第 4 步已接入图片上传与检测结果、关联任务读取，详见 [上传使用说明](UPLOAD_GUIDE.md)；第 5 步已接入人工审核，详见 [审核使用说明](REVIEW_GUIDE.md)。第 6 步任务管理见 [任务说明](TASK_GUIDE.md)，第 7 步队伍控制与显式重算见 [调度说明](PLANNING_GUIDE.md)。第 8 步地图见 [地图说明](MAP_GUIDE.md)。第 9 步 GA / Greedy 同轮比较见 [比较说明](COMPARISON_GUIDE.md)。助手仍待接入。第 3 步已增加统一客户端、OpenAPI 生成类型与响应校验，以及明确切换的只读模拟样例；详见 [API 接入说明](API_CLIENT.md)。
+The main agent verified desktop flows against an isolated integration database: real photo upload, low-confidence review, correction to a pothole creating a P2/120-minute task, task completion/removal from the active queue, explicit 20-task recalculation and same-run comparison. The new test task was completed and retained in history. The active queue contained 20 tasks, four available crews and input revision 55. At 390×844, upload, task, dispatch and comparison pages had no whole-page horizontal overflow; task selection and review deep links focused loaded details correctly. Explicit mock failure showed an error rather than empty data, and the assistant remained unavailable. Evidence is in ignored local directory `Dataset/acceptance/frontend-preview-20261018/`. No real Google/GPT calls, training or routine-database changes occurred. Preview `http://127.0.0.1:5173` proxied to isolated backend port 8001. This was not production, cross-browser or physical-device acceptance.
 
-## Mac 启动
+Owner: C. Implemented React + TypeScript foundations, seven workspace categories, responsive layout, basic accessibility and real health checks. Step 4 adds upload/results and linked tasks ([upload guide](UPLOAD_GUIDE.md)); step 5 adds [review](REVIEW_GUIDE.md); step 6 adds [task management](TASK_GUIDE.md); step 7 adds [crew controls and explicit recalculation](PLANNING_GUIDE.md); step 8 adds the [map](MAP_GUIDE.md); step 9 adds [same-run GA/Greedy comparison](COMPARISON_GUIDE.md). The assistant remains pending. Step 3 introduced the shared client, generated OpenAPI types, response validation and explicitly selected read-only mock examples ([API client](API_CLIENT.md)).
 
-使用 **Node 22 + npm**，与现有 CI 一致。Node 必须是 22.12 或更高的 22.x；目录中的 `.nvmrc` 供已经安装 nvm 的成员执行 `nvm use`。未安装 Node 时先安装 Node.js 官方 22.x 版本，然后确认：
+## Start on macOS
+
+Use **Node 22 + npm**, matching CI. Node must be 22.12 or later within 22.x. With nvm installed, use `.nvmrc` through `nvm use`; otherwise install official Node.js 22.x. Check:
 
 ```sh
 node --version
 npm --version
 ```
 
-从仓库根目录启动前端：
+From repository root:
 
 ```sh
 cd SystemCode/frontend
@@ -41,9 +43,9 @@ cp .env.example .env.local
 npm run dev
 ```
 
-浏览器访问 `http://127.0.0.1:5173`。环境文件可省略，默认后端地址为 `http://127.0.0.1:8000`；改地址使用 `.env.local` 的 `ROADGUARD_API_TARGET`，修改后重启前端。端口被占用时明确报错，不悄悄换端口。按 Ctrl+C 停止。
+Open `http://127.0.0.1:5173`. The environment file is optional; backend target defaults to `http://127.0.0.1:8000`. Set `ROADGUARD_API_TARGET` in `.env.local` and restart to change it. An occupied port fails explicitly rather than selecting another port. Stop with Ctrl+C.
 
-另开终端，从仓库根目录启动现有 FastAPI（已有虚拟环境可直接激活，不重复创建）：
+Start the existing FastAPI app in another terminal from repository root (activate an existing environment rather than recreating it):
 
 ```sh
 python3.11 -m venv .venv
@@ -52,30 +54,30 @@ python -m pip install -r SystemCode/backend/requirements.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
-健康检查无需安装或运行视觉推理；真实模型依赖按[后端说明](../backend/README.md)单独准备。后端启动会按既有行为初始化/验证其数据库；不要把已有数据库当测试临时文件删除。
+Health checks do not require vision dependencies or inference. Prepare real-model dependencies separately using the [backend guide](../backend/README.md). Backend startup initialises/validates its database as designed; never delete an existing database as disposable test data.
 
-## 页面与连接行为
+## Pages and connection behaviour
 
-| 前端地址 | 内容 |
+| Frontend path | Content |
 |---|---|
-| `/` | 跳转任务工作区 |
-| `/inspections/new` | 图片、模式、位置与道路声明上传 |
-| `/inspections/:inspectionId` | 巡检结果、单框图片与关联任务 |
-| `/reviews` | 待审队列、确认、纠正与驳回 |
-| `/tasks` | 任务列表、详情与状态管理 |
-| `/routes` | 队伍控制、显式重算、Jurong 地图与路线详情 |
-| `/comparison` | 同轮方案核对、指标与未分配原因比较 |
-| `/crew?crew=crew-02&algorithm=ga` | 按队查看保存路线、最新任务、完成进度及提交完成 |
-| `/assistant` | 路线助手骨架 |
-| 其他路径 | 404 页面及返回入口 |
+| `/` | Redirect to the role-appropriate workspace |
+| `/inspections/new` | Photo, mode, coordinates and road declaration upload |
+| `/inspections/:inspectionId` | Inspection result, single-box image and linked task |
+| `/reviews` | Pending queue, confirmation, correction and rejection |
+| `/tasks` | Task list, details and status management |
+| `/routes` | Crew controls, explicit recalculation, Jurong map and route details |
+| `/comparison` | Same-run verification, metrics and unassigned-reason comparison |
+| `/crew?crew=crew-02&algorithm=ga` | Account-bound crew route, current tasks, progress and completion |
+| `/assistant` | Route-assistant placeholder |
+| Other paths | 404 and workspace link |
 
-页面自动请求只读 `GET /api/v1/health`，有加载、成功、失败、8 秒超时和手动重试状态。上方数据来源面板可显式切换实时/模拟；展开“检查数据接入”后点击按钮，才读取活动任务快照和 GA 最新方案。应用与数据库成功不等于模型、Google 或助手就绪。失败不改用 mock；页面“未接入”不等同于任务为空。
+Pages automatically make the read-only `GET /api/v1/health` call with loading, success, failure, eight-second timeout and manual retry states. The source panel explicitly selects live/mock data. Only opening “Check data connection” and clicking its button reads the active snapshot and latest GA plan. App/database success does not establish model, Google or assistant readiness. Failures do not fall back to mock; “not connected” is different from an empty task list.
 
-Vite 开发服务器与本地构建预览把 `/api` 原样转发给后端，不需要更改 A 的 CORS。浏览器不存放后端密钥。`ROADGUARD_API_TARGET` 只供本地服务器使用，不使用 `VITE_` 前缀暴露秘密。
+Vite development and local preview proxy `/api` unchanged to the backend, without changing backend CORS. Backend keys never enter the browser. `ROADGUARD_API_TARGET` is server-only and avoids the client-exposed `VITE_` prefix.
 
-生产部署必须将 `/api` 反向代理到同一 FastAPI，并将其他页面请求回退到 `index.html`，支持刷新深层页面。`npm run preview` 仅用于本机构建检查，不是生产服务器。
+Production must reverse-proxy `/api` to the same FastAPI app and fall back to `index.html` for page routes so deep links refresh correctly. `npm run preview` is a local build check, not a production server.
 
-## 检查与依赖
+## Checks and dependencies
 
 ```sh
 npm run lint
@@ -84,22 +86,22 @@ npm run build
 npm run preview
 ```
 
-预览地址 `http://127.0.0.1:4173`。`npm test` 是开发监视模式；CI 用 `test:ci` 单次运行。测试覆盖七页导航、首页跳转、直接路由、404、健康加载/成功/失败/重试、非法响应、超时与卸载取消。新增客户端与来源切换测试见 API_CLIENT.md；后端业务测试不在本次改动范围。
+Preview uses `http://127.0.0.1:4173`. `npm test` watches in development; CI uses single-run `test:ci`. Tests cover seven-page navigation, home redirects, direct routes, 404, health loading/success/failure/retry, invalid responses, timeouts and cancellation on unmount. Client/source tests are described in API_CLIENT.md. Backend business tests are separate.
 
-- React/React DOM：组件渲染；React Router：页面导航与浏览器历史。
-- Vite/React 插件、TypeScript：开发代理、构建与类型检查。
-- ESLint/TypeScript 与 React 规则：静态检查。
-- Vitest/jsdom/Testing Library：真实组件交互与网络状态测试。
-- 依赖固定在 package.json，唯一锁文件为 package-lock.json；使用 npm ci 复现。现有 CI 自动检测前端并运行 lint、test:ci、build，不需要更改 `.github`。
+- React/React DOM render components; React Router handles navigation/history.
+- Vite/React plugin and TypeScript provide proxy, builds and type checks.
+- ESLint/TypeScript/React rules provide static checking.
+- Vitest/jsdom/Testing Library exercise actual component/network interactions.
+- Versions are pinned in package.json with one package-lock.json; reproduce with `npm ci`. Existing CI discovers the frontend and runs lint, test:ci and build; no `.github` change is needed.
 
-## 交接边界
+## Handoff boundary
 
-本轮只修改 `SystemCode/frontend/`，不修改 A/B API、数据库、业务配置。七类页面不显示虚构队伍任务、路线或指标；助手交互仍按后续步骤实现。共享文档中“前端尚未实现”的旧描述应理解为完整业务应用未交付；当前基础状态以本说明为准。
+Frontend work stays in `SystemCode/frontend/` without changing A/B APIs, database or business configuration. Workspaces do not invent tasks, routes or metrics. Assistant interactions remain future work. Older shared statements that “frontend is not implemented” refer to the incomplete full application; this guide states the implemented foundation.
 
-## C 的任务规划与页面设计
+## C planning and page design
 
-[14 步任务清单](docs/C_TASK_PLAN.md)、[页面流程](docs/PAGE_FLOW.md)、[初始接口对照](docs/API_MAPPING.md)、[初始待对齐事项](docs/OPEN_QUESTIONS.md)保留规划时的基线。当前已实现第 1–9 步，验证边界以本目录各模块说明为准。
+The [14-step plan](docs/C_TASK_PLAN.md), [page flow](docs/PAGE_FLOW.md), [initial API mapping](docs/API_MAPPING.md) and [open questions](docs/OPEN_QUESTIONS.md) retain their planning baseline. Steps 1–9 are implemented; module guides define validation boundaries.
 
-## 按账号进入工作区
+## Account-based access
 
-2026-10-18 增加登录：巡查员仅上传与本人结果，施工队固定绑定所属队伍，中央调度员使用审核/任务/四队路线/比较/助手入口。前端与后端须一起更新。开通账号、Cookie/CSRF 和权限边界见[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)；工作台见[施工队操作说明](CREW_GUIDE.md)。前端没有角色选择器或自助注册，登录状态失效后返回登录页；手机同样支持查看账号与退出。
+Sign-in was added on 2026-10-18. Inspectors upload and view their own results; crew accounts bind to one crew; central dispatchers access review/tasks/four-crew routes/comparison/assistant. Update frontend and backend together. Account provisioning, cookies/CSRF and permissions are in [account roles](../../Miscellaneous/ACCOUNT_ROLES.md); operations are in the [crew guide](CREW_GUIDE.md). There is no role selector or self-registration. Expired sessions return to sign-in. Mobile supports account details and sign-out.

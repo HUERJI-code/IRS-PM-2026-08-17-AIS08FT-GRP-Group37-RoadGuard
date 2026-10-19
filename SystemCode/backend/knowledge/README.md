@@ -1,19 +1,21 @@
-# A → C 知识资料包
+# A -> C knowledge package
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v8`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v9`; module owner: A. This is citable project material, without an LLM, embeddings, index, retriever or assistant execution service.
 
-先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
+Read [manifest.json](manifest.json) first, then the six English documents listed in documents. Document paths are relative to this directory; sources/context_sources paths are relative to the repository root. Citations use fixed `document_id#section_id` references matching explicit ASCII anchors, independent of automatically generated heading anchors. Include package_version, document_version and relevant scope/rule/label versions to explain older answers.
 
-每个 section 的 classification 区分：`confirmed_project_fact` 是已记录的项目决定或当前可执行行为；`demo_assumption` 是明确未校准的演示参数/策略；`pending_decision` 是仍未确认的选项。项目约定可以已经确定而对应服务尚未实现，正文会明确区分。不能把分类为项目事实的“计划接口要求”描述成正在运行的功能。
+Each section's classification distinguishes `confirmed_project_fact` (recorded project decisions or current executable behavior), `demo_assumption` (explicitly uncalibrated demonstration parameters/policies), and `pending_decision` (unconfirmed options). A project convention may be settled while its service is still pending; the body makes that distinction. Do not describe planned interface requirements classified as project facts as running features.
 
-v6 同步 demo-rules-v2 的项目工时决定。2026-10-18 的 v7 同步上传解码隔离修复的源码摘要，并纠正 qa-03 中“真实检测全部先审核”的过期要求：主框原始置信度 ≥0.60 自动建任务，低于阈值待审核。六份正文版本和业务规则保持不变；此维护更新不代表助手实现或全部 B/C 知识已更新，接入前仍需核对阶段描述与运行方案来源。参数经项目发起人确认不等于工程有效性获批，下面的 review 元数据仅说明资料包核对方式。
+v6 synchronized the demo-rules-v2 service-time decision. On 2026-10-18, v7 synchronized source digests for upload-decoding isolation and corrected qa-03's obsolete requirement that all real detections need review: primary raw confidence >=0.60 automatically creates a task, while lower confidence requires review. The six document versions and business rules were unchanged. This maintenance did not implement an assistant or update all B/C knowledge; stage descriptions and runtime-plan provenance still need review before integration. Project-owner confirmation of parameters is not engineering approval; review metadata below only describes package consistency checks.
 
-review_basis 为 `repository_consistency_review`：本轮 coding agent 代表 A 对照仓库源码/配置进行一致性核对，不代表 A 本人的人工签署、工程专家批准、道路许可或真实试验验证。manifest 明确记录 `human_or_expert_approval=false`。
+review_basis is `repository_consistency_review`: a coding agent acting for A checks repository source/configuration consistency. This is neither A's personal signature nor engineering-expert approval, road permission or real experimental validation. The manifest explicitly records `human_or_expert_approval=false`.
 
-sha256 使用文件原始 UTF-8 字节；仓库通过 .gitattributes 固定 LF。核验 documents、sources 和验收文件的摘要后再摄取。发现摘要/版本不一致应停止使用旧资料并由 A 更新包版本；规则变动还须更新规则版本及对应表格。context_sources 是显式不做摘要的可变背景文档，不能用它们代替带摘要的配置/代码事实。不要把上传图片、真实巡检数据库、凭据或运行方案复制进静态知识包。
+sha256 hashes raw UTF-8 file bytes, with LF fixed by .gitattributes. Verify document, source and acceptance-file digests before ingestion. Digest/version mismatches require discontinuing the old material and having A update the package version. Rule changes also require rule-version and table updates. context_sources are explicitly unhashed mutable background documents and cannot replace hashed configuration/code facts. Never copy uploaded images, real inspection databases, credentials or runtime plans into this static package.
 
-[acceptance_cases.json](acceptance_cases.json) 提供十个未来助手验收题。`supported` 表示有静态依据支持所列解释，不表示已经执行修改；`insufficient_data` 表示问题需要包中没有的运行事实/实验/道路权限证据，须承认不足并指出缺少的材料。期望要点是验收要求，不是伪造的助手测试结果。
+[acceptance_cases.json](acceptance_cases.json) supplies ten future-assistant acceptance questions. `supported` means static evidence supports the listed explanation, not that a change was executed. `insufficient_data` means the question requires runtime facts, experiments or road-permission evidence absent from the package; acknowledge the gap and identify missing material. Expected points are acceptance specifications, not fabricated assistant-test results.
 
-文档完整性测试为 `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`，验证来源摘要、引用 anchor、标签/演示映射与十个验收题。C 后续自行实现检索与引用，并以 B 的持久化方案事实回答动态路线问题。
+Integrity command: `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`. It checks source digests, citation anchors, label/demo mappings and ten acceptance questions. C must implement retrieval/citations and use B's persisted plan facts for dynamic route answers.
 
-2026-10-18 v8 定向更新：人工操作身份与工作流来源哈希同步账号权限实现；旧记录不改写。角色与 CLI 见[账号角色规范](../../../Miscellaneous/ACCOUNT_ROLES.md)。其余尚待助手接入核验的阶段描述保持原限制。
+2026-10-18 v8 targeted update synchronized manual-action identity and workflow source hashes with account permissions; older records were not rewritten. See [account roles and CLI](../../../Miscellaneous/ACCOUNT_ROLES.md). Other stage descriptions pending assistant integration retained their existing limitations.
+
+2026-10-19 v9 translates all package prose and acceptance questions into English, updates document versions/digests and the canonical label-display digest, and retains citation anchors and business rules. The label schema retains the legacy `display_name_zh` field key for compatibility; its values now display English. This translation does not validate previously pending services or change historical record semantics.

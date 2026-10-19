@@ -46,7 +46,7 @@ class PRLanguageTests(unittest.TestCase):
                 self.assertTrue(validate_english("Title", value))
 
     def test_non_latin_letters_are_rejected_without_echoing_text(self):
-        for value in ("中文", "カナ", "한글", "Привет", "مرحبا", "Ελληνικά", "हिन्दी"):
+        for value in ("\u4e2d\u6587", "カナ", "한글", "Привет", "مرحبا", "Ελληνικά", "हिन्दी"):
             with self.subTest(script=value):
                 text = "English " + value
                 errors = validate_english("Title", text)
@@ -60,7 +60,7 @@ class PRLanguageTests(unittest.TestCase):
     def test_event_contexts(self):
         for event, expected in (
             ({"pull_request": {"title": "Fix parser", "body": "Add validation."}}, 0),
-            ({"pull_request": {"title": "中文 private-token", "body": "Valid body"}}, 1),
+            ({"pull_request": {"title": "\u4e2d\u6587 private-token", "body": "Valid body"}}, 1),
             ({"pull_request": {"title": "Fix parser"}}, 1),
             ({"pull_request": None}, 1),
             ({"ref": "refs/heads/main"}, 0), ({"inputs": {}}, 0), ([], 1),
@@ -82,7 +82,7 @@ class PRLanguageTests(unittest.TestCase):
                 self.assertIn("failed", output)
 
     def test_cli_entrypoint_returns_the_check_status_without_site_packages(self):
-        for body, expected in (("Valid English body", 0), ("English 中文", 1)):
+        for body, expected in (("Valid English body", 0), ("English \u4e2d\u6587", 1)):
             with self.subTest(body=body):
                 self.event_path.write_text(json.dumps({"pull_request": {"title": "Title", "body": body}}), encoding="utf-8")
                 result = subprocess.run(

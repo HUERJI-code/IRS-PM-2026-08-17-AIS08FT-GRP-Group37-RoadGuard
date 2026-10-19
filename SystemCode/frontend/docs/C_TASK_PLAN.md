@@ -1,200 +1,128 @@
-> 归档说明：下文保留 2026-10-15 规划时的基线与待办，不代表当前全部未实现。第 1–9 步现已实现，实际验证边界见前端 README、VALIDATION.md 和 COMPARISON_GUIDE.md；第 10–14 步尚待实施。
+> Archive: this retains the 2026-10-15 planning baseline and open work, rather than describing everything as currently unimplemented. Steps 1–9 are now implemented; README, VALIDATION.md and COMPARISON_GUIDE.md define actual validation. Steps 10–14 remain pending.
 
-# RoadGuard：C 组员任务清单与实施顺序
+# RoadGuard: C implementation plan
 
-基于本机 `groupwork1` 的 `main`，提交 `f8a2cf37de91c09d86ec14e6cbd6045e83e421f8`；检查日期：2026-10-15。本文是实施规划，以下开发步骤尚未执行。
+Baseline: local groupwork1 main `f8a2cf37de91c09d86ec14e6cbd6045e83e421f8`, checked 2026-10-15. This was a plan; the steps below had not been executed when written.
 
-**C 的目标是交付完整的 React 网页、四队地图和 GPT/RAG 助手，让用户能从上传照片一路操作到查看路线、询问原因、确认调整队伍。建议将仓库 C1～C7 七个工作包拆成 14 个可验收步骤。**
+C should deliver React pages, the four-crew map and GPT/RAG assistant, supporting photo upload through route viewing, explanation and confirmed crew changes. The seven C1–C7 work packages are divided into fourteen independently verifiable steps.
 
-## 一、实际起点
+## Starting point
 
-| 部分 | 当前仓库状态 | 对 C 的意义 |
-| --- | --- | --- |
-| A 的业务后端 | 已有上传、检测、审核、任务、图片、版本和历史接口 | 可以接现有服务；无需重写识别与优先级规则 |
-| 部署模型 | 已包含 19,218,837 字节权重，摘要与清单一致 | 可在安装相符视觉环境后验证真实模式；C 不需要重新训练 |
-| B 的调度 | 已有队伍服务、Greedy/GA、持久化方案、重算、可选 Google 矩阵与实验资料 | 可以接入地图和比较页；仍需在本机联调验证 |
-| 前端 | 只有 `SystemCode/frontend/README.md`，没有应用代码或 package.json | C 从前端基础工程开始 |
-| 助手 | 没有 `roadguard/assistant/` 实现，也没有助手路由 | C 要实现后端服务与网页交互 |
-| 知识资料 | `a-knowledge-v6`，6 份知识文档、manifest、10 道验收题 | 已有原料，但还没有索引、检索或回答能力 |
-| 报告与视频 | 以提纲、安装说明和要求为主；未包含完成的最终报告或视频 | C 需要补自己的章节、界面截图、操作指南与录屏 |
+| Area | Repository state at planning | Implication |
+|---|---|---|
+| A backend | Upload/detection/review/task/image/revision/history APIs | Integrate rather than duplicate vision/rules |
+| Released model | 19,218,837-byte weights match manifest/hash | Verify real mode with compatible dependencies; no retraining required |
+| B dispatch | Crew service, Greedy/GA, saved plans, recalculation, optional Google matrix and experiments | Map/comparison can integrate; local acceptance still needed |
+| Frontend | README only, no application/package.json | Begin foundations |
+| Assistant | No roadguard/assistant or routes | Implement backend and UI |
+| Knowledge | a-knowledge-v6, six documents, manifest, ten acceptance questions | Materials exist; no retrieval/index/generation |
+| Report/video | Outlines, installation and requirements; no final report/video | Supply C chapters, screenshots, guide and recordings |
 
-仓库有 275 个跟踪文件：根目录 5、`.github` 9、`Miscellaneous` 33、`ProjectReport` 6、`SystemCode` 221、`Video` 1。检查覆盖全部文件路径和内容扫描；C 直接依赖的规范、接口、数据模型、队伍/规划服务和知识资料作了重点精读。其余算法、训练及测试代码作结构和用途检查，JSON/GeoJSON/CSV 全文件解析；14 张图片作总览检查，模型只检查元数据和 SHA-256。**这不是对 108 个 Python 文件逐行完成的代码审计，也没有重新运行模型或全套测试。** 初始逐文件检查记录保留在 C 的本地工作材料中。
+The inventory contained 275 tracked files: root 5, .github 9, Miscellaneous 33, ProjectReport 6, SystemCode 221 and Video 1. All paths/content were scanned. Direct C dependencies—guidance, contracts, models, crew/planning services and knowledge—received detailed reading. Other algorithms/training/tests received structural/purpose review; JSON/GeoJSON/CSV were parsed completely, fourteen images reviewed together and model metadata/SHA-256 checked. This was not a line-by-line audit of all 108 Python files, nor a model/full-test rerun. The initial file inventory remains in C’s local materials.
 
-## 二、开工前要处理的差异
+## Differences to resolve
 
-1. **总览文档落后于代码。** 根 README、AGENTS 的阶段描述、分工表和 API 文档前部仍有“B 尚未实现”的旧表述；当前路由注册和 B 的服务已经存在。按当前实现制定接入计划，同时请 A/B 同步阶段说明，不能只按旧总览等待。
-2. **更新队伍不会自动重算。** 当前 `CrewService.update()` 只改变队伍和共享输入版本，之后要显式调用 `PlanningService.recalculate()`。任务变化也一样。网页应区分“数据已改变”“路线待重算”“重算成功”“重算失败”。
-3. **助手确认的并发保护尚需补齐。** 当前 CrewPatch 校验的是队伍的 `expected_version`，没有接收预览所绑定的全局 `input_revision`；服务内部自行开启写事务。助手如果仅在外面先查一次版本，再调用 update，会有检查与写入之间输入变化的窗口。第 12 步须与 B/A 设计支持同事务校验预览版本的领域接口；C 不直接更新 B 的表。
-4. **知识验收题存在旧规则。** `knowledge/acceptance_cases.json` 的 qa-03 仍要求回答“所有非空真实检测一律先审核”；当前 workflow schema、单框测试和知识文档 04 已支持真实主框 confidence ≥0.60 自动建一个任务。摄取和建立验收标准前，请 A 同步题目及包版本/摘要。其他“B 仍待实现”的知识表述也需更新。文件摘要一致，只能证明文件与清单一致，不能证明内容没有过时。
-5. **路线参数是演示假设。** 项目配置的返基地仍为 null；B 的路由配置明确采用返基地、480 分钟班次。页面从保存的方案 settings 读取并注明演示假设，不能宣称已批准的运营规则。
-6. **旧样例不能冒充当前在线响应。** `contracts/examples` 是最初的 a-dto-v1；`real-auto-task-example.json` 保留旧 v4 上传格式。当前上传 v5 只有四字段，审核需另查详情。旧样例可做兼容性参考，不能直接作为当前上传 mock。
-7. **有 Google 时间不等于有道路折线。** 当前方案 `geometry=null`，地图只能显示明确标注的顺序示意连线；不能显示为导航路线。
+1. Overview documents lag code: root README, AGENTS stage text, allocation and early API text still say B is pending despite registered routes/services. Plan against actual implementation and ask A/B to update shared status.
+2. CrewService.update changes crew/global input only; PlanningService.recalculate is explicit. Task changes behave similarly. Distinguish changed data, pending planning, successful recalculation and failed recalculation.
+3. Assistant confirmation needs atomic concurrency protection. CrewPatch checks crew expected_version but not preview input_revision and opens its own write transaction. An external precheck leaves a race. Step 12 requires A/B support for both checks inside the update transaction; C never writes B tables directly.
+4. Knowledge qa-03 still requires review for every nonempty real result, conflicting with current workflow/tests/document 04: primary confidence ≥0.60 creates one task automatically. A must update question/content/package hashes before indexing. Other “B pending” text also needs revision. Hash consistency does not prove current content.
+5. Return/shift settings are demo assumptions: project return policy remains null while B uses return=true and 480 minutes. Display saved settings with provenance; do not claim approved operational policy.
+6. Old contracts/examples use a-dto-v1; real-auto-task-example.json retains v4 upload. Current v5 has four fields and review requires a detail read. Historical examples are not current mocks.
+7. Google travel times do not supply road polylines. geometry=null allows only labelled stop-order schematic lines.
 
-## 三、14 步任务清单
+## Fourteen steps
 
-测试和使用说明随每一步补充；第 13 步负责跨模块验收，不把所有测试拖到最后。
+Tests and guides accompany every step; step 13 adds cross-module acceptance rather than postponing all tests.
 
-### 第 1 步：确认 C 的接入清单和页面流程
+### 1. Integration inventory and page flow
 
-**做什么：** 列出六类页面/区域：上传与结果、审核、任务、四队路线与队伍控制、算法比较、助手。整理 A/B 已实现接口、当前响应版本、正常/空/失败样例。确认助手四个接口的请求与响应草案。把上面的文档冲突、地图静态资料供应方式、知识更新和确认事务问题列为对接项。
+Define upload/results, review, tasks, four-crew controls/routes, comparison and assistant. Map implemented A/B contracts/versions and normal/empty/failure examples. Draft assistant requests/responses. Record documentation conflicts, geography delivery, knowledge updates and confirmation transactions. Deliver PAGE_FLOW.md, API_MAPPING.md and OPEN_QUESTIONS.md. C leads UI/assistant; A owns shared contracts/content; B owns routes/crews. Every field needs a source and explicit dependency; ordinary pages need not wait for all assistant decisions.
 
-**产出：** 页面流程、字段与接口对照表、待对齐事项表。C 主导页面与助手设计；A 负责共享契约与知识内容；B 负责路线和队伍接口。
+### 2. Frontend foundation and local entry
 
-**完成标准：** 每个页面需要的数据都有来源；明确哪些可以直接实现、哪些需要 A/B 补充。普通页面不必等待助手全部约定完成。
+Create React navigation, skeletons/layout under SystemCode/frontend. Match Node 22/npm CI and one package-lock. Add API proxy or agreed CORS; backend initially has no CORS middleware. Provide executable macOS instructions rather than Windows/CUDA training commands. Deliver app, environment example, lint/test:ci/build and meaningful foundation tests. Desktop/mobile navigation, real local health and CI scripts must work; real vision can be verified later with explicit demo first.
 
-### 第 2 步：搭建前端与本机开发入口
+### 3. Shared client, types and mock mode
 
-**做什么：** 在 `SystemCode/frontend/` 创建 React 工程、导航、页面骨架和通用布局。遵循仓库 CI 的 Node 22 + npm，保留一个 package-lock。建立开发 API 代理或与 A 约定跨域方案；当前后端没有 CORS 中间件。写 Mac 可执行的启动说明，不直接照抄 Windows/CUDA 训练命令。
+Wrap /api/v1, image URLs, error codes, operation IDs, revisions and time formatting. Provide explicit schema-validated mocks with visible provenance and shared loading/empty/no-plan/error/conflict states. Deliver shared types/methods/error components/current examples. Retry the same action key; changed content/resolved conflicts create new keys. No silent failure fallback. Keep business minutes, runtime milliseconds, UTC and Singapore display distinct.
 
-**产出：** 可启动网页；环境示例；`lint`、`test:ci`、`build` 脚本及真实基础测试。
+### 4. Upload and results
 
-**完成标准：** 桌面和手机宽度能使用；导航有效；本机能访问后端健康接口；CI 所需脚本可执行。真实视觉运行环境可在后续单独验证，前端基础可先用明确 demo 模式。
+Upload one JPEG/PNG with Jurong coordinates/road declaration using multipart image/metadata and Idempotency-Key. Distinguish real/demo; real omits scenario_id. Handle accepted/pending_review/no_detection. After the four-field upload result, read details/task for image_url, provenance, detection_id, record_version and rule evidence. Draw the unique box on server-normalised dimensions to avoid EXIF errors. Deliver form/location/results/box. Verify normal/no detection/low confidence, invalid location/image, 8 MiB/20 MP limits, unavailable inference and duplicate upload. No detection never means road safety; distinguish real inference and demo business rules.
 
-### 第 3 步：建立统一 API 调用、类型和演示模式
+### 5. Manual review
 
-**做什么：** 封装 `/api/v1` 客户端、图片地址解析、错误码处理、请求 ID、版本字段和时间格式。提供显式可切换的 mock 数据，用当前 schema 校验；演示模式有明显标签。统一加载、空列表、无方案、失败和冲突显示。
+Pending queue/details support confirm, correct among eight shared labels, and dismiss. Send expected_version/request_id, valid detection_id for confirm/correct, damage_label only for correction. Preserve model evidence and review history. Only pending_review is writable; no duplicate tasks. After 409, reread/reassess rather than overwrite. Refresh tasks/route status after success.
 
-**产出：** 共享类型、API 方法、错误提示组件、当前格式的样例。
+### 6. Task management
 
-**完成标准：** 重试复用同一逻辑动作的 key；改变内容或解决版本冲突后用新 key；服务失败不静默切换 mock。分钟、算法毫秒、UTC 与新加坡显示时间不混淆。
+List active/completed/cancelled tasks with location, damage, priority, duration, rule reasons/version. Complete/cancel or correct label/full location group; show history. Do not allow arbitrary priority/service_minutes/due_at. Final states retain history and cannot reactivate. Unknown duration/deadline is unknown/not set, never zero. Input changes warn of stale plans.
 
-### 第 4 步：完成图片上传与检测结果页面
+### 7. Crew controls and explicit recalculation
 
-**做什么：** 上传一张 JPEG/PNG，选择 Jurong 位置并作道路类别声明。上传使用 multipart 的 image、metadata 和 Idempotency-Key。区分 real/demo；real 不传 scenario_id。处理 accepted、pending_review、no_detection 等状态。
+Read all crews and change availability. Use returned input_revision to explicitly recalculate paired GA/Greedy IDs. Read a snapshot when upload-created tasks need a revision. Share the replan entry across changes. Show disabled/idle crews. A crew save is not route success; retain actual saved state/stale old plans if Google/planning fails. Retrying planning must not repeat crew changes. Refresh conflicts before confirmation.
 
-上传成功先读取四字段结果，再查询巡检详情/关联任务，获得 image_url、来源、detection_id、record_version 和规则记录。用后端规范化图片与响应尺寸绘制唯一展示框，避免原始 EXIF 方向导致错位。
+### 8. Jurong map
 
-**产出：** 上传表单、位置选择、结果卡片与检测框。
+Use frozen JE/JW GeoJSON/NUS-ISS and include the external depot in bounds. Stable crew colours, ordered stops/lines, linked task/crew details, return legs, status and all unassigned reasons. Coordinate direction/order must match saved plans without omissions. geometry=null requires a stop-order/non-navigation label; distinguish Google/simulated travel.
 
-**完成标准：** 正常、无检测、低置信度、非法位置、无效图片、超过 8 MiB/20MP、推理不可用和重复上传都有正确反馈。没有检测不显示“道路安全”；真实检测与模拟业务规则分别标识。
+### 9. GA/Greedy comparison
 
-### 第 5 步：完成人工审核流程
+Prefer paired IDs from one recalculation. Display assigned/unassigned P1/P2/P3, travel/repair/makespan/workload/runtime/objective. Verify revision/start/settings/provenance; two latest plans alone are insufficient. Missing evidence suppresses improvement percentages; consider B batch/matrix IDs. Missing deadlines make lateness uncomputable; handle zero denominators. Objective improvement is not universal improvement/money saving. Identify Greedy-seeded online GA from algorithm_parameters and distinguish pure-GA historical experiments.
 
-**做什么：** 展示待审核列表和详情，支持确认、纠正八类标签、驳回。请求携带 expected_version 和 request_id；确认/纠正携带有效 detection_id，纠正再携带 damage_label。界面展示原模型证据、审核结果与历史。
+After steps 1–9, demonstrate upload → review/auto-acceptance → task → recalculation → four-crew map/comparison.
 
-**产出：** 审核队列、详情和三类操作。
+### 10. Knowledge cleaning, chunking and retrieval
 
-**完成标准：** 只有 pending_review 可审核；不会重复建任务；409 后刷新并要求重新判断，不自动覆盖；审核完成刷新任务和路线状态。
+Correct outdated knowledge/questions with A and release matching versions. Validate manifest hashes; chunk at stable anchors. Retain document_id, section_id, package/document/rule versions, classification and original sources. Choose retrieval proportionate to scale; embeddings depend on evidence/cost, not default complexity. Deliver ingestion/retrieval/citations/acceptance. Return relevant document_id#section_id, reject inconsistent sources, distinguish facts/demo assumptions/open decisions. Never explain/recalculate old rule_version tasks using the latest static rules.
 
-### 第 6 步：完成任务列表、详情与状态管理
+### 11. Read-only GPT/RAG
 
-**做什么：** 按 active/completed/cancelled 展示任务，呈现位置、损伤、优先级、维修时长、规则理由与版本。支持完成、取消；为已约定的标签/位置纠正提供入口，位置字段作为完整一组提交。展示历史。
+Implement POST /assistant/query in the shared backend with retrieved knowledge and B’s saved plan_id. Explain order, assignment, unassigned reasons, metrics/rules; obtain task provenance through A services if needed. Return answer/sources/supported/version evidence and show plan/citations in UI. Missing evidence/plan must be explicit; stale plans labelled. No invented IDs/numbers/sources. GPT credentials/limits stay server-side. Treat retrieved text/questions as data, preventing instructions from executing business actions. Verify real calls separately from doubles.
 
-**产出：** 可操作的任务管理页面。
+### 12. Crew-change preview, confirmation, cancellation and recovery
 
-**完成标准：** 不允许自由填写 priority/service_minutes/due_at；终态保留历史、不重新激活。未知时长/期限显示“未知/未设置”，不显示零。任务变化后提示旧方案过期。
+Implement three proposed change-request/confirm/cancel endpoints, initially only one crew availability change. Persist concrete crew, old/new availability, based_on_plan_id, input_revision, crew version and lifecycle. Clarify ambiguous/unsupported requests instead of guessing.
 
-### 第 7 步：完成四队控制与显式重算
+With A/B, atomically check preview versions and update through domain services, then replan. C owns lifecycle persistence integrated through shared migrations. Contractually distinguish pending/executing/confirmed/cancelled/expired and updated-but-recalculation-failed. Deliver structured cards, three APIs, persisted status and before/after comparison. Preview/cancel never changes business data; stale previews fail; duplicate/concurrent confirms execute once; restart recovery can establish outcome. Keep business-save and calculation status separate; planning retry must not disable again. Current recalculate lacks idempotency ID, requiring a recovery protocol rather than claims based only on disabled buttons.
 
-**做什么：** 读取全部工程队，允许改变可用状态。实际变化后使用返回的 input_revision 请求重算，获得同一次计算的 GA、Greedy 方案 ID。上传自动建任务后需要版本时，读取任务快照。统一处理任务和队伍变化后的重算入口。
+### 13. C and A/B/C acceptance
 
-**产出：** 四队控制、重算按钮、计算状态和失败恢复流程。
+Use isolated database/images for full flows with mock, real backend, available real model and external failures. At least ten dynamic route questions and ten adjustment cases retain inputs/expected/actual/citations/versions/real-model status. A/B fix their own module defects. Deliver automation, end-to-end records, limitations and assistant evaluation. Run lint/test:ci/build, relevant Python and repository checks. Unrun paid APIs/models/devices remain explicitly unverified.
 
-**完成标准：** 停用/闲置队伍仍显示；不把更新成功当成路线成功。队伍已修改但 Google/规划失败时明确说明，并保留真实状态和旧方案过期提示。重试计算不重复执行队伍修改；输入冲突时刷新确认。
+### 14. Guides, report, screenshots and video
 
-### 第 8 步：完成 Jurong 地图与四队路线展示
+Update frontend/assistant READMEs, macOS installation, user guide, variables and limitations. Supply design, retrieval/prompt constraints, confirmation and evaluation chapters. Use actual UI screenshots and C’s use-case/technical recordings for A’s final package. Another member must reproduce the demo. Team delivers two approximately five-minute videos; C coordinates recordings, A final package. Members narrate personally without AI speech. Reflections/peer evaluation remain individual/confidential submissions.
 
-**做什么：** 使用冻结 JE/JW GeoJSON 和 NUS-ISS 基地；视野同时容纳区域与区域外基地。给每队稳定颜色，按 stops.sequence 画点和示意线，支持地图与任务/队伍详情联动。展示返程、队伍状态、未分配任务及原因。
+## Minimum acceptance set
 
-**产出：** 四队地图和路线详情。
+| Area | Required cases |
+|---|---|
+| General | Loading, empty, error, mobile, duplicate clicks, timeout, Singapore time, live/mock provenance |
+| Image/review | Upload/details, 0.60 boundary, low confidence, no detection, all review actions, normalised-image box, no duplicate tasks |
+| Task/crew | Completion/cancel/correction history/revision; disable/restore/all unavailable; no-op; conflict |
+| Routes | 0/1/fewer-than-four/10/15/20 tasks; four crews visible; every task assigned or reasoned; stale/missing/failure |
+| Comparison | Same-run evidence, missing/zero values, runtime milliseconds/business minutes, noncomparability explanation |
+| Knowledge | Supported/citable answers, refusal, old rules/stale plans, model failure, no instruction-driven actions |
+| Changes | No write before confirm/on cancel; stale rejection; duplicate/concurrent confirm; post-write disconnection; restart; partial failure |
 
-**完成标准：** 经纬度顺序正确；停靠顺序与保存方案完全一致；不遗漏未分配任务。geometry 为 null 时标明“路线顺序示意，非道路导航”；Google 与模拟行程来源可辨。
+Ten suggested route questions: crew responsibilities; one crew’s order; why NUS-ISS; task arrival/completion; why unassigned; busiest crew; GA/Greedy metric comparison; stale-plan reason; Google provenance; lateness without deadlines. Each needs plan_id/citations; ten static knowledge questions do not substitute.
 
-### 第 9 步：完成 GA / Greedy 比较
+Ten suggested adjustments: disable a named crew; restore it; cancel; repeat confirmation; concurrent confirms; task change after preview; crew change after preview; already-target state; ambiguous/invalid crew; unsupported closure/direct priority change. Add matrix failure after committed crew change and restart recovery.
 
-**做什么：** 优先绑定同一次重算返回的两个方案 ID，展示分配/未分配数量、P1/P2/P3 未分配、总行程、维修时长、完工时间、工作量差异、算法耗时和目标值。比较前核对输入版本、开始时刻、设置与来源；不要独立读取两个 latest 后直接默认可比。缺少同批次证明时不输出改善百分比，必要时与 B 补充批次/矩阵标识。
+## Coordination
 
-**产出：** 比较区域和方案详情。
+| Party | Align | Independent progress |
+|---|---|---|
+| A | Schemas/examples, qa-03/content, static geography/labels, assistant config/routes/migration | UI/client/labelled mocks/existing A pages |
+| B | Crew/plans, two-stage results, atomic revisions, retries, same-run evidence | Read plans/maps/crews/current recalculation |
+| A/B | Demo shift/return/weights, integration data/replan UX | Display current saved settings with provenance |
+| User/owner | GPT config/budget, map provider, real-call acceptance | No-cost UI/doubles |
 
-**完成标准：** 延误无期限则显示“无法计算”；百分比零分母有处理；不将目标值改善等同所有指标改善或金额节省。根据 algorithm_parameters 标明在线 GA 是否含 Greedy 初始解，不将纯 GA 历史实验与在线结果混为一谈。
+Define each step’s acceptance and commit scope. Start short-lived feature/c-* from clean synced main; shared changes document caller impact. PRs are English; incomplete/review-only PRs remain Draft. Historical auto-merge guidance does not authorise pushing this plan.
 
-**阶段成果：** 第 1～9 步结束后，C 应能演示“上传 → 审核或自动接受 → 任务 → 重算 → 四队地图与算法比较”。
+## Sources and review limits
 
-### 第 10 步：完成知识清理、分段和检索
+Root: groupwork1. Relative sources: AGENTS.md (ownership/services/confirmation/citations/tests); Miscellaneous/TEAM_WORK_ALLOCATION.md sections 4/7/10 (C1–C7/four assistant routes/20 cases); API_CONTRACT.md (A v5/snapshots/B); backend api/workflow.py and schemas/workflow.py; crews/service.py:78; routing/service.py/models.py/README.md; knowledge/manifest.json, six documents and acceptance_cases.json:88; SystemCode/contracts and config; .github/workflows/ci.yml and scripts/check_repository.py; SystemCode/tests; ProjectReport, Video and SUBMISSION_CHECKLIST.md. Existing tests do not imply executed tests.
 
-**做什么：** 先与 A 修正过期题目/知识，发布相符版本；按 manifest 校验哈希，按稳定 section anchor 切分。保留 document_id、section_id、包/文档/规则版本、分类和原始来源，实现检索接口。使用与现有规模相称的检索方案，是否引入嵌入由实际效果与成本决定；避免默认增加复杂服务。
-
-**产出：** 知识摄取与检索模块、引用结构、知识验收记录。
-
-**完成标准：** 检索能返回相关片段和 `document_id#section_id` 引用；来源不一致时拒绝使用；区分事实、模拟假设、未定事项。不同 rule_version 的旧任务不被最新静态规则解释或重算。
-
-### 第 11 步：完成只读 GPT/RAG 问答
-
-**做什么：** 在统一后端内实现 `POST /assistant/query`。结合第 10 步检索结果与 B 根据 plan_id 读取的保存方案，回答路线顺序、队伍分配、未分配原因、指标及规则问题；需要任务来源时通过 A 的查询服务补充。返回 answer、sources、supported 及相符版本信息；网页显示答案、引用和依据方案。
-
-**产出：** 助手后端、问答面板和可追溯回答。
-
-**完成标准：** 没有方案或证据时说明不足；过期方案明确标注；模型不生成任务 ID、行程数字或虚构依据。服务端配置 GPT 凭据与调用限制，前端构建不包含密钥。将检索文本和用户问题作为资料处理，不能让其中的指令越权执行业务操作。真实模型调用与测试替身分别验证、如实标记。
-
-### 第 12 步：完成队伍调整的预览、确认、取消与恢复
-
-**做什么：** 实现三个草案接口：创建 change-request、confirm、cancel。首版只解析队伍 available 状态变更。预览保存具体队伍、原/目标状态、based_on_plan_id、input_revision、队伍版本与请求状态；含糊、不支持的请求先说明或澄清，不猜测执行。
-
-与 B/A 补足“预览版本校验与队伍写入在同一事务”的服务能力，确认后调用领域服务，再执行重算。为 C 的请求生命周期增加自己的持久化记录，由统一迁移入口集成。建议区分 pending、执行中、已确认、已取消、已过期、修改成功但重算失败等情况，具体枚举先写进契约。
-
-**产出：** 结构化确认卡片、三个接口、持久化状态及调整前后对比。
-
-**完成标准：** 预览/取消不改变业务；旧预览不能执行；重复和并发确认只执行一次；重启后可以查清结果。单独保存“修改结果”和“计算结果”；重算重试不再次停队。当前 recalculate 没有 request_id 幂等契约，需明确重复/超时重算的恢复方案，不能仅靠前端禁用按钮宣称全流程幂等。
-
-### 第 13 步：完成 C 验收与 A/B/C 联调
-
-**做什么：** 在隔离数据库/图片目录中执行完整流程，覆盖 mock、真实后端、可用的真实模型和外部服务失败。完成至少 10 个路线问题与 10 个调整请求测试；保留输入、预期、实际结果、引用、版本和是否使用真实模型。让 A/B 修复归属其模块的问题。
-
-**产出：** 自动测试、端到端记录、缺陷与限制表、助手评估结果。
-
-**完成标准：** 覆盖下节的场景；执行 npm 的 lint/test:ci/build、相关 Python 测试和仓库检查。未运行的付费 API、真实模型或设备环境明确标注，不用 mock 结果代替真实验收。
-
-### 第 14 步：完成说明、报告材料、截图和视频交付
-
-**做什么：** 更新前端与助手 README、Mac 安装/运行步骤、用户指南、环境变量和已知限制；提供系统设计、检索/提示约束、确认流程与助手评估章节。使用实际运行界面截图，准备业务用例和技术视频中 C 的素材，交 A 汇总。
-
-**产出：** 可复现使用说明、C 的报告章节与实测证据、截图和录屏素材、完成清单。
-
-**完成标准：** 另一名组员能照说明运行并演示；课程要求两段各约 5 分钟视频由全组配合，C 协调录屏，A 统筹最终包。按仓库记载由成员本人讲解，不使用 AI 演讲音频。个人反思和互评独立完成、单独提交。
-
-## 四、C 的最低验收集合
-
-| 类别 | 必须验证 |
-| --- | --- |
-| 页面共性 | 加载、空数据、错误、移动端；重复点击；网络超时；新加坡时间；真实/模拟来源 |
-| 图片与审核 | 上传→详情；0.60 边界；低置信度；无检测；确认/纠正/驳回；原图归正后框位置；重复操作不建重复任务 |
-| 任务与队伍 | 完成/取消/纠正后历史与版本；单队停用/恢复；全部停用；无变化提交；版本冲突 |
-| 路线 | 0、1、少于4及10/15/20任务；四队始终可见；每个任务有分配或明确未分配；过期、无方案、重算失败 |
-| 比较 | 同批次方案；缺失/零值；算法毫秒与业务分钟；不可比较时解释原因 |
-| 知识与问答 | 有依据回答、来源可打开、无依据拒答、旧规则版本、过期方案、模型服务失败、指令注入不执行操作 |
-| 调整 | 未确认不改、取消不改、过期拒绝、并发确认、重复确认、执行后断线、重启恢复、修改成功但重算失败 |
-
-建议的 10 个动态路线问题：四队分别负责什么；某队访问顺序；为什么从 NUS-ISS 出发；某任务预计到达/完成；为何未分配；哪个队最忙；GA 与 Greedy 哪项更好；为什么方案过期；当前矩阵是否来自 Google；无期限时能否判断延误。每题要求具体 plan_id 与引用，不能仅使用静态问答十题替代。
-
-建议的 10 个调整案例：停用指定队；恢复指定队；取消预览；重复确认；两次并发确认；预览后任务变化；预览后队伍变化；目标本已是该状态；模糊队名/无效队名；请求封路或直接改优先级（不支持）。另追加“队伍修改已提交后矩阵失败、重启再恢复”作为可靠性用例。
-
-## 五、与 A/B 的具体对接清单
-
-| 对象 | 需要对齐的事项 | 可先独立推进 |
-| --- | --- | --- |
-| A | 当前 schema/样例；过时知识与 qa-03；边界/标签静态资料提供方式；助手配置/路由注册/数据库迁移 | 页面布局、API 客户端、正确标记的 mock、已有 A 接口页面 |
-| B | 队伍和方案格式；重算两阶段结果；同事务输入版本保护；确认后的重试语义；比较方案的同批次证明 | 读取现有方案、地图、四队展示、现有重算接口联调 |
-| A/B 共同 | 演示班次、返基地与目标权重的表述；端到端测试数据与重算触发体验 | 按当前方案字段显示并保留演示标识 |
-| 用户/项目负责人 | 实际 GPT 配置、调用预算；地图供应商所需配置；真实调用验收范围 | 无外部费用的页面与测试替身开发 |
-
-每个步骤独立定义验收条件和提交范围。进入实现后，从干净且同步的 main 建短期 `feature/c-*` 分支；共享文件变动记录调用方影响。PR 文本按仓库要求使用英文；未就绪或仅供审阅的 PR 保持 Draft，不能把历史文档中的自动合并约定理解为本次规划已经授权推送。
-
-## 六、来源索引与本次检查边界
-
-仓库根目录：`groupwork1`。
-
-关键依据（以下路径均相对该根目录）：
-
-- `AGENTS.md`：角色边界、统一服务、确认与引用、测试及交付要求。
-- `Miscellaneous/TEAM_WORK_ALLOCATION.md` 第 4、7、10 节：C1～C7、助手接口草案、20 个助手验收案例要求。
-- `Miscellaneous/API_CONTRACT.md`：A v5、任务快照、B 队伍和规划接口。
-- `SystemCode/backend/roadguard/api/workflow.py` 与 `schemas/workflow.py`：实际上传、审核、任务请求响应。
-- `SystemCode/backend/roadguard/crews/service.py:78`：现有队伍更新的事务和版本边界。
-- `SystemCode/backend/roadguard/routing/service.py`、`models.py`、`README.md`：重算、保存方案、来源、指标与演示设置。
-- `SystemCode/backend/knowledge/manifest.json`、6 份知识文档及 `acceptance_cases.json:88`：检索输入、引用规范及已发现的旧验收要求。
-- `SystemCode/contracts/`、`SystemCode/config/`：当前与历史样例、规则和路线配置。
-- `.github/workflows/ci.yml`、`.github/scripts/check_repository.py`：Node 22、npm lockfile、lint/test:ci/build 和测试接入要求。
-- `SystemCode/tests/`：A/B 现有边界与集成测试；测试文件存在不等于本机已经执行通过。
-- `ProjectReport/`、`Video/`、`Miscellaneous/SUBMISSION_CHECKLIST.md`：报告、指南、录屏与提交边界。
-
-本次完成文件清点、静态解析与重点阅读、图像总览、知识清单哈希核对和部署模型哈希核对。没有安装项目依赖、启动应用、调用 GPT/Google、修改业务代码或运行全套测试；项目工作区保持干净。规划和文件目录保存在本次 Codex 的 outputs 中，不写入团队仓库。
+This planning review inventoried/scanned/parsed files, read key dependencies, reviewed images and checked knowledge/model hashes. It did not install dependencies, start apps, call GPT/Google, change business code or run full tests. Workspace stayed clean. Planning/inventory initially remained in Codex outputs rather than the team repository.

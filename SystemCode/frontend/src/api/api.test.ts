@@ -161,7 +161,7 @@ describe('requests and failures', () => {
       code: 'stale_record_version',
       details: { current_version: 3 },
     })
-    expect(errorMessage(error)).toContain('刷新')
+    expect(errorMessage(error)).toContain('Refresh')
   })
   it('detects HTML fallback and invalid success bodies', async () => {
     const transport = vi
@@ -255,17 +255,17 @@ describe('explicit mock source', () => {
 
 describe('units and Singapore time', () => {
   it('distinguishes missing values from zero and milliseconds from minutes', () => {
-    expect(formatMinutes(null)).toBe('未提供')
-    expect(formatMinutes(0)).toBe('0 分钟')
-    expect(formatRuntime(0)).toBe('0 毫秒')
-    expect(formatRuntime(1200)).toBe('1,200 毫秒')
+    expect(formatMinutes(null)).toBe('Not provided')
+    expect(formatMinutes(0)).toBe('0 min')
+    expect(formatRuntime(0)).toBe('0 ms')
+    expect(formatRuntime(1200)).toBe('1,200 ms')
   })
   it('converts UTC and stop offsets to Singapore time, including date rollover', () => {
     expect(formatSingaporeTime('2026-10-15T01:00:00Z')).toContain('09:00')
     expect(stopTime('2026-10-15T15:30:00Z', 60)).toContain('16')
     expect(stopTime('2026-10-15T15:30:00Z', 60)).toContain('00:30')
-    expect(stopTime('2026-10-15T01:00:00Z', null)).toBe('未提供')
-    expect(formatSingaporeTime('2026-10-15T01:00:00')).toBe('无效时间')
+    expect(stopTime('2026-10-15T01:00:00Z', null)).toBe('Not provided')
+    expect(formatSingaporeTime('2026-10-15T01:00:00')).toBe('Invalid time')
   })
 })
 

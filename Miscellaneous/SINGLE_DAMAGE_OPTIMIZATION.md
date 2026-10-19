@@ -1,84 +1,84 @@
-# 单张照片主要损伤：第一轮优化与验收
+# Primary damage in a single photo: First optimisation and acceptance
 
-后续状态：项目发起人随后明确要求发布并接入后端，已按[发布接入指南](MODEL_RELEASE_AND_BACKEND.md)提供默认 manifest 与独立主建议字段。下文保留第一轮实验当时的决策、指标与本地交付记录；接入不代表识别质量达标。
+Subsequent status: The project owner later explicitly requested release and backend integration. A default manifest and separate primary-suggestion fields were provided according to the [release and integration guide](MODEL_RELEASE_AND_BACKEND.md). The text below retains the decisions, metrics and local delivery record from the first experiment; integration does not establish acceptable recognition quality.
 
-日期：2026-10-13；负责人：A。完成范围：不训练的对照实验、主结果选择工具、真实权重试图和回归检查。模型识别质量仍未验收通过。
+Date: 2026-10-13; owner: A. Completed scope: a comparison without training, primary-result selection tools, inference on real weights and regression checks. Model recognition quality has not passed acceptance.
 
-## 场景与交付边界
+## Scenario and delivery boundary
 
-项目发起人确认：一般一张照片只有一种主要损伤和一个主要框。这是拍摄与展示目标，不是每张输入必然符合的保证。允许无结果；多个损伤、类别冲突或背景干扰时仍需审核。八个源标签保持原义，不能把“框数量变少”当成识别准确率提高。
+The project owner confirmed that a typical photo contains one primary damage type and one primary box. This is a capture/display objective, not a guarantee for every input. No result is allowed; multiple defects, class conflicts or background interference still require review. The eight source labels retain their meanings. Fewer boxes must not be described as improved recognition accuracy.
 
-本轮提供独立实验入口，最多返回一个 `main_detection`，同时保留全部 `raw_detections` 与歧义提示。无检测时主结果为 `null`；非空主结果标记 `review_required:true`，不是 Task，也不写巡检数据库。现有上传、审核、任务、四队接口和模型 manifest 契约保持原样，B/C 暂时无需改客户端。
+This round supplies an independent experiment entry point returning at most one `main_detection`, while retaining all `raw_detections` and ambiguity warnings. Without detections, the primary result is `null`; a nonempty result is marked `review_required:true`. It is not a Task and does not write to the inspection database. Existing upload, review, task, four-crew and model-manifest contracts remain unchanged; B/C do not yet need client changes.
 
-## 方法与评估口径
+## Method and evaluation definitions
 
-复用最佳 YOLO11s，权重 SHA-256 为 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`。没有训练、下载权重或恢复已删除的两阶段方案。
+The best YOLO11s is reused, with weights SHA-256 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`. No training, weight download or restoration of the deleted two-stage approach occurred.
 
-完整 1,921 张验证原图中，**581 张单标注图、649 张空标注图**用于主要评估；另外 **691 张多标注图、2,042 个框**单独报告。标注不删除、不改写；空标注也不等于经专家核验的无损伤。
+Of all 1,921 original validation images, **581 single-annotation images and 649 empty-annotation images** support the primary evaluation. The other **691 multi-annotation images, with 2,042 boxes**, are reported separately. Annotations are neither deleted nor rewritten; empty annotations do not establish expert-verified absence of damage.
 
-按源 `group_id` 的固定 SHA-256 划分：853 张校准图选择设置，377 张确认图报告选定方案。确认部分有 171 张单损伤、206 张空标注图。这些验证数据此前已用于训练与选型，**本次确认部分不是全新独立测试集，也不是 Jurong 实拍验收集**。第 3 类在确认部分没有阳性样本；其他稀有类别支持也很少。
+A fixed SHA-256 split by source `group_id` uses 853 calibration images to choose settings and 377 confirmation images to report the selected method. Confirmation contains 171 single-damage and 206 empty-annotation images. These validation data were previously used in training and selection; **this confirmation subset is not a new independent test set or a Jurong field-acceptance set**. Class 3 has no positive confirmation examples; other rare classes also have very limited support.
 
-在读取预测和计算结果前保存计划，比较 80 个固定候选：两个推理配方（832 原图、832 原图加翻转）；四种排序（置信度、置信度乘面积占比的四次方根/平方根、置信度乘有限中心权重）；五个过滤阈值（0.10/0.20/0.30/0.40/0.50）；两种歧义处理（保留建议加提示、有强竞争类别/区域时不提供建议）。
+The plan was saved before reading predictions or calculating results. Eighty fixed candidates compare two inference recipes (832 original; 832 original plus flip), four rankings (confidence; confidence multiplied by the fourth root/square root of area fraction; confidence multiplied by a bounded centre weight), five confidence thresholds (0.10/0.20/0.30/0.40/0.50) and two ambiguity policies (retain suggestion with warning; withhold suggestion when strong competing classes/regions exist).
 
-只用校准部分选型：最大化八类图像级 Precision/Recall 中较小值，然后比较八类 macro F1、Recall；完全相同按预先候选顺序。确认结果不用于重新挑选方案。
+Selection uses calibration only: maximise the smaller of eight-class image-level Precision and Recall, then compare eight-class macro F1 and Recall; exact ties retain the preregistered candidate order. Confirmation results are not used to choose another method.
 
-**图像级八类判断**：主建议类型正确计 TP；类型错误同时计 FP 和 FN；漏出计 FN；空标注图输出损伤计 FP。此指标不要求框重合，另报同类型且 IoU≥0.3/0.5 的更严格指标。它不同于历史全量多目标框检测指标，不能把两者相减称作模型提升。
+**Eight-class image-level judgement:** a correctly typed primary suggestion counts TP; a wrong type counts both FP and FN; no output counts FN; output on an empty-annotation image counts FP. This metric does not require box overlap. Stricter same-class IoU≥0.3/0.5 results are reported separately. It differs from historical full multi-object box-detection metrics; subtracting them must not be called model improvement.
 
-## 实际结果
+## Actual results
 
-选定：**原图 832、置信度过滤 0.20、置信度 × 面积占比的四次方根**。排名分数不替换模型置信度，也不是正确概率。歧义过滤会减少召回，校准选型没有选中这一过滤，因此实验入口保留供审核的主建议，同时返回歧义信息。
+Selected: **original 832, confidence threshold 0.20, confidence × fourth root of area fraction**. Ranking scores do not replace model confidence and are not probabilities of correctness. Ambiguity filtering reduces recall and was not selected in calibration. The inference tool therefore retains a primary suggestion for review while returning ambiguity information.
 
-同一 377 张确认图片：
+On the same 377 confirmation images:
 
-| 方案 | 类型正确 TP | 错误 FP | 漏掉/错型 FN | 八类 Precision | 八类 Recall |
+| Method | Correct-type TP | FP | Missing/wrong-type FN | Eight-class Precision | Eight-class Recall |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 原图 832、0.25、最高分一个框 | 98 | 62 | 73 | 61.25% | 57.31% |
-| 翻转 832、0.30、最高分一个框 | 100 | 60 | 71 | 62.50% | 58.48% |
-| 本轮面积加权、0.20 | 106 | 66 | 65 | **61.63%** | **61.99%** |
+| Original 832, 0.25, highest-confidence single box | 98 | 62 | 73 | 61.25% | 57.31% |
+| Flip 832, 0.30, highest-confidence single box | 100 | 60 | 71 | 62.50% | 58.48% |
+| This round: area weighting, 0.20 | 106 | 66 | 65 | **61.63%** | **61.99%** |
 
-相对原图最高分基线，多正确 8 张，但多 4 个 FP；相对翻转基线，Recall 上升、Precision 略降。没有显著性结论。校准阶段没有候选同时达到两个 70%，选定方案的确认结果也没有达到。
+Compared with the original highest-confidence baseline, eight more images are correctly typed but there are four more FP. Compared with the flip baseline, Recall increases while Precision falls slightly. No significance claim is made. No calibration candidate met both 70% targets, and the selected confirmation result also falls short.
 
-选定方案的其他结果：
+Other selected-method results:
 
-- 确认部分只问“有无损伤”、不区分类型：Precision 79.65%、Recall 80.12%。**这不表示八类识别达标。**
-- 确认部分同类型且 IoU≥0.3：Precision 53.49%、Recall 53.80%；IoU≥0.5：50.58%、50.88%。
-- 确认部分普通坑洞：14 张阳性正确 5 张，Recall 35.71%；深坑：4 张正确 2 张，Recall 50.00%。两项仍不足。
-- 全部 1,230 张零/单标注图：类型 Precision 65.68%、Recall 65.23%；其中包含选型数据。
-- 多标注图仅 157/691 张触发歧义提示，658 张产生主建议。这个提示不能可靠识别所有多目标照片。
+- Confirmation, damage present/absent without distinguishing type: Precision 79.65%, Recall 80.12%. **This does not establish acceptable eight-class recognition.**
+- Confirmation, same class and IoU≥0.3: Precision 53.49%, Recall 53.80%; IoU≥0.5: 50.58%, 50.88%.
+- Confirmation ordinary potholes: five correct among fourteen positives, Recall 35.71%; deep potholes: two correct among four, Recall 50.00%. Both remain inadequate.
+- All 1,230 zero/single-annotation images: type Precision 65.68%, Recall 65.23%; includes selection data.
+- Only 157/691 multi-annotation images triggered ambiguity warnings; 658 produced a primary suggestion. The warning does not reliably identify every multi-object photo.
 
-## 已知照片复测
+## Retesting known photos
 
-实际 CPU FP32 推理复测此前六张网上照片和用户 AI 图片；它们是已知探索样例，未用于设置选择，也没有新增专家标注，不能计算真实场景准确率。
+Actual CPU FP32 inference retested six earlier internet photos and the user’s AI-generated image. These are known exploratory examples, were not used to choose settings and have no new expert annotations; real-world accuracy cannot be calculated from them.
 
-明显坑洞照片 `05-pothole-asphalt` 仍输出左侧大框 `alligator_crack`，原始置信度 0.253。用户 AI 图仍输出前景碎石区域 `pothole`，置信度 0.692，未覆盖主要坑洞。其他输出包括裂纹图的主框、Jurong 街景的空结果；框变大或变少本身不证明更正确。
+The clear pothole photo `05-pothole-asphalt` still produces a large left-side `alligator_crack` box with raw confidence 0.253. The user’s AI image still produces `pothole` on foreground gravel at confidence 0.692, failing to cover the main pothole. Other outputs include primary boxes on crack photos and an empty result for the Jurong street scene. Larger/fewer boxes do not by themselves demonstrate greater correctness.
 
-结论：排序与阈值在固定单目标子集上改善召回，但没有解决显眼坑洞的失败。**保留实验工具，不升级当前 API 默认设置，也不放宽自动建任务规则。**
+Conclusion: ranking and threshold changes improve recall on a fixed single-target subset but do not resolve the obvious pothole failure. **Retain the experiment tools without promoting these settings to current API defaults or relaxing automatic task-creation rules.**
 
-## 复现与试图
+## Reproduction and photo inference
 
-从仓库根目录运行；输出目录必须位于 Dataset 且不能已存在：
+Run from repository root; output must be inside Dataset and must not already exist:
 
 ```powershell
 .\.venv\Scripts\python.exe SystemCode/model/single_damage.py --output Dataset/single-damage-repeat
-.\.venv\Scripts\python.exe SystemCode/model/predict_single_damage.py --image "你的图片.jpg" --output Dataset/single-damage-my-photo
+.\.venv\Scripts\python.exe SystemCode/model/predict_single_damage.py --image "your-photo.jpg" --output Dataset/single-damage-my-photo
 ```
 
-比较命令验证现有两份全量预测导出、权重、标签和数据文件哈希；不访问 test 图片选型。试图默认使用已完成的 `Dataset/single-damage-v1`；可用 `--experiment` 指定新比较目录，当前实际推理入口仅支持选定的 standard832 配方，其他配方会明确拒绝。可以重复 `--image` 测多张照片。
+The comparison verifies hashes for the two existing full prediction exports, weights, labels and data files; it does not use test images for selection. Photo inference defaults to the completed `Dataset/single-damage-v1`; `--experiment` selects a new comparison directory. The actual inference entry currently supports only the selected standard832 recipe and explicitly rejects others. Repeat `--image` for multiple photos.
 
-输入沿用后端 JPEG/PNG、8 MiB、20 megapixels 和 EXIF 规范。输出 `results.json`、逐图 JSON（主建议、全部检测、歧义、哈希）和每图一个主框 JPG；预览可能缩小，JSON 坐标仍以原图为准。`inference_manifest.json` 仅描述检测子步骤，不包含主目标后处理，不能把它作为现有 API 已支持单主框的证明。
+Input follows backend JPEG/PNG, 8 MiB, 20-megapixel and EXIF rules. Outputs include `results.json`, per-image JSON (primary suggestion, all detections, ambiguity and hashes) and one primary-box JPG per image. Previews may be resized; JSON coordinates remain in original-image pixels. `inference_manifest.json` describes detection only and excludes primary-target postprocessing. It is not evidence that the existing API already supports a single primary box.
 
-代码：[选择器](../SystemCode/backend/roadguard/vision/primary.py)、[比较工具](../SystemCode/model/single_damage.py)、[试图入口](../SystemCode/model/predict_single_damage.py)。小型[实验摘要](../SystemCode/experiments/vision/single_damage_summary.json)可分享；完整证据和图片在忽略的 `Dataset/single-damage-v1/`。
+Code: [selector](../SystemCode/backend/roadguard/vision/primary.py), [comparison tool](../SystemCode/model/single_damage.py), [photo-inference entry](../SystemCode/model/predict_single_damage.py). The small [experiment summary](../SystemCode/experiments/vision/single_damage_summary.json) can be shared; full evidence/images stay in ignored `Dataset/single-damage-v1/`.
 
-## 下一轮数据与对接要求
+## Next-round data and integration requirements
 
-优先补齐符合拍摄方式的真实照片：一个主要损伤、完整边缘、周边路面，尤其近距离大坑洞；负例包含湿地、阴影、补丁、碎石、井盖。AI 图只作探索性压力样例，不计入实拍验收。
+Prioritise real photos matching the intended capture method: one primary defect, complete edges and surrounding road, especially large potholes at short range. Negatives should include wet surfaces, shadows, patches, gravel and manholes. AI images are exploratory stress cases only and excluded from real-photo acceptance.
 
-每图记录来源/许可、实拍或生成、场景组、原图哈希、主要对象标注和标注者；同地点/同坑洞/相邻帧留在同一划分。允许 `uncertain`，不能凭外观确认工程深度。实际有多个目标时标注全部目标和主要对象，不能为“一图一框”删除真实标签。先冻结独立验收集，再调整模型。
+For each image record source/licence, real/generated status, scene group, original hash, primary-object annotation and annotator. Keep the same location/pothole/adjacent frames in one split. Allow `uncertain`; appearance cannot establish engineering depth. Where multiple real objects exist, annotate all objects and the primary object rather than deleting labels to force one box per photo. Freeze independent acceptance data before model adjustments.
 
-真实独立样本证明改进后，由 A 设计 API 主建议字段，C 默认画一个建议框并能展开原始证据；B 继续消费审核后的 TaskSnapshot。`selected_detection_id` 现有接受/审核含义不能被实验建议替换。
+After real independent samples demonstrate improvement, A designs primary-suggestion API fields; C draws one suggestion by default while allowing original evidence to expand; B continues consuming reviewed TaskSnapshot. The existing acceptance/review meaning of `selected_detection_id` cannot be replaced by an experimental suggestion.
 
-## 工程验收与交付
+## Engineering acceptance and delivery
 
-全量回归：808 passed、1 skipped（Windows 符号链接权限），包含新增初始 18 项测试。沙箱中既有 TestClient 停滞后终止，以独立临时数据库在沙箱外完成。随后加入 5 项证据篡改/路径测试，最终专题测试 23 passed；没有把这 5 项算入此前全量次数。实际七图推理全部完成；工程通过不等于识别质量通过。
+Full regression: 808 passed, 1 skipped (Windows symlink permission), including eighteen initial new tests. An existing sandbox TestClient hang was terminated; the run completed outside the sandbox using an isolated temporary database. Five evidence-tampering/path tests were then added, yielding 23 passing focused tests; those five are not included in the earlier full-run count. Actual inference completed on all seven images. Engineering acceptance does not establish recognition quality.
 
-没有启动训练。原始数据、YOLO 权重和保存点保留；Dataset 整体忽略。本次交付为本地功能分支代码和记录，尚未提交或推送 GitHub。
+No training was started. Raw data, YOLO weights and checkpoints are retained; Dataset is entirely ignored. This delivery consisted of local feature-branch code and records, not yet committed or pushed to GitHub at this stage.

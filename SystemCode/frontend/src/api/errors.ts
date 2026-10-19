@@ -16,39 +16,39 @@ export class ApiError extends Error {
 }
 
 const messages: Record<string, string> = {
-  authentication_required: '登录已失效，请重新登录。',
-  forbidden: '当前账号没有此操作权限，请联系调度员。',
-  csrf_failed: '登录状态已变化，请刷新页面后重试。',
-  route_changed: '调度已更新路线，请刷新工作台后核对。',
-  task_unavailable: '记录不存在或已不可访问，请刷新工作台。',
-  stale_record_version: '记录已被修改。请刷新并重新检查，再提交新操作。',
-  stale_input_revision: '任务或队伍已变化。请刷新输入版本，再重新规划。',
-  idempotency_conflict: '此请求标识已用于不同内容。请核对操作并创建新请求。',
-  invalid_state: '记录当前状态不允许此操作，请刷新查看。',
-  route_plan_not_found: '尚未生成路线方案。',
-  not_found: '记录不存在或已不可访问。',
-  validation_error: '提交内容不符合接口要求，请检查输入。',
-  outside_service_area: '位置超出 Jurong 服务范围。',
-  image_too_large: '图片过大，请使用不超过 8 MiB、20 MP 的图片。',
-  unsupported_image_type: '请选择 JPEG 或 PNG 图片。',
-  unsupported_upload_type: '上传格式不符合要求。',
-  detector_unavailable: '真实检测服务暂不可用。',
-  detector_inference_failed: '图片推理失败，请稍后重试。',
-  travel_matrix_unavailable: '行程数据暂不可用；没有生成新方案。',
-  database_unavailable: '数据库暂不可用，请稍后重试。',
-  mock_write_unavailable: '当前是只读模拟快照，不能提交业务修改。',
-  contract_mismatch: '服务返回格式不符合当前接口约定。',
-  invalid_response: '服务未返回有效 JSON。',
-  request_timeout: '等待服务超时。',
-  network_error: '无法连接服务，请检查连接。',
-  request_cancelled: '请求已取消。',
+  authentication_required: 'Your session has expired. Please sign in again.',
+  forbidden: 'Your account cannot perform this action. Contact the dispatcher.',
+  csrf_failed: 'Your session has changed. Refresh the page and try again.',
+  route_changed: 'Dispatch has updated the route. Refresh your workspace and check it.',
+  task_unavailable: 'This record is unavailable. Refresh the workspace.',
+  stale_record_version: 'The record has changed. Refresh and check it before submitting a new action.',
+  stale_input_revision: 'Tasks or crews have changed. Refresh the input revision and replan.',
+  idempotency_conflict: 'This request ID was used with different content. Check the action and create a new request.',
+  invalid_state: 'The current record status does not allow this action. Refresh to check it.',
+  route_plan_not_found: 'No route plan has been generated.',
+  not_found: 'The record does not exist or is no longer accessible.',
+  validation_error: 'The submission does not meet the API requirements. Check your inputs.',
+  outside_service_area: 'The location is outside the Jurong service area.',
+  image_too_large: 'The image is too large. Use an image within 8 MiB and 20 MP.',
+  unsupported_image_type: 'Select a JPEG or PNG image.',
+  unsupported_upload_type: 'The upload format is unsupported.',
+  detector_unavailable: 'Real detection is temporarily unavailable.',
+  detector_inference_failed: 'Image inference failed. Please try again later.',
+  travel_matrix_unavailable: 'Travel data is unavailable; no new plan was generated.',
+  database_unavailable: 'The database is temporarily unavailable. Please try again later.',
+  mock_write_unavailable: 'This is a read-only mock snapshot. Changes cannot be submitted.',
+  contract_mismatch: 'The service response does not match the current API contract.',
+  invalid_response: 'The service did not return valid JSON.',
+  request_timeout: 'The service request timed out.',
+  network_error: 'Cannot connect to the service. Check your connection.',
+  request_cancelled: 'The request was cancelled.',
 }
 
 export function errorMessage(error: unknown): string {
-  if (!(error instanceof ApiError)) return '发生未知错误，请稍后重试。'
+  if (!(error instanceof ApiError)) return 'An unexpected error occurred. Please try again later.'
   const message =
-    messages[error.code] ?? `请求失败（${error.code}），请稍后重试。`
+    messages[error.code] ?? `Request failed (${error.code}), Please try again later.`
   return error.outcomeUnknown
-    ? `${message} 操作结果尚不确定，请先核对；不要直接发起新的重复操作。`
+    ? `${message} The outcome is uncertain. Check it before submitting another action.`
     : message
 }

@@ -91,6 +91,6 @@ Durable idempotency is checked in a consistent read transaction before loading a
 
 `SystemCode/tests/test_real_vision.py` injects detectors/model objects and covers modes, review-before-task behavior, genuine-vs-demo flags, no detection, replay while unavailable, concurrency/write-lock separation, rollback, names/digests, malformed predictions and HTTP persistence/restart. These tests do not establish numerical model quality. Genuine trained-weight inference and held-out numerical evaluation must be reported from their actual run artifacts separately. The adapter follows the [Ultralytics prediction interface](https://docs.ultralytics.com/modes/predict/); the project pins its optional runtime version in the model dependency list.
 
-## 账号权限增量（2026-10-18）
+## Account-permission increment (2026-10-18)
 
-本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。
+HTTP examples now require login and `X-CSRF-Token` on writes. Inspectors upload/read their own inspections; dispatchers review/manage; crews read/complete only their own tasks. The four-field upload, single-box and 0.60 gate remain unchanged. See [account roles](ACCOUNT_ROLES.md) for the full permission matrix, sessions and Swagger usage.

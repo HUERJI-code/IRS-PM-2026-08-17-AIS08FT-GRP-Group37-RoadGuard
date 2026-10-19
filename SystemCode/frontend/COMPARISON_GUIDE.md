@@ -1,38 +1,39 @@
-# C 第九步：GA / Greedy 同轮方案比较
+# C step 9: Same-run GA / Greedy comparison
 
-2026-10-17，负责人 C。实现已直接写入原项目前端，未提交、未推送；不修改 A/B 模块、公共接口、数据库结构或依赖。
+2026-10-17; owner C. Implemented directly in the original frontend, uncommitted/unpushed at this stage. No changes to A/B modules, shared APIs, database structure or dependencies.
 
-## 使用
+## Usage
 
-在 `/routes` 核对输入后点击“重算 GA 与 Greedy”，成功后点击“比较本次 GA 与 Greedy”。也可通过“算法比较”导航进入 `/comparison`。页面按本次重算响应中的两个 ID 读取保存方案；“重新读取比较”仅发 GET，不会重新计算。
+In `/routes`, check inputs, select “Recalculate GA and Greedy”, then “Compare this GA and Greedy run”. Navigation also opens `/comparison`. The page reads the saved plans using the two response IDs. “Reload comparison” issues GET only and never recalculates.
 
-本次响应保留在当前页面会话内，跨应用导航可用；整页刷新、关闭页面或切换数据来源后清除。直接打开页面时可读取两个 latest 的原始指标，但明确缺少同批次证明，不计算差异或百分比。现有接口没有可查询的批次或矩阵唯一标识，不能用相同版本/时间代替证明；以后如需恢复历史同轮比较，需由 B 提供持久化批次关联。
+The response stays in the current application session across navigation. Full refresh, closure or source change clears it. Direct entry can show raw metrics from two latest plans but explicitly lacks same-run evidence and calculates no differences/percentages. Current APIs provide no queryable run/matrix identifier; matching revisions/timestamps are insufficient. Reliable historical comparison requires a persisted batch association from B.
 
-## 核对与指标
+## Checks and metrics
 
-- 核对算法、两个方案 ID、重算响应摘要、输入版本、开始时刻、任务与矩阵来源、全部任务 ID 集合和唯一性、队伍与可用状态、基地、规划配置及目标权重。对象键顺序不影响核对。读取失败清除未核实展示，重试不发 POST。
-- 同轮依据来自成功的重算响应，契约保证该次计算共用输入和矩阵；独立 latest 不提供此保证。当前输入版本从 health 读取，结合方案 is_stale 标识过期。过期的同轮方案仍可作历史比较，但不能当作当前调度。
-- 指标包含分配/未分配数、P1/P2/P3 未分配、总行程、维修工时、最晚收工用时、工作量标准差、优先级加权平均完工时间、有期限任务数、延误、目标值、算法毫秒耗时。
-- 所有指标来自保存方案；前端只计算展示用差值和变化率。变化率为 `(GA - Greedy) / Greedy`，保留正负方向，基线为零不计算百分比，null 不转成零。已分配任务集合不同时，时间和目标值仅显示原值，避免通过少排任务宣称优化。
-- 无期限时延误显示“无法计算”；有期限时后端延误仅统计已分配任务，未分配原因必须一并查看。优先级加权完工时间不是延误，算法耗时不包含行程矩阵/API 等待。
-- 目标按未分配 P1/P2/P3 再到加权成本的次序理解；单项目标值下降不能说明所有指标改善或真实费用节省。页面保留权重、配置、随机种子和算法参数，按 seed_with_greedy 的 true/false/缺失分别说明在线 GA 是否使用 Greedy 初始解。
-- 每个方案显示全部队伍、工作量、未分配任务及后端原因。单轮在线结果不等于多种子实验结论，不预设 GA 胜过 Greedy。
+- Verify algorithms, plan IDs, response summaries, input revision, start, task/matrix provenance, complete task-ID sets/uniqueness, crews/availability, depot, planning configuration and weights. Object-key order is irrelevant. Read failure clears unverified presentation; retries issue no POST.
+- A successful recalculation response supplies same-run evidence under the shared-input/matrix contract; independent latest plans do not. Current health input_revision and plan is_stale identify stale plans. Historical same-run comparisons remain valid but are not current dispatch instructions.
+- Metrics include assigned/unassigned counts, unassigned P1/P2/P3, travel, repairs, makespan, workload standard deviation, priority-weighted mean completion, deadline count, lateness, objective and algorithm milliseconds.
+- All metrics come from saved plans. Frontend calculates only display differences and `(GA - Greedy) / Greedy`, preserving sign. Zero baselines produce no percentage; null never becomes zero. Different assigned-task sets suppress time/objective differences and percentages to avoid claiming gains from scheduling fewer tasks.
+- Without deadlines, lateness is not calculable. With deadlines, backend lateness includes assigned tasks only, so also inspect unassigned reasons. Weighted completion is not lateness; algorithm runtime excludes matrix/API waiting.
+- Interpret the objective lexicographically by unassigned P1/P2/P3 then weighted cost. One reduction does not establish universal improvement or monetary savings. Preserve weights, settings, seed and algorithm parameters; seed_with_greedy true/false/missing separately states whether online GA used a Greedy initial solution.
+- Each plan lists all crews, workloads and unassigned reasons. One online run is not a multi-seed experiment or proof that GA beats Greedy.
 
-## 验证结果
+## Validation
 
-原项目使用 Node 22：`npm run lint`、`npm run test:ci`、`npm run build` 通过。共 10 个测试文件、127 项测试（本步新增 27 项），覆盖上述核对、源切换清除依据、导航保留依据、读取失败与只读重试、StrictMode 取消、空任务、全停用和零/未知值。生产 JS 682.86 kB，gzip 183.90 kB；现有单包 >500 kB 提示仍保留。
+Node 22 lint, test:ci and build passed in the original project: ten files, 127 tests, including 27 additions. Coverage includes checks above, evidence clearing on source changes, persistence across navigation, read failure/GET-only retry, StrictMode cancellation, empty tasks, all crews unavailable and zero/unknown values. JS 682.86 kB, gzip 183.90 kB; >500 kB warning retained.
 
-浏览器实际连接原项目与独立测试库（合成巡检、模拟矩阵）：
-1. 直接进入比较页显示两个 latest 的原值与“暂不能确认可比”，无百分比结论。
-2. 从路线页重算后进入比较，显示“同轮方案已核对”、5 项任务、输入版本 7、相符 ID、来源、指标和 GA + Greedy 初始解。
-3. 1280×900 桌面检查表格；390×844 手机检查文档宽 375 ≤ 390，表格宽 540 在局部区域横向滚动。验收后恢复默认视口。
-4. 整页刷新清除同轮依据；显式切换“模拟 · 服务失败”显示错误并撤下指标；切回实时后可恢复读取，且不恢复旧依据。
-5. 最后再次显式重算，页面保留已核对结果：GA `plan-b7a5e2ba130049b6bc5e055d65c5c003`，Greedy `plan-a560795d1dcc4940891c6868b62fa141`，输入版本 7。
+Browser acceptance used the original project and isolated database with synthetic inspections/simulated matrices:
 
-浏览器未调用真实模型、Google 或 GPT，测试方案不作为算法实验数据。版本、配置、来源不一致等异常由自动化测试覆盖；本轮未重新验收第六步任务提交。
+1. Direct comparison displayed raw latest values and “Comparability not verified”, without percentage conclusions.
+2. Recalculation then comparison showed verified same-run evidence, five tasks, input revision 7, matching IDs/sources/metrics and GA with a Greedy seed.
+3. Desktop 1280×900 table verified. At 390×844, document width 375 ≤ 390; the 540-pixel table scrolled locally. Default viewport restored afterwards.
+4. Full refresh cleared evidence. Explicit mock failure showed errors and removed metrics. Returning live restored reads without old evidence.
+5. Final explicit recalculation retained verified GA `plan-b7a5e2ba130049b6bc5e055d65c5c003` and Greedy `plan-a560795d1dcc4940891c6868b62fa141`, revision 7.
 
-## 文件与后续
+No real model, Google or GPT calls. Test plans are not algorithm experiment data. Automated tests cover version/settings/source mismatch. Step 6 task-submission browser acceptance was not repeated in this stage.
 
-新增 `src/pages/ComparisonPage.tsx` 及其测试、`src/planning/{comparison.ts,comparison.test.ts,runContext.ts,PlanningRunProvider.tsx}`；更新 App、RoutesPage、相应集成测试和样式。无新增依赖，保持现有客户端与响应校验。
+## Files and next step
 
-第九步完成。下一步按 C 清单为第十步：知识资料清理、分段和检索；本次未提前实现助手或知识后端。
+Added `src/pages/ComparisonPage.tsx` and tests plus `src/planning/{comparison.ts,comparison.test.ts,runContext.ts,PlanningRunProvider.tsx}`; updated App, RoutesPage, integration tests and styles. Existing client/response validation retained, no new dependencies.
+
+Step 9 is complete. Step 10 is knowledge cleaning, chunking and retrieval. Assistant/knowledge backend work was not implemented early.

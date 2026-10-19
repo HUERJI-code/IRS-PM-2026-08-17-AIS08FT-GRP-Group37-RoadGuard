@@ -1,194 +1,196 @@
-# RoadGuard 项目与 Agent 协作规范
+# RoadGuard project and agent collaboration rules
 
-版本：1.17 · 更新日期：2026-10-18 · 适用范围：本仓库全部目录、三名成员及其使用的 coding agent。
+Version: 1.17 · Updated: 2026-10-18 · Applies to every directory in this repository, all three team members and their coding agents.
 
-这是本项目共用的开发规范入口。成员应使用同一仓库版本，并让 agent 在任务开始前读取本文件。详细分工和接口草案见 [TEAM_WORK_ALLOCATION.md](Miscellaneous/TEAM_WORK_ALLOCATION.md)，不依赖某位成员的聊天记录。
+This is the shared entry point for project development rules. Members should use the same repository version and have their agents read this file before starting a task. Detailed responsibilities and draft interfaces are in [TEAM_WORK_ALLOCATION.md](Miscellaneous/TEAM_WORK_ALLOCATION.md); they must not depend on one member's chat history.
 
-## 1. 当前阶段与工作授权
+## 1. Current stage and authorization
 
-- 当前已完成 A 的第 3～7 步；第 8 步已实现全量数据准备、可恢复训练/评估和真实检测接入，实际运行验收以 [第 8 步记录](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) 为准。真实模型保持 experimental，真实主框置信度达到配置阈值（默认 0.60）自动建一个任务，低于阈值先审核；业务规则仍为演示。四队调度、前端和 GPT/RAG 服务仍待实现。
-- 每次只实施人类明确交办的任务；基础工程的实现授权不等于可以一次性实现整个项目。
-- 用户只要求解释、评审、计划或文档时，交付对应成果，不顺带创建业务代码、安装运行依赖、启动训练或调用收费服务。
-- 已明确授权范围内的常规实现、局部修复和必要验证自行完成。只有缺少关键业务决定、需要扩大范围或存在破坏性影响时，才提出具体问题；可独立完成的工作继续进行。
-- 本文规定项目约定，不覆盖工具或平台的系统要求。人类明确变更既有项目决定时，记录变更及影响；跨成员共享约定由 A 统筹同步。
+- A's Steps 3–7 are complete. Step 8 implements full-data preparation, resumable training/evaluation and real detection integration; actual execution acceptance is recorded in the [Step 8 record](Miscellaneous/STEP8_VISION_ACCEPTANCE.md). The real model remains experimental. A real primary box meeting the configured confidence threshold (default 0.60) automatically creates one task; lower confidence requires review. Business rules remain demonstrative. Four-crew dispatch, the frontend and GPT/RAG services are pending.
+- Implement only the task explicitly assigned by the human. Authorization to build the foundation does not authorize implementing the entire project at once.
+- When the user requests explanation, review, planning or documentation, deliver that result without also creating business code, installing runtime dependencies, starting training or calling paid services.
+- Complete routine implementation, local fixes and necessary verification within the authorized scope independently. Ask a specific question only when a critical business decision is missing, the scope must expand or an action has destructive effects; continue work that can be completed independently.
+- This file defines project conventions and does not override system requirements of tools or platforms. Record explicit human changes to existing project decisions and their effects; A coordinates changes to conventions shared across members.
 
-## 2. 每次开始任务先做什么
+## 2. Before every task
 
-1. 确认工作目录是本仓库，查看 Git 分支、工作区已有改动及适用的本地指令，保留其他成员的工作。
-2. 阅读本文件、[项目范围](Miscellaneous/PROJECT_SCOPE.md)、[三人分工](Miscellaneous/TEAM_WORK_ALLOCATION.md)和本次模块的 README。
-3. 涉及里程碑时读 [实现计划](Miscellaneous/IMPLEMENTATION_PLAN.md)；涉及默认场景时读 [示例配置](SystemCode/config/project.example.json)；涉及交付时读 [课程映射](ProjectReport/COURSE_MAPPING.md)与[提交清单](Miscellaneous/SUBMISSION_CHECKLIST.md)。
-4. 明确本次代表 A、B 或 C，列出任务目标、准备修改的模块、接口依赖及验收方式。角色能从任务确定时直接采用；范围不清时先澄清。
-5. 检查文档与实际代码是否一致。发现冲突时说明差异，不静默选择一个版本，也不把历史提案或模拟样例升级为已确认需求。
+1. Confirm that the working directory is this repository. Inspect the Git branch, existing workspace changes and applicable local instructions, preserving other members' work.
+2. Read this file, the [project scope](Miscellaneous/PROJECT_SCOPE.md), [three-person allocation](Miscellaneous/TEAM_WORK_ALLOCATION.md) and the relevant module README.
+3. For milestones, read the [implementation plan](Miscellaneous/IMPLEMENTATION_PLAN.md); for default scenarios, the [example configuration](SystemCode/config/project.example.json); for delivery, the [course mapping](ProjectReport/COURSE_MAPPING.md) and [submission checklist](Miscellaneous/SUBMISSION_CHECKLIST.md).
+4. State whether the task represents A, B or C, its objective, intended modules, interface dependencies and acceptance method. Adopt the role directly when the task makes it clear; clarify an unclear scope first.
+5. Check that documentation agrees with actual code. Explain conflicts rather than silently choosing one version or promoting historical proposals or simulated examples into confirmed requirements.
 
-共同业务决定以项目范围和经确认的变更为依据；模块归属以分工表为依据；本文负责协作规范。首批 DTO、错误和版本字段以[独立接口契约](Miscellaneous/API_CONTRACT.md)及其链接的公共 schema 为唯一维护位置。B/C 的规划、队伍、助手对象及尚未冻结的 HTTP 请求仍按分工表草案处理；首批冻结不表示整个 M0 完成。
+Shared business decisions follow the project scope and confirmed changes; module ownership follows the allocation table; this file governs collaboration. The [separate API contract](Miscellaneous/API_CONTRACT.md) and its linked shared schemas are the single maintenance location for the first DTOs, errors and version fields. B/C planning, crew and assistant objects and HTTP requests that are not yet frozen remain drafts in the allocation table. Freezing the initial set does not mean all of M0 is complete.
 
-## 3. 已确定的项目基线
+## 3. Confirmed project baseline
 
-| 项目 | 共同要求 |
+| Item | Shared requirement |
 | --- | --- |
-| 项目 | RoadGuard；AIS08FT；Group7；课程开始日期 2026-08-17 |
-| 地域 | 新加坡 Jurong East 与 Jurong West；采用 URA MP2025 冻结边界，详见[范围与基地文档](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) |
-| 调度场景 | 一个模拟维修部门、默认四支工程队；共用 NUS-ISS 模拟起点，允许该指定基地位于任务区域外；不冒充真实维修业务 |
-| 主流程 | 单张图片与位置 → 检测 → 置信度分流/人工复核 → 业务规则 → 有效任务 → 四队调度 → 地图与解释 |
-| 技术方向 | React；Python/FastAPI；SQLite；YOLO/RDD2022ES；Google 行程时间数据；自建 GA；Greedy 基线；GPT + RAG 助手 |
-| 数据标签 | `juusos/rdd2022es` 第 1 版；八类编号 0～7 已核验，以[共享标签字典](SystemCode/model/label_schema.json)为准；全量准备与分组划分已实施，见第 8 步验收记录 |
-| 主要评估 | 四队、10/15/20 个任务；GA 与 Greedy 使用相同输入、行程矩阵和约束 |
-| 开发基线 | 从当前课程模板重建；不迁入已舍弃原型的代码及历史实验结果 |
+| Project | RoadGuard; AIS08FT; Group7; course start date 2026-08-17 |
+| Geography | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundaries, as defined in the [scope and depot document](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) |
+| Dispatch scenario | One simulated maintenance department and four crews by default; shared NUS-ISS simulated origin, explicitly permitted outside the task area; no claim to represent real maintenance operations |
+| Main workflow | Single image and location → detection → confidence routing/human review → business rules → valid task → four-crew planning → map and explanation |
+| Technical direction | React; Python/FastAPI; SQLite; YOLO/RDD2022ES; Google travel-time data; a group-built GA; Greedy baseline; GPT + RAG assistant |
+| Dataset labels | `juusos/rdd2022es` version 1; all eight class IDs 0–7 verified against the [shared label dictionary](SystemCode/model/label_schema.json); full preparation and grouped splitting implemented, as recorded in Step 8 acceptance |
+| Main evaluation | Four crews and 10/15/20 tasks; GA and Greedy use identical inputs, travel matrices and constraints |
+| Development baseline | Rebuild from the current course scaffold; do not migrate code or historical experimental results from the abandoned prototype |
 
-默认队伍 ID 使用 `crew-01` 至 `crew-04`，与示例配置保持一致。队伍数量应通过配置/输入传递，不能沿用旧提案硬编码两队；改变主要实验场景须同步范围与评估说明。
+Default crew IDs are `crew-01` through `crew-04`, matching the example configuration. Pass the crew count through configuration/input rather than hardcoding the old two-crew proposal. Changes to the main experimental scenario require corresponding scope and evaluation updates.
 
-2026-10-13 确认通常一张照片只有一个主要损伤类型和一个主要对象；允许无检测、多目标及不确定情况。2026-10-13 用户进一步确认接口最多返回一个框，选定主框原始 confidence ≥ 0.60 自动创建一个任务；低于阈值待审核，无检测不建任务。不得删除原始证据或把阈值描述为准确率保证。[单目标优化](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md)之后，按用户明确授权[发布最佳权重并接入后端](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md)：默认采用发布 manifest，a-workflow-v5 上传仅返回 inspection_id、status、detection（单对象或 null）、task_id；详情保留单框、完整来源和 auto_acceptance，a-knowledge-v5 同步说明。数据库保留原始证据，八类含义不变；图像类型指标须与框检测指标分开，两个 70% 仍未达到。
+On 2026-10-13, it was confirmed that a photo typically has one main damage type and one main subject; no detection, multiple objects and uncertainty remain possible. The user further confirmed that day that the interface returns at most one box: a selected primary box with raw confidence ≥ 0.60 automatically creates one task; lower confidence awaits review, and no detection creates no task. Do not delete raw evidence or describe the threshold as an accuracy guarantee. After [single-target optimization](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md), the user explicitly authorized [publishing the best weights and integrating them into the backend](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md). The default uses the release manifest. An a-workflow-v5 upload returns only inspection_id, status, detection (one object or null) and task_id; details retain one box, complete provenance and auto_acceptance, with matching a-knowledge-v5 documentation. The database retains raw evidence and the eight class meanings are unchanged. Image-type metrics must remain separate from box-detection metrics; neither of the two 70% targets has been met.
 
-2026-10-14 用户定稿课程模拟规则 `demo-rules-v2`：八类严重度/优先级映射不变，P3/P2/P1 预计维修时长分别为 60/120/240 分钟；保持 is_demo=true，不冒充工程标准。详见[业务规则基线](Miscellaneous/BUSINESS_RULES_BASELINE.md)和[联调验收清单](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)。旧巡检与任务沿用各自冻结规则，不批量重算；B 读取保存的 Task 工时。知识包更新为 a-knowledge-v6，固定样例更新为 planning-synthetic-v2。本轮只做 A 的规则和验收准备，B/C 接入整合暂缓。
+On 2026-10-14, the user finalized the course-simulation rules `demo-rules-v2`: the eight severity/priority mappings remain unchanged; expected repair durations for P3/P2/P1 are 60/120/240 minutes. Keep is_demo=true and do not present them as engineering standards. See the [business-rule baseline](Miscellaneous/BUSINESS_RULES_BASELINE.md) and [integration acceptance checklist](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md). Existing inspections and tasks retain their frozen rules without bulk recalculation; B reads each saved Task duration. The knowledge package becomes a-knowledge-v6 and fixed examples become planning-synthetic-v2. This round covers only A's rules and acceptance preparation; B/C integration is deferred.
 
-以下事项尚待 M0 确认：班次及是否返基地、任务期限、真实工程映射与工时证据、真实场景阈值校准、目标函数权重及 GA 参数。NUS-ISS 的建筑参考坐标已确定，实际车辆入口由 B 在道路行程接入时核验。当前项目已确认自动接受阈值 `0.60`，集中读取 demo_rules.example.json 的 confidence_threshold，并在 auto_acceptance 中冻结；这不是经过模型校准的正确概率。不得自行把固定班次当作已确认值，也不得静默替换基地坐标。需要占位时明确标为演示假设并集中配置；正式验证不得混用未确认假设。
+M0 still needs decisions on shifts and return-to-depot policy, task deadlines, real engineering mappings and duration evidence, real-world threshold calibration, objective weights and GA parameters. The NUS-ISS building reference coordinate is fixed; B must verify the actual vehicle entrance when integrating road travel. The confirmed automatic-acceptance threshold is `0.60`, read centrally from confidence_threshold in demo_rules.example.json and frozen in auto_acceptance. It is not a calibrated probability of correctness. Do not treat a fixed shift as confirmed or silently replace depot coordinates. Explicitly label any placeholder as a demo assumption and configure it centrally; formal validation must not mix unconfirmed assumptions.
 
-第 5 步的 [demo_rules.example.json](SystemCode/config/demo_rules.example.json) 已集中实现演示阈值、八类映射和单候选选取策略，说明见[模拟检测与规则](Miscellaneous/DEMO_DETECTION_AND_RULES.md)。所有输出显式标记演示；`ready_for_task` 仅表示候选计算完成，不是已接受巡检或入队任务。规则参数变更时更新版本，不能将这些演示假设升级为正式批准值。
+Step 5's [demo_rules.example.json](SystemCode/config/demo_rules.example.json) centralizes the demo threshold, eight-class mapping and single-candidate selection policy; see [demo detection and rules](Miscellaneous/DEMO_DETECTION_AND_RULES.md). Every output explicitly identifies demonstration data. `ready_for_task` means only that candidate calculation is complete, not that an inspection is accepted or a task is queued. Update the version when rule parameters change; do not promote these demo assumptions to formally approved values.
 
-第 6 步的[巡检/审核/任务流程](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)以明确选择的 demo 案例生成检测，保存原始证据、完整规则快照及独立的审核/任务历史。道路类别目前由调用者声明并记录来源，不能声称已自动核验道路权限。审核与标签修正使用巡检冻结规则；任务变更同事务递增 input_revision；重试不重复建任务。HTTP 巡检记录已扩展为 a-workflow-v2，包含模式、模型权重哈希等额外字段，严格使用旧记录 schema 的客户端须更新。真实 Detection.is_demo=false，但演示业务 Inspection/Task.is_demo=true；真实上传按 single-primary-auto-v1 分流：主框原始置信度达标自动建 Task，低置信度待审核；Task 的严重度、工时和优先级仍为演示映射。
+Step 6's [inspection/review/task workflow](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md) generates detections from an explicitly selected demo case, retaining raw evidence, the complete rule snapshot and separate review/task histories. Road type is currently declared by the caller with its source recorded; do not claim that road eligibility has been automatically verified. Review and label corrections use the inspection's frozen rules. Task changes increment input_revision in the same transaction, and retries do not create duplicate tasks. HTTP inspection records were extended to a-workflow-v2 with additional fields such as mode and model-weight hash; clients strictly using the old record schema must update. Real Detection.is_demo=false, while demonstration-business Inspection/Task.is_demo=true. Real uploads follow single-primary-auto-v1: a primary box meeting the raw confidence threshold automatically creates a Task; lower confidence awaits review. Task severity, duration and priority still use demo mappings.
 
-第 7 步的 [B/C 交接说明](Miscellaneous/BC_HANDOFF.md)冻结 a-task-query-v1：TaskQueryService 在同一事务读取全部活动任务与 input_revision，可参与调用者已有的共享事务；B 不拼接不同版本的分页结果。固定 10/15/20 任务点仅经多边形校验，未核验道路。C 使用带版本/引用的知识包，区分项目事实、演示假设和待定事项；知识核对不代表专家审批，具体路线事实仍来自 B 的方案。保存规划结果前须在写事务中再次检查输入版本。
+Step 7's [B/C handoff](Miscellaneous/BC_HANDOFF.md) freezes a-task-query-v1. TaskQueryService reads all active tasks and input_revision in one transaction and can join a caller's existing shared transaction; B must not combine paginated results from different revisions. Fixed 10/15/20-task points pass polygon validation only, without road verification. C uses a versioned knowledge package with references, distinguishing project facts, demo assumptions and unresolved decisions. Knowledge checks are not expert approval; specific route facts still come from B's plans. Before saving a planning result, recheck the input revision in the write transaction.
 
-维修任务按 JE／JW 多边形并集校验，包含边界并遵守道路类型限制；指定 NUS-ISS 基地不套用任务范围限制。行驶路径可以离开任务区域，必须计入基地至首个任务的行程。四队共享基地，GA／Greedy 使用同一地理数据版本；地图视野须同时容纳任务区域与基地。返基地策略尚未确定，配置中的 `null` 不能默认为 `false`。
+Repair tasks are checked against the JE/JW polygon union, including boundaries and respecting road-type restrictions; the designated NUS-ISS depot is exempt from the task-area restriction. Driving routes may leave the task area, and travel from the depot to the first task must be counted. All four crews share the depot, GA/Greedy use the same geographic-data version, and the map viewport must include both task area and depot. Return-to-depot policy is unresolved; configuration `null` must not default to `false`.
 
-首版设计将助手调整限制为工程队可用状态，并采用统一开始时刻重新规划活动任务。封路绕行、实时车辆跟踪、复杂队伍技能、等扩展，不自动加入当前任务范围。2026-10-18 用户明确授权账号权限：巡查员只上传并查看本人结果，施工队账号固定绑定一队并处理本队任务，中央调度员进入审核、任务、调度等其余页面。前后端同时校验，具体接口与账号管理见[账号角色规范](Miscellaneous/ACCOUNT_ROLES.md)。
+The first design limits assistant changes to crew availability and replans active tasks from one common start time. Road-closure detours, live vehicle tracking, complex crew skills and other extensions are not automatically in scope. On 2026-10-18 the user explicitly authorized account permissions: inspectors upload and see only their own results; a crew account is permanently linked to one crew and handles its tasks; central dispatchers access review, task, planning and other pages. Enforce permissions in frontend and backend; see the [account-role specification](Miscellaneous/ACCOUNT_ROLES.md) for interfaces and account management.
 
-## 4. 三人责任与代码边界
+## 4. Responsibilities and code boundaries
 
-公共后端已落地在 `SystemCode/backend/roadguard/`；以下业务子目录仍按各自任务逐步创建，保持责任一致。
+The shared backend exists at `SystemCode/backend/roadguard/`. Create the following business subdirectories gradually as assigned, preserving ownership.
 
-| 负责人 | 主责模块/路径 | 对接要求 |
+| Owner | Main modules/paths | Integration requirement |
 | --- | --- | --- |
-| A：项目发起人 | `SystemCode/model/`；后端 `vision/`、`rules/`、`inspections/`、`tasks/` | 提供检测、规则、审核、任务及其样例；负责视觉和规则评估 |
-| A：共享基础 | 后端应用入口、配置、数据库连接、统一错误、公共 schema、路由注册、初始化/迁移入口 | B/C 提供所需增量；A 统筹集成，避免多个后端入口或各自建库 |
-| B | 后端 `crews/`、`routing/` | 提供四队管理、行程矩阵、Greedy/GA、重算、方案存储、统一指标与实验 |
-| C | `SystemCode/frontend/`；后端 `assistant/` | 提供页面、地图、GPT/RAG 和调整确认流程；调用 A/B 的业务服务 |
-| A + C | `SystemCode/backend/knowledge/` | A 负责业务知识正确性；C 负责检索、索引、引用和回答 |
-| 各自负责，A 汇总 | 模块测试、实验、报告章节、安装说明与视频材料 | 模块缺陷由模块负责人修复；A 统筹不意味着代写所有模块或测试 |
+| A: project initiator | `SystemCode/model/`; backend `vision/`, `rules/`, `inspections/`, `tasks/` | Supplies detection, rules, review, tasks and examples; owns vision/rule evaluation |
+| A: shared foundation | Backend entry point, configuration, database connection, shared errors/schemas, route registration, initialization/migration entry point | B/C supply required increments; A coordinates integration, avoiding separate backends or databases |
+| B | Backend `crews/`, `routing/` | Supplies four-crew management, travel matrix, Greedy/GA, recalculation, plan storage, shared metrics and experiments |
+| C | `SystemCode/frontend/`; backend `assistant/` | Supplies pages, map, GPT/RAG and change-confirmation workflow; calls A/B business services |
+| A + C | `SystemCode/backend/knowledge/` | A owns business-knowledge correctness; C owns retrieval, indexing, citations and answers |
+| Each owner; A compiles | Module tests, experiments, report chapters, installation instructions and video materials | Owners fix their modules; coordination by A does not mean writing every module or test |
 
-- 修改自己的内部实现且不影响外部行为时可独立推进。
-- 修改公共 schema、数据库公共入口、依赖清单、接口或其他成员模块时，说明原因、调用方影响和所需增量，并同步相关契约与文档；已有任务明确包含该变更时不用重复申请，PR 不以另一位成员人工审核为前提。
-- 被上游进度阻塞时，使用已约定且清楚标识的模拟响应/固定数据开发；不复制一套他人的业务逻辑。
-- 不直接更新其他模块拥有的业务表：B 通过 A 的查询服务取任务，C 通过 A/B 的服务取事实或执行变更。
-- 每个成员都应提交自己的测试、文档与报告材料，不能只交一个孤立脚本或依赖聊天记录才能运行的 notebook。
+- Proceed independently on internal changes that do not affect external behavior.
+- For changes to shared schemas, database entry points, dependency lists, interfaces or another member's module, explain the reason, caller effects and required increments, and update affected contracts/documentation. Do not seek repeated authorization when the task already explicitly includes the change; PRs do not require another member's manual review.
+- If blocked by upstream progress, develop with agreed, clearly labeled mock responses/fixed data; do not copy another module's business logic.
+- Do not directly update business tables owned by another module: B obtains tasks through A's query service; C reads facts or executes changes through A/B services.
+- Every member supplies their own tests, documentation and report material, not just an isolated script or a notebook that requires chat history to run.
 
-## 5. 架构、接口和数据规范
+## 5. Architecture, interface and data conventions
 
-- 保留课程四个顶层目录：`SystemCode/`、`ProjectReport/`、`Video/`、`Miscellaneous/`；保留根 README 的七个课程栏目。
-- 使用一套 FastAPI 后端、一套 React 前端和统一 SQLite 连接/配置。路由负责输入输出，服务负责业务逻辑，数据访问负责持久化；复杂算法不堆在路由或界面中。
-- 接口统一前缀 `/api/v1`。已冻结部分见[接口契约](Miscellaneous/API_CONTRACT.md)，待实现业务路径见分工表第 7 节。实施新接口前明确最小请求、正常响应、错误响应与示例，不各自发明兼容层。固定 JSON 样例供开发使用，不是在线业务接口。
-- ID 用字符串；JSON 字段统一 `snake_case`；坐标用 `latitude`、`longitude`，按 WGS84 十进制度传递；置信度为 0～1。
-- 行程与维修时长统一分钟；时间戳使用带时区 ISO 8601，存储/传输统一 UTC，前端按 `Asia/Singapore` 显示。算法运行耗时另用明确命名的秒或毫秒字段，不能混淆。
-- 检测保留稳定 `detection_id`；`bbox_xyxy` 使用原图像素坐标，并携带原图尺寸、模型版本与 `is_demo`。不得在前端自行猜测类别或严重程度。
-- `null`、空列表和零的含义须区分：未知维修时长不是零；无方案不是空的有效方案；不可达的行程不是零分钟。
-- 错误响应至少包含 `code`、`message`、可选 `details`；错误码及 HTTP 状态在契约中统一。前端不得通过匹配自然语言报错来判断业务状态。
-- 接口变更在同一 PR 中更新 schema、样例、调用方影响说明及必要检查。破坏性变更先协调调用方，不静默重命名、换单位或删除字段。
-- 后端可生成 OpenAPI 后，保持它与批准的契约一致；前端共享 API 客户端和类型，避免每页手写不同的数据结构。
+- Retain the course's four top-level directories: `SystemCode/`, `ProjectReport/`, `Video/`, `Miscellaneous/`; retain the root README's seven course sections.
+- Use one FastAPI backend, one React frontend and shared SQLite connection/configuration. Routes handle input/output, services handle business logic and data access handles persistence; keep complex algorithms out of routes and UI.
+- All APIs use `/api/v1`. See the [API contract](Miscellaneous/API_CONTRACT.md) for frozen parts and allocation section 7 for planned business paths. Define minimum request, success/error responses and examples before implementing a new interface; do not invent separate compatibility layers. Fixed JSON examples are development artifacts, not live business endpoints.
+- IDs are strings; JSON fields use `snake_case`; coordinates are `latitude` and `longitude` in WGS84 decimal degrees; confidence is 0–1.
+- Travel and repair durations use minutes. Timestamps are timezone-aware ISO 8601, stored/transmitted in UTC and displayed in `Asia/Singapore`. Algorithm runtime uses explicitly named second/millisecond fields and must not be confused with operational durations.
+- Detections retain stable `detection_id`; `bbox_xyxy` uses original-image pixel coordinates with image dimensions, model version and `is_demo`. The frontend must not guess class or severity.
+- Distinguish `null`, empty lists and zero: unknown repair duration is not zero; no plan is not a valid empty plan; unreachable travel is not zero minutes.
+- Error responses contain at least `code`, `message` and optional `details`; the contract defines shared error codes and HTTP statuses. The frontend must not infer business state by matching natural-language errors.
+- Update schemas, examples, caller-impact notes and necessary checks in the same PR as interface changes. Coordinate breaking changes with callers; do not silently rename, change units or remove fields.
+- Once the backend generates OpenAPI, keep it consistent with the approved contract. Share the frontend API client and types rather than hand-writing different structures on each page.
 
-## 6. 必须保持的业务行为
+## 6. Required business behavior
 
-| 环节 | 不可破坏的行为 |
+| Stage | Behavior that must be preserved |
 | --- | --- |
-| 检测与审核 | 低置信度未确认前不进入活动任务；无检测结果不自动生成任务；重复确认不重复建任务 |
-| 业务规则 | 优先级、严重度和维修时长来自 A 维护的规则；审核纠正后仍经过规则计算；记录规则版本和理由 |
-| 任务状态 | 已完成/取消的任务保留历史，但不参加新规划；状态和可编辑字段由后端校验 |
-| 四队输出 | 停用队伍不分配任务；闲置或停用队伍仍可在四队结果中辨认；每个已分配任务只出现一次 |
-| 未分配任务 | 明确返回未分配任务及原因；不能为了指标好看而丢弃任务 |
-| 重算一致性 | 任务/队伍变更更新输入版本；一个规划使用一致输入快照；过期输入的结果不能覆盖当前方案 |
-| 失败反馈 | 重算失败时业务数据仍可查、旧方案标为过期；不能把旧结果或模拟结果显示为新的真实结果 |
-| 助手 | 基于指定方案事实与已审核知识回答并给出来源；无依据时说明不足，不编造任务、指标或规则 |
-| 助手修改 | 先结构化预览，再由用户确认，通过 B 的业务服务执行；重复确认不得重复修改；旧版本请求不能直接执行 |
-| 地图 | 停靠顺序与方案一致；点间直线只能标为示意线；Google 行程时间与模拟矩阵明确区分 |
+| Detection/review | Unconfirmed low-confidence results cannot enter active tasks; no detection creates no task; repeated confirmation creates no duplicate |
+| Rules | Priority, severity and duration come from A's rules; review corrections still pass through rule calculation; record rule version and reasons |
+| Task status | Completed/cancelled tasks retain history but do not enter new plans; backend validates status and editable fields |
+| Four-crew output | Unavailable crews receive no tasks; idle/unavailable crews remain identifiable; each assigned task appears once |
+| Unassigned tasks | Explicitly return tasks and reasons; never discard tasks to improve metrics |
+| Recalculation consistency | Task/crew changes update the input revision; a plan uses a consistent snapshot; stale results cannot overwrite the current plan |
+| Failure feedback | Business data remains accessible after recalculation failure; mark the old plan stale; do not present old/mock results as new real results |
+| Assistant | Answer using the specified plan's facts and reviewed knowledge with sources; explain insufficient evidence instead of inventing tasks, metrics or rules |
+| Assistant changes | Structured preview first, user confirmation next, execution through B's service; repeated confirmation cannot repeat changes and stale requests cannot execute directly |
+| Map | Stop order matches the plan; straight lines are labeled schematic; distinguish Google travel times from mock matrices |
 
-上述是未来实现的验收约束。事务边界、并发方式和具体存储结构由各负责人按已冻结契约设计，不因此提前引入复杂基础设施。
+These are acceptance constraints for future implementation. Each owner designs transaction boundaries, concurrency and storage against frozen contracts; they do not justify adding complex infrastructure prematurely.
 
-## 7. 编码与环境规范
+## 7. Coding and environment conventions
 
-- 标识符使用英文、名称表达业务含义；沟通和开发说明默认中文。Python 使用 `snake_case`，类用 `PascalCase`；React 组件用 `PascalCase`，前端函数/变量用 `camelCase`，API 字段保持契约格式。
-- Python 使用 4 空格缩进；前端文件使用 2 空格缩进。文本使用 UTF-8 和 LF，遵循 `.gitattributes`；已有格式化配置建立后以配置执行，避免个人风格造成无关差异。
-- 公共服务/接口提供清楚的类型和数据验证；算法的非显然约束、规则依据及异常行为需要注释。避免复制业务逻辑、超大函数和吞掉异常后伪造成功。
-- 最小化改动范围；不顺带全仓格式化、重构其他模块、升级全套依赖或切换技术栈。
-- Python、Node、包管理器与依赖版本在基础工程落地时由 A 统筹确定，并写入模块 README 和依赖文件；后续成员使用相同版本和安装方式。
-- 每个技术环境只维护约定的一套依赖/锁定方式；不同时添加相互冲突的 npm、pnpm、Yarn 锁文件。新增必要依赖说明用途并更新对应依赖记录。
-- 运行路径相对仓库或通过配置提供，不硬编码某人的盘符、用户名、密钥或模型位置。配置示例须能说明必填项。
-- 后端启动与依赖命令见[后端说明](SystemCode/backend/README.md)，CI 检查入口见 [GitHub 协作与 CI 说明](Miscellaneous/GITHUB_WORKFLOW.md)。每次新增行为同时接入真实测试；CI 基线为 Python 3.11、Node 22 和 npm。需要变更时同步更新 CI、依赖和开发说明。
+- Use English for identifiers, repository text, UI, documentation and comments; names should convey business meaning. Conversation may follow the user's language. Python uses `snake_case` and `PascalCase` classes; React components use `PascalCase`, frontend functions/variables use `camelCase`, and API fields retain contract formatting.
+- Use four-space Python indentation and two-space frontend indentation. Text is UTF-8 with LF under `.gitattributes`; follow established formatter configuration rather than introducing unrelated personal-style differences.
+- Public services/interfaces need clear types and validation. Comment non-obvious algorithm constraints, rule evidence and exceptional behavior. Avoid duplicated business logic, oversized functions and swallowed exceptions that fabricate success.
+- Minimize the change scope; do not also reformat the repository, refactor other modules, upgrade all dependencies or change the stack.
+- A coordinates Python, Node, package-manager and dependency versions when establishing the foundation and records them in module READMEs/dependency files. Other members use the same versions and installation method.
+- Maintain one agreed dependency/lock approach per environment; do not add conflicting npm, pnpm and Yarn lockfiles. Explain necessary new dependencies and update the relevant records.
+- Use repository-relative or configurable paths, never hardcoded personal drive letters, usernames, secrets or model locations. Configuration examples must explain required fields.
+- See the [backend guide](SystemCode/backend/README.md) for startup/dependency commands and [GitHub workflow/CI guide](Miscellaneous/GITHUB_WORKFLOW.md) for checks. Connect each new behavior to real tests. CI uses Python 3.11, Node 22 and npm; update CI, dependencies and development instructions together when changing this baseline.
 
-## 8. 数据、模型、外部服务与实验
+## 8. Data, models, external services and experiments
 
-- 遵循 `.gitignore`；用户指定根目录 `Dataset/` 存放下载数据、训练与恢复权重、缓存和运行证据；该目录整体不上传 GitHub。不提交密钥、实际 `.env`、运行数据库、上传图片、虚拟环境、`node_modules`、大型数据集和未经单独授权的模型权重。下方指定的一份部署权重是明确例外。必要配置给脱敏的 `.env.example` 或其他示例。
-- 外部 API 密钥由各成员在本地按说明配置；浏览器可见的地图凭据须按用途限制。后端服务密钥不放进前端源码或构建产物。
-- Mock/演示数据必须显式标记，不能在服务失败时悄悄替代真实数据。先用固定样例联调，正式模型、Google 数据和 GPT 接入后分别验证。
-- RDD2022ES 来源、0～7 标签及本轮目录／样本核验见[数据集核对](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)；不混用原版 RDD2022 的四类编号。原图与 `xmirror_`／其他增广关联样本不可跨训练、验证、测试集；测试集不用于选择阈值。不得称图像来自 Jurong，除非有证据。
-- 处理文档记录的缺失图片／标注，完成全量内容校验与类别统计后再准备训练划分；不把目录统计或定向抽样写成全库质量通过。发布者的 BY-SA 正文与 BY-NC-SA 元数据存在差异，保留两处声明；业务优先级、维修时间和工程测量阈值不从数据集标签直接推定。
-- 2026-10-13 用户明确授权将当前最佳部署权重作为本私有仓库 Release 附件发布；Release 保留为备份下载渠道，原始 Dataset 和训练恢复保存点继续禁止上传。
-- 2026-10-14 用户进一步明确授权将 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt` 直接提交到本私有仓库，组员普通 clone/pull 即可获得这份部署权重。后端默认清单从该位置加载并核对哈希；安装视觉依赖后启动即可，无需单独下载或运行安装脚本。CI 只允许这个路径、19,218,837 bytes 和 SHA-256 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`，同时核对清单；禁止其他权重和 Dataset 内任何文件进入 Git。更新部署模型须同步经批准的文件、清单和 CI 校验值。训练代码仍在 `SystemCode/model/`，训练保存点和原始数据仍在 `Dataset/`。详见[部署目录说明](SystemCode/backend/roadguard/model/README.md)。
-- 权重及大型资源提供获取位置、版本、校验信息和复现步骤；只将必要且可分享的小型固定样例加入仓库。
-- GA 与 Greedy 的比较必须保持任务、矩阵、约束及指标口径一致；GA 使用多个随机种子，记录参数、原始结果、运行环境与代码版本。失败和不可行结果同样保留。
-- 区分算法耗时、外部 API 等待、行程时间和维修完工时间；没有任务期限不编造延误，没有成本模型不宣称实际节省金额。
-- 不编造准确率、优化提升、测试通过、训练完成、用户反馈或课程覆盖。报告中的图表应能追溯到实际保存的实验记录。
-- 大规模训练或明显增加外部服务用量前说明运行规模；按人类已授权的范围与预算执行，不循环无上限重试。
+- Follow `.gitignore`. The user-designated root `Dataset/` stores downloaded data, training/recovery weights, caches and run evidence, and is entirely excluded from GitHub. Do not commit secrets, actual `.env`, runtime databases, uploaded images, virtual environments, `node_modules`, large datasets or weights without separate authorization. The one deployment weight specified below is an explicit exception. Supply sanitized `.env.example` or other examples as needed.
+- Each member configures external API keys locally as documented. Restrict browser-visible map credentials by use; never include backend secrets in frontend source or builds.
+- Explicitly label mock/demo data; never silently substitute it when a service fails. Integrate fixed examples first, then verify the real model, Google data and GPT separately.
+- The [dataset audit](Miscellaneous/DATASET_AND_LABEL_AUDIT.md) records the RDD2022ES source, labels 0–7 and this round's directory/sample checks; do not mix in the original RDD2022 four-class IDs. Original images and `xmirror_`/other related augmentations must not cross train/validation/test splits; do not select thresholds on test data. Do not claim images originate from Jurong without evidence.
+- Address documented missing images/annotations and finish full content validation/class counts before preparing splits. Directory statistics or targeted samples are not proof of full-dataset quality. Preserve both the publisher's conflicting BY-SA body and BY-NC-SA metadata statements. Dataset labels do not directly establish priorities, repair times or engineering measurement thresholds.
+- On 2026-10-13, the user explicitly authorized publishing the current best deployment weight as a Release attachment in this private repository. The Release remains a backup download channel; original Dataset content and training recovery checkpoints remain prohibited.
+- On 2026-10-14, the user additionally authorized committing `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt` directly to this private repository so normal clone/pull provides it to members. The backend default manifest loads that location and checks its hash. After installing vision dependencies it starts without a separate download or installer. CI permits only this path, 19,218,837 bytes and SHA-256 `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`, also checking the manifest. All other weights and all Dataset files remain prohibited in Git. Model updates require the approved file, manifest and CI values to change together. Training code stays in `SystemCode/model/`; checkpoints and raw data stay in `Dataset/`. See the [deployment directory guide](SystemCode/backend/roadguard/model/README.md).
+- Document acquisition location, version, checksum and reproduction steps for weights/large resources. Commit only necessary small examples that may be shared.
+- GA/Greedy comparisons must use identical tasks, matrices, constraints and metric definitions. Run GA with multiple seeds and retain parameters, raw results, environment and code revision, including failed/infeasible results.
+- Distinguish algorithm runtime, external API waits, travel time and repair completion time. Do not invent lateness without deadlines or claim real monetary savings without a cost model.
+- Never fabricate accuracy, optimization gains, passing tests, completed training, user feedback or course coverage. Report figures must trace to saved experimental records.
+- Explain the run size before large-scale training or significant external-service use. Stay within human-authorized scope/budget and do not retry without limit.
 
-## 9. Git 与协作流程
+## 9. Git and collaboration workflow
 
-1. 为一个明确任务建立短期功能分支，例如 `feature/a-inspection-api`、`feature/b-ga-planner`、`feature/c-route-map`；文档任务可用 `docs/project-guidelines`。从已同步且状态清楚的 `main` 开始，不覆盖未提交工作。
-2. 一次提交围绕一个改动；建议 `feat(routing): ...`、`fix(vision): ...`、`docs(team): ...`、`test(assistant): ...`，正文可中文。不要把他人未完成修改混入提交。
-3. 提交到 `main` 前发起 PR。PR 标题、正文、摘要、评论及合并说明全部使用英文；描述问题与结果、涉及模块、接口/依赖变化、实际验证、已知限制。仓库业务文档与成员沟通仍可中文；未完成时标为草稿。
-4. 按项目发起人 2026-10-12 的明确授权，PR 不要求人工审核或批准；普通就绪 PR 在检查通过后自动 Squash merge。提交者或其 agent 先完成自检、接口影响说明和适用验证，各模块问题由负责人修复。创建非草稿 PR 即进入此自动流程，无需再询问人类是否合并。
-5. [RoadGuard Auto Merge](.github/workflows/auto-merge.yml) 只合并本仓库有写权限成员提交的 PR；核对最新提交的最新 CI 成功、分支包含当前 `main`、无冲突、英文标题/正文和没有未解决的 changes requested。草稿、fork、过期/失败检查或落后于 `main` 的分支暂不合并；先修复或同步，再推送触发检查。
-6. `.github/` 内文件（含移入/移出）改变检查与合并控制，因此不由机器人合并自身规则。此类 PR 由 agent 核对变更和最新 CI 后执行合并，项目发起人已授权此流程，无需人工审核或再次确认。不得用普通业务 PR 绕过此边界。
-7. 普通 CI 仅有读取权限；合并工作流只执行 `main` 上受信的脚本，不运行 PR 代码，也不使用 PR 产物。机器人合并后显式触发 `main` CI；失败通过修复 PR 处理，不自动回滚。当前套餐无法强制阻止成员直接推送或手动绕过检查，仍须遵守本流程。详细条件与费用见 [GitHub 协作说明](Miscellaneous/GITHUB_WORKFLOW.md)。
+1. Use a short-lived branch for one clear task, such as `feature/a-inspection-api`, `feature/b-ga-planner` or `feature/c-route-map`; documentation may use `docs/project-guidelines`. Start from synchronized `main` with known status and preserve uncommitted work.
+2. Keep each commit focused. Suggested formats: `feat(routing): ...`, `fix(vision): ...`, `docs(team): ...`, `test(assistant): ...`. Commit text is English. Do not include others' unfinished work.
+3. Open a PR before merging into `main`. PR titles, bodies, summaries, comments and merge descriptions are English; describe the problem/result, modules, interface/dependency changes, actual verification and limitations. Repository business documentation is English; member conversation may follow the user's language. Mark unfinished work as draft.
+4. Under the initiator's explicit 2026-10-12 authorization, PRs require no manual review/approval. Ordinary ready PRs automatically Squash merge after checks pass. The submitter/agent first completes self-review, interface-impact notes and applicable verification; module owners fix their issues. Creating a non-draft PR enters this automatic process without asking again whether to merge.
+5. [RoadGuard Auto Merge](.github/workflows/auto-merge.yml) merges only PRs submitted by members with repository write access. It checks latest CI success for the latest commit, inclusion of current `main`, no conflicts, English title/body and no unresolved changes requested. Drafts, forks, stale/failed checks or branches behind `main` wait until fixed/synchronized and pushed to trigger checks.
+6. Changes to files within `.github/`, including moves in/out, affect checks and merge control, so the bot does not merge its own rules. For such PRs, the agent checks the diff/latest CI and merges under the initiator's existing authorization, without human review or repeated confirmation. Do not bypass this boundary using an ordinary business PR.
+7. Ordinary CI is read-only. Merge workflows execute only trusted scripts from `main`, never PR code or PR artifacts. The bot explicitly triggers `main` CI after merging; failures are addressed through fix PRs, without automatic rollback. The current plan cannot enforce a ban on direct pushes/manual bypasses, but members must still follow this workflow. See [GitHub collaboration](Miscellaneous/GITHUB_WORKFLOW.md) for detailed conditions/costs.
 
-人类只要求本地交付时，不自动推送或创建 PR；明确要求仅供查看、暂不合并的 PR 必须标为草稿。已要求提交、同步或发起就绪 PR 时按上述自动合并约定执行。禁止擅自强制推送、删除成员分支、重写共享历史、清除别人工作或重建有数据的数据库。发生冲突时按业务含义解决，不能简单整文件覆盖。
+For local-only delivery, do not automatically push or create a PR. A PR explicitly requested only for review and not yet for merge must be draft. When committing, synchronization or a ready PR is requested, follow the automatic-merge agreement above. Do not force push, delete members' branches, rewrite shared history, discard others' work or recreate a database containing data without authorization. Resolve conflicts by business meaning rather than replacing entire files.
 
-每个开发任务记录负责人、目标、验收条件和依赖，可使用 GitHub Issue。跨成员的关键决定必须写回仓库文档/Issue/PR，不能只留在私人聊天中。
+Record each task's owner, objective, acceptance conditions and dependencies, optionally in a GitHub Issue. Write critical cross-member decisions into repository documents/Issues/PRs rather than leaving them only in private chat.
 
-## 10. 验证与完成标准
+## 10. Verification and completion criteria
 
-对受影响行为运行必要且有意义的检查。修复缺陷应有能发现该缺陷的验证；不为纯文档改动安装整个应用或创建无关测试。
+Run necessary, meaningful checks for affected behavior. A bug fix needs verification capable of detecting it; documentation-only changes do not justify installing the entire application or creating unrelated tests.
 
-| 模块 | 应覆盖的关键情况 |
+| Module | Key cases to cover |
 | --- | --- |
-| A：视觉/规则/任务 | 无检测、低置信度、审核纠正/驳回、重复确认、非法坐标/输入、任务完成/取消、规则边界 |
-| B：路线 | 空任务、单任务、任务数少于四队、队伍停用/全停用、不可达、约束不可行、任务不重不漏、固定种子、旧版本结果 |
-| C：页面/助手 | 加载/空/失败状态、四队与顺序展示、模拟来源提示、有依据/无依据回答、未确认不修改、取消/过期/重复确认 |
-| 联调 | 上传 → 审核/接受 → 任务 → 规划 → 展示；任务或队伍变化后的重算与失败反馈 |
+| A: vision/rules/tasks | No detection, low confidence, review correction/dismissal, repeated confirmation, invalid coordinates/input, task completion/cancellation, rule boundaries |
+| B: routing | No tasks, one task, fewer tasks than four crews, one/all crews unavailable, unreachable/infeasible inputs, no missing/duplicate tasks, fixed seeds, stale results |
+| C: pages/assistant | Loading/empty/failure states, four crews and order, mock-source labeling, supported/unsupported answers, no change before confirmation, cancellation/staleness/repeated confirmation |
+| Integration | Upload → review/accept → task → planning → display; recalculation and failure feedback after task/crew changes |
 
-交付前检查：
+Before delivery:
 
-- [ ] 只完成授权范围；功能符合约定，未破坏模块边界与其他成员改动。
-- [ ] 相关接口、示例、配置和启动/使用说明随变更更新。
-- [ ] 已运行的检查附具体命令与结果；未运行的注明原因，不把未验证写成通过。
-- [ ] 真数据、模拟数据、已实现功能、计划功能明确区分。
-- [ ] 没有密钥、无关产物、训练数据泄漏或伪造实验结果。
-- [ ] 面向接手者说明后续依赖、需要谁对接、已知限制，以及代码当前是本地/已提交/已推送/已合并哪一种状态。
+- [ ] Work stays within authorization, conforms to agreed behavior and preserves module boundaries/others' changes.
+- [ ] Interfaces, examples, configuration and startup/usage documentation are updated together.
+- [ ] Report actual check commands/results; explain checks not run and do not call unverified behavior passed.
+- [ ] Distinguish real/mock data and implemented/planned functionality.
+- [ ] No secrets, unrelated artifacts, training-data leakage or fabricated results.
+- [ ] Explain remaining dependencies, integration owners, limitations and whether delivery is local/committed/pushed/merged.
 
-## 11. Agent 的交接输出
+## 11. Agent handoff
 
-每次任务结束简明交代：
+At task completion, briefly state:
 
-1. 完成了什么，解决什么问题。
-2. 改了哪些文件；对 A/B/C 的接口或配置有什么影响。
-3. 实际做了哪些验证及结果，哪些尚未验证。
-4. 仍缺什么，以及下一位成员需要接什么。
-5. Git 交付状态；有提交/PR 时提供对应标识。
+1. What was completed and which problem it solves.
+2. Changed files and A/B/C interface/configuration effects.
+3. Actual verification/results and what remains unverified.
+4. Missing work and the next member's integration needs.
+5. Git delivery status, including commit/PR identifiers when applicable.
 
-缺少密钥、模型或上游接口时交付可复核的本地成果与明确限制，不声称端到端已完成。规则改变时同步本文件和受影响文档，不创建互相矛盾的个人版本；专用 agent 配置只引用本文件并补充工具特有内容。
+When keys, models or upstream interfaces are missing, deliver reviewable local work and explicit limitations without claiming end-to-end completion. Synchronize this file and affected documents when rules change rather than creating contradictory personal versions. Tool-specific agent configurations should reference this file and add only tool-specific instructions.
 
-## 12. 给组员的 Agent 启动提示
+## 12. Agent kickoff prompt for members
 
-组员在自己的电脑打开本仓库根目录后，将以下内容发给 agent，并替换角色与任务：
+After opening the repository root on their computer, members can send this prompt to their agent, replacing the role and task:
 
 ```text
-这是 RoadGuard 三人协作仓库。我负责【A / B / C】。
-先读取根目录 AGENTS.md、Miscellaneous/PROJECT_SCOPE.md、
-Miscellaneous/TEAM_WORK_ALLOCATION.md 及我的模块 README。
-本次任务是：【填写具体目标和验收条件】。
-当前仅做规划；只有我明确要求实现时才写业务代码。
-开始前简述已读取的规范、负责模块、拟修改范围、接口依赖和验证方式。
-遵守统一契约，保留其他成员的改动；结束时说明文件变化、实际验证、
-待对接事项，以及本地/提交/推送状态。不要扩展本次任务范围。
+This is the RoadGuard three-person collaboration repository. I represent [A / B / C].
+First read root AGENTS.md, Miscellaneous/PROJECT_SCOPE.md,
+Miscellaneous/TEAM_WORK_ALLOCATION.md and my module README.
+This task is: [specific objective and acceptance criteria].
+This is planning only; write business code only when I explicitly request implementation.
+Before starting, briefly state the rules read, owned modules, intended changes,
+interface dependencies and verification method.
+Follow shared contracts and preserve others' changes. At completion, state file changes,
+actual verification, outstanding integration and local/commit/push status.
+Do not expand this task's scope.
 ```
 
-进入实现时，把提示中的“当前仅做规划”替换为“本次已授权实现上述任务，并完成必要验证”。
+For implementation, replace the planning-only sentence with: “Implementation of the task above and necessary verification are authorized.”
 
-Codex 支持在项目中读取 `AGENTS.md`；其他 agent 若未自动读取，应显式提供本文件并要求先总结适用规则。拉取规范更新后，应重新读取或开启新会话。相同文件统一的是项目约定，不保证不同工具/模型的输出完全一致，仍需自检与适用的自动验证。[OpenAI 官方说明](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
+Codex supports reading `AGENTS.md` in a project. For agents that do not read it automatically, explicitly provide this file and ask them to summarize applicable rules first. Reread it or start a new session after pulling rule updates. Shared files standardize project conventions but do not guarantee identical outputs from different tools/models; self-review and applicable automated verification are still required. [Official OpenAI guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md)

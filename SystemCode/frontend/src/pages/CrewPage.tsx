@@ -17,7 +17,7 @@ type Task = Model<'TaskRecord'>
 type Payload = Omit<Model<'TaskPatch'>, 'request_id'>
 type TaskRead = { task: Task; error?: never } | { task?: never; error: unknown }
 const labelName = (key: string) => labels.classes.find((item) => item.label_key === key)?.display_name_zh ?? key
-const taskStatus = { active: '待完成', completed: '已完成', cancelled: '已取消' } as const
+const taskStatus = { active: 'Pending', completed: 'Completed', cancelled: 'Cancelled' } as const
 
 export default function CrewPage() {
   const { api } = useApi()
@@ -42,16 +42,16 @@ export default function CrewPage() {
   }
   return (
     <div className="crew-workspace">
-      <section className="crew-toolbar crew-page-header" aria-label="本队工作台">
-        <div className="page-heading"><div><p className="eyebrow">{data?.crew.name ?? '我的队伍'} · 现场作业</p><h1>施工队工作台</h1><p className="description">按路线处理任务，完成后及时记录。</p></div></div>
-        <button className="button secondary" disabled={loading || locked} onClick={refresh}>刷新工作台</button>
+      <section className="crew-toolbar crew-page-header" aria-label="Crew workspace">
+        <div className="page-heading"><div><p className="eyebrow">{data?.crew.name ?? 'My crew'} · FIELD OPERATIONS</p><h1>Crew workspace</h1><p className="description">Follow the route and record each repair when completed.</p></div></div>
+        <button className="button secondary" disabled={loading || locked} onClick={refresh}>Refresh workspace</button>
       </section>
       {loading || (!data && !error) ? <LoadingState /> : error ? <ErrorState error={error} /> : data && (
-        !data.plan ? <div className="crew-empty"><h2>还没有路线安排</h2><p>请等待中央调度员安排路线，再刷新工作台。</p></div>
+        !data.plan ? <div className="crew-empty"><h2>No route assigned yet</h2><p>Wait for the central dispatcher to assign a route, then refresh your workspace.</p></div>
         : <CrewRoute key={`${data.crew.crew_id}:${data.plan.plan_id}:${attempt}`} crew={data.crew} plan={data.plan}
           revision={data.input_revision} onLock={setLocked} />
       )}
-      <p className="crew-scope-note">工作台仅显示账号所属队伍。路线采用中央调度员最近保存的 GA 方案；如需变更安排，请联系调度员。</p>
+      <p className="crew-scope-note">This workspace shows only your assigned crew. It uses the central dispatcher’s latest saved GA plan. Contact the dispatcher to change the schedule.</p>
     </div>
   )
 }
@@ -102,13 +102,13 @@ function CrewRoute({ crew, plan, revision, onLock }: {
     api.crewWorkspace(options).then((fresh) => {
       if (!current) return
       if (fresh.plan?.plan_id !== plan.plan_id) {
-        setRevisionError(new ApiError('route_changed', '调度已更新路线，请刷新工作台。', 409, 'http'))
+        setRevisionError(new ApiError('route_changed', 'Dispatch has updated the route. Refresh the workspace.', 409, 'http'))
       } else setRevisionError(null)
       setReadRevision(fresh.input_revision)
       setCurrentAvailable(fresh.crew.available)
       const next: Record<string, TaskRead> = Object.fromEntries((route?.stops ?? []).map((stop) => {
         const task = fresh.tasks.find((item) => item.task_id === stop.task_id)
-        return [stop.task_id, task ? { task } : { error: new ApiError('task_unavailable', '任务已重新分配或暂不可读取，请刷新工作台。', 404, 'http') }]
+        return [stop.task_id, task ? { task } : { error: new ApiError('task_unavailable', 'This task has been reassigned or is temporarily unavailable. Refresh the workspace.', 404, 'http') }]
       }))
       setReads(next)
       setSelected((previous) => next[previous] ? previous : [...(route?.stops ?? [])]
@@ -173,66 +173,66 @@ function CrewRoute({ crew, plan, revision, onLock }: {
   const failed = stops.filter((item) => reads[item.task_id]?.error !== undefined).length
   const stale = plan.is_stale || plan.input_revision !== readRevision || !!saved
   const nextTask = remaining.find((item) => item.task_id !== selected)
-  if (!route) return <EmptyState message="该保存方案中没有此队伍记录，请联系调度人员核对。" />
+  if (!route) return <EmptyState message="This saved plan has no record for your crew. Contact the dispatcher." />
   return (
     <>
-      <section className="crew-banner" style={{ '--crew-accent': crewColor(crew.crew_id) } as CSSProperties} aria-label="本队工作概览">
-        <div className="crew-banner-heading"><div><p className="eyebrow">{crew.crew_id} / {plan.algorithm.toUpperCase()}</p><h2>本次路线<span>{unavailable ? '已停用' : '本队作业'}</span></h2></div><button className="crew-route-shortcut" disabled={locked || loading || !stops.length} onClick={() => { itineraryRef.current?.focus({ preventScroll: true }); itineraryRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' }) }}>查看 {stops.length} 站路线 ↓</button></div>
-        <div className="crew-progress-label"><span>{loading ? '正在核对任务状态…' : `已完成 ${completed} / ${stops.length}`}</span><span>{loading ? '' : `待完成 ${remaining.length}${cancelled ? ` · 已取消 ${cancelled}` : ''}${failed ? ` · 未知 ${failed}` : ''}`}</span></div>
-        <progress value={completed} max={Math.max(stops.length, 1)} aria-label="本路线完成进度" />
+      <section className="crew-banner" style={{ '--crew-accent': crewColor(crew.crew_id) } as CSSProperties} aria-label="Crew work overview">
+        <div className="crew-banner-heading"><div><p className="eyebrow">{crew.crew_id} / {plan.algorithm.toUpperCase()}</p><h2>Current route<span>{unavailable ? 'Unavailable' : 'Crew operations'}</span></h2></div><button className="crew-route-shortcut" disabled={locked || loading || !stops.length} onClick={() => { itineraryRef.current?.focus({ preventScroll: true }); itineraryRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' }) }}>View {stops.length}-stop route ↓</button></div>
+        <div className="crew-progress-label"><span>{loading ? 'Checking task status…' : `Completed ${completed} / ${stops.length}`}</span><span>{loading ? '' : `Pending ${remaining.length}${cancelled ? ` · Cancelled ${cancelled}` : ''}${failed ? ` · Unknown ${failed}` : ''}`}</span></div>
+        <progress value={completed} max={Math.max(stops.length, 1)} aria-label="Route completion progress" />
       </section>
-      {mode !== 'live' && <p className="notice">当前为只读模拟数据，不能提交任务完成状态。</p>}
-      {unavailable && <p className="notice">该队伍已停用，保存的路线仅供查看。请由调度人员核对队伍状态。</p>}
-      {stale && <p className="notice" role="status">路线快照已过期，顺序与预计时间沿用原方案。核对任务后仍可记录完成，请联系调度员重新规划。</p>}
-      {revisionError !== null && <><ErrorState error={revisionError} /><p className="notice">无法核对最新输入版本；路线是否过期尚不确定，请刷新工作台。</p></>}
-      {loading ? <LoadingState /> : stops.length === 0 ? <div className="crew-empty"><h2>{unavailable ? '当前队伍不可用' : '本方案没有安排任务'}</h2><p>本队处于{unavailable ? '停用' : '闲置'}状态，请等待调度安排。</p></div> : (
+      {mode !== 'live' && <p className="notice">This is read-only mock data. Task completion cannot be submitted.</p>}
+      {unavailable && <p className="notice">This crew is unavailable. The saved route is for reference only. Ask the dispatcher to check crew status.</p>}
+      {stale && <p className="notice" role="status">The route snapshot is stale. Order and estimated times follow the original plan. You can still record completion after checking tasks; contact the dispatcher to replan.</p>}
+      {revisionError !== null && <><ErrorState error={revisionError} /><p className="notice">Cannot verify the latest input revision. Route freshness is uncertain; refresh the workspace.</p></>}
+      {loading ? <LoadingState /> : stops.length === 0 ? <div className="crew-empty"><h2>{unavailable ? 'Crew currently unavailable' : 'No tasks assigned in this plan'}</h2><p>Crew status:{unavailable ? 'Unavailable' : 'Idle'}. Wait for dispatch instructions.</p></div> : (
         <div className="crew-content">
-          <section className="crew-current" ref={detailRef} tabIndex={-1} aria-label="当前维修任务">
-            <div className="crew-card-heading"><p className="eyebrow">第 {stop?.sequence} 站 · 当前任务</p><span className="crew-task-number">#{selected.slice(0, 8)}</span></div>
-            {!task ? <><h2>任务详情读取失败</h2><ErrorState error={reads[selected]?.error} /><button className="button" disabled={locked} onClick={reloadTasks}>重新读取任务状态</button></> : (
+          <section className="crew-current" ref={detailRef} tabIndex={-1} aria-label="Current repair task">
+            <div className="crew-card-heading"><p className="eyebrow">Stop {stop?.sequence} · Current task</p><span className="crew-task-number">#{selected.slice(0, 8)}</span></div>
+            {!task ? <><h2>Task details could not load</h2><ErrorState error={reads[selected]?.error} /><button className="button" disabled={locked} onClick={reloadTasks}>Reload task status</button></> : (
               <>
                 <div className="crew-task-title"><h2>{labelName(task.damage_label)}</h2><span className={`status-badge priority-${task.priority.toLowerCase()}`}>{task.priority} · {taskStatus[task.status]}</span></div>
                 <dl className="crew-task-facts">
-                  <div><dt>预计维修</dt><dd>{formatMinutes(task.service_minutes)}</dd></div>
-                  <div><dt>方案预计到达</dt><dd>{stop ? stopTime(plan.planning_start_at, stop.arrival_minute) : '未提供'}</dd></div>
-                  <div className="crew-location"><dt>任务当前位置 · WGS84</dt><dd>{task.latitude.toFixed(6)}, {task.longitude.toFixed(6)}</dd></div>
+                  <div><dt>Estimated repair</dt><dd>{formatMinutes(task.service_minutes)}</dd></div>
+                  <div><dt>Planned arrival</dt><dd>{stop ? stopTime(plan.planning_start_at, stop.arrival_minute) : 'Not provided'}</dd></div>
+                  <div className="crew-location"><dt>Current task location · WGS84</dt><dd>{task.latitude.toFixed(6)}, {task.longitude.toFixed(6)}</dd></div>
                 </dl>
-                {stop && (task.latitude !== stop.latitude || task.longitude !== stop.longitude || task.service_minutes !== stop.service_minutes || task.priority !== stop.priority) && <p className="notice">任务位置、工时或优先级与路线快照不同。请核对最新详情，并联系调度重新规划。</p>}
-                <div className="crew-repair"><h3>维修建议</h3><p>{task.repair_recommendation}</p></div>
-                {!locked && <div className="crew-detail-links"><Link to={`/inspections/${task.inspection_id}`}>查看巡检照片 ↗</Link></div>}
-                {saved?.task.task_id === selected && <p className="crew-success" role="status">{saved.replayed ? '已确认原请求结果，任务已完成。' : '完成状态已保存。'}记录保留，后续规划会排除此任务。</p>}
+                {stop && (task.latitude !== stop.latitude || task.longitude !== stop.longitude || task.service_minutes !== stop.service_minutes || task.priority !== stop.priority) && <p className="notice">Task location, duration or priority differs from the route snapshot. Check the latest details and ask the dispatcher to replan.</p>}
+                <div className="crew-repair"><h3>Repair recommendation</h3><p>{task.repair_recommendation}</p></div>
+                {!locked && <div className="crew-detail-links"><Link to={`/inspections/${task.inspection_id}`}>View inspection photo ↗</Link></div>}
+                {saved?.task.task_id === selected && <p className="crew-success" role="status">{saved.replayed ? 'Original request confirmed; the task is completed.' : 'Completion saved.'}The record is retained and this task is excluded from future plans.</p>}
                 {error !== null && <ErrorState error={error} />}
-                {conflict && <p className="notice">任务已被修改，请重新读取任务状态并核对，再确认完成。</p>}
-                {uncertain && <p className="notice">提交结果尚不确定。请留在本页，用原请求重试；不要切换数据来源或离开页面。</p>}
+                {conflict && <p className="notice">The task has changed. Reload and check its status before confirming completion.</p>}
+                {uncertain && <p className="notice">The submission outcome is uncertain. Stay here and retry the original request; do not change sources or leave the page.</p>}
                 <div className="crew-completion">
                   {task.status === 'active' ? (
-                    confirming || uncertain ? <section className="crew-confirm" aria-label="确认任务完成">
-                      <h3>确认这项维修已完成？</h3><p>第 {stop?.sequence} 站 · {labelName(task.damage_label)} · #{task.task_id.slice(0, 8)}。提交后保留记录，不能重新激活。</p>
-                      <div className="crew-action-row"><button className="button" disabled={busy || conflict || mode !== 'live' || unavailable || revisionError !== null} onClick={() => void complete()}>{busy ? '正在提交…' : uncertain ? '用原请求重试' : '确认完成'}</button><button className="button secondary" disabled={locked} onClick={() => { setConfirming(false); setError(null) }}>暂不提交</button></div>
-                    </section> : <button className="button crew-complete-button" disabled={mode !== 'live' || unavailable || conflict || revisionError !== null} onClick={() => setConfirming(true)}>✓ 标记为完成</button>
-                  ) : <div className="crew-finished"><strong>{taskStatus[task.status]}</strong><p>此任务保留历史，不再进入新的路线规划。</p>{nextTask && <button className="button" onClick={() => chooseTask(nextTask.task_id)}>查看下一项待完成任务 →</button>}</div>}
-                  <button className="text-button" disabled={locked} onClick={reloadTasks}>重新读取任务状态</button>
+                    confirming || uncertain ? <section className="crew-confirm" aria-label="Confirm task completion">
+                      <h3>Confirm this repair is complete?</h3><p>Stop {stop?.sequence} · {labelName(task.damage_label)} · #{task.task_id.slice(0, 8)}. The record is retained after submission and cannot be reactivated.</p>
+                      <div className="crew-action-row"><button className="button" disabled={busy || conflict || mode !== 'live' || unavailable || revisionError !== null} onClick={() => void complete()}>{busy ? 'Submitting…' : uncertain ? 'Retry original request' : 'Confirm completion'}</button><button className="button secondary" disabled={locked} onClick={() => { setConfirming(false); setError(null) }}>Not now</button></div>
+                    </section> : <button className="button crew-complete-button" disabled={mode !== 'live' || unavailable || conflict || revisionError !== null} onClick={() => setConfirming(true)}>✓ Mark as complete</button>
+                  ) : <div className="crew-finished"><strong>{taskStatus[task.status]}</strong><p>This task remains in history and is excluded from new route plans.</p>{nextTask && <button className="button" onClick={() => chooseTask(nextTask.task_id)}>View next pending task →</button>}</div>}
+                  <button className="text-button" disabled={locked} onClick={reloadTasks}>Reload task status</button>
                 </div>
               </>
             )}
           </section>
-          <section className="crew-itinerary" ref={itineraryRef} tabIndex={-1} aria-label="本队停靠顺序">
-            <div className="crew-card-heading"><h2>本队路线</h2><span>{stops.length} 站</span></div>
-            <p className="crew-itinerary-note">按保存顺序排列，点选一站查看详情。</p>
-            <div className="crew-depot"><span aria-hidden="true">◈</span><div><strong>NUS-ISS</strong><small>出发基地</small></div></div>
+          <section className="crew-itinerary" ref={itineraryRef} tabIndex={-1} aria-label="Crew stop order">
+            <div className="crew-card-heading"><h2>My crew route</h2><span>Stops: {stops.length}</span></div>
+            <p className="crew-itinerary-note">Saved stop order. Select a stop to view details.</p>
+            <div className="crew-depot"><span aria-hidden="true">◈</span><div><strong>NUS-ISS</strong><small>depot</small></div></div>
             <ol className="crew-stops">{stops.map((item) => {
               const record = reads[item.task_id]?.task
-              return <li key={item.task_id}><button className="crew-stop" aria-current={selected === item.task_id ? 'step' : undefined} disabled={locked} onClick={() => chooseTask(item.task_id)} aria-label={`第 ${item.sequence} 站 ${record ? labelName(record.damage_label) : '任务读取失败'} ${record ? taskStatus[record.status] : '状态未知'}`}>
-                <span className={`crew-stop-index ${record?.status === 'completed' ? 'is-complete' : ''}`}>{record?.status === 'completed' ? '✓' : item.sequence}</span><span className="crew-stop-copy"><strong>{record ? labelName(record.damage_label) : '任务读取失败'}</strong><small>{record ? `${record.priority} · ${formatMinutes(record.service_minutes)} · ${taskStatus[record.status]}` : '状态未知，请重新读取'}</small><small>#{item.task_id.slice(0, 8)}</small></span><span aria-hidden="true">›</span>
+              return <li key={item.task_id}><button className="crew-stop" aria-current={selected === item.task_id ? 'step' : undefined} disabled={locked} onClick={() => chooseTask(item.task_id)} aria-label={`Stop ${item.sequence} ${record ? labelName(record.damage_label) : 'Task loading failed'} ${record ? taskStatus[record.status] : 'Status unknown'}`}>
+                <span className={`crew-stop-index ${record?.status === 'completed' ? 'is-complete' : ''}`}>{record?.status === 'completed' ? '✓' : item.sequence}</span><span className="crew-stop-copy"><strong>{record ? labelName(record.damage_label) : 'Task loading failed'}</strong><small>{record ? `${record.priority} · ${formatMinutes(record.service_minutes)} · ${taskStatus[record.status]}` : 'Status unknown. Reload to check'}</small><small>#{item.task_id.slice(0, 8)}</small></span><span aria-hidden="true">›</span>
               </button></li>
             })}</ol>
-            <p className="crew-route-end">{plan.settings.return_to_depot ? '↩ 计划结束后返回 NUS-ISS' : '本方案不要求返回基地'}</p>
+            <p className="crew-route-end">{plan.settings.return_to_depot ? '↩ Return to NUS-ISS after the planned route' : 'This plan does not require depot return'}</p>
             <CrewRouteMap plan={plan} route={route} selected={selected} />
-            <details className="crew-plan-details"><summary>方案时间与来源</summary>
-              <p>出发基地 NUS-ISS · 方案开始 {formatSingaporeTime(plan.planning_start_at)}</p>
-              <p>以下均为保存的计划值，完成任务后不会自动扣减或重算。</p>
-              <dl><dt>行程</dt><dd>{formatMinutes(route.travel_minutes)}</dd><dt>维修</dt><dd>{formatMinutes(route.service_minutes)}</dd><dt>总工作时长</dt><dd>{formatMinutes(route.total_work_minutes)}</dd></dl>
-              <p>{plan.matrix_is_simulated ? '模拟行程矩阵' : '外部行程数据'} · {plan.matrix_provider}</p><p className="record-id">{plan.plan_id} · 输入版本 {plan.input_revision}</p>
+            <details className="crew-plan-details"><summary>Plan times and sources</summary>
+              <p>Departure depot NUS-ISS · Plan start {formatSingaporeTime(plan.planning_start_at)}</p>
+              <p>All values below are saved estimates. Completing tasks does not automatically reduce them or recalculate the plan.</p>
+              <dl><dt>Travel</dt><dd>{formatMinutes(route.travel_minutes)}</dd><dt>Repair</dt><dd>{formatMinutes(route.service_minutes)}</dd><dt>Total work time</dt><dd>{formatMinutes(route.total_work_minutes)}</dd></dl>
+              <p>{plan.matrix_is_simulated ? 'Simulated travel matrix' : 'External travel data'} · {plan.matrix_provider}</p><p className="record-id">{plan.plan_id} · Input revision {plan.input_revision}</p>
             </details>
           </section>
         </div>
