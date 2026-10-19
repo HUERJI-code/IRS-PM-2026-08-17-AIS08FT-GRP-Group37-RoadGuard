@@ -65,18 +65,18 @@ it('scrolls mobile review detail after loading and does not jump again on retry'
   const queue = { items: [fixture.before], total: 1, limit: 20, offset: 0 }
   transport.mockImplementation(async (url) => url.includes('?') ? reply(queue) : deferred)
   mount('')
-  const pane = screen.getByLabelText('审核详情工作区')
+  const pane = screen.getByLabelText('Review details workspace')
   const scroll = vi.fn()
   Object.defineProperty(pane, 'scrollIntoView', { value: scroll })
-  await userEvent.click(await screen.findByRole('button', { name: new RegExp(`待审核.*${fixture.before.inspection_id}`) }))
+  await userEvent.click(await screen.findByRole('button', { name: new RegExp(`Pending review.*${fixture.before.inspection_id}`) }))
   expect(pane).toHaveFocus()
   expect(scroll).not.toHaveBeenCalled()
   await act(async () => resolveDetail(reply(fixture.before)))
-  expect(await screen.findByRole('heading', { name: '巡检详情' })).toBeVisible()
+  expect(await screen.findByRole('heading', { name: 'Inspection details' })).toBeVisible()
   expect(scroll).toHaveBeenCalledExactlyOnceWith({ block: 'start', behavior: 'instant' })
   transport.mockImplementation(async (url) => reply(url.includes('?') ? queue : fixture.before))
-  await userEvent.click(screen.getByRole('button', { name: '重新读取并检查' }))
-  await screen.findByRole('heading', { name: '巡检详情' })
+  await userEvent.click(screen.getByRole('button', { name: 'Reload and check' }))
+  await screen.findByRole('heading', { name: 'Inspection details' })
   expect(scroll).toHaveBeenCalledTimes(1)
   expect(transport.mock.calls.some(([, init]) => init.method === 'POST')).toBe(false)
 })
@@ -95,14 +95,14 @@ it('validates all backend-generated review and replay fixtures', () => {
 
 it('loads the queue and fresh detail before confirmation, then refreshes the queue', async () => {
   mount()
-  const button = await screen.findByRole('button', { name: '保存审核决定' })
+  const button = await screen.findByRole('button', { name: 'Save review decision' })
   await userEvent.click(button)
   expect(
-    await screen.findByRole('heading', { name: '审核已保存' }),
+    await screen.findByRole('heading', { name: 'Review saved' }),
   ).toBeVisible()
-  expect(await screen.findByText('当前没有待审核巡检。')).toBeVisible()
-  expect(screen.getByText(/已有路线需要重新规划/)).toBeVisible()
-  expect(screen.getByText(/当前为只读/)).toBeVisible()
+  expect(await screen.findByText('No inspections are awaiting review.')).toBeVisible()
+  expect(screen.getByText(/Existing routes require replanning/)).toBeVisible()
+  expect(screen.getByText(/Read-only/)).toBeVisible()
   const request = transport.mock.calls.find(
     ([, init]) => init.method === 'POST',
   )!
@@ -131,15 +131,15 @@ it.each(['correct', 'dismiss'] as const)(
     })
     mount(sample.before.inspection_id)
     const user = userEvent.setup()
-    await user.selectOptions(await screen.findByLabelText('操作'), action)
+    await user.selectOptions(await screen.findByLabelText('Action'), action)
     if (action === 'correct') {
-      const selector = screen.getByLabelText('纠正后的标签')
+      const selector = screen.getByLabelText('Corrected label')
       expect(within(selector).getAllByRole('option')).toHaveLength(9)
       await user.selectOptions(selector, 'pothole_deep')
     }
-    await user.type(screen.getByLabelText(/审核备注/), 'Checked photo')
-    await user.click(screen.getByRole('button', { name: '保存审核决定' }))
-    await screen.findByRole('heading', { name: '审核已保存' })
+    await user.type(screen.getByLabelText(/Review notes/), 'Checked photo')
+    await user.click(screen.getByRole('button', { name: 'Save review decision' }))
+    await screen.findByRole('heading', { name: 'Review saved' })
     const request = JSON.parse(
       transport.mock.calls.find(([, init]) => init.method === 'POST')![1]
         .body as string,
@@ -154,7 +154,7 @@ it.each(['correct', 'dismiss'] as const)(
     else {
       expect(request).not.toHaveProperty('damage_label')
       expect(request).not.toHaveProperty('detection_id')
-      expect(screen.getByText('本次结果没有关联任务。')).toBeVisible()
+      expect(screen.getByText('No task is linked to this result.')).toBeVisible()
     }
   },
 )
@@ -175,15 +175,15 @@ it('does not repeat a decision after a version conflict; reload uses the new ver
   })
   mount()
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '保存审核决定' }))
-  expect(await screen.findByRole('alert')).toHaveTextContent('记录已被修改')
-  expect(screen.getByRole('button', { name: '保存审核决定' })).toBeDisabled()
+  await user.click(await screen.findByRole('button', { name: 'Save review decision' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('The record has changed')
+  expect(screen.getByRole('button', { name: 'Save review decision' })).toBeDisabled()
   expect(
     transport.mock.calls.filter(([, init]) => init.method === 'POST'),
   ).toHaveLength(1)
-  await user.click(screen.getByRole('button', { name: '重新读取并检查' }))
-  await user.click(await screen.findByRole('button', { name: '保存审核决定' }))
-  await screen.findByRole('heading', { name: '审核已保存' })
+  await user.click(screen.getByRole('button', { name: 'Reload and check' }))
+  await user.click(await screen.findByRole('button', { name: 'Save review decision' }))
+  await screen.findByRole('heading', { name: 'Review saved' })
   const bodies = transport.mock.calls
     .filter(([, init]) => init.method === 'POST')
     .map(([, init]) => JSON.parse(init.body as string))
@@ -206,14 +206,14 @@ it('retries an uncertain response using the same request ID and payload', async 
   })
   mount()
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '保存审核决定' }))
+  await user.click(await screen.findByRole('button', { name: 'Save review decision' }))
   const retry = await screen.findByRole('button', {
-    name: '使用原请求重试审核',
+    name: 'Retry review with original request',
   })
-  expect(screen.getByLabelText('操作')).toBeDisabled()
+  expect(screen.getByLabelText('Action')).toBeDisabled()
   await user.click(retry)
   expect(
-    await screen.findByRole('heading', { name: '已恢复原请求结果' }),
+    await screen.findByRole('heading', { name: 'Original request result recovered' }),
   ).toBeVisible()
   const bodies = transport.mock.calls
     .filter(([, init]) => init.method === 'POST')
@@ -229,7 +229,7 @@ it('blocks double submission while the response is pending', async () => {
   )
   mount()
   const form = (
-    await screen.findByRole('button', { name: '保存审核决定' })
+    await screen.findByRole('button', { name: 'Save review decision' })
   ).closest('form')!
   fireEvent.submit(form)
   fireEvent.submit(form)
@@ -238,7 +238,7 @@ it('blocks double submission while the response is pending', async () => {
       transport.mock.calls.filter(([, init]) => init.method === 'POST'),
     ).toHaveLength(1),
   )
-  expect(screen.getByRole('button', { name: '正在保存审核…' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Saving review…' })).toBeDisabled()
 })
 
 it('renders already processed records without editable actions', async () => {
@@ -250,17 +250,17 @@ it('renders already processed records without editable actions', async () => {
     ),
   )
   mount()
-  expect(await screen.findByText(/当前为只读/)).toBeVisible()
+  expect(await screen.findByText(/Read-only/)).toBeVisible()
   expect(
-    screen.queryByRole('button', { name: '保存审核决定' }),
+    screen.queryByRole('button', { name: 'Save review decision' }),
   ).not.toBeInTheDocument()
-  expect(screen.getByRole('heading', { name: '审核历史' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Review history' })).toBeVisible()
 })
 
 it('prevents writes in mock mode', async () => {
   mount(fixture.before.inspection_id, 'normal')
   expect(
-    await screen.findByRole('button', { name: '保存审核决定' }),
+    await screen.findByRole('button', { name: 'Save review decision' }),
   ).toBeDisabled()
   expect(transport.mock.calls.some(([, init]) => init.method === 'POST')).toBe(
     false,
@@ -272,9 +272,9 @@ it('shows queue read errors without claiming there are no pending inspections', 
     reply({ code: 'database_unavailable', message: 'failed' }, 503),
   )
   mount('')
-  expect(await screen.findByRole('alert')).toHaveTextContent('数据库暂不可用')
-  expect(screen.queryByText('当前没有待审核巡检。')).not.toBeInTheDocument()
-  expect(screen.getByRole('button', { name: '刷新待审队列' })).toBeEnabled()
+  expect(await screen.findByRole('alert')).toHaveTextContent('The database is temporarily unavailable')
+  expect(screen.queryByText('No inspections are awaiting review.')).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Refresh review queue' })).toBeEnabled()
 })
 
 it('paginates using pending_review and never fetches other statuses', async () => {
@@ -291,8 +291,8 @@ it('paginates using pending_review and never fetches other statuses', async () =
   })
   mount('')
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '下一页' }))
-  await screen.findByText('当前页已无待审记录，请返回上一页。')
+  await user.click(await screen.findByRole('button', { name: 'Next page' }))
+  await screen.findByText('No pending records remain on this page. Go to the previous page.')
   expect(transport.mock.calls[1][0]).toContain(
     'status=pending_review&limit=20&offset=20',
   )
@@ -316,13 +316,13 @@ it('preserves a successful review when queue refresh fails', async () => {
   })
   mount()
   await userEvent.click(
-    await screen.findByRole('button', { name: '保存审核决定' }),
+    await screen.findByRole('button', { name: 'Save review decision' }),
   )
   expect(
-    await screen.findByRole('heading', { name: '审核已保存' }),
+    await screen.findByRole('heading', { name: 'Review saved' }),
   ).toBeVisible()
-  expect(await screen.findByText(/保留上次列表/)).toBeVisible()
+  expect(await screen.findByText(/Previous list retained/)).toBeVisible()
   expect(
-    screen.queryByRole('button', { name: '保存审核决定' }),
+    screen.queryByRole('button', { name: 'Save review decision' }),
   ).not.toBeInTheDocument()
 })

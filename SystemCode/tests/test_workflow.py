@@ -446,7 +446,7 @@ def test_foreign_key_and_unique_inspection_task_constraints_are_real(service, im
     {"action": "confirm", "detection_id": "d", "damage_label": "pothole"},
     {"action": "dismiss", "detection_id": "d"}, {"action": "dismiss", "damage_label": "pothole"},
     {"action": "correct", "detection_id": "d", "damage_label": "unknown"},
-    {"action": "dismiss", "note": "x" * 501}, {"action": "dismiss", "request_id": "non ascii 中文"},
+    {"action": "dismiss", "note": "x" * 501}, {"action": "dismiss", "request_id": "non ascii \u4e2d\u6587"},
 ])
 def test_review_request_rejects_invalid_action_fields(fields):
     data = dict(request_id="review", expected_version=1)

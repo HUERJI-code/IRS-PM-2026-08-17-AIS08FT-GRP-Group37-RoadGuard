@@ -28,7 +28,7 @@ export function parseModel<K extends keyof Schemas>(
   if (!validate || !validate(value)) {
     throw new ApiError(
       'contract_mismatch',
-      '服务返回格式不符合当前接口约定。',
+      'The service response does not match the current API contract.',
       0,
       'contract',
     )

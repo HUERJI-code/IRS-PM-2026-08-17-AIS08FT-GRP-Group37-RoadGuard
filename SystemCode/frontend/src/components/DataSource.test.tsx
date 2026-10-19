@@ -14,36 +14,36 @@ it('switches explicitly between live, normal, empty and failed sources without n
       <App />
     </MemoryRouter>,
   )
-  await screen.findByText(/已连接 · 输入版本 5/)
+  await screen.findByText(/Application and database connected · Input revision 5/)
   await user.selectOptions(
-    screen.getByRole('combobox', { name: '数据来源' }),
+    screen.getByRole('combobox', { name: 'Data source' }),
     'normal',
   )
-  expect(await screen.findByText(/模拟连接状态/)).toBeVisible()
-  expect(screen.getByText(/固定只读快照/)).toBeVisible()
-  await user.click(screen.getByText('检查数据接入'))
-  await user.click(screen.getByRole('button', { name: '读取当前来源' }))
-  expect(await screen.findByText(/活动任务：1/)).toBeVisible()
+  expect(await screen.findByText(/Mock connection status/)).toBeVisible()
+  expect(screen.getByText(/Fixed read-only snapshot/)).toBeVisible()
+  await user.click(screen.getByText('Check data connection'))
+  await user.click(screen.getByRole('button', { name: 'Read current source' }))
+  expect(await screen.findByText(/Active tasks: 1/)).toBeVisible()
   await user.selectOptions(
-    screen.getByRole('combobox', { name: '数据来源' }),
+    screen.getByRole('combobox', { name: 'Data source' }),
     'empty',
   )
-  expect(screen.queryByText(/活动任务：1/)).not.toBeInTheDocument()
-  await user.click(screen.getByText('检查数据接入'))
-  await user.click(screen.getByRole('button', { name: '读取当前来源' }))
-  expect(await screen.findByText('当前列表为空。')).toBeVisible()
-  expect(screen.getByText(/空任务列表与没有方案是不同状态/)).toBeVisible()
+  expect(screen.queryByText(/Active tasks:1/)).not.toBeInTheDocument()
+  await user.click(screen.getByText('Check data connection'))
+  await user.click(screen.getByRole('button', { name: 'Read current source' }))
+  expect(await screen.findByText('This list is empty.')).toBeVisible()
+  expect(screen.getByText(/An empty task list differs from having no plan/)).toBeVisible()
   await user.selectOptions(
-    screen.getByRole('combobox', { name: '数据来源' }),
+    screen.getByRole('combobox', { name: 'Data source' }),
     'failure',
   )
-  await user.click(screen.getByText('检查数据接入'))
-  await user.click(screen.getByRole('button', { name: '读取当前来源' }))
+  await user.click(screen.getByText('Check data connection'))
+  await user.click(screen.getByRole('button', { name: 'Read current source' }))
   expect(
-    await within(screen.getByRole('region', { name: '数据来源' })).findByRole(
+    await within(screen.getByRole('region', { name: 'Data source' })).findByRole(
       'alert',
     ),
-  ).toHaveTextContent('数据库暂不可用')
+  ).toHaveTextContent('The database is temporarily unavailable')
   // The initial task read may start before the source switch; switching aborts it.
   const initialTasks = network.mock.calls.filter(([url]) => url.startsWith('/api/v1/tasks?'))
   for (const [, init] of initialTasks) expect(init?.signal?.aborted).toBe(true)

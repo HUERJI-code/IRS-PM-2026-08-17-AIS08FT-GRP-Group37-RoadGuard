@@ -1,32 +1,32 @@
-# 施工队工作台
+# Crew workspace
 
-2026-10-18 · 本地预览 · 账号绑定版。负责人：A 统筹前端扩展与联调验收。
+2026-10-18 · Local preview · Account-bound version. Owner: A coordinating frontend extension and integration acceptance.
 
-## 登录与操作
+## Sign-in and operations
 
-- 使用施工队账号登录，自动进入 `/crew`。例如账号 B 固定绑定 `crew-02`，没有队伍/算法选择器，也不出现调度或上传页面入口。改 URL 参数不会改变绑定。
-- 工作台读取中央调度员最新保存的 GA 方案，只显示本队停靠点、任务与照片。没有安排时提示等待调度，不由施工队生成方案。
-- 按保存顺序查看待完成任务、损伤类型、工时、优先级、维修建议、当前位置和预计到达时间。点选站点查看详情。
-- 「标记为完成」后核对任务，再「确认完成」。完成状态及进度更新，历史保留，可进入下一项任务；已完成/取消任务只读。
-- 「刷新工作台」读取最新安排；「重新读取任务状态」核对现有路线。若调度保存了新方案，必须刷新工作台后继续操作。
-- 手机端保留账号、所属队伍和退出按钮，导航收为菜单；内容单列，地图折叠。主要完成按钮 52 px，任务/确认按钮至少 44 px。点选任务会定位详情。
+- Sign in with a crew account to enter `/crew`. Account B, for example, binds to `crew-02`. There is no crew/algorithm selector or dispatch/upload entry. URL parameters cannot change the binding.
+- The workspace reads the central dispatcher’s latest saved GA plan and shows only this crew’s stops, tasks and photos. If unassigned, wait for dispatch rather than generating a plan.
+- Follow saved order and inspect pending tasks, damage type, duration, priority, recommendation, current location and planned arrival. Select a stop for details.
+- Select “Mark as complete”, check the task and “Confirm completion”. Status/progress updates while history remains; continue to the next task. Completed/cancelled tasks are read-only.
+- “Refresh workspace” reads the latest schedule. “Reload task status” checks the current route. A newer dispatch plan requires workspace refresh before further actions.
+- Mobile retains account, crew and sign-out with collapsed navigation, single-column content and a collapsed map. Main completion control is 52 px; task/confirmation buttons are at least 44 px. Selecting a task focuses its details.
 
-## 路线快照与权限
+## Snapshots and permissions
 
-`GET /api/v1/crew/workspace` 在一个数据库事务中返回所属 crew、仅含本队的 plan、当前 tasks 和 input_revision。全局队伍、全局路线、全局任务列表对施工队返回 403。
+`GET /api/v1/crew/workspace` returns the bound crew, crew-only plan, current tasks and input_revision in one transaction. Global crews, routes and task lists return 403 to crew accounts.
 
-任务位置/工时改变时会提示它与路线快照的差异。完成任务递增 input_revision，旧方案变为过期，但未改派且仍有效的本队任务可继续确认完成。调度人员需要显式重算，工作台不自动重算。路线顺序与预计时间是计划值，不能当作实时剩余工时。
+Changed task location/duration is flagged against the snapshot. Completion increments input_revision and makes the old plan stale, but valid, un-reassigned crew tasks may still be completed. Dispatch explicitly replans; the workspace never automatically recalculates. Stop order/times are estimates, not live remaining work.
 
-`PATCH /api/v1/tasks/{task_id}` 对施工队仅允许 expected_version、固定 request_id 和 status=completed；服务端在同一写事务校验最新归属、队伍可用性、版本和状态。新改派任务无法再由旧队伍完成。重复提交不重复修改；网络结果不确定时保留原请求并锁定切换/刷新，使用原请求重试。
+For crews, `PATCH /api/v1/tasks/{task_id}` accepts only expected_version, fixed request_id and status=completed. The backend validates latest assignment, availability, version and state in one write transaction. Former crews cannot complete reassigned tasks. Duplicate submission does not duplicate changes. Uncertain network outcomes retain the request, lock switching/refresh and retry the original request.
 
-任务详情与巡检照片也由服务端检查归属。任务实际完成后，可凭本队完成收据读取和重试；原始任务及审核历史保留。具体账号、会话及审计规范见[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)。
+Task details/photos also enforce server-side ownership. After actual completion, crew completion receipts allow reads/retries. Original task/review history is retained. See [account roles](../../Miscellaneous/ACCOUNT_ROLES.md) for accounts, sessions and audit rules.
 
-地图显示冻结 Jurong 边界、NUS-ISS 和本队路线，直线仅是顺序示意，不提供道路导航或 GPS。当前没有单独“发布方案”步骤，最近保存 GA 就是工作台依据。
+The map shows frozen Jurong boundaries, NUS-ISS and this crew’s route. Straight lines illustrate sequence, not navigation or GPS. There is no separate publication step: the latest saved GA plan is authoritative for the workspace.
 
-## 本地验收与限制
+## Local acceptance and limitations
 
-认证前的组件/浏览器验收记录保留在被忽略的 `Dataset/acceptance/crew-workspace-20261018/`；账号版本的账号凭据、数据库备份、截图与实际检查结果保存在 `Dataset/acceptance/auth-roles-20261018/`。不提交 Dataset、凭据或运行数据库。
+Pre-authentication component/browser records remain in ignored `Dataset/acceptance/crew-workspace-20261018/`. Account-version credentials, backups, screenshots and actual checks are in `Dataset/acceptance/auth-roles-20261018/`. Dataset, credentials and runtime databases are not committed.
 
-本次继续使用隔离联调库，迁移前备份且保留原 input_revision。真实鉴权测试覆盖跨队访问、任务改派、队伍停用、版本冲突、幂等重试及会话校验；前端测试覆盖固定队伍、未知结果重试、终态只读、缺失任务、过期方案、角色导航、账号切换与手机焦点。
+The isolated integration database was backed up before migration and its input_revision retained. Real authorisation tests cover cross-crew access, reassignment, disabled crews, revision conflict, idempotent retry and session checks. Frontend tests cover fixed crew, unknown-outcome retry, final-state read-only records, missing tasks, stale plans, role navigation, account switching and mobile focus.
 
-本机开发服务只监听回环地址。手机尺寸适配不代表已开放手机网络访问，也不代表真实手机硬件或生产部署验收。本工作台随统一前端及账号权限接口一并交付，必须同时更新前后端并创建本地账号。
+Local services listen only on loopback. Mobile layout does not establish mobile-network access, physical-device or production acceptance. Deliver this workspace with the frontend and account-permission APIs: update both ends and create local accounts.

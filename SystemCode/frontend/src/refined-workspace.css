@@ -175,9 +175,9 @@
   .refined-shell #task-filter { font-size: 16px; min-height: 44px; }
   .refined-shell :is(.pagination button, .queue-toolbar button, .map-controls button, .map-controls select, .map-legend button, .crew-card button) { min-height: 44px; }
   .refined-shell .map-controls select { font-size: 16px; }
-  .refined-shell .map-controls[aria-label='地图视野控制'] { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; }
-  .refined-shell .map-controls[aria-label='地图视野控制'] button:nth-child(-n+3) { grid-column: span 4; padding: 6px 4px; }
-  .refined-shell .map-controls[aria-label='地图视野控制'] button:nth-child(n+4) { grid-column: span 3; }
+  .refined-shell .map-controls[aria-label='Map view controls'] { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; }
+  .refined-shell .map-controls[aria-label='Map view controls'] button:nth-child(-n+3) { grid-column: span 4; padding: 6px 4px; }
+  .refined-shell .map-controls[aria-label='Map view controls'] button:nth-child(n+4) { grid-column: span 3; }
   .refined-shell .comparison-table tbody th { position: sticky; left: 0; max-width: 145px; background: #fff; box-shadow: 1px 0 #e2e6db; }
   .refined-shell .comparison-table tbody tr:nth-child(even) th { background: #f8f9f5; }
   .refined-shell .section-links { gap: 8px 20px; margin-top: 0; }
@@ -346,3 +346,7 @@
   .refined-shell .crew-stop { min-height: 84px; }
   .refined-shell .crew-action-row button { min-height: 48px; }
 }
+
+/* Keep English navigation labels readable at desktop and mobile widths. */
+.refined-shell .nav-soon { white-space: nowrap; flex-shrink: 0; font-size: 10px; }
+.refined-shell .nav-label { overflow-wrap: normal; }

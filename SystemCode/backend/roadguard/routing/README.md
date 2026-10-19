@@ -1,55 +1,55 @@
-# B 路线模块：四队调度、模拟行程矩阵、Greedy 与 GA
+# B routing module: four crews, simulated travel, Greedy and GA
 
-负责人：B。状态（2026-10-15）：已完成 B-1～B-5 和 B6。B-1～B-5 包括纯算法核心、自建 GA、实验脚本，数据库表、队伍和规划服务、HTTP 接口，以及可选的 Google Routes 行程矩阵（第 10 节）；在线服务默认仍使用模拟矩阵。B6 完成了模拟矩阵和 Google 矩阵下 10/15/20 个任务的 GA 与 Greedy 对比实验（第 12 节）。在线重算的 GA 从 Greedy 解出发，保证不比 Greedy 差，实验仍用纯 GA（第 13 节）。尚未开始：B7（报告章节与视频素材）。
+Owner: B. Status (2026-10-15): B-1 through B-5 and B6 complete. B-1 through B-5 cover the pure algorithm core, custom GA, experiments, database tables, crew/planning services, HTTP APIs and optional Google Routes matrix (section 10). Online service still defaults to simulated matrices. B6 compares GA/Greedy for 10/15/20 tasks with simulated and Google matrices (section 12). Online GA starts from Greedy to guarantee no worse results; experiments retain pure GA (section 13). Not started: B7 report chapters/video material.
 
-## 1. 演示假设（集中配置）
+## 1. Demo assumptions: centralized configuration
 
-[routing.example.json](../../../config/routing.example.json) 版本为 `b-routing-demo-v1`，`is_demo=true`。以下是 B 在 2026-10-14 选定的**演示假设，待 A 确认**，不是批准的运营规则：
+[routing.example.json](../../../config/routing.example.json), version `b-routing-demo-v1`, `is_demo=true`. B selected these **demo assumptions pending A confirmation** on 2026-10-14; they are not approved operational rules:
 
-| 项目 | 取值 | 说明 |
+| Item | Value | Notes |
 | --- | --- | --- |
-| 收工返基地 | `return_to_depot: true` | 最后一个任务回到 NUS-ISS 的行程计入行程和完工时间。A 的 `project.example.json` 仍保持 `null`（未决定）。本模块不读取那个 null，也不把它解释为 false |
-| 班次 | `shift_limit: {"mode": "limited", "minutes": 480}` | 2026-10-14 由 B 改为每队每天最多 480 分钟，计入行程（含基地往返）和维修。可以改成 `"unlimited"` 明确取消上限，这和“未知”不同。默认四队时，15/20 个任务会有部分 P2/P3 排不下，结果列为 `exceeds_shift_limit` |
-| 开始时刻 | 所有可用队伍在 `planning_start_at`（第 0 分钟）同时从 NUS-ISS 出发 | 符合“统一开始时刻重新规划”的首版语义；不跟踪在途车辆 |
-| 等待 | 没有时间窗，行驶和维修连续进行 | `due_at` 只用来计算延误，不作为时间窗 |
-| 模拟矩阵 | 球面距离 × 1.3 绕行系数 ÷ 30 km/h，保留 1 位小数 | `provider=simulated_haversine_v1`、`is_simulated=true`；不是道路网络或 Google 数据 |
-| 矩阵来源 | `travel_matrix_provider: "simulated"`（默认） | 可改为 `google_routes`，见第 10 节；两者之间没有自动回退 |
+| Return to depot | `return_to_depot: true` | Travel from final task back to NUS-ISS counts toward travel/completion. A's `project.example.json` remains `null` (undecided); this module neither reads that null nor interprets it as false. |
+| Shift | `shift_limit: {"mode": "limited", "minutes": 480}` | B set a 480-minute daily limit per crew on 2026-10-14, including travel/depot legs and service. `"unlimited"` explicitly removes capacity and differs from unknown. With four crews, some P2/P3 tasks among 15/20 exceed capacity and are marked `exceeds_shift_limit`. |
+| Start | Every available crew leaves NUS-ISS at `planning_start_at` (minute 0) | First-version semantics replan from one common start, without tracking in-transit vehicles. |
+| Waiting | No time windows; travel/service are continuous | `due_at` computes lateness only, not time windows. |
+| Simulated matrix | Great-circle distance x 1.3 detour factor / 30 km/h, one decimal | `provider=simulated_haversine_v1`, `is_simulated=true`; neither road-network nor Google data. |
+| Matrix source | `travel_matrix_provider: "simulated"` (default) | Optional `google_routes`, section 10; no automatic fallback. |
 
-## 2. 数据模型（`b-*-v1-draft`，尚未写入共享接口契约）
+## 2. Data models (`b-*-v1-draft`, not yet in the shared contract)
 
-定义见 [models.py](models.py)。HTTP 接口已登记在[接口契约](../../../../Miscellaneous/API_CONTRACT.md)，版本名仍带 `-draft`，三人联调确认后再去掉。
+Definitions: [models.py](models.py). HTTP endpoints are registered in the [API contract](../../../../Miscellaneous/API_CONTRACT.md); version names retain `-draft` until three-member integration confirmation.
 
-- **PlanningInput**：`input_revision`、`planning_start_at`、`depot`、`crews`（全部配置的队伍，包括停用的）、`tasks`（a-task-query-v1 的 Task）、`settings`。任务只能是 active 状态，ID 唯一。
-- **TravelMatrix**：`node_ids` 第 0 个是基地，之后按快照顺序排任务。`duration_minutes[i][j]` 表示 i→j 的行程，不假设对称，`null` 表示不可达。对角线必须为 0。
+- **PlanningInput**: `input_revision`, `planning_start_at`, `depot`, `crews` (all configured crews, including unavailable), `tasks` (a-task-query-v1 Task), `settings`. Tasks must be active with unique IDs.
+- **TravelMatrix**: `node_ids[0]` is depot, followed by snapshot task order. `duration_minutes[i][j]` is i->j travel, without assumed symmetry; `null` means unreachable. Diagonal entries must be 0.
 - **RoutePlan**：`plan_id`、`algorithm`（`ga`/`greedy`）、`crew_routes`、`unassigned_tasks`、`metrics`、`matrix_provider`、`matrix_is_simulated`、`settings`、`random_seed`、`algorithm_parameters`、`is_stale`、`is_demo=true`。
-- **CrewRoute**：每支配置的队伍都输出一条，状态为 `assigned`、`idle` 或 `unavailable`。`stops` 按访问顺序排列，每站有到达和完工分钟数（相对开始时刻）。还包括 `travel_minutes`（含基地往返）、`return_travel_minutes`（不返基地时为 null）、`service_minutes`、`total_work_minutes`。`geometry=null`，前端只能画**标明示意的直线**。
-- **未分配原因**：`unknown_service_minutes`、`unreachable_from_depot`、`unreachable_to_depot`、`no_available_crew`、`exceeds_shift_limit`、`no_feasible_route_position`。
+- **CrewRoute**: one entry per configured crew, `assigned`, `idle` or `unavailable`. `stops` follow visit order, with arrival/completion minutes relative to start. Also includes `travel_minutes` including depot legs, `return_travel_minutes` (null without return), `service_minutes`, `total_work_minutes`. `geometry=null`; frontend may show only **explicitly illustrative straight lines**.
+- **Unassigned reasons**: `unknown_service_minutes`, `unreachable_from_depot`, `unreachable_to_depot`, `no_available_crew`, `exceeds_shift_limit`, `no_feasible_route_position`.
 
-`plan_routes()` 之后，`check_plan_covers_input()` 会断言每个输入任务恰好出现一次：要么在某条路线里，要么在未分配列表里。
+After `plan_routes()`, `check_plan_covers_input()` asserts every input task appears exactly once, either on a route or in unassigned_tasks.
 
-## 3. 统一评估器与目标函数
+## 3. Shared evaluator and objective
 
-[evaluation.py](evaluation.py) 中的 `RoutingProblem.evaluate()` 被 Greedy 和 GA 共用，保证约束和指标口径一致：
+Greedy and GA share `RoutingProblem.evaluate()` in [evaluation.py](evaluation.py), keeping constraints and metric definitions identical:
 
-1. **预过滤**（两种算法相同）：未知工时、基地不可达、需要返回但回程不可达、没有可用队伍、单个任务就超过班次。这些任务直接列为未分配。
-2. **解码**：每队按给定顺序依次检查。上一个点到该任务不可达，或者加入后超出班次（含回程），就跳过该任务并记录原因，不会悄悄丢弃。
-3. **指标**：总行程（含首段和返程）、总维修时长、完工时间 makespan（最晚结束的可用队伍）、工作量标准差（可用队伍的行程加维修，闲置队伍记 0；停用队伍不计入）、优先级加权平均完工时间（P1/P2/P3 权重 3/2/1）。延误只对有 `due_at` 的任务计算；全部为 null 时，延误指标为 null，不会编造。
-4. **目标**（`b-objective-v1`，演示权重，待 A 复核）：按字典序比较 `(未分配 P1 数, 未分配 P2 数, 未分配 P3 数, 加权成本)`。加权成本 = 1.0×makespan + 0.2×总行程 + 0.5×工作量标准差 + 0.5×优先级加权完工时间，单位都是分钟。前三位保证算法不能靠丢任务改善指标，也不能为了多排几个短任务而牺牲更紧急的任务。早期版本只比较未分配总数，结果 GA 在班次受限时会丢掉全部 240 分钟的 P1，已修正并加了回归测试。容量确实不够时（例如只剩三队，4 个 P1 无法在 480 分钟内完成）仍会出现未分配的 P1，并注明原因。**优先级加权完工时间不是延误**，只是在没有期限时对“紧急任务先完成”的替代度量。
+1. **Prefilter** (same for both): unknown duration, unreachable depot departure, unreachable required return, no available crew, or a single task exceeding shift. These go directly to unassigned.
+2. **Decode**: process each crew sequence. Skip and record tasks unreachable from the preceding point or exceeding shift including return; never silently drop them.
+3. **Metrics**: total travel including first/return legs, total service, makespan (latest available-crew finish), workload standard deviation (travel+service for available crews, idle=0, unavailable excluded), priority-weighted mean completion (P1/P2/P3 weights 3/2/1). Lateness uses only tasks with `due_at`; all-null deadlines yield null lateness, never invented values.
+4. **Objective** (`b-objective-v1`, demo weights pending A review): lexicographic `(unassigned P1 count, unassigned P2 count, unassigned P3 count, weighted cost)`. Cost = 1.0 x makespan + 0.2 x total travel + 0.5 x workload standard deviation + 0.5 x priority-weighted completion, all minutes. The first three entries prevent improving metrics by dropping tasks or sacrificing urgent tasks to fit more short ones. An earlier total-unassigned-only objective made shift-limited GA drop all 240-minute P1 tasks; regression tests cover the fix. Genuine capacity shortages (e.g. three crews cannot finish four P1 tasks within 480 minutes) still leave P1 unassigned with reasons. **Priority-weighted completion is not lateness**; without deadlines it approximates completing urgent tasks earlier.
 
-## 4. Greedy 基线（[greedy.py](greedy.py)）
+## 4. Greedy baseline ([greedy.py](greedy.py))
 
-最早空闲的可用队伍先选。它在自己还能可行承担的剩余任务里取优先级最高的（P1 > P2 > P3）；优先级相同时取离当前位置行程最短的，再按快照顺序。某队已经没有可行任务时就停止。剩余任务交给评估器给出具体原因。结果是确定性的，没有随机种子。
+Select the earliest-free available crew. Among its feasible remaining tasks choose highest priority (P1 > P2 > P3), then shortest travel from current location, then snapshot order. Stop a crew when no feasible tasks remain. The evaluator gives specific reasons for remaining tasks. Results are deterministic, without a random seed.
 
-## 5. 自建 GA（[ga.py](ga.py)）
+## 5. Custom GA ([ga.py](ga.py))
 
-- **染色体**：`order`（可调度任务的排列）加上 `owner[task]`（可用队伍编号）。每队按 `order` 中的先后访问自己的任务。owner 只从可用队伍中取，所以编码本身就保证停用队伍不会被分配，每个任务也只出现一次。
-- **算子**：锦标赛选择（k=3）；`order` 用 OX 交叉，`owner` 用均匀交叉；变异随机选一种：交换、片段反转、换队、重定位。
-- **精英保留** 2 个；**停止条件**是 300 代，或连续 80 代没有改进。种群 60，交叉率 0.9，变异率 0.3。
-- **可复现**：所有随机数来自同一个 `random.Random(seed)`。实验默认使用种子 1～10。
-- `ga.seed_with_greedy=false`：实验默认不把 Greedy 解放进初始种群，避免对比时偏向 GA。开启时 GA 不会比 Greedy 差（有测试覆盖），但这不能当作算法优势。
-- 在线重算另读 `planning_service.seed_with_greedy=true`，见第 13 节。
+- **Chromosome**: `order` (schedulable-task permutation) plus `owner[task]` (available crew index). Crews visit their tasks in order. Owners come only from available crews; encoding itself prevents unavailable assignments and duplicate tasks.
+- **Operators**: tournament selection k=3; OX crossover for `order`, uniform crossover for `owner`; mutation randomly chooses swap, segment reversal, crew reassignment or relocation.
+- **Elitism**: 2. **Stop**: 300 generations or 80 without improvement. Population 60, crossover rate 0.9, mutation rate 0.3.
+- **Reproducibility**: one `random.Random(seed)` supplies all randomness; default experiment seeds are 1-10.
+- `ga.seed_with_greedy=false`: experimental populations omit Greedy to avoid favoring GA comparisons. Enabling it guarantees GA is no worse (tested), but that guarantee is not evidence of algorithm superiority.
+- Online recalculation separately reads `planning_service.seed_with_greedy=true`; section 13.
 
-## 6. 使用
+## 6. Usage
 
 ```python
 from roadguard.config import load_settings
@@ -65,174 +65,174 @@ greedy_plan, _ = plan_routes(planning_input, matrix, "greedy")
 ga_plan, ga_result = plan_routes(planning_input, matrix, "ga", ga_parameters=config.ga, random_seed=1)
 ```
 
-`snapshot` 可以是 `TaskQueryService.snapshot()` 的结果，也可以是固定样例 `TaskSnapshot`。在线服务按[交接说明](../../../../Miscellaneous/BC_HANDOFF.md)的方式运行，见第 9 节。
+`snapshot` may be `TaskQueryService.snapshot()` output or a fixed `TaskSnapshot`. Online services follow the [handoff](../../../../Miscellaneous/BC_HANDOFF.md), section 9 below.
 
-实验脚本、运行方式和输出说明见 [experiments/routing](../../../experiments/routing/README.md)；B6 的正式结果与分析见 [results/README.md](../../../experiments/routing/results/README.md)。
+See [experiments/routing](../../../experiments/routing/README.md) for scripts, execution and output; [results/README.md](../../../experiments/routing/results/README.md) for B6 formal results/analysis.
 
-## 7. 测试
+## 7. Tests
 
 ```powershell
 python -m pytest SystemCode/tests/test_routing_core.py SystemCode/tests/test_routing_ga.py SystemCode/tests/test_routing_experiments.py -q
 ```
 
-覆盖：配置与校验、矩阵形状和节点顺序、空任务、单任务往返、不返基地、任务少于四队、停用一队、全部停用、未知工时、不可达（首段、回程、任务之间）、480 分钟班次超限、不设上限时全部分配、P1 不被牺牲、Greedy 确定性与 P1 优先、10/15/20 任务不重不漏、延误计算、GA 固定种子可复现、精英单调、两种算法共享约束、算子合法性、实验脚本输出与拒绝覆盖。
+Coverage: configuration/validation; matrix shape/node order; empty input; single-task round trip; no return; fewer tasks than crews; one/all crews unavailable; unknown duration; unreachable first/return/intertask legs; 480-minute limits; complete unlimited assignment; P1 preservation; deterministic/P1-first Greedy; exact 10/15/20 coverage; lateness; seeded GA reproducibility; monotonic elitism; shared constraints; legal operators; experiment output and overwrite rejection.
 
-## 8. 已知限制与后续
+## 8. Known limitations and next steps
 
-- 模拟矩阵只能说明算法在模拟行程上的表现，不能作为真实道路结论。Google 矩阵做过 3 个任务的冒烟测试，并用于 B6 实验（两次取数，共 882 个元素）；NUS-ISS 车辆入口初步检查未见异常，但还没有正式核验，扩大用量前需确认费用。
-- 固定任务点只经过多边形校验，没有核验是否在可作业道路上。
-- 返基地、班次、目标权重和 GA 参数都是演示假设，需要 A 确认后才能作为正式口径。
-- B-4 修改了 A 的公共入口：`database.py`（v3 迁移）、`api/__init__.py`（路由注册）和 `main.py`（服务装配）。同时更新了 `test_backend.py`、`test_workflow.py` 中写死 v2 和接口列表的断言。
+- Simulated matrices establish algorithm performance only on simulated travel, not real roads. Google matrices had a three-task smoke test and B6 experiments (two fetches, 882 elements total). Preliminary NUS-ISS entrance checks showed no anomaly but are not formal verification; confirm costs before expanded use.
+- Fixed task points passed polygon validation only; work-eligible road placement is unverified.
+- Return policy, shifts, objective weights and GA parameters are demo assumptions requiring A confirmation for formal use.
+- B-4 changed A's shared `database.py` (v3 migration), `api/__init__.py` (registration), `main.py` (service assembly), plus hardcoded v2/endpoint-list assertions in `test_backend.py` and `test_workflow.py`.
 
-## 9. B-4：持久化与 HTTP 接口
+## 9. B-4: persistence and HTTP APIs
 
-接口契约见[API 契约](../../../../Miscellaneous/API_CONTRACT.md)中的 B 小节，运行后也可以在 `/docs` 的 Crews、Route plans 分组中查看。
+See B's section in the [API contract](../../../../Miscellaneous/API_CONTRACT.md) or the Crews/Route plans groups in running `/docs`.
 
-**数据库（schema v3）**：`Database.initialize()` 把 v2 原地迁移到 v3，新增 `crews`（只保存被修改过的队伍状态）和 `route_plans`（方案 JSON 以及算法、输入版本、创建时间）。原有巡检、任务、幂等记录和 `input_revision` 不变。v3 缺少路线表时拒绝启动，不会悄悄重建。
+**Database (schema v3)**: `Database.initialize()` migrates v2 in place, adding `crews` (modified states only) and `route_plans` (plan JSON, algorithm, revision, creation time). Existing inspections/tasks/idempotency/input_revision remain unchanged. Missing v3 routing tables fail startup without rebuilding.
 
-**队伍（[crews/](../crews/service.py)）**：队伍名单以项目配置的 `crew_ids` 为准。没有记录的队伍使用默认值（可用、`record_version=1`、`updated_at=null`），所以启动时不需要写库。`PATCH` 时实际改变可用状态才会写入，并在同一事务里递增 `input_revision`。幂等记录复用 A 的 `operation_keys` 表，scope 为 `crew:<id>`。
+**Crews ([crews/](../crews/service.py))**: project `crew_ids` defines the roster. Unstored crews use defaults (available, `record_version=1`, `updated_at=null`) without startup writes. `PATCH` persists actual availability changes only, incrementing `input_revision` in the same transaction. Idempotency reuses A's `operation_keys`, scope `crew:<id>`.
 
-**重算（[service.py](service.py)）**：
-1. 在同一个只读事务中读取任务快照和队伍状态，并核对 `expected_revision`。
-2. 退出事务后生成矩阵，在同一输入上运行 Greedy 和 GA（种子 `planning_service.ga_seed=1`；GA 从 Greedy 解出发，见第 13 节）。
-3. 在写事务中再次核对版本后同时保存两个方案；版本已变化就都不保存，返回 409。
+**Recalculation ([service.py](service.py))**:
+1. Read task snapshot and crew states in one read-only transaction, checking `expected_revision`.
+2. Outside the transaction, build a matrix and run Greedy/GA on identical input (`planning_service.ga_seed=1`; Greedy-initialized GA, section 13).
+3. Recheck revision in a write transaction and save both plans together. A changed revision saves neither and returns 409.
 
-**过期判断**：读取时比较方案的 `input_revision` 与当前版本，不同即 `is_stale=true`。旧方案仍可以按 ID 查询，供前后比较。
+**Staleness**: compare saved `input_revision` with current on read; mismatch sets `is_stale=true`. Older plans remain queryable by ID for comparisons.
 
-**设计选择**：队伍修改和任务修改（A）都不会自动触发重算，只通过 `planning_input_changed` 和方案过期来提示。这样不会在用户不知情时生成新方案，也避免把重算失败和业务修改混在一起。C 的确认流程是：先 `PATCH /crews/{id}`，再用返回的 `input_revision` 调用 recalculate。
+**Design choice**: neither crew changes nor A's task changes automatically recalculate. `planning_input_changed` and stale plans signal the need, avoiding new plans without user knowledge and mixing recalculation failures with business mutations. C confirms via `PATCH /crews/{id}`, then calls recalculate with returned `input_revision`.
 
-测试：`SystemCode/tests/test_routing_api.py`。覆盖默认队伍不写库、修改与幂等、版本冲突、无方案 404、空队列、完整流程（建任务 → 重算 → 停用队伍 → 过期 → 完成任务 → 重算）、计算期间输入变化不保存、重启后仍保留、v2→v3 迁移，以及异常库拒绝启动。
+Tests: `SystemCode/tests/test_routing_api.py`: default crews without writes, changes/idempotency, conflicts, no-plan 404, empty queue, full create-task -> recalculate -> deactivate-crew -> stale -> complete-task -> recalculate flow, input changes during calculation preventing save, restart persistence, v2->v3 migration and malformed-database startup rejection.
 
-## 10. B-5：Google Routes 行程矩阵
+## 10. B-5: Google Routes travel matrix
 
-实现见 [google_matrix.py](google_matrix.py)，配置在 [routing.example.json](../../../config/routing.example.json) 的 `google_routes`。
+Implementation: [google_matrix.py](google_matrix.py); configuration: `google_routes` in [routing.example.json](../../../config/routing.example.json).
 
-**启用方式**（默认关闭，不会产生费用）：
+**Enable** (off by default, no charges while disabled):
 
 ```powershell
 $env:ROADGUARD_TRAVEL_MATRIX_PROVIDER = "google_routes"
-$env:ROADGUARD_GOOGLE_MAPS_API_KEY = "<服务端 Routes API 密钥>"
+$env:ROADGUARD_GOOGLE_MAPS_API_KEY = "<server-side Routes API key>"
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend
 ```
 
-也可以改配置文件中的 `travel_matrix_provider`；环境变量优先。密钥只从 `api_key_env` 指定的环境变量读取，不写入配置、方案、日志或错误响应，也不能放进前端。建议在 Google Cloud 中把这把密钥限制为只允许 Routes API。
+Alternatively change `travel_matrix_provider` in configuration; environment variables take precedence. Read the key only from `api_key_env`, never configuration, plans, logs, errors or frontend. Restrict it to Routes API in Google Cloud.
 
-**调用方式**：`POST https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix`，`travelMode=DRIVE`，坐标用 `latLng`，字段掩码 `originIndex,destinationIndex,duration,condition,status`。
+**Request**: `POST https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix`, `travelMode=DRIVE`, coordinates in `latLng`, field mask `originIndex,destinationIndex,duration,condition,status`.
 
-| 规则 | 实现 |
+| Rule | Implementation |
 | --- | --- |
-| 行列顺序 | 节点仍是“基地 + 快照顺序的任务”。按 Google 返回的 originIndex/destinationIndex 写回第 i 行第 j 列；返回顺序不固定，也不假设对称。proto3 省略的 0 号下标按 0 处理 |
-| 单位 | `duration`（如 `"754s"`）÷ 60，保留 `minutes_decimals` 位小数；对角线固定 0 |
-| 不可达 | `ROUTE_NOT_FOUND` 记为 `null`，由评估器给出 `unreachable_*` 等未分配原因，不当成 0 分钟 |
-| 失败 | 缺少密钥、HTTP 错误、超时、网络错误、元素 status 非 0、缺少/重复元素、格式异常都抛 `TravelMatrixError`；重算返回 503 `travel_matrix_unavailable`，两个方案都不保存，**不回退到模拟矩阵** |
-| 分块 | 每次请求不超过 25×25 且不超过 `max_elements_per_request`（≤625；`TRAFFIC_AWARE_OPTIMAL` 另限 100）。20 个任务 + 基地 = 21×21 = 441 个元素，一次请求 |
-| 费用保护 | 节点数超过 `max_nodes`（默认 31，即 30 个任务）直接拒绝，不发请求。每次未命中缓存的取数按“节点数²”计费元素，记录在 `parameters.billed_elements_per_fetch` |
-| 缓存 | 仅 `TRAFFIC_UNAWARE` 时按坐标和参数缓存在进程内（默认 16 份），只修改队伍后的重算不会再次计费。命中时 `generated_at` 保持原取数时间，`served_from_cache=true`。重启后缓存清空 |
-| 出发时间 | 默认 `TRAFFIC_UNAWARE`，不发送出发时间。改成路况模式时，`planning_start_at` 在未来才作为 `departureTime` 发送；已过去则由 Google 按请求时刻计算，实际使用值记录在 `parameters.departure_time` |
-| GA/Greedy 一致 | 一次重算只取一次矩阵，两种算法共用；`RecalculationResult` 和 RoutePlan 用 `matrix_provider`、`matrix_is_simulated=false` 标明来源，`matrix_generated_at` 给出取数时间 |
+| Row/column order | Depot + snapshot task order. Map returned originIndex/destinationIndex to row i/column j; response order is arbitrary and symmetry is not assumed. proto3 omitted zero indices mean 0. |
+| Units | Divide `duration` (e.g. `"754s"`) by 60, round to `minutes_decimals`; diagonal fixed 0. |
+| Unreachable | `ROUTE_NOT_FOUND` becomes `null`; evaluator supplies `unreachable_*` and other reasons, never zero minutes. |
+| Failure | Missing keys, HTTP/timeout/network errors, nonzero element status, missing/duplicate elements or malformed data raise `TravelMatrixError`. Recalculation returns 503 `travel_matrix_unavailable`, saves neither plan and **never falls back to simulated matrices**. |
+| Chunking | At most 25x25 and `max_elements_per_request` (<=625; `TRAFFIC_AWARE_OPTIMAL` limit 100). 20 tasks + depot = 21x21 = 441 elements in one request. |
+| Cost protection | Above `max_nodes` (default 31, or 30 tasks), reject without requesting. Uncached fetch bills node_count squared elements, recorded in `parameters.billed_elements_per_fetch`. |
+| Cache | `TRAFFIC_UNAWARE` only: in-process coordinate/parameter cache (default 16) avoids charges after crew-only changes. Hits retain original `generated_at` and set `served_from_cache=true`. Restart clears it. |
+| Departure | Default `TRAFFIC_UNAWARE` sends none. Traffic-aware modes send future `planning_start_at` as `departureTime`; past times make Google use request time. Actual value: `parameters.departure_time`. |
+| GA/Greedy consistency | One matrix fetch per recalculation, shared by both. `RecalculationResult`/RoutePlan identify `matrix_provider`, `matrix_is_simulated=false` and `matrix_generated_at`. |
 
-**尚未完成 / 需要对接**：
+**Pending / integration needs**:
 
-- **冒烟测试（2026-10-15，B 本地真实密钥，`TRAFFIC_UNAWARE`）**：用 [google_smoke.py](../../../experiments/routing/google_smoke.py) 在 Jurong 建 3 个演示任务，计 16 个元素。重算返回 `matrix_is_simulated=false`；基地往返分别为 20.3/21.8、20.9/18.8、23.4/23.9 分钟，往返不对称，没有不可达；同一位置的模拟矩阵结果约 25～31 分钟，数量级一致。Greedy 与 GA 总行程都是 129.1 分钟。只是 3 个点的冒烟测试，不是正式的精度评估。
-- NUS-ISS 车辆入口：3 条首段都可达，时间也合理，初步检查未见异常，但**还没有正式核验**入口位置。Google 会把坐标吸附到最近道路；如果后续出现首段异常，应由 A/B 记录入口坐标并更新基地版本，GA/Greedy 继续共用同一坐标。
-- 不提供路线几何，`geometry` 仍为 null；前端只能画标明示意的直线（C）。
-- B6 已用 Google 矩阵完成 10/15/20 个任务的实验，见 [results/README.md](../../../experiments/routing/results/README.md) 第 6 节。
+- **Smoke test (2026-10-15, B's local real key, `TRAFFIC_UNAWARE`)**: [google_smoke.py](../../../experiments/routing/google_smoke.py) created three Jurong demo tasks, 16 elements. Result: `matrix_is_simulated=false`; outbound/return depot pairs 20.3/21.8, 20.9/18.8, 23.4/23.9 minutes, asymmetric and all reachable. Simulated results at the same locations were about 25-31 minutes, of similar magnitude. Greedy/GA both totaled 129.1 travel minutes. This three-point smoke test is not formal accuracy evaluation.
+- NUS-ISS vehicle entrance: all three first legs are reachable with plausible times; preliminary checks show no anomaly, but entrance location is **not formally verified**. Google snaps coordinates to nearby roads. If first-leg anomalies arise, A/B must record entrance coordinates and update depot version; GA/Greedy retain shared coordinates.
+- No road geometry: `geometry` stays null; C may show only explicitly illustrative straight lines.
+- B6 completed Google-matrix 10/15/20-task experiments; [results/README.md](../../../experiments/routing/results/README.md), section 6.
 
-测试：`SystemCode/tests/test_routing_google_matrix.py`，全部用假传输层，并屏蔽真实网络调用。冒烟测试中发现总行程用 `sum()` 累加时结果依赖队伍顺序（同一组路线得到 129.1 和 129.10000000000002），已改为 `math.fsum` 并加了回归测试。
+Tests: `SystemCode/tests/test_routing_google_matrix.py`, all with fake transport and real-network blocking. Smoke testing exposed crew-order-dependent `sum()` totals (129.1 versus 129.10000000000002 for identical routes); `math.fsum` fixes this with regression coverage.
 
-## 11. B-1～B6 新建文件一览
+## 11. New files from B-1 through B6
 
-阶段按测试文件标注：B-1 核心与 Greedy，B-2 GA，B-3 实验，B-4 持久化与接口，B-5 Google 矩阵，B6 正式实验结果。
+Stages match tests: B-1 core/Greedy, B-2 GA, B-3 experiments, B-4 persistence/APIs, B-5 Google, B6 formal results.
 
-| 文件 | 阶段 | 用途 |
+| File | Stage | Purpose |
 | --- | --- | --- |
-| [routing/\_\_init\_\_.py](__init__.py) | B-1 | 对外导出路线模块的公共入口（模型、矩阵、规划函数、配置加载） |
-| [routing/models.py](models.py) | B-1 | 数据模型：Crew、Depot、PlanningInput、TravelMatrix、RoutePlan、CrewRoute、Stop、未分配原因及校验 |
-| [routing/settings.py](settings.py) | B-1 | 读取 `routing.example.json`（班次、返基地、目标权重、GA 参数、矩阵来源），组装 PlanningInput |
-| [routing/matrix.py](matrix.py) | B-1 | 模拟行程矩阵（球面距离 × 绕行系数 ÷ 车速）和统一的节点顺序（基地在前，任务按快照顺序） |
-| [routing/evaluation.py](evaluation.py) | B-1 | Greedy 与 GA 共用的评估器：约束检查、解码路线、计算指标和目标值，保证两种算法口径一致 |
-| [routing/greedy.py](greedy.py) | B-1 | Greedy 基线：最早空闲的队伍优先选最紧急、最近的任务 |
-| [routing/planner.py](planner.py) | B-1 | 无状态规划入口 `plan_routes()`：一份输入 + 一个矩阵 → 校验过的 RoutePlan，并检查任务不重不漏 |
-| [routing/ga.py](ga.py) | B-2 | 自建遗传算法：顺序 + 归属双染色体、OX 交叉、四种变异、精英保留、固定种子可复现 |
-| [config/routing.example.json](../../../config/routing.example.json) | B-1 | B 的集中配置（演示假设）；B-5 增加 `travel_matrix_provider` 和 `google_routes` |
-| [experiments/routing/run_experiments.py](../../../experiments/routing/run_experiments.py) | B-3（B6 扩展） | 10/15/20 个任务的 GA（多种子）与 Greedy 对比实验，输出原始数据、收敛曲线、汇总、运行元数据和矩阵全文；B6 增加 `--matrix-provider google_routes` 和 `--unlimited-shift` |
-| [experiments/routing/plot_results.py](../../../experiments/routing/plot_results.py) | B-3（B6 扩展） | 根据保存的实验结果画对比图和收敛图（需要 matplotlib）；B6 起图标题标明矩阵来源和班次设置 |
-| [experiments/routing/README.md](../../../experiments/routing/README.md) | B-3 | 实验设计与复现说明 |
-| [crews/\_\_init\_\_.py](../crews/__init__.py) | B-4 | 队伍模块入口 |
-| [crews/schemas.py](../crews/schemas.py) | B-4 | 队伍接口的请求和响应模型（`b-crew-v1`） |
-| [crews/service.py](../crews/service.py) | B-4 | 队伍可用状态：读取、修改、幂等处理；修改时在同一事务里递增 `input_revision` |
-| [crews/api.py](../crews/api.py) | B-4 | HTTP 接口 `GET /crews`、`PATCH /crews/{id}` |
-| [routing/service.py](service.py) | B-4 | 规划服务：一致快照读取 → 取矩阵 → Greedy/GA → 写事务内复核版本后保存；方案查询和过期判断 |
-| [routing/api.py](api.py) | B-4 | HTTP 接口 `POST /route-plans/recalculate`、`GET /route-plans/latest`、`GET /route-plans/{id}` |
-| [routing/google_matrix.py](google_matrix.py) | B-5 | Google Routes 行程矩阵：分块请求、下标映射、不可达记为 null、失败报错不回退、缓存与费用保护 |
-| [experiments/routing/evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) | B6 后续 | GA 评估：Greedy、纯 GA、在线 GA 的消融对比，以及离已知最好解的差距（读取已保存的矩阵，不调用 API），见第 14 节 |
-| [tests/test_routing_ga_evaluation.py](../../../tests/test_routing_ga_evaluation.py) | B6 后续 | 测试 GA 评估脚本：已知最好解不差于任何一次运行、在线 GA 不差于 Greedy、差距只在覆盖相同时计算、拒绝被篡改的矩阵和覆盖已有输出 |
-| `experiments/routing/results/ga-evaluation-v1/` | B6 后续 | GA 评估输出：原始运行、汇总、已知最好解路线和元数据 |
-| [experiments/routing/diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) | B6 后续 | 诊断容量极紧场景中纯 GA 漏排任务的原因（读取已保存的 Google 矩阵，不调用 API、不写文件），见第 13 节 |
-| [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google 矩阵冒烟测试：建 3 个演示任务 → 重算 → 打印数据来源和各段时间 |
-| [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | 测试模型、模拟矩阵、评估器和 Greedy 的边界情况 |
-| [tests/test_routing_ga.py](../../../tests/test_routing_ga.py) | B-2 | 测试 GA 的合法性、可复现性，以及与 Greedy 约束一致 |
-| [tests/test_routing_experiments.py](../../../tests/test_routing_experiments.py) | B-3（B6 扩展） | 测试实验脚本的记录完整性、拒绝覆盖；B6 增加矩阵保存、Google 只取一次并截取、取数失败不留输出、不限班次覆盖的记录 |
-| [experiments/routing/results/README.md](../../../experiments/routing/results/README.md) | B6 | 实验结果说明：运行记录、指标表、图、结论和局限，供报告引用 |
-| `experiments/routing/results/simulated-shift480-v1/`、`simulated-unlimited-v1/` | B6 | 模拟矩阵实验输出（480 分钟班次 / 不限班次）：原始数据、收敛记录、汇总、元数据、矩阵和图 |
-| `experiments/routing/results/google-shift480-v1/`、`google-unlimited-v1/` | B6 | Google 矩阵实验输出，内容同上 |
-| [tests/test_routing_api.py](../../../tests/test_routing_api.py) | B-4 | 测试队伍接口、重算、版本冲突、方案过期、重启后保留和 v2→v3 迁移 |
-| [tests/test_routing_google_matrix.py](../../../tests/test_routing_google_matrix.py) | B-5 | 用假传输层测试 Google 矩阵的映射、分块、缓存、错误处理和“不回退”行为 |
+| [routing/\_\_init\_\_.py](__init__.py) | B-1 | Public routing exports: models, matrices, planning functions and configuration loading |
+| [routing/models.py](models.py) | B-1 | Crew, Depot, PlanningInput, TravelMatrix, RoutePlan, CrewRoute, Stop, unassigned reasons and validation |
+| [routing/settings.py](settings.py) | B-1 | Load routing.example.json shifts, return policy, objective weights, GA parameters and matrix source; assemble PlanningInput |
+| [routing/matrix.py](matrix.py) | B-1 | Simulated matrix: great-circle distance x detour factor / speed; depot first, then snapshot task order |
+| [routing/evaluation.py](evaluation.py) | B-1 | Shared Greedy/GA constraint checks, route decoding, metrics and objective evaluation |
+| [routing/greedy.py](greedy.py) | B-1 | Greedy baseline: earliest-free crew selects most urgent, nearest task |
+| [routing/planner.py](planner.py) | B-1 | Stateless plan_routes(): one input + one matrix -> validated RoutePlan, with exact task coverage |
+| [routing/ga.py](ga.py) | B-2 | Custom GA: order/owner chromosomes, OX crossover, four mutations, elitism and seeded reproduction |
+| [config/routing.example.json](../../../config/routing.example.json) | B-1 | Central demo configuration; B-5 adds travel_matrix_provider and google_routes |
+| [experiments/routing/run_experiments.py](../../../experiments/routing/run_experiments.py) | B-3 (B6 extension) | Multi-seed GA/Greedy comparison for 10/15/20 tasks; raw data, convergence, summaries, runtime metadata and full matrices; B6 adds --matrix-provider google_routes and --unlimited-shift |
+| [experiments/routing/plot_results.py](../../../experiments/routing/plot_results.py) | B-3 (B6 extension) | Plot comparisons/convergence from saved results (matplotlib); B6 titles include matrix source and shifts |
+| [experiments/routing/README.md](../../../experiments/routing/README.md) | B-3 | Experiment design and reproduction |
+| [crews/\_\_init\_\_.py](../crews/__init__.py) | B-4 | Crew module entry |
+| [crews/schemas.py](../crews/schemas.py) | B-4 | Crew request/response models (b-crew-v1) |
+| [crews/service.py](../crews/service.py) | B-4 | Read/change availability with idempotency; increment input_revision in the same transaction |
+| [crews/api.py](../crews/api.py) | B-4 | GET /crews and PATCH /crews/{id} |
+| [routing/service.py](service.py) | B-4 | Read consistent snapshot -> fetch matrix -> Greedy/GA -> recheck revision in write transaction and save; plan queries/staleness |
+| [routing/api.py](api.py) | B-4 | POST /route-plans/recalculate, GET /route-plans/latest, GET /route-plans/{id} |
+| [routing/google_matrix.py](google_matrix.py) | B-5 | Google Routes matrix: chunking, index mapping, unreachable=null, errors without fallback, caching and cost protection |
+| [experiments/routing/evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) | B6 follow-up | Greedy/pure-GA/online-GA ablation and best-known gaps using saved matrices, no API calls; section 14 |
+| [tests/test_routing_ga_evaluation.py](../../../tests/test_routing_ga_evaluation.py) | B6 follow-up | BKS no worse than any run, online GA no worse than Greedy, gaps only with equal coverage, tampered-matrix/overwrite rejection |
+| `experiments/routing/results/ga-evaluation-v1/` | B6 follow-up | GA evaluation outputs: raw runs, summary, BKS routes and metadata |
+| [experiments/routing/diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) | B6 follow-up | Diagnose pure-GA omissions at tight capacity using saved Google matrices, no API calls/writes; section 13 |
+| [experiments/routing/google_smoke.py](../../../experiments/routing/google_smoke.py) | B-5 | Google smoke test: create 3 demo tasks -> recalculate -> print provenance and leg durations |
+| [tests/test_routing_core.py](../../../tests/test_routing_core.py) | B-1 | Model, simulated matrix, evaluator and Greedy boundaries |
+| [tests/test_routing_ga.py](../../../tests/test_routing_ga.py) | B-2 | GA legality, reproducibility and shared Greedy constraints |
+| [tests/test_routing_experiments.py](../../../tests/test_routing_experiments.py) | B-3 (B6 extension) | Artifact completeness/overwrite rejection; B6 matrix retention, one Google fetch plus slicing, no output on fetch failure, unlimited-shift records |
+| [experiments/routing/results/README.md](../../../experiments/routing/results/README.md) | B6 | Report-ready experiment records, metric tables, figures, conclusions and limitations |
+| `experiments/routing/results/simulated-shift480-v1/` / `simulated-unlimited-v1/` | B6 | Simulated 480-minute/unlimited outputs: raw data, convergence, summary, metadata, matrices and plots |
+| `experiments/routing/results/google-shift480-v1/` / `google-unlimited-v1/` | B6 | Google matrix outputs with the same contents |
+| [tests/test_routing_api.py](../../../tests/test_routing_api.py) | B-4 | Crew API, recalculation, conflicts, staleness, restart persistence and v2->v3 migration |
+| [tests/test_routing_google_matrix.py](../../../tests/test_routing_google_matrix.py) | B-5 | Fake-transport Google mapping, chunking, caching, errors and no fallback |
 
-B-4 还修改了 A 的公共文件：`database.py`（v3 迁移）、`api/__init__.py`（注册路由）、`main.py`（装配服务）。这些不是新建文件，所以没有列在表里。
+B-4 also changed A's existing `database.py` (v3 migration), `api/__init__.py` (registration) and `main.py` (assembly), omitted from this new-file table.
 
-## 12. B6：路线指标与实验
+## 12. B6: routing metrics and experiments
 
-结果和分析见 [results/README.md](../../../experiments/routing/results/README.md)，设计和复现见 [experiments/routing](../../../experiments/routing/README.md)。
+Results/analysis: [results/README.md](../../../experiments/routing/results/README.md). Design/reproduction: [experiments/routing](../../../experiments/routing/README.md).
 
-| 实验 | 代码版本 | 内容 |
+| Experiment | Code | Content |
 | --- | --- | --- |
-| `simulated-shift480-v1` | `7651947` | 模拟矩阵，480 分钟班次（主实验） |
-| `simulated-unlimited-v1` | `7651947` | 模拟矩阵，不限班次（敏感性） |
-| `google-shift480-v1` | `06cb76b` | Google 矩阵，480 分钟班次 |
-| `google-unlimited-v1` | `06cb76b` | Google 矩阵，不限班次 |
+| `simulated-shift480-v1` | `7651947` | Simulated matrix, 480-minute shifts (main) |
+| `simulated-unlimited-v1` | `7651947` | Simulated matrix, unlimited shifts (sensitivity) |
+| `google-shift480-v1` | `06cb76b` | Google matrix, 480-minute shifts |
+| `google-unlimited-v1` | `06cb76b` | Google matrix, unlimited shifts |
 
-共同条件：四队、10/15/20 个任务，Greedy 运行 1 次，GA 使用种子 1～10。GA 和 Greedy 在每个场景下使用同一输入和同一矩阵。算法耗时与矩阵准备时间（Google 时即 API 等待）分开记录。每次运行都保存了矩阵全文，并记录了代码版本。
+Shared conditions: four crews, 10/15/20 tasks, one Greedy run and GA seeds 1-10. GA/Greedy share input/matrix per scenario. Algorithm runtime is separate from matrix preparation (Google API waiting). Every run retains full matrix and code version.
 
-主要结论（详见结果页第 4、6.4 节）：
+Main conclusions (results sections 4 and 6.4):
 
-- 480 分钟班次下，15、20 个任务时的主要瓶颈是班次容量，不是算法；P1 全部排上。
-- GA 的优势主要是让高优先级任务更早完成。在模拟矩阵上，代价是总行程略长。
-- **GA 并非总是更好**：Google 矩阵、480 分钟班次、15 个任务时，5/10 个种子比 Greedy 少排 1 个 P3。这些结果原样保留。
-- 数据源会改变结论：同一场景下，Greedy 在模拟矩阵上漏排 3 个任务，在 Google 矩阵上漏排 2 个。
+- At 480-minute shifts, capacity is the main bottleneck for 15/20 tasks; all P1 tasks are assigned.
+- GA mainly completes urgent work earlier; on simulated matrices total travel is slightly higher.
+- **GA is not always better**: with Google, 480-minute shifts and 15 tasks, 5/10 seeds assign one fewer P3 than Greedy. These results are preserved unchanged.
+- Source affects conclusions: in the same scenario Greedy misses three tasks with simulated travel and two with Google.
 
-B6 没有改动在线服务的代码和接口，只扩展了实验脚本、画图脚本和测试。
+B6 extended experiment/plot scripts and tests only, without changing online services or APIs.
 
-## 13. 在线 GA 从 Greedy 解出发（B6 之后的优化）
+## 13. Online GA starts from Greedy: post-B6 improvement
 
-**问题**：B6 中有一个场景（Google 矩阵、480 分钟班次、15 个任务）纯 GA 有 5/10 个种子比 Greedy 少排一个 P3。用 [diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) 诊断后，结论如下（详见[结果页 6.6 节](../../../experiments/routing/results/README.md)）：
+**Problem**: pure GA assigned one fewer P3 than Greedy in 5/10 seeds for Google/480-minute/15-task B6 input. [diagnose_tight_capacity.py](../../../experiments/routing/diagnose_tight_capacity.py) found the following ([results section 6.6](../../../experiments/routing/results/README.md)):
 
-- 15 个任务的维修时长合计正好是 4×480 分钟。加上路程最多排进 13 个，是一个极紧的装箱问题。
-- 失败种子在第 1～10 代就锁定在“排进 12 个”。剩余时间集中在一支队伍（60～79 分钟），放不下“60 分钟维修 + 往返路程”的 P3；直接插入的可行位置为 0。要多排一个，需要“先挪一个已排任务、再插入”的协同调整，而每次变异只做一个动作。
-- 把耐心代数加到 300、最大代数加到 1000，失败的仍是同样 5 个种子；改种群或变异率只是换了一批失败的种子。所以这是搜索方式的结构性问题，不是参数问题，因此不做调参。
+- Service totals exactly 4x480 minutes for 15 tasks; travel reduces maximum coverage to 13, a tight packing problem.
+- Failed seeds lock into 12 assignments in generations 1-10. Remaining capacity concentrates in one crew (60-79 minutes), insufficient for P3 service 60 plus round trip; no direct insertion is feasible. One more assignment requires coordinated relocation of an existing task followed by insertion, while each mutation performs one action.
+- Raising patience to 300 and generations to 1000 leaves the same five failed seeds. Population/mutation-rate changes only change which seeds fail. This is a structural search issue, so parameter tuning was not pursued.
 
-**处理**：在线服务追求结果好，实验追求比较公平，两者分开设置。
+**Approach**: use separate settings for online result quality and fair experimental comparisons.
 
-| 场景 | 设置 | 效果 |
+| Scenario | Setting | Effect |
 | --- | --- | --- |
-| 在线重算（`POST /route-plans/recalculate`） | `planning_service.seed_with_greedy=true`：GA 初始种群包含 Greedy 解 | 精英保留使 GA 方案按 `(未分配 P1, P2, P3, 目标值)` 不比 Greedy 差。上述场景 10/10 个种子都排进 13 个任务，目标值 668.2～670.4（Greedy 为 682.9） |
-| 实验（`run_experiments.py`） | 仍读取 `ga.seed_with_greedy=false` | 纯 GA 与 Greedy 独立比较，B6 结果不变 |
+| Online `POST /route-plans/recalculate` | `planning_service.seed_with_greedy=true`: initial population contains Greedy | Elitism guarantees no worse `(unassigned P1, P2, P3, objective)`. All 10/10 seeds assign 13 tasks here, objective 668.2-670.4 versus Greedy 682.9. |
+| `run_experiments.py` | Retains `ga.seed_with_greedy=false` | Independent pure-GA/Greedy comparison; B6 results unchanged. |
 
-- 保存的 RoutePlan 在 `algorithm_parameters.seed_with_greedy` 中记录实际设置，报告和前端可以据此说明在线 GA 是“GA + Greedy 初始解”。
-- 接口字段、数据库和前端都没有变化；在线 GA 仍然输出 `algorithm="ga"` 的独立方案。
-- 测试：`test_routing_ga.py` 用已保存的矩阵复现失败场景（纯 GA 种子 2 漏排，Greedy 初始化后 10 个种子都不差于 Greedy）；`test_routing_api.py` 检查在线方案记录了该设置且不比 Greedy 差；`test_routing_core.py` 检查两处配置各自的取值。
-- 可选的后续改进：在 GA 中加入“挪动 + 插入”的修复步骤（memetic GA）。诊断显示它能修好 5 个失败种子中的 3 个。目前未实现。
+- Saved RoutePlan `algorithm_parameters.seed_with_greedy` records actual settings, allowing reports/frontend to describe online GA as GA + Greedy initialization.
+- API fields, database and frontend are unchanged; online GA still returns an independent `algorithm="ga"` plan.
+- Tests: `test_routing_ga.py` replays saved matrices (pure seed 2 misses a task; all 10 seeded runs are no worse than Greedy). `test_routing_api.py` checks recorded settings and no-worse online plans; `test_routing_core.py` verifies both configuration values.
+- Optional future improvement: relocation+insertion repair (memetic GA). Diagnostics repair three of five failed seeds; not implemented.
 
-## 14. GA 评估（消融与离已知最好解的差距）
+## 14. GA evaluation: ablation and best-known-solution gap
 
-在线 GA 从 Greedy 出发后必然不差于 Greedy，所以“GA 是否优于 Greedy”不足以评价 GA。[evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) 在 12 个场景（模拟 / Google 矩阵 × 480 分钟 / 不限班次 × 10/15/20 个任务）上比较 Greedy、纯 GA 和在线 GA，并用大预算运行找已知最好解（BKS）作参照。结果目录 `ga-evaluation-v1`（代码 `7bb1536`），完整分析见[结果页第 7 节](../../../experiments/routing/results/README.md)。
+Since Greedy-initialized online GA cannot be worse, merely beating Greedy is insufficient evaluation. [evaluate_ga.py](../../../experiments/routing/evaluate_ga.py) compares Greedy, pure GA and online GA across 12 scenarios (simulated/Google x 480-minute/unlimited x 10/15/20 tasks), with larger-budget BKS reference runs. Outputs: `ga-evaluation-v1`, code `7bb1536`; full analysis in [results section 7](../../../experiments/routing/results/README.md).
 
-| 评估角度 | 结果 |
+| Evaluation | Result |
 | --- | --- |
-| 离 BKS 的差距 | Greedy 1.2%～5.1%；在线 GA 0.2%～1.8%，把 Greedy 的差距缩小 63%～89% |
-| 相对 Greedy | 在线 GA 120/120 次优于 Greedy，目标值平均低 0.7%～3.6%，没有一次少排任务 |
-| 消融（有无 Greedy 初始解） | 10、15 个任务时在线 GA 更接近 BKS；部分 20 个任务场景两者持平或纯 GA 略好。纯 GA 在容量极紧场景有 5/10 次少排任务，在线 GA 没有 |
-| 稳定性 | 在线 GA 的种子间波动在 8/12 个场景小于纯 GA |
-| 速度 | 默认参数 0.1～0.4 秒；约 10 倍预算（0.7～5.4 秒）的平均结果与在线 GA 相差在 ±0.8% 以内 |
+| BKS gap | Greedy 1.2%-5.1%; online GA 0.2%-1.8%, reducing Greedy's gap 63%-89% |
+| Versus Greedy | Online GA improves 120/120 runs, mean objectives 0.7%-3.6% lower, never fewer assignments |
+| Ablation: Greedy initialization | Online GA closer to BKS at 10/15 tasks; some 20-task scenarios tie or favor pure GA slightly. Pure GA loses coverage in 5/10 tight-capacity runs; online GA never does. |
+| Stability | Online seed variation lower than pure GA in 8/12 scenarios |
+| Speed | Defaults 0.1-0.4 seconds; about 10x budget (0.7-5.4 seconds) averages within +/-0.8% of online GA |
 
-局限：BKS 不保证最优，差距是下限估计；只有一组合成任务和 B6 的两份矩阵；10 个种子未做显著性检验。
+Limitations: BKS is not guaranteed optimal and gaps are lower-bound estimates; one synthetic task set and B6's two matrices; ten seeds without significance testing.

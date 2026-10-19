@@ -1,49 +1,49 @@
-# 查看 RoadGuard 数据库
+# Viewing the RoadGuard database
 
-本项目使用 SQLite，默认文件是仓库中的 `SystemCode/backend/data/roadguard.sqlite3`。无需独立启动 MySQL/PostgreSQL 服务。PyCharm 运行配置若设置了 ROADGUARD_DB_PATH，应查看该覆盖路径；相对路径按仓库根目录解析。
+The project uses SQLite, by default at `SystemCode/backend/data/roadguard.sqlite3`. No separate MySQL/PostgreSQL server is needed. If a PyCharm run configuration sets ROADGUARD_DB_PATH, inspect that overridden path; relative paths resolve against the repository root.
 
-## 先通过 Swagger 查询
+## Query through Swagger first
 
-后端启动后打开 `http://127.0.0.1:8000/docs`：
+After starting the backend, open `http://127.0.0.1:8000/docs`:
 
-| 接口 | 用途 |
+| Endpoint | Purpose |
 | --- | --- |
-| GET /api/v1/inspections | 巡检列表，默认包含各状态；每条最多一个展示框 |
-| GET /api/v1/inspections/{inspection_id} | 一次巡检的完整业务详情，包括模型、规则、审核历史；原始全部候选仅存于数据库 |
-| GET /api/v1/tasks?status=all | 全部状态的任务列表，支持分页；默认不传 status 时只返回 active |
-| GET /api/v1/tasks/{task_id} | 单个任务及其修改历史 |
-| GET /api/v1/tasks/snapshot | 全部活动任务与同一事务下的 input_revision，供规划使用 |
+| GET /api/v1/inspections | Inspections across all statuses by default; at most one display box per record |
+| GET /api/v1/inspections/{inspection_id} | Full business details, model, rules and review history; all raw candidates remain database-only |
+| GET /api/v1/tasks?status=all | Paginated tasks in all statuses; omitting status defaults to active only |
+| GET /api/v1/tasks/{task_id} | One task and its change history |
+| GET /api/v1/tasks/snapshot | All active tasks and input_revision from one transaction, for planning |
 
-新上传只返回 inspection_id、status、detection、task_id。把返回的 ID 填入详情接口，点击 Execute 即可。
+New uploads return only inspection_id, status, detection and task_id. Enter the returned ID in the detail endpoint and select Execute.
 
-## 在 PyCharm 打开数据库文件
+## Open the database in PyCharm
 
-如果你的 PyCharm 提供 Database 工具窗口：
+If your PyCharm has the Database tool window:
 
-1. 打开 **View → Tool Windows → Database**。
-2. 点击 **+ → Data Source → SQLite**。
-3. 在 File 选择当前项目的 `SystemCode/backend/data/roadguard.sqlite3`，连接已有文件。
-4. 如果提示缺驱动，点击 Download missing driver files；然后 Test Connection → OK。
-5. 展开数据库表，双击 inspections 或 tasks 查看数据；新增记录后刷新表格。
+1. Open **View → Tool Windows → Database**.
+2. Select **+ → Data Source → SQLite**.
+3. Select the existing `SystemCode/backend/data/roadguard.sqlite3` file in this project.
+4. If prompted, select Download missing driver files, then Test Connection → OK.
+5. Expand tables and double-click inspections or tasks. Refresh after new records are added.
 
-这使用 PyCharm 的 Database Tools 功能；若当前环境没有这个窗口，可直接用上面的 Swagger，无需为查看数据改后端。[JetBrains SQLite 连接说明](https://www.jetbrains.com/help/pycharm/sqlite.html)、[Database 快速入门](https://www.jetbrains.com/help/pycharm/quick-start-with-database-functionality.html)。
+This uses PyCharm Database Tools. If unavailable, use Swagger above without changing the backend. [JetBrains SQLite connections](https://www.jetbrains.com/help/pycharm/sqlite.html), [Database quick start](https://www.jetbrains.com/help/pycharm/quick-start-with-database-functionality.html).
 
-## 四张表分别是什么
+## The four tables
 
-| 表 | 内容 |
+| Table | Contents |
 | --- | --- |
-| inspections | 巡检 ID、状态、版本、创建时间；record_json 存完整原始检测/图片引用/审核记录，policy_json 存本次冻结的业务规则 |
-| tasks | 任务 ID、来源巡检、状态、版本、创建时间；record_json 存类型、优先级、工时及修改历史 |
-| operation_keys | 上传/审核/修改的幂等请求键及关联资源，防重复创建或执行 |
-| infra_metadata | 数据库结构版本与全局规划输入版本 input_revision |
+| inspections | ID/status/revision/creation time; record_json contains complete raw detections/image references/review, policy_json the frozen rules |
+| tasks | ID/source inspection/status/revision/creation time; record_json contains type, priority, duration and change history |
+| operation_keys | Idempotency keys and associated resources for upload/review/change, preventing duplicate creation/execution |
+| infra_metadata | Database schema version and global planning input_revision |
 
-图片本体保存在数据库旁边的 uploads 目录（除非覆盖 ROADGUARD_UPLOAD_PATH），数据库保存图片地址，不把图片当作二进制字段存储。默认部署模型权重另在 SystemCode/backend/roadguard/model 中。
+Images live in uploads beside the database unless ROADGUARD_UPLOAD_PATH overrides it. The database stores references rather than binary image fields. Default deployment weights are separately in SystemCode/backend/roadguard/model.
 
-业务对象的完整字段存储为 record_json，所以表格中不会每个业务字段都单独显示一列。可以查看该单元格的 JSON，或者用下面的只读 SQL 提取想看的字段。
+Complete business objects are stored in record_json, so individual business fields are not separate table columns. Inspect the JSON cell or extract fields with read-only SQL.
 
-## 常用只读 SQL
+## Common read-only SQL
 
-最近 20 条巡检：
+Latest 20 inspections:
 
 ```sql
 SELECT inspection_id, status, created_at,
@@ -54,7 +54,7 @@ ORDER BY created_at DESC
 LIMIT 20;
 ```
 
-最近 20 条任务：
+Latest 20 tasks:
 
 ```sql
 SELECT task_id, status,
@@ -66,18 +66,16 @@ ORDER BY created_at DESC
 LIMIT 20;
 ```
 
-手动查看用 SELECT；修改任务、完成、取消等通过 API 操作，使规则快照、修改历史和 input_revision 一起更新。直接改表格只改一部分字段会破坏这些一致性约定。运行数据库与上传图片均被 Git 忽略，不上传 GitHub。
+Use SELECT for manual inspection. Modify, complete and cancel through APIs so frozen rules, history and input_revision update together. Editing only some table fields breaks these consistency rules. Runtime databases/uploads are Git-ignored and must not go to GitHub.
 
-## 遇到 database is locked
+## Handling database is locked
 
-数据库查看工具如果保留未结束的查询事务，即使只运行 SELECT，也可能持有读取锁。在 SQLite 默认的回滚日志模式下，这会阻塞其他连接的写提交；另一个未结束的写事务也会阻塞写入。[SQLite 事务说明](https://www.sqlite.org/lang_transaction.html)、[锁机制说明](https://www.sqlite.org/lockingv3.html)。
+A viewer retaining an unfinished query transaction may hold a read lock even after SELECT. Under SQLite's default rollback-journal mode this can block another connection's write commit; an unfinished write transaction also blocks writes. [SQLite transactions](https://www.sqlite.org/lang_transaction.html), [locking](https://www.sqlite.org/lockingv3.html).
 
-处理方法：
+1. In PyCharm Database, right-click the RoadGuard data source and select **Disconnect**, leaving the IDE/project open. Inspect any uncommitted changes before choosing to commit or discard them.
+2. Stop the backend instance that failed startup and restart with its original Run configuration. Wait for `Application startup complete` before opening Swagger; `Uvicorn running` alone does not confirm application startup, especially with `--reload`.
+3. End queries and disconnect after viewing data to avoid long transactions; do not start duplicate backend instances.
 
-1. 在 PyCharm Database 窗口右键 RoadGuard 数据源，选择 **Disconnect**（断开连接），保留 IDE 和项目打开。若提示未提交修改，先确认内容，不要盲目提交或丢弃。
-2. 停止启动失败的后端运行实例，再用原来的 Run 配置启动；看到 `Application startup complete` 后再访问 Swagger。`Uvicorn running` 单独出现并不代表应用启动完成，尤其是 `--reload` 模式。
-3. 数据库查看完成后结束查询并断开连接，避免长时间保留事务；不要同时重复启动后端。
+Startup validation for the current schema now uses a read-only transaction. Creation/migration still uses writes. This avoids unnecessary write-lock contention during normal restart but neither bypasses external exclusive locks nor removes external transaction blocking of uploads/task changes.
 
-后端已将当前 schema 的启动校验改为只读事务；新建和迁移数据库仍通过写事务完成。这个修复避免正常重启争抢不必要的写锁，但不绕过外部独占锁，也不解除外部事务对上传保存或任务修改的阻塞。
-
-不要通过删除 `roadguard.sqlite3` 或其 `-journal`、`-wal`、`-shm` 文件来解决锁问题；这些文件可能包含尚待恢复的数据。
+Do not delete `roadguard.sqlite3` or its `-journal`, `-wal`, `-shm` files to fix locks: they may contain data awaiting recovery.

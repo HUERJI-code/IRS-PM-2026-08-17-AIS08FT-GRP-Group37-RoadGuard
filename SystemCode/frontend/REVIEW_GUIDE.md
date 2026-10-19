@@ -1,45 +1,45 @@
-# C 第 5 步：人工审核
+# C step 5: Manual review
 
-负责人 C；2026-10-16。人工审核工作区已接入现有后端，只修改 SystemCode/frontend，不改变 A/B 接口、模型、业务规则或数据库结构。
+Owner C; 2026-10-16. The review workspace connects the existing backend. Changes stay in SystemCode/frontend without altering A/B APIs, models, rules or database structure.
 
-## 使用流程
+## Workflow
 
-1. 打开 http://127.0.0.1:5173/reviews，选择实时后端接口。也可从待审核巡检结果进入。
-2. 待审列表每页 20 条，支持分页和刷新；选择记录后重新读取完整详情及最新 record_version。
-3. 对照服务端图片上的唯一检测框、模型标签、置信度、规则来源和历史记录，选择确认、纠正标签后接受或驳回。纠正选项直接读取共享八类标签字典，不在前端复制业务映射。
-4. 可填写最多 500 字备注。提交成功后刷新队列，展示后端返回的巡检、关联任务、规划输入版本和审核历史。
-5. 确认或纠正创建任务时显示后端给出的优先级与维修分钟数；驳回不创建任务。规划输入变化会提示需要重新规划，本页不自动触发重算。
+1. Open http://127.0.0.1:5173/reviews and select the live backend, or follow a pending-inspection result link.
+2. The pending list shows 20 records per page with refresh/pagination. Selecting a record reloads full details and current record_version.
+3. Check the single box on the server image, model label/confidence, rule source and history. Confirm, correct the label and accept, or reject. Correction options read the shared eight-class dictionary without copying business mappings.
+4. Add an optional note up to 500 characters. Success refreshes the queue and shows the returned inspection, linked task, planning-input revision and review history.
+5. Confirmation/correction shows backend priority and repair minutes; rejection creates no task. Input changes prompt replanning without automatically triggering it.
 
-原始模型标签与置信度作为证据保留；人工纠正结果体现在关联任务及审核历史。已处理记录只读，不能再次审核。页面区分加载、真实空队列、读取失败和刷新后可能过期的旧列表；顶部模拟来源是只读样例，禁止保存。
+Original model labels/confidence remain evidence; corrections appear in linked tasks and review history. Processed records are read-only and cannot be reviewed again. Loading, an actual empty queue, failures and potentially stale retained lists are distinct. Top-level mock sources are read-only and cannot save.
 
-## 接口对照与并发处理
+## API and concurrency
 
-| 操作 | 接口或字段 |
+| Action | Endpoint or fields |
 |---|---|
-| 待审队列 | GET /api/v1/inspections，status=pending_review、limit=20、offset |
-| 最新详情 | GET /api/v1/inspections/{inspection_id} |
-| 审核 | POST /api/v1/inspections/{inspection_id}/review |
-| 所有审核动作 | request_id、expected_version、action；可选 note |
-| confirm | 另传 detection_id，不传 damage_label |
-| correct | 另传 detection_id、damage_label |
-| dismiss | 不传 detection_id 或 damage_label |
+| Queue | GET /api/v1/inspections; status=pending_review, limit=20, offset |
+| Current details | GET /api/v1/inspections/{inspection_id} |
+| Review | POST /api/v1/inspections/{inspection_id}/review |
+| Every action | request_id, expected_version, action; optional note |
+| confirm | Include detection_id; omit damage_label |
+| correct | Include detection_id and damage_label |
+| dismiss | Omit detection_id and damage_label |
 
-提交期间防止重复点击。网络中断等未知结果保留原请求内容和 request_id，锁定编辑，只允许重试同一操作；重放结果会明确显示。旧版本、非法状态或幂等冲突停止写入，必须重新读取并检查记录，清除旧操作意图，再由用户选择新动作。
+Submission blocks duplicate clicks. Unknown outcomes retain the original payload/request_id, lock editing and permit retry of only that operation; replay is visibly identified. Stale revisions, invalid state and idempotency conflict stop writes. Reload/check the record, clear old intent and choose a new action.
 
-重试信息仅保存在当前页面内存；关闭或刷新有离开提醒，但不能跨刷新恢复。结果不确定时请留在当前审核记录，不切换数据来源或其他页面。其他队列记录在提交或未知结果期间禁用。重新进入页面不等同于恢复之前的请求。
+Retry data lives only in page memory. Closing/refreshing warns but cannot restore it. Remain on the current record for uncertain outcomes; do not change sources or pages. Other queue records are disabled during submission/uncertainty. Reopening the page does not recover the previous request.
 
-## 验证结果
+## Validation results
 
-- npm run lint、npm run test:ci、npm run build 均通过；共 5 个测试文件、55 项测试。
-- 新增 12 项审核测试，覆盖三种动作字段、共享八类标签、旧版本刷新后新请求、未知结果原请求重试、重复提交、已处理只读、模拟禁写、分页和刷新失败保留结果等。
-- scripts/export_review_fixtures.py 使用现有后端应用和临时数据库生成三种审核及重放样例；响应通过同一 OpenAPI JSON Schema 校验。
-- 共享客户端经 Vite 代理连接真实 FastAPI：三种动作均验证；错误 expected_version 返回 409 stale_record_version；相同请求重放不重复建任务或增加审核记录。confirm/correct 关联任务，dismiss 的 task 为空。
-- 浏览器实际完成一次“坑洞纠正为深坑洞”，队列刷新，记录版本更新，显示 P1、240 分钟和审核历史。390 像素手机视口无横向溢出。
-- 上述联调仅使用独立测试库、合成 PNG 与显式 demo 检测；未改动原项目业务数据，未运行真实模型，不代表视觉精度验收。临时后端为 Python 3.12，未宣称完成 Python 3.11 后端全量测试。
-- 构建成功，仍有单 JS 包超过 500 kB 的体积提示（约 525 kB，gzip 148 kB）；后续可按路由拆分。
+- npm run lint, npm run test:ci and npm run build passed: five test files, 55 tests.
+- Twelve new review tests cover action fields, eight shared labels, new requests after stale-version refresh, original-request retry, duplicate submission, processed read-only records, blocked mock writes, pagination and retained data on refresh failure.
+- scripts/export_review_fixtures.py uses the existing app and a temporary database to generate three actions/replays, validated against the same OpenAPI JSON Schemas.
+- The shared client connected through Vite to real FastAPI. All three actions passed; wrong expected_version returned 409 stale_record_version; replay created no duplicate tasks/reviews. confirm/correct linked tasks; dismiss returned null task.
+- Browser correction from pothole to deep pothole refreshed the queue/version and showed P1, 240 minutes and review history. A 390-pixel viewport had no horizontal overflow.
+- Integration used an isolated test database, synthetic PNG and explicit demo detection. Normal project data was unchanged; no real model ran and this is not vision acceptance. Temporary Python was 3.12; full Python 3.11 backend acceptance was not claimed.
+- Build succeeded with the existing >500 kB chunk warning (about 525 kB, gzip 148 kB); future route splitting remains possible.
 
-## 交付与后续
+## Delivery and next steps
 
-新增 ReviewPage、共享 InspectionImage、审核测试和样例生成脚本，并更新导航、样式及前端说明。第 2–5 步保留在 feature/c-frontend-foundation 本地功能分支，未提交、未推送；A/B 文件未改动。
+Added ReviewPage, shared InspectionImage, review tests and a fixture exporter; updated navigation, styles and docs. At this stage, steps 2–5 remained on local feature/c-frontend-foundation without commit/push; A/B files were unchanged.
 
-下一步是第 6 步任务页面；本次未提前实现任务编辑、地图、队伍或助手功能。
+Step 6 task management was next; this stage did not implement task editing, maps, crews or assistant features early.

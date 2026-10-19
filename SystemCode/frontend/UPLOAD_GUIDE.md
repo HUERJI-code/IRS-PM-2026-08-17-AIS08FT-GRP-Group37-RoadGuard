@@ -1,39 +1,39 @@
-# C 第 4 步：上传与结果
+# C step 4: Upload and results
 
-负责人 C；2026-10-16。本步接入现有 A 接口，不修改模型、规则、数据库结构或 A/B API。
+Owner C; 2026-10-16. This step connects existing A endpoints without changing models, rules, database structure or A/B APIs.
 
-## 使用
+## Usage
 
-1. 打开 `/inspections/new`，数据来源选择“实时后端接口”。顶部的只读模拟快照与表单里的模拟检测是两件事：前者禁止写入，后者会由真实后端保存显式 demo 巡检。
-2. 选择真实图片推理或模拟检测。demo 案例从 `/demo/scenarios` 读取；real 请求完全省略 scenario_id。真实推理需要后端已配置模型及其依赖。
-3. 选择一张 JPEG/PNG；前端检查非空、8 MiB、可解码与 20 MP。后端继续进行最终安全与内容校验。
-4. 填写实际拍摄位置的 WGS84 纬度/经度，确认公共机动车道路声明。Jurong 冻结边界由后端校验；前端不自行推断道路权限。本步使用坐标输入，地图选点留到地图步骤。
-5. 上传后自动进入 `/inspections/{id}`，读取完整巡检详情；accepted 另读关联任务。结果页支持直接打开和刷新。
+1. Open `/inspections/new` with “Live backend API”. The top-level read-only mock snapshot differs from the form’s mock detection: the former blocks writes, while the latter saves an explicit demo inspection through the real backend.
+2. Select real image inference or mock detection. Demo scenarios come from `/demo/scenarios`; real requests omit scenario_id entirely. Real inference requires configured backend weights and dependencies.
+3. Select one JPEG/PNG. Frontend checks a nonempty file, 8 MiB limit, decodability and 20 MP limit. Backend performs final safety/content validation.
+4. Enter actual photo coordinates in WGS84 latitude/longitude and confirm the public-motor-road declaration. Backend validates the frozen Jurong boundary; frontend does not infer road eligibility. This step uses coordinate inputs; map selection is deferred to the map stage.
+5. Successful upload navigates to `/inspections/{id}` and reads full inspection details; accepted inspections also load their task. Results support direct links and refresh.
 
-## 分流与展示
+## Routing and display
 
-- accepted：显示关联任务、后端优先级/维修时间/规则版本/建议；本页不重新规划。
-- pending_review：显示待人工复核与审核工作区入口。审核已在第 5 步接入，见 [审核使用说明](REVIEW_GUIDE.md)；待审状态不会提前建任务。
-- no_detection：显示无任务，并明确没有检测不等于道路安全。
-- rejected：只读显示保留的巡检记录。
+- accepted: show backend task, priority, repair duration, rule version and recommendation; no replanning here.
+- pending_review: show pending status and review-workspace link. Review is implemented in step 5 ([guide](REVIEW_GUIDE.md)); no task is created before confirmation.
+- no_detection: show no task and explain that no detection does not establish road safety.
+- rejected: show the retained inspection read-only.
 
-仅绘制详情返回的唯一检测框。图片使用服务端归一化 PNG，按 image_width/height 和 bbox_xyxy 原图像素用 SVG 比例叠加；不使用本地原图或不存在的标注图。图片失败保留检测与任务文字。推理模式、模型版本、自动接受策略或人工审核来源、课程演示业务规则分开展示；置信度不称为准确率。
+Only the single returned detection box is drawn. The server-normalised PNG is overlaid proportionally with SVG using image_width/height and original-pixel bbox_xyxy. The local original and nonexistent annotated images are not used. Image failure retains detection/task text. Inference mode, model version, auto-acceptance policy/manual review provenance and course-demo business rules are distinguished. Confidence is not described as accuracy.
 
-## 重试与限制
+## Retry and limitations
 
-同一次上传保存 File、metadata 和 Idempotency-Key。正在处理时禁用表单和提交；网络未知结果保留原输入并锁定，仅允许以原请求重试。明确的输入拒绝允许修正，新动作生成新 key。上传最多等待 120 秒，不自动重试；健康和一般读取仍默认 8 秒。
+One upload retains File, metadata and Idempotency-Key. Processing disables the form and duplicate submission. An uncertain network outcome retains and locks the original inputs, allowing only the original request to be retried. Explicit input rejection allows correction and a new action/key. Upload waits up to 120 seconds without automatic retry; health/general reads retain the eight-second default.
 
-上传成功即转为巡检 ID 读取；详情或关联任务失败只重试 GET，绝不重新 POST。关联任务失败仍保留巡检结果。结果页通过入口进入审核工作区，不直接编辑任务或自动重算。
+After upload success, subsequent operations read the inspection ID. Detail/task failures retry GET only, never POST again. A failed task read retains inspection results. Results link to the review workspace and do not directly edit tasks or recalculate.
 
-未确定结果时留在当前页面；关闭/刷新页有浏览器离开提醒。当前文件与重试标识仅保存在该页面内存中，不能跨刷新恢复。不要切换来源或导航离开后重新上传同一未知结果操作；后续若需要长期恢复，应增加专门持久化协议，而不是悄悄新建请求。
+Stay on the page while the outcome is uncertain; closing/refreshing triggers a browser leave warning. File and retry ID exist only in page memory and cannot survive refresh. Do not change source or navigate away and resubmit an unknown-outcome upload. Durable recovery would require an explicit persistence protocol rather than silently creating a new request.
 
-## 本轮验证
+## Stage validation
 
-- 静态检查、43 项测试、生产构建通过。
-- 通过真实 HTTP 在独立测试数据库上传合成 PNG：high_confidence、low_confidence、no_detection；各自检查上传、同 key 重放、详情、PNG 和关联任务。首次 201，重放 200，无新增重复任务。
-- 浏览器实际完成 demo 高置信度上传，显示一个框和 P2/120 分钟任务；390 像素视口无横向溢出，图片与叠加框显示区域同为 293×219.75。
-- 新增测试覆盖重复提交、未知结果原 key 重试、详情失败只读取、任务读取失败、demo 字段、四种状态、图片错误与限制、坐标/道路声明和只读模式。
-- 本次使用合成图片与 demo 检测；真实模型未运行，不把结果作为视觉模型精度证据。后端沿用独立测试库，未修改原项目业务数据。
-- 构建有单 JS 包超过 500 kB 的体积提示（约 512 kB，gzip 144 kB），构建成功；后续页面完善时可按路由拆分。
+- Static checks, 43 tests and production build passed.
+- Real HTTP with an isolated test database uploaded synthetic PNGs for high_confidence, low_confidence and no_detection. Each verified upload, same-key replay, details, PNG and linked task. Initial 201 and replay 200 created no duplicate tasks.
+- Browser demo high-confidence upload displayed one box and a P2/120-minute task. At 390 pixels, no horizontal overflow occurred; image and overlay both measured 293×219.75.
+- Added tests cover duplicate submission, original-key retry, read-only detail retry, task-read failure, demo fields, four statuses, image errors/limits, coordinates/road declaration and read-only mode.
+- Synthetic images/demo detection were used. No real model ran; this is not vision-accuracy evidence. The isolated backend database left ordinary project data unchanged.
+- Build succeeded with a >500 kB JS-chunk warning (about 512 kB, gzip 144 kB); route splitting may be added later.
 
-代码仍为本地未提交、未推送成果。第 5 步人工审核现已接入，见 REVIEW_GUIDE.md。
+At this stage, code remained local, uncommitted and unpushed. Step 5 review is now connected; see REVIEW_GUIDE.md.

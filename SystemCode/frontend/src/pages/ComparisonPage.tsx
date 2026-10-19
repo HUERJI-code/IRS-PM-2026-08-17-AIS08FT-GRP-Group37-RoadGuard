@@ -10,19 +10,19 @@ import { assessPair, numberText, percentageChange, priorities, type Pair, type P
 
 type MetricRow = { label: string; unit: string; read: (plan: Plan) => number | null; percent?: boolean; note?: string }
 const rows: MetricRow[] = [
-  { label: '已分配任务', unit: '项', read: (p) => p.metrics.assigned_task_count },
-  { label: '未分配任务', unit: '项', read: (p) => p.metrics.unassigned_task_count },
-  ...priorities.map((priority) => ({ label: `${priority} 未分配`, unit: '项', read: (p: Plan) => p.metrics.unassigned_by_priority[priority] ?? null })),
-  { label: '总行程', unit: '分钟', read: (p) => p.metrics.total_travel_minutes, percent: true, note: '包含基地至首站；返程是否计入以保存配置为准。' },
-  { label: '总维修时长', unit: '分钟', read: (p) => p.metrics.total_service_minutes },
-  { label: '最晚收工时间', unit: '分钟', read: (p) => p.metrics.makespan_minutes, percent: true, note: '从统一出发时刻到最晚可用队伍结束，按配置含返基地。' },
-  { label: '工作量标准差', unit: '分钟', read: (p) => p.metrics.workload_std_minutes, percent: true, note: '可用队伍的行程加维修；闲置计 0，停用不计入。' },
-  { label: '优先级加权平均完工时间', unit: '分钟', read: (p) => p.metrics.priority_weighted_completion_minutes, percent: true, note: '来自后端的加权平均值，不是延误。' },
-  { label: '有期限的任务', unit: '项', read: (p) => p.metrics.tasks_with_due_at },
-  { label: '总延误', unit: '分钟', read: (p) => p.metrics.tasks_with_due_at === 0 ? null : p.metrics.total_lateness_minutes, percent: true, note: '无期限无法计算；有期限时仅统计已分配任务的延误，须同时查看未分配项。' },
-  { label: '延误任务', unit: '项', read: (p) => p.metrics.tasks_with_due_at === 0 ? null : p.metrics.late_task_count },
-  { label: '目标值', unit: '加权分钟', read: (p) => p.metrics.objective_value, percent: true, note: '后端先比较未分配 P1 / P2 / P3，再比较加权成本，不能只看目标值。' },
-  { label: '算法耗时', unit: '毫秒', read: (p) => p.metrics.algorithm_runtime_ms, percent: true, note: '不包含行程矩阵准备或外部 API 等待，不是维修完工时长。' },
+  { label: 'Assigned tasks', unit: 'tasks', read: (p) => p.metrics.assigned_task_count },
+  { label: 'Unassigned tasks', unit: 'tasks', read: (p) => p.metrics.unassigned_task_count },
+  ...priorities.map((priority) => ({ label: `${priority} Unassigned`, unit: 'tasks', read: (p: Plan) => p.metrics.unassigned_by_priority[priority] ?? null })),
+  { label: 'Total travel', unit: 'min', read: (p) => p.metrics.total_travel_minutes, percent: true, note: 'Includes depot-to-first-stop travel; return travel follows the saved configuration.' },
+  { label: 'Total repair time', unit: 'min', read: (p) => p.metrics.total_service_minutes },
+  { label: 'Makespan', unit: 'min', read: (p) => p.metrics.makespan_minutes, percent: true, note: 'From the shared start time until the last available crew finishes, including depot return when configured.' },
+  { label: 'Workload standard deviation', unit: 'min', read: (p) => p.metrics.workload_std_minutes, percent: true, note: 'Travel plus repairs for available crews; idle crews count as 0, unavailable crews are excluded.' },
+  { label: 'Priority-weighted mean completion time', unit: 'min', read: (p) => p.metrics.priority_weighted_completion_minutes, percent: true, note: 'Backend weighted mean; this is not lateness.' },
+  { label: 'Tasks with deadlines', unit: 'tasks', read: (p) => p.metrics.tasks_with_due_at },
+  { label: 'Total lateness', unit: 'min', read: (p) => p.metrics.tasks_with_due_at === 0 ? null : p.metrics.total_lateness_minutes, percent: true, note: 'Cannot calculate without deadlines. With deadlines, lateness covers assigned tasks only; also check unassigned tasks.' },
+  { label: 'Late tasks', unit: 'tasks', read: (p) => p.metrics.tasks_with_due_at === 0 ? null : p.metrics.late_task_count },
+  { label: 'Objective value', unit: 'weighted min', read: (p) => p.metrics.objective_value, percent: true, note: 'The backend compares unassigned P1 / P2 / P3 counts before weighted cost. Do not assess the objective value alone.' },
+  { label: 'Algorithm runtime', unit: 'ms', read: (p) => p.metrics.algorithm_runtime_ms, percent: true, note: 'Excludes travel-matrix preparation and external API waiting. This is not repair completion time.' },
 ]
 
 export default function ComparisonPage() {
@@ -69,47 +69,47 @@ export default function ComparisonPage() {
   const stale = data && [ga, greedy].some((p) => p && (p.is_stale || p.input_revision !== data.revision))
   return <>
     <div className="page-heading">
-      <p className="eyebrow">方案比较 / 05</p><h1>算法比较</h1>
-      <p className="description">比较保存的 GA 与 Greedy 结果，先核对同轮依据，再查看任务覆盖与各项指标。</p>
+      <p className="eyebrow">PLAN COMPARISON / 05</p><h1>Algorithm comparison</h1>
+      <p className="description">Compare saved GA and Greedy results. Verify the same run first, then review coverage and metrics.</p>
     </div>
-    <div className="map-controls"><button className="button" disabled={busy} onClick={() => setRefresh((n) => n + 1)}>重新读取比较</button><Link className="button secondary" to="/routes">前往四队路线重算</Link></div>
-    {mode !== 'live' && <p className="notice">只读模拟样例；不代表真实规划或实验结果。</p>}
+    <div className="map-controls"><button className="button" disabled={busy} onClick={() => setRefresh((n) => n + 1)}>Reload comparison</button><Link className="button secondary" to="/routes">Recalculate in four-crew routes</Link></div>
+    {mode !== 'live' && <p className="notice">Read-only mock example; not actual planning or experimental evidence.</p>}
     {busy && <LoadingState />}
-    {error !== null && <><ErrorState error={error} /><p>比较读取失败，未展示未核实的差异；重试只读取方案，不会重新计算。</p></>}
+    {error !== null && <><ErrorState error={error} /><p>Comparison loading failed; unverified differences are hidden. Retrying only reads plans and does not recalculate.</p></>}
     {data && check && <>
-      <section className="notice" aria-label="比较依据">
-        <h2>{check.comparable ? '同轮方案已核对' : '暂不能确认可比'}</h2>
+      <section className="notice" aria-label="Comparison basis">
+        <h2>{check.comparable ? 'Same-run plans verified' : 'Comparability not verified'}</h2>
         {check.reasons.map((reason) => <p key={reason}>{reason}</p>)}
-        {!run && <p>从四队路线发起重算后再进入此页，可保留同轮依据。页面刷新或切换数据来源会清除该依据；不会仅凭相同时间或版本恢复。</p>}
-        {run && <p>本轮输入版本 {run.input_revision} · {run.task_count} 项任务 · 矩阵 {run.matrix_provider} · {run.matrix_is_simulated ? '模拟行程' : '外部行程数据'} · 取数时间 {formatSingaporeTime(run.matrix_generated_at)}</p>}
-        <p>{stale ? '方案已过期，仅供历史比较；当前安排需要重新规划。' : '状态以本次读取为准，不保证此后输入未变化。'} 最近读取输入版本：{data.revision}。</p>
-        {check.comparable && !check.sameCoverage && <p>两方案分配的任务集合不同：保留任务数量差异，时间和目标值仅展示原值，不计算百分比。</p>}
+        {!run && <p>Recalculate in four-crew routes before opening this page to retain same-run evidence. Refreshing or changing sources clears this evidence; matching times or revisions alone cannot restore it.</p>}
+        {run && <p>Run input revision {run.input_revision} · Tasks: {run.task_count} · Matrix {run.matrix_provider} · {run.matrix_is_simulated ? 'Simulated travel' : 'External travel data'} · Retrieved {formatSingaporeTime(run.matrix_generated_at)}</p>}
+        <p>{stale ? 'The plan is stale and is shown for historical comparison only. Replan the current schedule.' : 'Status reflects this read and does not guarantee that inputs have stayed unchanged.'} Latest input revision:{data.revision}. </p>
+        {check.comparable && !check.sameCoverage && <p>The assigned task sets differ. Task-count differences remain available; time and objective values are shown without percentage comparisons.</p>}
       </section>
-      {ga && greedy && <div className="comparison-overview" aria-label="两种方案概览">
-        <div><p className="eyebrow">01 / 任务覆盖</p><h3>先确认哪些任务得到安排</h3><p><strong>GA {ga.metrics.assigned_task_count}</strong><span>Greedy {greedy.metrics.assigned_task_count}</span></p><small>已分配任务数；未分配原因见下方详情。</small></div>
-        <div><p className="eyebrow">02 / 行程时间</p><h3>再看队伍需要行驶多久</h3><p><strong>GA {numberText(ga.metrics.total_travel_minutes)}</strong><span>Greedy {numberText(greedy.metrics.total_travel_minutes)}</span></p><small>单位：分钟。分配任务集合不同时不作比例比较。</small></div>
+      {ga && greedy && <div className="comparison-overview" aria-label="Two-plan overview">
+        <div><p className="eyebrow">01 / Task coverage</p><h3>Check which tasks are scheduled first</h3><p><strong>GA {ga.metrics.assigned_task_count}</strong><span>Greedy {greedy.metrics.assigned_task_count}</span></p><small>Assigned task counts; see unassigned reasons below.</small></div>
+        <div><p className="eyebrow">02 / Travel time</p><h3>Then check crew travel time</h3><p><strong>GA {numberText(ga.metrics.total_travel_minutes)}</strong><span>Greedy {numberText(greedy.metrics.total_travel_minutes)}</span></p><small>Unit: minutes. No percentage comparison when assigned task sets differ.</small></div>
       </div>}
-      {ga && greedy && <section className="review-record comparison-panel" aria-label="指标比较">
-        <h2>指标对照</h2>
-        <p className="comparison-mobile-hint">窄屏可左右滑动表格，查看两种算法和变化列。</p>
-        <p>变化率 =（GA − Greedy）÷ Greedy；负值表示数值减少，正值表示增加。单项减少不等于整体更优，也不代表金额节省。</p>
-        <div className="comparison-scroll" role="region" aria-label="可横向滚动的指标表" tabIndex={0}>
-          <table className="comparison-table"><caption>保存方案指标与相对 Greedy 的变化</caption><thead><tr><th scope="col">指标</th><th scope="col">GA</th><th scope="col">Greedy</th><th scope="col">变化</th></tr></thead>
+      {ga && greedy && <section className="review-record comparison-panel" aria-label="Metric comparison">
+        <h2>Metrics side by side</h2>
+        <p className="comparison-mobile-hint">On narrow screens, scroll horizontally to view both algorithms and the change column.</p>
+        <p>Percentage change = (GA − Greedy)÷ Greedy; Negative values indicate a decrease; positive values indicate an increase. A decrease in one metric does not establish a better overall result or monetary savings.</p>
+        <div className="comparison-scroll" role="region" aria-label="Horizontally scrollable metrics table" tabIndex={0}>
+          <table className="comparison-table"><caption>Saved plan metrics and change relative to Greedy</caption><thead><tr><th scope="col">Metric</th><th scope="col">GA</th><th scope="col">Greedy</th><th scope="col">Change</th></tr></thead>
             <tbody>{rows.map((row) => {
               const a = row.read(ga), b = row.read(greedy)
-              const showChange = check.comparable && (row.unit === '项' || check.sameCoverage)
-              return <tr key={row.label}><th scope="row">{row.label}<small>{row.unit}</small></th><td>{a === null ? '无法计算' : numberText(a)}</td><td>{b === null ? '无法计算' : numberText(b)}</td><td>{!showChange ? '不比较' : row.percent ? percentageChange(a, b) : a === null || b === null ? '无法计算' : `${a - b > 0 ? '+' : ''}${numberText(a - b)} ${row.unit}`}</td></tr>
+              const showChange = check.comparable && (row.unit === 'tasks' || check.sameCoverage)
+              return <tr key={row.label}><th scope="row">{row.label}<small>{row.unit}</small></th><td>{a === null ? 'Not calculable' : numberText(a)}</td><td>{b === null ? 'Not calculable' : numberText(b)}</td><td>{!showChange ? 'Not compared' : row.percent ? percentageChange(a, b) : a === null || b === null ? 'Not calculable' : `${a - b > 0 ? '+' : ''}${numberText(a - b)} ${row.unit}`}</td></tr>
             })}</tbody>
           </table>
         </div>
-        <details><summary>指标口径与限制</summary><ul>{rows.filter((r) => r.note).map((r) => <li key={r.label}><strong>{r.label}：</strong>{r.note}</li>)}</ul></details>
-        <p>这是单次在线结果，不能代替多随机种子实验，不能据此宣称 GA 总是更好。</p>
+        <details><summary>Metric definitions and limitations</summary><ul>{rows.filter((r) => r.note).map((r) => <li key={r.label}><strong>{r.label}: </strong>{r.note}</li>)}</ul></details>
+        <p>This is a single online result, not a substitute for experiments with multiple random seeds or evidence that GA is always better.</p>
       </section>}
       <div className="comparison-plans">{(['ga', 'greedy'] as const).map((algorithm) => {
         const plan = data.pair[algorithm]
-        return <section className="review-record comparison-panel" aria-label={`${algorithm.toUpperCase()} 方案详情`} key={algorithm}>
-          <h2>{algorithm === 'ga' ? 'GA' : 'Greedy'} 方案</h2>
-          {!plan ? <p>尚未找到保存方案，不等于有效的空任务方案。</p> : <PlanDetails plan={plan} />}
+        return <section className="review-record comparison-panel" aria-label={`${algorithm.toUpperCase()} Plan details`} key={algorithm}>
+          <h2>{algorithm === 'ga' ? 'GA' : 'Greedy'} Plan</h2>
+          {!plan ? <p>No saved plan found. This differs from a valid plan with no tasks.</p> : <PlanDetails plan={plan} />}
         </section>
       })}</div>
     </>}
@@ -120,15 +120,15 @@ function PlanDetails({ plan }: { plan: Plan }) {
   const seeded = plan.algorithm_parameters.seed_with_greedy
   return <>
     <p className="record-id">{plan.plan_id}</p>
-    <p>输入版本 {plan.input_revision} · 规划结果 · 任务来源 {plan.task_source}</p>
-    <p>行程来源：{plan.matrix_provider}（{plan.matrix_is_simulated ? '模拟矩阵' : '外部行程数据'}）</p>
-    <p>开始：{formatSingaporeTime(plan.planning_start_at)}<br />最晚收工：{stopTime(plan.planning_start_at, plan.metrics.makespan_minutes)}</p>
-    {plan.algorithm === 'ga' && <p>{seeded === true ? 'GA + Greedy 初始解' : seeded === false ? 'GA 未使用 Greedy 初始解' : '未提供是否使用 Greedy 初始解'}；随机种子 {plan.random_seed ?? '未提供'}。在线设置不能与纯 GA 历史实验混用。</p>}
-    <p>返基地：{plan.settings.return_to_depot ? '是' : '否'}；班次：{plan.settings.shift_limit.mode === 'limited' ? `${plan.settings.shift_limit.minutes} 分钟` : '明确不限时'}。保存配置：{plan.settings.config_version}。</p>
-    <h3>队伍工作量</h3>
-    <ul>{plan.crew_routes.map((route) => <li key={route.crew_id}>{route.crew_id} · {{ assigned: '已分配', idle: '闲置', unavailable: '停用' }[route.status]} · {route.stops.length} 项任务 · {numberText(route.total_work_minutes)} 分钟</li>)}</ul>
-    <h3>未分配任务与原因</h3>
-    {plan.unassigned_tasks.length === 0 ? <p>未分配 0 项。</p> : <ul>{plan.unassigned_tasks.map((task) => <li key={task.task_id}><Link to={`/tasks?task=${encodeURIComponent(task.task_id)}`}>{task.task_id}</Link> · {unassignedReasons[task.reason] ?? task.reason}<details><summary>原因代码</summary><code>{task.reason}</code></details></li>)}</ul>}
-    <details><summary>保存的目标权重与算法参数</summary><pre>{JSON.stringify({ settings: plan.settings, algorithm_parameters: plan.algorithm_parameters, random_seed: plan.random_seed }, null, 2)}</pre></details>
+    <p>Input revision {plan.input_revision} · Planning result · Task source {plan.task_source}</p>
+    <p>Travel source:{plan.matrix_provider} ({plan.matrix_is_simulated ? 'Simulated matrix' : 'External travel data'})</p>
+    <p>Start:{formatSingaporeTime(plan.planning_start_at)}<br />Latest finish:{stopTime(plan.planning_start_at, plan.metrics.makespan_minutes)}</p>
+    {plan.algorithm === 'ga' && <p>{seeded === true ? 'GA + Greedy Initial solution' : seeded === false ? 'GA Greedy initial solution not used' : 'Use of Greedy initial solution not provided'}; Random seed {plan.random_seed ?? 'Not provided'}. Do not mix online settings with historical pure-GA experiments.</p>}
+    <p>Return to depot:{plan.settings.return_to_depot ? 'Yes' : 'No'}; Shift:{plan.settings.shift_limit.mode === 'limited' ? `${plan.settings.shift_limit.minutes} min` : 'Explicitly unlimited'}. Saved configuration:{plan.settings.config_version}. </p>
+    <h3>Crew workload</h3>
+    <ul>{plan.crew_routes.map((route) => <li key={route.crew_id}>{route.crew_id} · {{ assigned: 'Assigned', idle: 'Idle', unavailable: 'Unavailable' }[route.status]} · Tasks: {route.stops.length} · {numberText(route.total_work_minutes)} min</li>)}</ul>
+    <h3>Unassigned tasks and reasons</h3>
+    {plan.unassigned_tasks.length === 0 ? <p>0 unassigned tasks.</p> : <ul>{plan.unassigned_tasks.map((task) => <li key={task.task_id}><Link to={`/tasks?task=${encodeURIComponent(task.task_id)}`}>{task.task_id}</Link> · {unassignedReasons[task.reason] ?? task.reason}<details><summary>Reason code</summary><code>{task.reason}</code></details></li>)}</ul>}
+    <details><summary>Saved objective weights and algorithm parameters</summary><pre>{JSON.stringify({ settings: plan.settings, algorithm_parameters: plan.algorithm_parameters, random_seed: plan.random_seed }, null, 2)}</pre></details>
   </>
 }

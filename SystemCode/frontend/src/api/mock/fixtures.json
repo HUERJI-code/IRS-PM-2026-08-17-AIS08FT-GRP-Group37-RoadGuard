@@ -316,31 +316,31 @@
       "scenarios": [
         {
           "scenario_id": "high_confidence",
-          "description": "演示：单个高置信度坑洞；固定合成结果，不读取图片。"
+          "description": "Demo: one high-confidence pothole; a fixed synthetic result without image analysis."
         },
         {
           "scenario_id": "low_confidence",
-          "description": "演示：单个低置信度坑洞，供人工复核分流测试。"
+          "description": "Demo: one low-confidence pothole for manual-review routing tests."
         },
         {
           "scenario_id": "no_detection",
-          "description": "演示：没有检测结果，不代表实际图片未发现损坏。"
+          "description": "Demo: no detection; this does not establish that the actual image has no damage."
         },
         {
           "scenario_id": "multiple_detections",
-          "description": "演示：纵向裂缝 0.98 与深坑洞 0.90，用于验证业务选取不只看最高置信度。"
+          "description": "Demo: longitudinal crack at 0.98 and deep pothole at 0.90, verifying that selection considers more than confidence."
         },
         {
           "scenario_id": "mixed_confidence",
-          "description": "演示：高置信度坑洞与低置信度深坑洞，供整次巡检待复核测试。"
+          "description": "Demo: high-confidence pothole and low-confidence deep pothole for inspection-review tests."
         },
         {
           "scenario_id": "threshold_boundary",
-          "description": "演示：置信度恰好为演示阈值候选 0.60；该值不是正式批准阈值。"
+          "description": "Demo: confidence exactly at the demo threshold candidate of 0.60; this is not a formally approved threshold."
         },
         {
           "scenario_id": "below_threshold",
-          "description": "演示：置信度 0.5999，供演示阈值候选 0.60 下方的边界测试。"
+          "description": "Demo: confidence 0.5999 for boundary testing below the demo threshold candidate of 0.60."
         }
       ]
     },
@@ -1174,31 +1174,31 @@
       "scenarios": [
         {
           "scenario_id": "high_confidence",
-          "description": "演示：单个高置信度坑洞；固定合成结果，不读取图片。"
+          "description": "Demo: one high-confidence pothole; a fixed synthetic result without image analysis."
         },
         {
           "scenario_id": "low_confidence",
-          "description": "演示：单个低置信度坑洞，供人工复核分流测试。"
+          "description": "Demo: one low-confidence pothole for manual-review routing tests."
         },
         {
           "scenario_id": "no_detection",
-          "description": "演示：没有检测结果，不代表实际图片未发现损坏。"
+          "description": "Demo: no detection; this does not establish that the actual image has no damage."
         },
         {
           "scenario_id": "multiple_detections",
-          "description": "演示：纵向裂缝 0.98 与深坑洞 0.90，用于验证业务选取不只看最高置信度。"
+          "description": "Demo: longitudinal crack at 0.98 and deep pothole at 0.90, verifying that selection considers more than confidence."
         },
         {
           "scenario_id": "mixed_confidence",
-          "description": "演示：高置信度坑洞与低置信度深坑洞，供整次巡检待复核测试。"
+          "description": "Demo: high-confidence pothole and low-confidence deep pothole for inspection-review tests."
         },
         {
           "scenario_id": "threshold_boundary",
-          "description": "演示：置信度恰好为演示阈值候选 0.60；该值不是正式批准阈值。"
+          "description": "Demo: confidence exactly at the demo threshold candidate of 0.60; this is not a formally approved threshold."
         },
         {
           "scenario_id": "below_threshold",
-          "description": "演示：置信度 0.5999，供演示阈值候选 0.60 下方的边界测试。"
+          "description": "Demo: confidence 0.5999 for boundary testing below the demo threshold candidate of 0.60."
         }
       ]
     }

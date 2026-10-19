@@ -37,20 +37,20 @@ export default function HealthStatus() {
   }, [attempt, api])
 
   return (
-    <section className={`connection connection-${state.kind}`} aria-label="服务连接">
+    <section className={`connection connection-${state.kind}`} aria-label="Service connection">
       <div role="status" aria-live="polite">
         <span className={`status-dot ${state.kind}`} aria-hidden="true" />
-        {state.kind === 'loading' && '正在检查服务…'}
+        {state.kind === 'loading' && 'Checking service…'}
         {state.kind === 'ready' &&
-          `${mock ? '模拟连接状态' : '应用与数据库已连接'} · 输入版本 ${state.health.input_revision}`}
+          `${mock ? 'Mock connection status' : 'Application and database connected'} · Input revision ${state.health.input_revision}`}
         {state.kind === 'error' && (
           <>
-            暂时无法连接服务，或返回格式不符合约定：{errorMessage(state.error)}
+            Cannot connect to the service, or the response does not match the contract:{errorMessage(state.error)}
           </>
         )}
       </div>
-      <details className="connection-details"><summary>连接说明</summary><p>
-        连接状态是最近一次检查的快照，不代表模型、路线服务或助手已就绪；业务修改后可重新检查。
+      <details className="connection-details"><summary>Connection details</summary><p>
+        This status is a snapshot of the latest check. It does not establish model, routing or assistant readiness. Check again after business changes.
       </p></details>
       <button
         className="text-button"
@@ -60,7 +60,7 @@ export default function HealthStatus() {
           setAttempt((value) => value + 1)
         }}
       >
-        重新检查连接
+        Check connection again
       </button>
     </section>
   )

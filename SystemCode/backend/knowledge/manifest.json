@@ -1,14 +1,14 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v8",
-  "language": "zh-CN",
+  "package_version": "a-knowledge-v9",
+  "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
   "review": {
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
-    "reviewed_on": "2026-10-18",
-    "note": "Targeted v8 maintenance: authenticated human actions and workflow schema/service source digests. Existing records remain unchanged. Other stage descriptions still require review before assistant ingestion. Account authentication is not engineering accreditation."
+    "reviewed_on": "2026-10-19",
+    "note": "English translation maintenance: text, acceptance specifications, label display values and integrity digests updated. Citation anchors and business behavior are unchanged. Historical stage descriptions still require review before assistant ingestion; authentication is not engineering accreditation."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -28,7 +28,7 @@
       "source_id": "src-label-schema",
       "path": "SystemCode/model/label_schema.json",
       "version": "rdd2022es-v1-labels-1",
-      "sha256": "8b6e9932904e70ebc7e406e93a1c4ac4958f10f91f16a93b309f5a0487af33e7"
+      "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e"
     },
     {
       "source_id": "src-demo-rules",
@@ -111,10 +111,10 @@
     {
       "document_id": "rg-kb-scope",
       "path": "01_scope.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "c30cf4dc794b5749b757f9095d82f9ef1f5c3b5c4b60ac503cc75fe3f462ee8a",
+      "sha256": "37f81b39d01b34d602c8a85b12aa1febdda38654731a94d7150b6c7835cb2e11",
       "sections": [
         {
           "section_id": "scope-baseline",
@@ -153,10 +153,10 @@
     {
       "document_id": "rg-kb-labels",
       "path": "02_labels.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "9c5663785cc380de66c9a9cb23d21962a4155345d33d33d7858f323e6a644e00",
+      "sha256": "ae1008afaf6e9771ca000feca318c29210a221a8186303267c848f44cff3e260",
       "sections": [
         {
           "section_id": "label-table",
@@ -181,10 +181,10 @@
     {
       "document_id": "rg-kb-demo-rules",
       "path": "03_demo_rules.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "dda203ad327432f1ca61702bc67c097a75dd4c9c5f5b0644d7af124bfc153eab",
+      "sha256": "d7a2527672ed00b682ea9e083bb2afabece4c775a5af5073121e9477d1037a64",
       "sections": [
         {
           "section_id": "demo-rule-table",
@@ -220,10 +220,10 @@
     {
       "document_id": "rg-kb-workflow",
       "path": "04_workflow.md",
-      "document_version": "5",
+      "document_version": "6",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "a120b824cd953a6bb4e5621da74f8d4bde4f9090bc0830c74d8601d2d4bad0cf",
+      "sha256": "640ccc215716b8f1ad2643aeca14390c828e5b85c5f7a4f6b60c6e486333fadf",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -262,10 +262,10 @@
     {
       "document_id": "rg-kb-assistant",
       "path": "05_assistant_boundaries.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "45f461f9571b187d938d9c5e7b3c5a5c5c424ce09f0cceb66e289246873a327d",
+      "sha256": "9d54ed5cf5f6c3d1c0ed3abe27c9d57a0d9b8e931f0f5b25b7c3255b80f67407",
       "sections": [
         {
           "section_id": "assistant-plan-facts",
@@ -313,10 +313,10 @@
     {
       "document_id": "rg-kb-pending",
       "path": "06_pending_decisions.md",
-      "document_version": "4",
+      "document_version": "5",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "48fe20d20da0fb8e25c9326465c79665ebc4cef2e82b089d34746dd028b725e2",
+      "sha256": "620bd46f00ec9c482cc9ed722c88c69a43bc11cf65bcb56b9d1fa57fcf4340e8",
       "sections": [
         {
           "section_id": "pending-business",
@@ -345,11 +345,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "b6cba9f14d0a0ddc18afb4ba37c91f3a8dd78741fdb4178864f401fe4d3bef24",
+    "sha256": "5e0599be68430ace626b570423a561a2ddc12e8b96d11d6cf4bd06cd77aaf4ac",
     "case_count": 10
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "262d78191f24e759fb59661e436ca1fb2ffb654ed934f39ceb7c410712c8fbb9"
+    "sha256": "4a1084a1a03b96854719d3fd89250d9410e18f51779051e69c9e407b7cf8f0ea"
   }
 }

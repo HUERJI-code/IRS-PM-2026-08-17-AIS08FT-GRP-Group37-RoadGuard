@@ -1,25 +1,25 @@
-# YOLO11n / YOLO11s 的 30 epoch 配对实验
+# YOLO11n / YOLO11s paired 30-epoch experiment
 
-负责人 A；2026-10-13 在已完成的 10 epoch 基线验证误差分析之后，授权分别训练 n / s 两个 30 epoch 模型。本文是实验协议，不代表训练完成或准确率验收。10 epoch 基线和其后端模型清单保留，不覆盖。
+Owner: A. On 2026-10-13, after validation-error analysis of the completed 10-epoch baseline, the owner authorized separate 30-epoch n/s training. This is the protocol, not a completion/accuracy claim. Preserve the 10-epoch baseline and backend manifest without overwrite.
 
-## 预先固定的协议
+## Preregistered protocol
 
-两组使用同一份 `Dataset/baseline10-config.json` 的输入、推理参数和训练参数，仅将 epoch 和 patience 都改为 30，并分别使用官方 COCO 预训练的 `yolo11n.pt` / `yolo11s.pt` 独立初始化。不能从 n 的 10 epoch 检查点续训到 30，也不能用 n 检查点初始化 s。各自中断后可以用该运行自己的完整恢复检查点继续到原定 30 epoch。
+Both runs use inputs, inference and training parameters from the same `Dataset/baseline10-config.json`, changing only epochs/patience to 30 and independently initializing from official COCO-pretrained `yolo11n.pt`/`yolo11s.pt`. Do not extend the 10-epoch n checkpoint to 30 or initialize s from n. Interrupted runs may resume their own full recovery checkpoints to the originally planned 30 epochs.
 
-共同参数：seed 42、deterministic true、imgsz 640、batch 32、workers 4、device 0、amp false、cache false、fliplr 0、AdamW、lr0 0.001、lrf 0.01、warmup_epochs 1、close_mosaic 2。nbs 为 64，名义梯度累积为 2，名义有效 batch 为 64；warmup 期间累积步数由库调整。实际 batch 必须保持 32；OOM 自动缩小 batch 会被训练 guard 拒绝，不能静默变成不公平的比较。完整保留 best、last、latest / previous recovery 和实验日志。
+Shared parameters: seed 42, deterministic true, imgsz 640, batch 32, workers 4, device 0, amp false, cache false, fliplr 0, AdamW, lr0 0.001, lrf 0.01, warmup_epochs 1, close_mosaic 2. nbs=64 gives nominal accumulation 2 and nominal effective batch 64; the library adjusts accumulation during warmup. Actual batch must stay 32; the guard rejects automatic OOM batch reduction rather than silently create an unfair comparison. Retain best, last, latest/previous recovery and logs.
 
-两组运行名为 `yolo11n-rdd2022es-compare30-seed42` 和 `yolo11s-rdd2022es-compare30-seed42`。训练文件、数据 manifest、audit、split summary、预训练来源和哈希、准备计划及完整运行证据均放在忽略的 `Dataset/` 内。固定训练代码后应先提交，随后整个配对运行期间保持代码和输入不变；小型、去绝对路径的汇总可以由操作者复制到 `SystemCode/experiments/vision/` 供版本控制。
+Run names: `yolo11n-rdd2022es-compare30-seed42` and `yolo11s-rdd2022es-compare30-seed42`. Training files, data manifest/audit/split summary, pretrained provenance/hashes, preparation plan and full evidence stay in ignored `Dataset/`. Commit frozen training code first, then keep code/inputs unchanged throughout the pair. The operator may copy small summaries without absolute paths into `SystemCode/experiments/vision/` for version control.
 
-权重均来自 Ultralytics assets v8.3.0，n SHA-256 为 `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`，s 为 `85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5`。这些哈希是本次本地资产核验记录；s 下载时 GitHub 元数据没有发布 digest，不能称为发布方签名验证。工具只使用已有本地权重，缺失时明确失败，不下载。
+Both weights come from Ultralytics assets v8.3.0. n SHA-256: `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`; s: `85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5`. These are local asset-verification records. GitHub metadata supplied no digest when s was downloaded, so this is not publisher-signature verification. Tools use existing local weights and fail if absent, without downloading.
 
-## 生成、训练、验证和比较
+## Prepare, train, validate and compare
 
-从仓库根目录运行：
+Run from repository root:
 
 ```powershell
-# 所有资产须已准备；该步骤必须在两个 compare30 运行创建之前执行。
+# All assets must already exist; run this before either compare30 run is created.
 .venv/Scripts/python.exe SystemCode/model/compare_models.py prepare
-# 生成 Dataset/compare30/{n-config.json,s-config.json,plan.json}；拒绝覆盖。
+# Creates Dataset/compare30/{n-config.json,s-config.json,plan.json}; rejects overwrite.
 .venv/Scripts/python.exe SystemCode/model/train.py --config Dataset/compare30/n-config.json
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config Dataset/compare30/n-config.json --split val
 .venv/Scripts/python.exe SystemCode/model/train.py --config Dataset/compare30/s-config.json
@@ -27,17 +27,17 @@
 .venv/Scripts/python.exe SystemCode/model/compare_models.py compare
 ```
 
-`prepare` 默认读取 baseline10 config、`Dataset/pretrained/download.json` 和 `Dataset/pretrained/download-yolo11s.json`。它冻结计划指纹、两个配置指纹、数据 YAML / manifest / audit / split summary 和预训练来源文件哈希；相同数据与完整增强 / 优化参数保留。已生成的计划不能重新生成覆盖，训练入口仍使用原来的 `train.py`。
+`prepare` reads baseline10 configuration, `Dataset/pretrained/download.json` and `Dataset/pretrained/download-yolo11s.json` by default. It freezes plan/config fingerprints and data YAML/manifest/audit/split-summary/pretrained-source hashes, retaining identical data and complete augmentation/optimizer parameters. Generated plans cannot be regenerated over existing ones; training still uses the original `train.py`.
 
-比较工具先拒绝缺失 / 不匹配证据，再进行排序。必须同时具备恰好 30 个连续 epoch 的 results.csv、30 epoch recovery 身份及最新恢复权重哈希、四份保留检查点、成功的 val 状态、当前 best 权重对应的验证报告、八类源名称和模型清单。实际 args.yaml 和 `effective_training.json` 也须证明 batch 32、nbs 64、最终 train_end 及全部配置参数一致；运行时包、Python、训练来源哈希、代码 revision / dirty 状态、实际共同训练参数、验证图数和各类标注数必须相同。报告图数还须等于冻结的 val split summary。
+Comparison rejects missing/mismatched evidence before ranking. Require exactly 30 contiguous results.csv epochs, 30-epoch recovery identity and latest-recovery hash, all four retained checkpoints, successful val status, validation report for current best, eight source names and model manifest. Actual args.yaml and `effective_training.json` must establish batch 32, nbs 64, final train_end and matching configuration parameters. Runtime packages, Python, training-source hashes, code revision/dirty state, actual shared training parameters, validation image count and per-class annotation counts must match. Report image count must equal the frozen val split summary.
 
-`compare` 默认生成 `Dataset/compare30/summary.json`，拒绝覆盖已有摘要。摘要保留检查点哈希、输入指纹、实际训练参数指纹、运行来源、val 指标和建议的相对 `model_manifest.json` 路径，排除绝对路径和大文件。它不读取 `evaluation-test.json`，不执行测试集推理，不修改 `ROADGUARD_VISION_MANIFEST_PATH` 或现有后端运行。后端接入建议模型后仍需实际验收；所有模型状态保留 experimental。
+`compare` writes `Dataset/compare30/summary.json` by default, rejecting overwrite. It retains checkpoint hashes, input/actual-training-parameter fingerprints, runtime provenance, val metrics and a suggested relative `model_manifest.json` path, excluding absolute paths/large files. It neither reads `evaluation-test.json`, infers test data nor changes `ROADGUARD_VISION_MANIFEST_PATH` or the existing backend. Integrating a suggested model still requires actual acceptance; every model remains experimental.
 
-## 预注册的选型规则
+## Preregistered selection rule
 
-只按 validation mAP50-95 选高者；精确相等时按 validation mAP50 选高者。浮点值不先四舍五入。两项均精确相等时，才用同一 CPU 后端单图流程的 median latency 选低者。P / R / F1、逐类指标和业务烟雾测试是诊断证据，不改变该规则。不得利用 test 结果进行选型、调阈值或重训决策。
+Choose higher validation mAP50-95; exact ties use higher validation mAP50. Do not round floats first. Only exact ties in both use lower median latency under the same CPU single-image backend flow. P/R/F1, per-class metrics and business smoke tests are diagnostics and do not alter selection. Never use test results for selection, thresholds or retraining decisions.
 
-若需要延迟决胜，先用相同验证图片、CPU 线程数、已固定后端代码、推理参数和重复次数测量两组 best 权重；将证据保存于 `Dataset/` 并传入 `--cpu-latency PATH`。契约示例如下，哈希和数值必须来自实际测量：
+If latency breaks a tie, first measure both best weights using identical validation images, CPU thread counts, frozen backend code, inference parameters and repetitions. Save evidence under `Dataset/` and supply `--cpu-latency PATH`. Example contract follows; hashes/numbers must come from actual measurements:
 
 ```json
 {
@@ -47,37 +47,37 @@
   "protocol": {
     "pipeline": "backend_real_single_image",
     "source_split": "val",
-    "image_set_sha256": "64位小写十六进制的固定输入列表指纹",
-    "backend_source_sha256": "64位小写十六进制的后端来源指纹",
+    "image_set_sha256": "64-lowercase-hex fingerprint of the fixed input list",
+    "backend_source_sha256": "64-lowercase-hex backend source fingerprint",
     "imgsz": 640, "conf": 0.25, "iou": 0.7,
     "cpu_threads": 4, "warmup": 2, "repeats": 3
   },
   "candidates": {
-    "n": {"weights_sha256": "n的best.pt SHA256", "median_ms": 80.0},
-    "s": {"weights_sha256": "s的best.pt SHA256", "median_ms": 100.0}
+    "n": {"weights_sha256": "SHA256 of n best.pt", "median_ms": 80.0},
+    "s": {"weights_sha256": "SHA256 of s best.pt", "median_ms": 100.0}
   }
 }
 ```
 
-以上 80 / 100 仅说明结构，不是测量结果。最少一次 warmup、三次正式重复；两个候选共享整个 protocol。精确指标平局但没有完整延迟证据、或延迟也相等时，工具拒绝任意指定胜者。
+80/100 illustrate structure only, not measurements. Require at least one warmup and three formal repetitions; both candidates share the entire protocol. Exact metric ties without complete latency evidence, or equal latency, cause refusal to select an arbitrary winner.
 
-实际 CPU 延迟验收入口为 `benchmark_cpu.py`，须在两个候选训练与 val 评估均成功后执行。它先复用比较工具检查冻结计划和完整运行证据，未完成时在导入 torch／创建输出前失败。仓库根目录命令如下；`--repo .` 也可替换成仓库绝对路径，`--run-name` 须为未使用名称：
+Actual CPU-latency acceptance uses `benchmark_cpu.py` after both candidates finish training and val evaluation. It reuses comparison checks for the frozen plan/full evidence and fails before importing torch/creating output when incomplete. Commands below run from repository root; `--repo .` may be an absolute repository path, and `--run-name` must be unused:
 
 ```powershell
 .venv/Scripts/python.exe SystemCode/model/benchmark_cpu.py --repo . --run-name acceptance-v1
-# 需要延迟决胜时，将实际证据交给比较入口；已有 summary 不覆盖。
+# If latency must break a tie, pass actual evidence; existing summaries are not overwritten.
 .venv/Scripts/python.exe SystemCode/model/compare_models.py compare --cpu-latency Dataset/compare30/cpu-latency/acceptance-v1/latency.json --output Dataset/compare30/summary-with-latency.json
 ```
 
-协议固定从冻结 val originals 中选 Czech、India、Japan、United_States 各 10 张，共 40 张；各国内按 `SHA256("42:" + sample_id)` 排序后取前 10 张，再按上述国家顺序交错排列。两模型共用输入顺序，每次重新读取并核对图片 SHA256，拒绝镜像／排除项，不打开 train 或 test 图片。CPU intra-op 线程为 4、inter-op 为 1；每个模型用固定输入前两张作两次 warmup，再做三轮完整测量，每模型记录 120 次单图时间。轮次模型顺序为 n/s、s/n、n/s；实际 CPU、float32、推理参数和线程数均核对。库 CPU 设备选择会重置线程，入口仅在本进程将库的线程常量设为 4，不更改安装源码。
+The protocol selects 10 frozen val originals each from Czech, India, Japan and United_States (40 total), ordered within country by `SHA256("42:" + sample_id)`, taking the first 10 and interleaving countries in that order. Models share input order; every read checks image SHA256 and rejects mirrored/excluded inputs without opening train/test images. CPU intra-op threads=4, inter-op=1. Each model warms up on the first two inputs, then runs three full rounds, recording 120 single-image times per model. Model order is n/s, s/n, n/s. Actual CPU, float32, inference parameters and thread counts are verified. Library CPU selection resets threads, so the entry changes its thread constant to 4 only within this process, never installed source.
 
-计时从 `ImageStore.prepare(bytes)` 前到 `LocalVisionDetector.detect(prepared)` 返回 DTO 列表，包含图片校验／解码、EXIF/RGB/PNG 规范化、准备图解码、YOLO 前处理、CPU 推理、NMS／后处理和 Detection DTO 构建校验；排除文件读取、模型／清单加载、warmup、运行时断言、结果序列化、图片存储和 HTTP／数据库／规则／审核／任务流程。权重及 predictor 保持预热，但不缓存准备图片或复用预测结果。中位数和 nearest-rank p95 来自每模型 120 个正式测量；此固定小样本不代表生产流量或统计显著差异，OS 缓存、调度及温度仍可能影响时间。
+Timing starts before `ImageStore.prepare(bytes)` and ends when `LocalVisionDetector.detect(prepared)` returns DTOs. It includes image validation/decoding, EXIF/RGB/PNG normalization, prepared-image decoding, YOLO preprocessing, CPU inference, NMS/postprocessing and Detection DTO construction/validation. It excludes file reads, model/manifest loading, warmup, runtime assertions, result serialization, image storage and HTTP/database/rule/review/task flow. Weights/predictor stay warm, but prepared images and predictions are not reused. Median and nearest-rank p95 use each model's 120 formal samples. This fixed small sample does not represent production traffic or statistical significance; OS caches, scheduling and temperature can affect timing.
 
-输出只写 `Dataset/compare30/cpu-latency/{run-name}/`，拒绝已有目录或路径逃逸，保留状态、完整 `latency.json` 和本次本地工具缓存。JSON 是上面契约的扩展，包含 40 张输入与哈希、逐图逐轮时间／检测数量、median／p95、计时与总 wall time、模型／运行环境、后端来源及入口来源 SHA256；`helper_source_sha256` 使用实际执行时的 tracked `benchmark_cpu.py`。命令和协议不代表测量已执行；实际数值只能从保存证据填写。
+Outputs are confined to `Dataset/compare30/cpu-latency/{run-name}/`, rejecting existing directories/path escapes and retaining status, full `latency.json` and local tool cache. JSON extends the contract above with 40 inputs/hashes, per-image/per-round times and detection counts, median/p95, timed/total wall time, model/runtime environment and backend/entry SHA256. `helper_source_sha256` uses the tracked `benchmark_cpu.py` actually executed. Commands/protocol do not imply measurement occurred; actual values must come from saved evidence.
 
-这是单 seed 的受限比较，不能估计训练方差或宣称统计显著优势。RDD2022ES 不是 Jurong 实拍，宽 / 深 / 下沉是视觉标签而非测量的工程尺寸；验证数值有效不等于业务准确率已达标，不校准自动接受阈值。选择完成后如另行授权最终 held-out test，应只评估已选模型一次，并将结果作为选型后的独立证据保留。
+This single-seed limited comparison cannot estimate training variance or claim statistically significant superiority. RDD2022ES is not Jurong imagery; wide/deep/sunken are visual labels, not measured engineering dimensions. Valid validation numbers establish neither business-accuracy acceptance nor calibrated automatic acceptance. A separately authorized final held-out test should evaluate only the selected model once and remain independent post-selection evidence.
 
-轻量验证命令（不安装 torch / Ultralytics，不使用 GPU）：
+Lightweight validation (no torch/Ultralytics installation or GPU):
 
 ```powershell
 .venv/Scripts/python.exe -m pytest SystemCode/tests/test_vision_comparison.py -q

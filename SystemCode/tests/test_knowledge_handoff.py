@@ -43,7 +43,7 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v8"
+    assert MANIFEST["package_version"] == "a-knowledge-v9"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
     assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"
@@ -87,11 +87,11 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
     content = path.read_text(encoding="utf-8")
     assert digest(path) == document["sha256"]
     assert document["owner"] == "A"
-    versions = {"rg-kb-workflow": "5", "rg-kb-pending": "4", "rg-kb-labels": "2", "rg-kb-demo-rules": "2", "rg-kb-assistant": "2"}
+    versions = {'rg-kb-scope': '2', 'rg-kb-labels': '3', 'rg-kb-demo-rules': '3', 'rg-kb-workflow': '6', 'rg-kb-assistant': '3', 'rg-kb-pending': '5'}
     assert document["document_version"] == versions.get(document["document_id"], "1")
     assert document["review_basis"] == "repository_consistency_review"
-    assert f'document_id：`{document["document_id"]}`' in content
-    assert f'document_version：`{document["document_version"]}`' in content
+    assert f'document_id: `{document["document_id"]}`' in content
+    assert f'document_version: `{document["document_version"]}`' in content
     anchors = re.findall(r'<a id="([a-z0-9-]+)"></a>', content)
     assert len(anchors) == len(set(anchors))
     assert set(anchors) == {section["section_id"] for section in document["sections"]}
@@ -99,8 +99,8 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
         assert section["citation_id"] == document["document_id"] + "#" + section["section_id"]
         assert section["classification"] in MANIFEST["classification_vocabulary"]
         block = content.split(f'<a id="{section["section_id"]}"></a>', 1)[1].split('<a id="', 1)[0]
-        assert f'classification：`{section["classification"]}`' in block
-        assert f'citation_id：`{section["citation_id"]}`' in block
+        assert f'classification: `{section["classification"]}`' in block
+        assert f'citation_id: `{section["citation_id"]}`' in block
         assert section["source_ids"]
         for source_id in section["source_ids"]:
             assert source_id in SOURCES
@@ -136,8 +136,8 @@ def test_all_eight_label_definitions_exactly_match_central_schema():
         for entry in entries
     ]
     assert len(rows) == 8 and rows == expected
-    assert "不是量测" in text("rg-kb-labels")
-    assert "不证明损坏轻微" in text("rg-kb-labels")
+    assert "not measured" in text("rg-kb-labels")
+    assert "does not prove minor damage" in text("rg-kb-labels")
 
 
 def test_demo_rule_table_and_gate_are_exact_and_marked_as_assumptions():
@@ -155,7 +155,7 @@ def test_demo_rule_table_and_gate_are_exact_and_marked_as_assumptions():
     assert source["is_demo"] is True and source["status"] == "demonstration_assumptions"
     assert f'confidence_threshold={source["confidence_threshold"]:.2f}' in content
     assert f'selection_strategy={source["selection_strategy"]}' in content
-    assert "任一检测低于阈值" in content and "全部大于等于阈值" in content
+    assert "any detection below threshold" in content and "all detections are at or above threshold" in content
     assert all(section["classification"] == "demo_assumption" for document in MANIFEST["documents"] if document["document_id"] == "rg-kb-demo-rules" for section in document["sections"])
 
 
@@ -168,8 +168,8 @@ def test_scope_numbers_crews_unknown_return_and_evidence_limits_match_config():
         assert str(project["scenario"]["depot"][field]) in content
     assert project["planning"]["default_crew_count"] == 4
     assert project["planning"]["return_to_depot"] is None
-    assert "待确认" in content and "不能默认为不返回" in content
-    assert "不是道路网络" in content and "user_declared" in content
+    assert "pending confirmation" in content and "must not default to no return" in content
+    assert "not road-network verification" in content and "user_declared" in content
 
 
 def test_ten_acceptance_cases_use_valid_sources_and_grounded_support_statuses():
@@ -195,7 +195,7 @@ def test_ten_acceptance_cases_use_valid_sources_and_grounded_support_statuses():
     assert mismatch["provided_context"]["rule_version"] != MANIFEST["versions"]["rule_version"]
     assert mismatch["expected_status"] == "insufficient_data"
     assert "matching_rule_version" in mismatch["required_runtime_evidence"]
-    assert "不能默默改用最新静态表格" in text("rg-kb-assistant")
+    assert "must not silently substitute the latest static table" in text("rg-kb-assistant")
 
 
 def test_ingestion_guide_and_package_have_no_machine_specific_paths_or_runtime_code():

@@ -43,33 +43,33 @@ export default function DataSource() {
     }
   }
   return (
-    <section className={`data-source ${mode !== 'live' ? 'mock-source' : ''}`} aria-label="数据来源">
+    <section className={`data-source ${mode !== 'live' ? 'mock-source' : ''}`} aria-label="Data source">
       <div className="source-selector">
-      <label htmlFor="data-mode">数据来源</label>
+      <label htmlFor="data-mode">Data source</label>
       <select
         id="data-mode"
         value={mode}
         onChange={(event) => setMode(event.target.value as DataMode)}
       >
-        <option value="live">实时后端接口</option>
-        <option value="normal">模拟 · 正常样例</option>
-        <option value="empty">模拟 · 空数据</option>
-        <option value="failure">模拟 · 服务失败</option>
-        <option value="conflict">模拟 · 版本冲突</option>
+        <option value="live">Live backend API</option>
+        <option value="normal">Mock · Normal example</option>
+        <option value="empty">Mock · Empty data</option>
+        <option value="failure">Mock · Service failure</option>
+        <option value="conflict">Mock · Revision conflict</option>
       </select>
       </div>
-      {mode !== 'live' && <p className="source-warning">模拟数据 · 固定只读快照，不代表实际业务；修改操作被阻止，不会发送到后端。</p>}
+      {mode !== 'live' && <p className="source-warning">Mock data · Fixed read-only snapshot, not operational data. Changes are blocked and are not sent to the backend.</p>}
       <details>
-        <summary>检查数据接入</summary>
+        <summary>Check data connection</summary>
         <div className="diagnostic-panel">
-        <p>读取当前所选来源；服务失败不会自动切换模拟数据。</p>
-        <p>只读检查活动任务数量与 GA 方案是否存在，不会创建或重新规划。</p>
+        <p>Read the selected source. Service failures never switch automatically to mock data.</p>
+        <p>Read-only check of active task count and GA plan availability; does not create or recalculate plans.</p>
         <button
           className="text-button"
           disabled={state.kind === 'loading'}
           onClick={() => void inspect()}
         >
-          读取当前来源
+          Read current source
         </button>
         {state.kind === 'loading' && <LoadingState />}
         {state.kind === 'error' && <ErrorState error={state.error} />}
@@ -78,9 +78,9 @@ export default function DataSource() {
             {state.total === 0 ? (
               <EmptyState />
             ) : (
-              <p role="status">活动任务：{state.total}</p>
+              <p role="status">Active tasks: {state.total}</p>
             )}
-            {state.plan ? <p>方案：{state.plan}</p> : <NoPlanState />}
+            {state.plan ? <p>Plan:{state.plan}</p> : <NoPlanState />}
           </>
         )}
         </div>

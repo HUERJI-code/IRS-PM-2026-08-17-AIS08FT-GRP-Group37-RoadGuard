@@ -1,20 +1,21 @@
-# 第七、八步写回与浏览器验收
+# Steps 7–8 restoration and browser acceptance
 
-2026-10-17：累积补丁已成功应用到原 groupwork1 项目。第 2–8 步代码现均在 feature/c-frontend-foundation 本地分支，未提交、未推送；无需重复应用旧补丁。
+2026-10-17: The cumulative patch was applied to the original groupwork1 project. Steps 2–8 were on local feature/c-frontend-foundation, uncommitted/unpushed at this stage. Do not apply the old patch again.
 
-原项目静态检查、8 个测试文件共 100 项测试、生产构建全部通过。JS 670.51 kB，gzip 179.93 kB，保留 >500 kB 体积提示。
+Original-project lint, 100 tests in eight files and production build passed. JS 670.51 kB, gzip 179.93 kB; >500 kB warning retained.
 
-浏览器连接原项目 Vite 与 FastAPI，使用独立 frontend-check.sqlite3、合成巡检和模拟行程矩阵：
-- 停用 crew-01，记录版本从 1 到 2，输入版本从 5 到 6；显式重算返回同轮 GA/Greedy，5 项任务均分配给其余三队。
-- 点击队伍与第 2 停靠点，地图选中状态、维修时间、到达/完成时间和任务链接联动正常。
-- 390×844 手机视口文档宽度 375，不超过视口 390；视觉检查地图完整包含 Jurong 区域与 NUS-ISS，控件换行正常。地图定位与全域复位正常。
-- 恢复 crew-01 可用，输入版本到 7，旧地图和方案明确显示过期；再次重算生成新方案，GA/Greedy 地图切换正常。
-- 浏览器最后已恢复默认视口，测试队伍全部可用。
+Browser checks connected original Vite/FastAPI with isolated frontend-check.sqlite3, synthetic inspections and simulated matrices:
 
-最终测试方案：GA plan-313e2b682ae7447ab83b176acf463bb3；Greedy plan-e1a65a69915f4d558c4d3b72f69fb32f，输入版本 7。方案只存在于独立测试库，不作为算法评估结果。
+- Disable crew-01: record revision 1→2 and input revision 5→6. Explicit recalculation returned same-run GA/Greedy plans assigning all five tasks to the remaining three crews.
+- Selecting a crew and stop 2 synchronised map selection, repair duration, arrival/completion and task link.
+- At 390×844, document width was 375 ≤ 390. Map included Jurong and NUS-ISS; controls wrapped correctly. Focus and full-area reset worked.
+- Restore crew-01: input revision 7. Old map/plans visibly became stale; recalculation produced new plans and algorithm switching worked.
+- Default viewport restored; all test crews available.
 
-未调用真实模型、Google 或 GPT，未修改 A/B 源码或原业务数据库。第六步任务修改的浏览器提交验收未在本轮补做，其自动化测试已通过。后续开发为第九步同轮比较。
+Final test plans: GA plan-313e2b682ae7447ab83b176acf463bb3; Greedy plan-e1a65a69915f4d558c4d3b72f69fb32f; revision 7. These exist only in the isolated database and are not algorithm evaluation evidence.
 
-## 第九步补充
+No real model/Google/GPT calls or A/B source/ordinary-database changes. Step 6 task-submission browser acceptance was not repeated; automated tests passed. Step 9 same-run comparison followed.
 
-2026-10-17：同轮比较、刷新后失去依据、显式失败样例及恢复、桌面/手机布局已验收。完整步骤与最终测试方案见 COMPARISON_GUIDE.md。第九步已完成，下一步为第十步知识检索。
+## Step 9 addendum
+
+2026-10-17: Same-run comparison, loss of evidence after refresh, explicit failure/recovery and desktop/mobile layout passed. See COMPARISON_GUIDE.md for full steps and final plans. Step 9 is complete; step 10 knowledge retrieval follows.

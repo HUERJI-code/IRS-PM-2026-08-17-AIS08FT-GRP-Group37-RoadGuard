@@ -49,10 +49,10 @@ export function makeProjection(points: Point[]) {
   ]
 }
 export const unassignedReasons: Record<string, string> = {
-  unknown_service_minutes: '维修时长未知',
-  unreachable_from_depot: '从基地不可达',
-  unreachable_to_depot: '无法返回基地',
-  no_available_crew: '无可用队伍',
-  exceeds_shift_limit: '超过班次限制',
-  no_feasible_route_position: '无可行插入位置',
+  unknown_service_minutes: 'Unknown repair duration',
+  unreachable_from_depot: 'Unreachable from depot',
+  unreachable_to_depot: 'Cannot return to depot',
+  no_available_crew: 'No available crews',
+  exceeds_shift_limit: 'Exceeds shift limit',
+  no_feasible_route_position: 'No feasible insertion position',
 }

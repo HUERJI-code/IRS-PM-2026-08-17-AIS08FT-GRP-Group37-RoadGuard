@@ -44,11 +44,11 @@ function mount(
 async function fill() {
   const user = userEvent.setup()
   await user.upload(
-    screen.getByLabelText('道路照片'),
+    screen.getByLabelText('Road photo'),
     new File(['image'], 'road.png', { type: 'image/png' }),
   )
-  await user.type(screen.getByLabelText('纬度（latitude）'), '1.3405')
-  await user.type(screen.getByLabelText('经度（longitude）'), '103.706')
+  await user.type(screen.getByLabelText('Latitude (latitude)'), '1.3405')
+  await user.type(screen.getByLabelText('Longitude (longitude)'), '103.706')
   await user.click(screen.getByRole('checkbox'))
   return user
 }
@@ -84,14 +84,14 @@ afterEach(() => vi.unstubAllGlobals())
 it('uploads once and displays server detail, single box and associated task', async () => {
   mount()
   const user = await fill()
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
-  expect(await screen.findByRole('heading', { name: '关联任务' })).toBeVisible()
-  expect(screen.getByRole('img', { name: /唯一检测框/ })).toBeVisible()
-  expect(screen.getByAltText('服务端归一化的巡检照片')).toHaveAttribute(
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
+  expect(await screen.findByRole('heading', { name: 'Linked task' })).toBeVisible()
+  expect(screen.getByRole('img', { name: /Single detection box/ })).toBeVisible()
+  expect(screen.getByAltText('Server-normalised inspection photo')).toHaveAttribute(
     'src',
     accepted.image_url,
   )
-  expect(screen.getByText(/后续读取失败不会重新上传照片/)).toBeVisible()
+  expect(screen.getByText(/Subsequent read failures will not upload the photo again/)).toBeVisible()
   expect(uploadCount).toBe(1)
   const req = transport.mock.calls.find(
     ([, init]) => init.method === 'POST',
@@ -113,13 +113,13 @@ it('reuses the original key and frozen input after a network-unknown upload outc
   })
   mount()
   const user = await fill()
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
   expect(
-    await screen.findByRole('button', { name: '使用原请求重试' }),
+    await screen.findByRole('button', { name: 'Retry original request' }),
   ).toBeEnabled()
-  expect(screen.getByLabelText('纬度（latitude）')).toBeDisabled()
-  await user.click(screen.getByRole('button', { name: '使用原请求重试' }))
-  await screen.findByRole('heading', { name: '关联任务' })
+  expect(screen.getByLabelText('Latitude (latitude)')).toBeDisabled()
+  await user.click(screen.getByRole('button', { name: 'Retry original request' }))
+  await screen.findByRole('heading', { name: 'Linked task' })
   const uploads = transport.mock.calls.filter(
     ([, init]) => init.method === 'POST',
   )
@@ -145,9 +145,9 @@ it('retries only GET when detail reading fails after upload success', async () =
   })
   mount()
   const user = await fill()
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
-  await user.click(await screen.findByRole('button', { name: '重新读取详情' }))
-  await screen.findByRole('heading', { name: '关联任务' })
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
+  await user.click(await screen.findByRole('button', { name: 'Reload details' }))
+  await screen.findByRole('heading', { name: 'Linked task' })
   expect(uploadCount).toBe(1)
 })
 
@@ -155,24 +155,24 @@ it('prevents a rapid duplicate submit while awaiting the upload', async () => {
   transport.mockImplementation(() => new Promise(() => {}))
   mount()
   await fill()
-  const button = screen.getByRole('button', { name: '上传并检测' })
+  const button = screen.getByRole('button', { name: 'Upload and detect' })
   fireEvent.submit(button.closest('form')!)
   fireEvent.submit(button.closest('form')!)
   await waitFor(() => expect(transport).toHaveBeenCalledTimes(1))
-  expect(screen.getByRole('button', { name: '正在上传与检测…' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Uploading and detecting…' })).toBeDisabled()
 })
 
 it('selects a backend demo case and sends it only in demo mode', async () => {
   mount()
   const user = await fill()
-  await user.selectOptions(screen.getByLabelText('检测模式'), 'demo')
-  await screen.findByRole('option', { name: /单个高置信度坑洞/ })
+  await user.selectOptions(screen.getByLabelText('Detection mode'), 'demo')
+  await screen.findByRole('option', { name: /one high-confidence pothole/ })
   await user.selectOptions(
-    screen.getByLabelText('模拟检测案例'),
+    screen.getByLabelText('Mock detection scenario'),
     'high_confidence',
   )
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
-  await screen.findByRole('heading', { name: '关联任务' })
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
+  await screen.findByRole('heading', { name: 'Linked task' })
   const req = transport.mock.calls.find(
     ([, init]) => init.method === 'POST',
   )![1]
@@ -182,8 +182,8 @@ it('selects a backend demo case and sends it only in demo mode', async () => {
 })
 
 it.each([
-  [pending, '待人工审核'],
-  [none, '未检测到损伤'],
+  [pending, 'Pending manual review'],
+  [none, 'No damage detected'],
 ])('renders %s without requesting a task', async (record, heading) => {
   mount('/inspections/' + record.inspection_id)
   expect(await screen.findByRole('heading', { name: heading })).toBeVisible()
@@ -192,21 +192,21 @@ it.each([
   ).toBe(false)
   if (record.status === 'no_detection')
     expect(
-      screen.queryByRole('img', { name: /唯一检测框/ }),
+      screen.queryByRole('img', { name: /Single detection box/ }),
     ).not.toBeInTheDocument()
 })
 
 it('shows image failure while keeping inspection data visible', async () => {
   mount('/inspections/' + pending.inspection_id)
-  const img = await screen.findByAltText('服务端归一化的巡检照片')
+  const img = await screen.findByAltText('Server-normalised inspection photo')
   fireEvent.error(img)
-  expect(screen.getByRole('alert')).toHaveTextContent('图片读取失败')
-  expect(screen.getByRole('heading', { name: '待人工审核' })).toBeVisible()
+  expect(screen.getByRole('alert')).toHaveTextContent('The image could not load')
+  expect(screen.getByRole('heading', { name: 'Pending manual review' })).toBeVisible()
 })
 
 it('blocks submission in read-only mock mode', () => {
   mount('/inspections/new', 'normal')
-  expect(screen.getByRole('button', { name: '上传并检测' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: 'Upload and detect' })).toBeDisabled()
   expect(transport).not.toHaveBeenCalled()
 })
 
@@ -216,7 +216,7 @@ it('validates image format, size, dimensions and decode errors', async () => {
   ).rejects.toThrow('JPEG')
   await expect(
     validateImage(new File([], 'empty.png', { type: 'image/png' })),
-  ).rejects.toThrow('不能为空')
+  ).rejects.toThrow('must not be empty')
   await expect(
     validateImage(
       new File([new Uint8Array(8 * 1024 * 1024 + 1)], 'large.png', {
@@ -235,17 +235,17 @@ it('validates image format, size, dimensions and decode errors', async () => {
   vi.mocked(createImageBitmap).mockRejectedValueOnce(new Error('decode'))
   await expect(
     validateImage(new File(['x'], 'broken.png', { type: 'image/png' })),
-  ).rejects.toThrow('无法解码')
+  ).rejects.toThrow('Cannot decode')
 })
 
 it('requires coordinates, declaration and a demo scenario, preserving real omission', () => {
-  expect(() => uploadMetadata('real', '', '103.7', true, '')).toThrow('经度')
-  expect(() => uploadMetadata('real', '100', '103.7', true, '')).toThrow('有效')
+  expect(() => uploadMetadata('real', '', '103.7', true, '')).toThrow('longitude')
+  expect(() => uploadMetadata('real', '100', '103.7', true, '')).toThrow('valid')
   expect(() => uploadMetadata('real', '1.34', '103.7', false, '')).toThrow(
-    '公共',
+    'public',
   )
   expect(() => uploadMetadata('demo', '1.34', '103.7', true, '')).toThrow(
-    '案例',
+    'scenario',
   )
   expect(
     uploadMetadata('real', '1.34', '103.7', true, 'ignored'),
@@ -255,9 +255,9 @@ it('requires coordinates, declaration and a demo scenario, preserving real omiss
 it('renders a rejected inspection as a retained record without a task', async () => {
   transport.mockResolvedValue(reply({ ...pending, status: 'rejected' }))
   mount('/inspections/' + pending.inspection_id)
-  expect(await screen.findByRole('heading', { name: '已驳回' })).toBeVisible()
+  expect(await screen.findByRole('heading', { name: 'Rejected' })).toBeVisible()
   expect(
-    screen.queryByRole('heading', { name: '关联任务' }),
+    screen.queryByRole('heading', { name: 'Linked task' }),
   ).not.toBeInTheDocument()
 })
 
@@ -270,10 +270,10 @@ it('retains the accepted inspection when fetching its associated task fails', as
   )
   mount('/inspections/' + accepted.inspection_id)
   expect(
-    await screen.findByRole('heading', { name: '关联任务读取失败' }),
+    await screen.findByRole('heading', { name: 'Linked task could not load' }),
   ).toBeVisible()
-  expect(screen.getByRole('heading', { name: '已接受' })).toBeVisible()
-  expect(screen.getByRole('button', { name: '重新读取详情' })).toBeEnabled()
+  expect(screen.getByRole('heading', { name: 'Accepted' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Reload details' })).toBeEnabled()
 })
 
 it('allows correction after a definite input rejection and creates a new request key', async () => {
@@ -288,13 +288,13 @@ it('allows correction after a definite input rejection and creates a new request
   })
   mount()
   const user = await fill()
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('Jurong')
-  expect(screen.getByLabelText('纬度（latitude）')).toBeEnabled()
-  await user.clear(screen.getByLabelText('纬度（latitude）'))
-  await user.type(screen.getByLabelText('纬度（latitude）'), '1.3406')
-  await user.click(screen.getByRole('button', { name: '上传并检测' }))
-  await screen.findByRole('heading', { name: '关联任务' })
+  expect(screen.getByLabelText('Latitude (latitude)')).toBeEnabled()
+  await user.clear(screen.getByLabelText('Latitude (latitude)'))
+  await user.type(screen.getByLabelText('Latitude (latitude)'), '1.3406')
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
+  await screen.findByRole('heading', { name: 'Linked task' })
   const uploads = transport.mock.calls.filter(
     ([, init]) => init.method === 'POST',
   )
