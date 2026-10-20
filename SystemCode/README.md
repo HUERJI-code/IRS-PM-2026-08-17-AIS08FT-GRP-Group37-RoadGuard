@@ -1,23 +1,21 @@
 # System code
 
-This directory contains the new RoadGuard implementation. Its name follows the course submission template; the template's historical CLIPS/Python 2 example is not an application dependency. The [shared backend](backend/README.md) and [initial contracts](contracts/README.md) are available; the remaining business modules are planned.
+This directory contains the implemented RoadGuard local prototype. Its name follows the course submission template; the template's historical CLIPS/Python 2 example is not an application dependency.
 
-| Directory | Planned responsibility |
+| Directory | Current responsibility |
 | --- | --- |
-| `backend/` | Python API, confidence gate, business rules, task state, GA/greedy planning and route explanations |
-| `frontend/` | React interface for inspections, review, tasks and four crew routes |
-| `model/` | RDD2022ES preparation, YOLO training, evaluation and model integration |
-| `experiments/` | Repeatable experiments and clearly identified measured results |
-| `tests/` | Cross-component and end-to-end tests |
-| `config/` | Shared scenario configuration |
-| `contracts/` | Frozen DTO schemas and explicit demo fixtures for A/B/C integration |
+| `backend/` | One FastAPI/SQLite application: authentication, vision, rules, inspections, tasks, crews and Greedy/GA planning |
+| `frontend/` | React inspector, dispatcher and fixed-crew workspaces; schematic map and algorithm comparison |
+| `model/` | RDD2022ES preparation, recoverable YOLO training, evaluation and deployment manifest |
+| `experiments/` | Reproducible vision/routing experiments and saved results |
+| `tests/` | Module, API and integration checks |
+| `config/` | Scenario, demonstration business rules and routing assumptions |
+| `contracts/` | Shared DTO schemas and explicitly synthetic integration fixtures |
 
-Step 5 adds `backend/roadguard/vision/` for synthetic detections and `backend/roadguard/rules/` for configurable demo assessments. Step 6 adds `backend/roadguard/inspections/`, image storage, geography checks and persisted inspection/review/task APIs; see the [workflow guide](../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). `/demo` remains a stateless preview.
+The implemented workflow is image upload → primary detection → automatic acceptance at raw confidence >=0.60 or human review → one rule-based task → explicit four-crew planning → crew completion. No detection creates no task. Rule snapshots, history, idempotency and input revisions preserve consistency. Task/crew changes mark existing plans stale; they do not automatically recalculate.
 
-Step 7 adds `backend/roadguard/tasks/` for consistent active-task snapshots, `contracts/planning/` for reproducible synthetic inputs, `backend/knowledge/` for versioned source-checked documents, and `examples/handoff_demo.py` for actual HTTP consumer checks. See the [B/C handoff](../Miscellaneous/BC_HANDOFF.md). It does not implement planning, retrieval, generation or frontend code.
+The [backend guide](backend/README.md), [frontend guide](frontend/README.md) and [installation/user guide](../ProjectReport/INSTALLATION_AND_USER_GUIDE.md) cover startup and account provisioning. Use Python 3.12 for the complete vision environment and Node 22.x >=22.12 with npm >=10. Base CI uses Python 3.11 without the optional vision dependencies. The approved deployment weight is included in the repository; inference does not require downloading Dataset.
 
-`config/project.example.json` records the agreed scenario and is loaded by the backend at startup. Loading it does not create crew/task records or implement planning.
+The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the Jurong East/West task boundary and shared NUS-ISS simulated origin. Polygon validation is implemented; road eligibility is caller-declared. The routing configuration uses a simulated matrix by default, optional Google Routes estimates, and demonstration shift/return policies. The displayed map is schematic, not road navigation.
 
-Implementation should use four crews by default and expose crew count as a parameter rather than hard-coding two routes. The [geographic baseline](../Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) defines the JE/JW task boundary and the shared NUS-ISS origin outside it. Task polygon validation is implemented; road eligibility is user-declared and must not be described as independently verified. Configuration file paths are relative to the repository root; the return-to-depot policy remains undecided.
-
-Step 8 adds the [model pipeline](model/README.md), recoverable local training, explicit split evaluation and the [real inspection API](../Miscellaneous/REAL_VISION_API.md). See [actual acceptance evidence](../Miscellaneous/STEP8_VISION_ACCEPTANCE.md); experimental detections are reviewed before applying demo business rules.
+The [integration record](../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) and [frontend acceptance notes](frontend/DESIGN_PREVIEW.md) document the local workflow and later account/mobile checks. Historical Step 5–8 documents describe those earlier deliveries. The knowledge package and assistant page are preparation only: GPT/RAG retrieval, answers and confirmed changes remain unimplemented. Model accuracy and independent local validation remain separate from software acceptance.

@@ -1,23 +1,24 @@
-# RoadGuard shared backend foundation
+# RoadGuard shared backend
 
 See [released model installation and primary suggestions](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) for the current default detector and client migration.
 
 Deployment weights are committed at `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt` and arrive with normal clone/pull. The backend loads them there by default. Install backend and vision dependencies from the model integration guide in a new environment, then start; no separate download or model-path change is needed. See the [backend model directory](roadguard/model/README.md).
 
-A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v3 with B's `crews` and `route_plans` tables. Assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v4, including crews, saved plans, accounts, sessions, inspection ownership and audit records. The authenticated [React frontend](../frontend/README.md) and fixed-crew completion are implemented; the assistant service remains unimplemented. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
 Successful upload returns only `inspection_id`, `status`, `detection`, `task_id`. Read details with `GET /api/v1/inspections/{id}`. See the [database viewing guide](../../Miscellaneous/DATABASE_VIEWING.md) for database location, PyCharm access and read-only SQL.
 
 ## Environment and startup
 
-CI uses Python 3.11. `requirements.txt` pins FastAPI, Pydantic, Uvicorn, Pillow for image decoding and python-multipart for multipart parsing. `requirements-ci.txt` includes these plus HTTPX and pytest. SQLite uses the standard library. Reinstall requirements in existing environments to obtain new packages.
+Use Python 3.12 for the full application with real vision; pinned NumPy 2.5.2 requires Python >=3.12. Recorded local acceptance used Python 3.12.14. Base CI uses Python 3.11 without the optional vision dependencies. `requirements.txt` pins FastAPI, Pydantic, Uvicorn, Pillow for image decoding and python-multipart for multipart parsing. `requirements-ci.txt` includes these plus HTTPX and pytest. SQLite uses the standard library. Reinstall requirements in existing environments to obtain new packages.
 
-Run these commands from the repository root; create and activate the local virtual environment on first use:
+Run these commands from the repository root; create and activate a Python 3.12 environment on first use. If an existing `.venv` uses another Python version, create a separate environment with 3.12 and use that environment consistently; do not recreate an environment in use. Provision accounts following the [complete installation guide](../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Fresh-machine installation has not been independently validated:
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r SystemCode/backend/requirements-ci.txt
+python -m pip install -r SystemCode/model/requirements-vision.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
@@ -37,11 +38,11 @@ In `/docs`, call `GET /api/v1/demo/scenarios`, then send `{"scenario_id":"high_c
 
 ## Step 7: task and knowledge integration
 
-`GET /api/v1/tasks/snapshot` returns all active Tasks and input_revision from one transaction, with optional expected_revision. `/tasks` retains paginated page/TaskRecord-history uses. B's internal entry is `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`, available as `request.app.state.task_query_service`. Supplying an existing transaction connection from the same database permits a shared snapshot with B's future crew queries; the service does not end the caller's transaction.
+`GET /api/v1/tasks/snapshot` returns all active Tasks and input_revision from one transaction, with optional expected_revision. `/tasks` retains paginated page/TaskRecord-history uses. B's internal entry is `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`, available as `request.app.state.task_query_service`. Supplying an existing transaction connection from the same database permits a shared snapshot with B's crew queries; the service does not end the caller's transaction.
 
 See the [B/C handoff](../../Miscellaneous/BC_HANDOFF.md) for contracts, revision checks during calculation/save, fixed 10/15/20-task sets, C's knowledge material and actual HTTP consumption examples. Sources are checked against repository facts, not engineering-expert approval. That handoff did not implement routing, retrieval/generation or the frontend and introduced no dependencies or migrations.
 
-Current course-simulation rules are `demo-rules-v2`: P3/P2/P1 = 60/120/240 minutes. New inspections use startup configuration; older records retain frozen rules without automatic recalculation. See the [business baseline](../../Miscellaneous/BUSINESS_RULES_BASELINE.md) for definitions/version effects and [integration checklist](../../Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) for this stage's checks. B/C integration is deferred.
+Current course-simulation rules are `demo-rules-v2`: P3/P2/P1 = 60/120/240 minutes. New inspections use startup configuration; older records retain frozen rules without automatic recalculation. See the [business baseline](../../Miscellaneous/BUSINESS_RULES_BASELINE.md) for definitions/version effects and [integration checklist](../../Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) for this stage's checks. Frontend and planning integration is recorded in the [18 October acceptance](../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md); the assistant remains outside that acceptance.
 
 ## Configuration entry points
 
@@ -83,7 +84,7 @@ with database.transaction(expected_revision=input_revision) as connection:
     new_revision = increment_revision(connection, expected_revision=input_revision)
 ```
 
-This illustrates transaction boundaries, not a crew implementation. `expected_revision` is checked when the write transaction starts; stale versions raise `StaleRevisionError` (HTTP 409) before caller mutations. Incrementing does not commit; domain failure rolls back revisions too. Plan persistence must also check its input revision inside its write transaction. Saving a plan does not change planning input and must not increment input_revision. B's subsequent services own recalculation triggers, plan storage and stale-state reporting.
+This illustrates transaction boundaries, not a crew implementation. `expected_revision` is checked when the write transaction starts; stale versions raise `StaleRevisionError` (HTTP 409) before caller mutations. Incrementing does not commit; domain failure rolls back revisions too. Plan persistence must also check its input revision inside its write transaction. Saving a plan does not change planning input and must not increment input_revision. B's implemented planning services own explicit recalculation, plan storage and stale-state reporting.
 
 ## Errors and module integration
 

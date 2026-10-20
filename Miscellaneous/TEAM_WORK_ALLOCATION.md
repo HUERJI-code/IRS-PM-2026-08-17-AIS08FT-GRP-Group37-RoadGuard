@@ -1,20 +1,20 @@
 # RoadGuard three-person work allocation and interface handoff
 
-Prepared: 2026-10-11; updated: 2026-10-14. Status: A's Steps 3–7 are complete. Step 8 adds the full-data pipeline, resumable training/evaluation and real detection integration; actual results are in the [acceptance record](STEP8_VISION_ACCEPTANCE.md). B/C develop their modules under the allocation below.
+Prepared: 2026-10-11; status updated: 2026-10-20. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. GPT/RAG and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
 
 All members and agents follow root [AGENTS.md](../AGENTS.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
 
-Scope: Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
+Planned scope (assistant work remains incomplete): Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
 
-A is the project initiator (you); B/C names remain to be filled. At your request, A carries more work, including backend foundations, business data and system integration, so B can focus on routes and C on UI/assistant work. Unless explicitly implemented or frozen, the following interfaces and acceptance criteria are future-development agreements.
+A is Hu Erji (project initiator); B is Yan GuanTing; C is Wu TaoYi. At your request, A carries more work, including backend foundations, business data and system integration, so B can focus on routes and C on UI/assistant work. Unless explicitly implemented or frozen, the following interfaces and acceptance criteria are future-development agreements.
 
 ## 1. Overall responsibilities
 
 | Member | Main responsibility | Additional work/boundary | Final deliverables |
 | --- | --- | --- | --- |
-| **A: you** | Vision, confidence routing, rules, inspection review and tasks | Shared backend/database, knowledge/demo data, interface/integration/report/submission coordination | Detection/business APIs, model/evaluation, rules, task database, examples and reproducible integrated workflow |
-| **B: TBD** | Four-crew dispatch, travel matrix, Greedy, GA, route evaluation | Crew/routing APIs; consume A's standard tasks; results usable directly by C | Independently runnable routing, crew/planning APIs, metrics, GA comparisons and algorithm chapter |
-| **C: TBD** | React, map, GPT/RAG assistant | Assistant in A's backend; A supplies knowledge, B route facts; do not reimplement priorities/routes | Website/map/assistant APIs and interactions, guide, UI/assistant tests and recordings |
+| **A: Hu Erji** | Vision, confidence routing, rules, inspection review and tasks | Shared backend/database, knowledge/demo data, interface/integration/report/submission coordination | Detection/business APIs, model/evaluation, rules, task database, examples and reproducible integrated workflow |
+| **B: Yan GuanTing** | Four-crew dispatch, travel matrix, Greedy, GA, route evaluation | Crew/routing APIs; consume A's standard tasks; results usable directly by C | Independently runnable routing, crew/planning APIs, metrics, GA comparisons and algorithm chapter |
+| **C: Wu TaoYi** | React, map, GPT/RAG assistant | Assistant in A's backend; A supplies knowledge, B route facts; do not reimplement priorities/routes | Website/map/assistant APIs and interactions, guide, UI/assistant tests and recordings |
 
 Each member owns module tests, usage documentation and report chapters. A compiles/integrates; module owners still fix defects.
 
@@ -77,7 +77,7 @@ Paths follow the current `roadguard` package. A owns shared directories; owners 
 | `SystemCode/model/` | A | Shared Detection output |
 | `SystemCode/backend/roadguard/main.py`, configuration/DB/errors | A | B/C routers centrally registered by A |
 | `SystemCode/backend/roadguard/vision/`, `rules/`, `inspections/` | A | inspections owns inspection/linked-task transactions; outputs reviews/tasks without requiring model internals |
-| `SystemCode/backend/roadguard/crews/`, `routing/` (pending) | B | A's query inputs; crew/plan business logic |
+| `SystemCode/backend/roadguard/crews/`, `routing/` | B | Implemented crew/plan services using A's consistent task snapshots |
 | `SystemCode/backend/roadguard/assistant/` (pending) | C | A/B facts; confirmed domain-service changes, no direct table writes |
 | `SystemCode/frontend/` | C | API business conclusions |
 | `SystemCode/backend/knowledge/` | A content/C retrieval | A reviews rules; C indexes/retrieves/cites |

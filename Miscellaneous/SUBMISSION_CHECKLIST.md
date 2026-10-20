@@ -10,18 +10,19 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 - [x] Course start date 2026-08-17 and batch code AIS08FT confirmed; use Group7 for the group number.
 - [x] Private GitHub repository created and URL recorded.
 - [ ] Assessor access arranged as required by the course.
-- [ ] Confirmed team roster and contribution table completed.
+- [x] Team roster and contribution table populated from final report Table 5 in the root README.
 
 ## Group deliverables
 
-- [ ] Runnable intelligent reasoning system.
-- [ ] At least three required technique groups demonstrated with evidence.
+- [x] Runnable local prototype with recorded integration acceptance; independent clean-machine installation remains unchecked below.
+- [x] Three technique groups mapped to implementation and recorded evidence in Appendix C; final assessment remains with the course assessors.
 - [ ] Five-minute promotion/use-case video.
 - [ ] Separate five-minute system-design/technical video.
-- [ ] Group report as DOCX or PDF, with business case, design, implementation, experiments, findings and discussion.
+- [x] Group report available as DOCX, with business case, design, implementation, experiments, findings and discussion.
 - [x] Report appendix: final submitted project proposal in Appendix B; subsequent scope changes in Section 1.3.
 - [x] Report appendix: functionality-to-MR/RS/CGS mapping in Appendix C, linked to implementation and recorded verification evidence.
-- [ ] Report appendix: tested installation and user guide.
+- [x] Report appendix: installation and user guide; full-vision environment corrected to Python 3.12.
+- [ ] Independently validate installation on a clean machine; current evidence covers the recorded local environment and base CI.
 - [ ] `member-github.txt`: group name, official member names, student IDs or permitted masked identifiers, GitHub URL.
 - [ ] Downloaded repository ZIP.
 - [ ] Final ZIP containing the roster file, both videos, repository ZIP and group report.

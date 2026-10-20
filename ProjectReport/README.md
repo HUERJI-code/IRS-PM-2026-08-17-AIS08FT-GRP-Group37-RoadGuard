@@ -1,8 +1,8 @@
 # Project report
 
-The current [group Final Report](IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) includes English screenshots captured on 19 October 2026. The Markdown files are supporting outlines and guides.
+The current [group Final Report](IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) includes English screenshots captured on 19 October 2026. The Markdown files are supporting outlines and guides. The 20 October installation correction specifies Python 3.12 for the full vision environment because NumPy 2.5.2 requires Python >=3.12; Python 3.11 CI installs only the base dependency set. The repository report incorporates the latest saved Assignment wording.
 
-The report is 36 pages: three preliminary pages, 16 pages across six main chapters, the complete three-page installation and user guide in Appendix A, all 13 pages of the final submitted proposal in Appendix B, and a one-page course-functionality mapping in Appendix C. Repeated main-text material has been consolidated while retaining key experiments, failure analysis and team contributions. Vision metrics and their limitations appear in the results chapter rather than the abstract, with proposed improvements in the final chapter. The contents include all three appendices with verified page numbers.
+The report is 37 pages: three preliminary pages, 17 pages across six main chapters, the complete three-page installation and user guide in Appendix A, all 13 pages of the final submitted proposal in Appendix B, and a one-page course-functionality mapping in Appendix C. Repeated main-text material has been consolidated while retaining key experiments, failure analysis and team contributions. Vision metrics and their limitations appear in the results chapter rather than the abstract, with proposed improvements in the final chapter. The contents include all three appendices with verified page numbers.
 
 Its dispatcher review and mobile crew screenshots show the running English interface. The captures use an isolated test database and synthetic detection scenarios, not a new model-quality evaluation.
 
