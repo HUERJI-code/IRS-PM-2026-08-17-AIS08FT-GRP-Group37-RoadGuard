@@ -19,8 +19,8 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 - [ ] Five-minute promotion/use-case video.
 - [ ] Separate five-minute system-design/technical video.
 - [ ] Group report as DOCX or PDF, with business case, design, implementation, experiments, findings and discussion.
-- [ ] Report appendix: original project proposal and scope update.
-- [ ] Report appendix: functionality-to-MR/RS/CGS mapping.
+- [x] Report appendix: final submitted project proposal in Appendix B; subsequent scope changes in Section 1.3.
+- [x] Report appendix: functionality-to-MR/RS/CGS mapping in Appendix C, linked to implementation and recorded verification evidence.
 - [ ] Report appendix: tested installation and user guide.
 - [ ] `member-github.txt`: group name, official member names, student IDs or permitted masked identifiers, GitHub URL.
 - [ ] Downloaded repository ZIP.

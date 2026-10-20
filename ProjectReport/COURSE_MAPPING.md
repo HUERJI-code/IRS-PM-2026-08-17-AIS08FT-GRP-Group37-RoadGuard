@@ -1,12 +1,13 @@
-# Planned mapping to course requirements
+# Delivered functionality mapped to course content
 
-The current practice briefing requires at least three of four technique groups. This table is a plan, not a declaration of completed assessment coverage.
+Appendix C of the [group Final Report](IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) maps the implemented functions to MR, RS and CGS course content. The practice briefing requires at least three of four technique groups. The mapping below identifies the three demonstrated groups and their recorded evidence; it does not assert an assessment outcome or count proposed functionality as delivered.
 
-| Briefing technique group | Planned RoadGuard component | Evidence to produce |
+| Course / briefing technique group | Delivered RoadGuard function | Implementation and verification evidence |
 | --- | --- | --- |
-| Decision automation | Confidence gate, explicit priority rules, task workflow | Boundary cases, rule traces and workflow tests |
-| Business resource optimization | Group-built GA assigning and ordering tasks for four crews | GA-versus-greedy experiments, fitness/constraint specification and runtime |
-| Cognitive techniques/tools | Visual perception; proposed GPT/RAG natural-language route explanations | Held-out vision results; grounded explanation and interaction evaluation |
-| Knowledge discovery/data mining | Optional additional analysis if actually implemented | A separate supported method and evaluation; do not count ordinary data storage as a technique |
+| MR / decision automation | Confidence routing; label-to-priority and service rules; review correction and controlled task creation | [Business-rule baseline](../Miscellaneous/BUSINESS_RULES_BASELINE.md), [rule tests](../SystemCode/tests/test_rules.py) and [single-box workflow tests](../SystemCode/tests/test_single_box_workflow.py). Report Sections 2, 3.2 and 5.3 cover rule snapshots, decision traces, boundary cases, no detection, corrections and replay. Service durations remain project assumptions. |
+| RS / business resource optimisation | Group-built GA assigning and ordering work for four crews, with priority-first coverage and a weighted completion/travel/workload objective | [Routing design](../SystemCode/backend/roadguard/routing/README.md), [experiment records](../SystemCode/experiments/routing/README.md) and [GA tests](../SystemCode/tests/test_routing_ga.py). Report Sections 3.2, 4 and 5.2 cover shared GA/Greedy evaluation, multiple seeds, seeding ablation and failure analysis. Optimality is not established. |
+| CGS / cognitive techniques and tools | Learned visual perception with YOLO11s, eight damage classes and primary-candidate selection | [Model release and backend integration](../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md), [single-damage optimisation](../Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md) and [vision experiment records](../SystemCode/experiments/vision/README.md). Report Sections 2, 4 and 5.1 distinguish class-aware precision/recall, box metrics and error analysis. Independent local validation of the final model remains outstanding. |
 
-For the report appendix, map the delivered functions to MR, RS and CGS teaching content and provide concrete evidence. Do not count a normal review screen alone as an additional technique group. If the proposed assistant is removed, revise this mapping and check that the final system still demonstrates the required coverage.
+Database storage, access control, interface display and ordinary data preparation are supporting engineering, not evidence of a separate knowledge-discovery/data-mining technique. The GPT/RAG service remains proposed and has not been implemented or evaluated; neither its knowledge files nor its interface placeholder count as delivered assistant functionality.
+
+The report keeps the reasoning-chain explanation in Section 3.4 and uses Appendix C as the evidence index. Experimental results are reported once in Chapter 5, rather than repeated in the mapping.
