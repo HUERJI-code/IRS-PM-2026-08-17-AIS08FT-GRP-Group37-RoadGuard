@@ -121,6 +121,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Run demo detection and business rules](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
 - [Upload, review and manage persisted tasks](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
 - [B/C task snapshots, fixed inputs and knowledge handoff](Miscellaneous/BC_HANDOFF.md)
+- [RAG knowledge corpus: GA, plans, operations, evidence and integration requirements](SystemCode/backend/knowledge/README.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)

@@ -1,10 +1,10 @@
 # Step 7: A's handoff to B/C
 
-Date: 2026-10-12; updated: 2026-10-14; owner: A. This delivers consistent active-task queries, fixed inputs, citable project knowledge and actual HTTP examples. Inspections support explicit demo or real models; task parameters remain course-simulation rules. It does not imply completion of B's planning, C's pages/retrieval/assistant or the complete system.
+Date: 2026-10-12; current-status update: 2026-10-20; owner: A. The original handoff delivered consistent active-task queries, fixed inputs, citable project knowledge and actual HTTP examples. Planning, crew APIs and authenticated pages have since been integrated; retrieval/generated answers and assistant confirmation remain unimplemented. Inspections support explicit demo or real models; task parameters remain course-simulation rules. Historical acceptance numbers below describe their dated runs.
 
 a-workflow-v5 caller changes: uploads return only inspection_id, status, detection, task_id. C displays detection, then GET /inspections/{id} before review for detection ID/record version. Query automatic tasks with GET /tasks/{task_id}, and planning revision through /tasks/snapshot. The integration script uses this sequence.
 
-Current `demo-rules-v2` sets P3/P2/P1=60/120/240 minutes; fixtures were regenerated as `planning-synthetic-v2`. B reads saved durations rather than recalculating v1 as v2. C will ingest knowledge v6 and explain by record version. See [baseline](BUSINESS_RULES_BASELINE.md)/[checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md). B/C integration is outside this round.
+Current `demo-rules-v2` sets P3/P2/P1=60/120/240 minutes; fixtures were regenerated as `planning-synthetic-v2`. B reads saved durations rather than recalculating v1 as v2. That round supplied knowledge v6; the current ingestion target is [a-knowledge-v10](../SystemCode/backend/knowledge/README.md), with eleven documents and 30 synthetic acceptance specifications. See [baseline](BUSINESS_RULES_BASELINE.md)/[checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md). B/C integration was outside the original round and is documented separately in the later acceptance record.
 
 ## 1. Deliverables and boundaries
 
@@ -60,7 +60,7 @@ UI pagination remains `GET /tasks?status=...&limit=...&offset=...` returning his
 TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)
 ```
 
-Without connection, the service opens/closes one read transaction. To read tasks and future crews together, B uses one connection:
+Without connection, the service opens/closes one read transaction. The implemented PlanningService reads tasks and crews together using one connection:
 
 ```python
 from roadguard.tasks import TaskQueryService
@@ -68,7 +68,7 @@ from roadguard.tasks import TaskQueryService
 query = TaskQueryService(database)
 with database.connect() as connection:
     snapshot = query.snapshot(connection=connection)
-    # B's future CrewService reads crews using this same connection here.
+    # CrewService.read_planning_crews(connection) reads crews in this transaction.
     # Do not invoke a crew query that opens another connection in this context.
 
 # Compute matrix/Greedy/GA after exiting the read transaction.
@@ -77,17 +77,17 @@ with database.connect() as connection:
 #     Save B's plan here; saving a plan does not increment input revision.
 ```
 
-Crew reads/plan writes above are future B integration points, not an existing planner. Supplied connections must belong to the same file database and already be in a transaction. The caller owns commit/rollback/close; TaskQueryService does not.
+The snippet illustrates the transaction boundary; the executable integration is [PlanningService](../SystemCode/backend/roadguard/routing/service.py). Supplied connections must belong to the same file database and already be in a transaction. The caller owns commit/rollback/close; TaskQueryService does not.
 
 Snapshots are consistent at read time, not locks on future state. Tasks/crews can change during computation. Recheck input_revision in the saving write transaction, discarding/recalculating stale results under B's policy rather than overwriting current plans. A pre-computation check alone is insufficient.
 
-HTTP snapshots include only tasks and do not guarantee that crews read through another request share their revision. B combines inputs internally with the shared connection above. Automatic task-change events, planning triggers and stale-plan marking are not yet implemented; mutation planning_input_changed supports later integration.
+HTTP snapshots include only tasks and do not guarantee that crews read through another request share their revision. B combines inputs internally with the shared connection above. Saved plans are marked stale on read when input_revision differs. Task/crew changes do not automatically recalculate: planning_input_changed signals input changes, and explicit recalculation saves both plans only after a second revision check.
 
 ## 3. B: fixed inputs
 
 See [planning/README.md](../SystemCode/contracts/planning/README.md) for files/reproducible generator. 10/15/20 tasks are subsets of one sequence, without matrices/results/training images. Coordinates pass frozen-polygon checks but are synthetic and not verified on eligible roads; they are neither field tasks nor road-verified experiments.
 
-Configuration retains four crews/NUS-ISS building reference. B still verifies vehicle access and road eligibility before real travel integration. Unknown return/shift/deadline/algorithm constraints stay unknown, not silently completed.
+Configuration retains four crews/NUS-ISS building reference. Vehicle access and road eligibility remain unverified. The routing demo explicitly selects return_to_depot=true, a 480-minute shift and b-objective-v1 weights; shared operational approval and task deadlines remain unresolved. Optional Google estimates do not verify permission.
 
 Fixture revisions apply only within fixtures, never as live database revisions. No automatic import or fallback success on query failure. Fair GA/Greedy comparisons also require identical task snapshot, crews, node order, matrix and constraints, with versions/seeds recorded.
 
@@ -97,7 +97,7 @@ Knowledge retains stable document/passage IDs, sources/hashes, versions, respons
 
 Retain citation ID/version/classification/original source in retrieved passages and answers. `demo-rules-v2` cannot automatically explain tasks frozen under another version; check saved rule_version/decision/audit first and state insufficient version evidence.
 
-Specific routes, assignments, travel times and GA/Greedy metrics must come from B's saved plan_id, not static knowledge. Without results, invent no plan or improvement percentage. Availability changes require user confirmation/B's service; knowledge/model answers cannot write tables. Knowledge QA cases test future implementation and are not executed GPT/RAG results.
+Specific routes, assignments, travel times and GA/Greedy metrics must come from authorized saved plans, not static knowledge. Comparable algorithm percentages require same-recalculation evidence and matching inputs; equivalent-work time comparisons also require matching assigned task IDs. Availability changes require user confirmation/B's service; CrewPatch checks expected_version and does not automatically recalculate. The planned assistant orchestration must validate preview state, then call planning with the returned input_revision. Knowledge/model answers cannot write tables. Knowledge QA cases specify future behavior and are not executed GPT/RAG results. See the [RAG integration contract](../SystemCode/backend/knowledge/11_assistant_integration.md) for source lifecycle, permissions and confirmation boundaries.
 
 Frontend notes:
 
@@ -139,4 +139,4 @@ python -m pytest SystemCode/tests -q
 
 Tests cover complete queries above 100 tasks, original-field projection, unknowns, terminal filtering, conflicts/concurrency, caller connection lifecycle, corrupt data, reproducible fixtures, knowledge-source consistency and HTTP example. No real training, Google travel, planning, GPT or frontend demo was executed.
 
-See [Step 8](STEP8_VISION_ACCEPTANCE.md) for current implementation and actual data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and a-knowledge-v7 (qa-03 corrected and decoding-source digest synchronized); installation in [model release](MODEL_RELEASE_AND_BACKEND.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). Assistant remains unimplemented; recheck knowledge's B/C stage descriptions before ingestion.
+See [Step 8](STEP8_VISION_ACCEPTANCE.md) for its dated data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and the current [a-knowledge-v10](../SystemCode/backend/knowledge/README.md); installation is in the [current guide](../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). The v10 corpus now covers implemented GA/Greedy, saved plans, accounts and historical evaluations. Verify manifest digests before ingestion; the assistant remains unimplemented.
