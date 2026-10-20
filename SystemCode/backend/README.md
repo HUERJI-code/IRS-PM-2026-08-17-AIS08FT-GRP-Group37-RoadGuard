@@ -4,7 +4,7 @@ See [released model installation and primary suggestions](../../Miscellaneous/MO
 
 部署权重已随 Git 提交到 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`，普通 clone/pull 会同时取得，后端默认从该位置加载。新环境按模型接入说明安装后端与视觉依赖后启动即可，无需单独下载权重或修改模型路径。详见[后端模型目录](roadguard/model/README.md)。
 
-A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v3 with B's `crews` and `route_plans` tables. Assistant and frontend remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v3 with B's `crews` and `route_plans` tables. The frontend is implemented; C steps 10–11 add read-only knowledge retrieval and opt-in GPT evidence selection (see [assistant guide](roadguard/assistant/README.md)). Real GPT acceptance and assistant adjustments remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
 上传成功体仅返回 `inspection_id`、`status`、`detection`、`task_id`；详情从 `GET /api/v1/inspections/{id}` 读取。数据库位置、PyCharm 查看方式与只读 SQL 见[数据库查看指南](../../Miscellaneous/DATABASE_VIEWING.md)。
 
@@ -115,3 +115,8 @@ python -m pytest SystemCode/tests -q
 ## 账号接口（2026-10-18）
 
 `POST /api/v1/auth/login` 设置会话 Cookie，`GET /api/v1/auth/session` 返回当前账号，写请求需要 `X-CSRF-Token`。施工队使用 `GET /api/v1/crew/workspace` 读取本队快照；禁止匿名业务访问。Schema v4 增量迁移保留现有数据。账号开通、Swagger 测试及部署配置见[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)。
+
+
+## C 第 12 步增量：队伍调整
+
+新增 dispatcher 专用 `/api/v1/assistant/change-requests` 预览、查询及 confirm/cancel/replan 操作。预览不修改业务输入，确认与重算需分别明确提交，网络失败通过历史记录恢复。契约为 `c-assistant-change-v1`，数据库为 v5；完整状态、版本、幂等和迁移边界见 `SystemCode/backend/roadguard/assistant/README.md` 的第 12 步说明。前端已接入独立调整区，模拟来源禁止写入。该流程不调用 GPT。

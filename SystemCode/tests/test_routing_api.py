@@ -175,14 +175,14 @@ def test_v2_database_migrates_to_v3_keeping_rows_and_revision(settings):
         task_id = create_task(client, 0)
     database = Database(settings.database_path)
     with database.transaction() as connection:
-        for table in ("inspection_owners", "auth_audit", "auth_sessions", "auth_login_limits", "auth_users"):
+        for table in ("assistant_change_events", "assistant_changes", "inspection_owners", "auth_audit", "auth_sessions", "auth_login_limits", "auth_users"):
             connection.execute(f"DROP TABLE {table}")
         connection.execute("DROP TABLE route_plans")
         connection.execute("DROP TABLE crews")
         connection.execute("UPDATE infra_metadata SET schema_version=2")
     database.initialize()
     with database.connect() as connection:
-        assert connection.execute("SELECT schema_version FROM infra_metadata").fetchone()[0] == 4
+        assert connection.execute("SELECT schema_version FROM infra_metadata").fetchone()[0] == 5
         assert read_revision(connection) == 1
         assert connection.execute("SELECT COUNT(*) FROM tasks WHERE task_id=?", (task_id,)).fetchone()[0] == 1
 

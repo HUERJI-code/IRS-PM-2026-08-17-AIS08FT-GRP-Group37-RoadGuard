@@ -1,6 +1,6 @@
 # A → C 知识资料包
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v8`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v9`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
 
 先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
 
@@ -17,3 +17,5 @@ sha256 使用文件原始 UTF-8 字节；仓库通过 .gitattributes 固定 LF�
 文档完整性测试为 `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`，验证来源摘要、引用 anchor、标签/演示映射与十个验收题。C 后续自行实现检索与引用，并以 B 的持久化方案事实回答动态路线问题。
 
 2026-10-18 v8 定向更新：人工操作身份与工作流来源哈希同步账号权限实现；旧记录不改写。角色与 CLI 见[账号角色规范](../../../Miscellaneous/ACCOUNT_ROLES.md)。其余尚待助手接入核验的阶段描述保持原限制。
+
+2026-10-19 v9：C 对 A 所属正文进行一致性维护，纠正规划服务/联调阶段描述，增加带固定来源的调度演示配置与账号工作流。资料包本身仍只有文档与 manifest；检索代码位于 roadguard/assistant。此轮维护不代表 A 人工批准或专家审核，不修改业务规则。第十步静态检索不等于 GPT 问答、自然语言执行或动态方案证据。

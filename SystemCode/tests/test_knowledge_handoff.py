@@ -43,10 +43,10 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v8"
+    assert MANIFEST["package_version"] == "a-knowledge-v9"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
-    assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"
+    assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_C"
     assert MANIFEST["review"]["human_or_expert_approval"] is False
     assert MANIFEST["hash_algorithm"] == "sha256_raw_file_bytes"
     assert 4 <= len(MANIFEST["documents"]) <= 6
@@ -87,7 +87,7 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
     content = path.read_text(encoding="utf-8")
     assert digest(path) == document["sha256"]
     assert document["owner"] == "A"
-    versions = {"rg-kb-workflow": "5", "rg-kb-pending": "4", "rg-kb-labels": "2", "rg-kb-demo-rules": "2", "rg-kb-assistant": "2"}
+    versions = {"rg-kb-scope": "2", "rg-kb-workflow": "6", "rg-kb-pending": "5", "rg-kb-labels": "2", "rg-kb-demo-rules": "3", "rg-kb-assistant": "3"}
     assert document["document_version"] == versions.get(document["document_id"], "1")
     assert document["review_basis"] == "repository_consistency_review"
     assert f'document_id：`{document["document_id"]}`' in content

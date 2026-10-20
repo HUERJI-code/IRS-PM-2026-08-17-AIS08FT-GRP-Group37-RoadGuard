@@ -32,6 +32,15 @@ def current_user(request: Request, token: Annotated[str | None, Security(cookie)
 
 # Deny by default, including any future business route until explicitly classified.
 PERMISSIONS = {
+    ("GET", "/assistant/change-requests"): {"dispatcher"},
+    ("POST", "/assistant/change-requests"): {"dispatcher"},
+    ("GET", "/assistant/change-requests/{change_id}"): {"dispatcher"},
+    ("POST", "/assistant/change-requests/{change_id}/confirm"): {"dispatcher"},
+    ("POST", "/assistant/change-requests/{change_id}/cancel"): {"dispatcher"},
+    ("POST", "/assistant/change-requests/{change_id}/replan"): {"dispatcher"},
+    ("GET", "/assistant/status"): {"dispatcher"},
+    ("POST", "/assistant/query"): {"dispatcher"},
+    ("POST", "/assistant/knowledge/search"): {"dispatcher"},
     ("GET", "/demo/scenarios"): {"inspector"},
     ("POST", "/demo/assessments"): {"inspector"},
     ("POST", "/inspections"): {"inspector"},

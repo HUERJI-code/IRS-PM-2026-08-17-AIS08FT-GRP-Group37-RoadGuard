@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v8",
+  "package_version": "a-knowledge-v9",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -19,12 +19,14 @@
         "src-boundary",
         "src-depot",
         "src-geography-code",
-        "src-project-config"
+        "src-project-config",
+        "src-routing-config",
+        "src-routing-service"
       ],
       "expected_grounded_points": [
         "虚构维修部门的四队配置与 crew-01 至 crew-04。",
         "JE/JW 冻结多边形并集包含边缘；NUS-ISS 例外只针对基地。",
-        "NUS-ISS 坐标 1.292149/103.776551 为模拟建筑参考点；首个任务行程要计入，返程仍未定。"
+        "NUS-ISS 坐标 1.292149/103.776551 为模拟建筑参考点；首个任务行程要计入，正式返程策略仍待确认，B 当前演示配置返基地。"
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
@@ -107,6 +109,8 @@
       "source_ids": [
         "context-team",
         "context-workflow-guide",
+        "src-account-roles",
+        "src-routing-service",
         "src-workflow-schema",
         "src-workflow-service"
       ],
@@ -198,7 +202,8 @@
         "context-team",
         "src-demo-rules",
         "src-label-schema",
-        "src-project-config"
+        "src-project-config",
+        "src-routing-service"
       ],
       "expected_grounded_points": [
         "静态包没有当前队伍分配、顺序和总行程事实。",
@@ -234,7 +239,8 @@
         "context-team",
         "src-demo-rules",
         "src-label-schema",
-        "src-project-config"
+        "src-project-config",
+        "src-routing-guide"
       ],
       "expected_grounded_points": [
         "本包没有比较实验结果，不能保证 GA 更优或生成提升百分比。",

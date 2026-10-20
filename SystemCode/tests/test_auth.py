@@ -208,7 +208,7 @@ def test_v3_migration_preserves_business_data_without_granting_old_uploads(clien
     database=client.app.state.database
     with database.transaction() as conn:
         before=tuple(conn.execute('SELECT record_json FROM inspections').fetchone())
-        for table in ['inspection_owners','auth_audit','auth_sessions','auth_login_limits','auth_users']:
+        for table in ['assistant_change_events','assistant_changes','inspection_owners','auth_audit','auth_sessions','auth_login_limits','auth_users']:
             conn.execute('DROP TABLE '+table)
         conn.execute('UPDATE infra_metadata SET schema_version=3')
     database.initialize()

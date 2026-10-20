@@ -1,0 +1,59 @@
+{
+  "case_id": "q09",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "当前矩阵是否来自 Google？",
+    "scope": "plan",
+    "plan_id": "plan-0595533fb445468e9f43bc8fb98b2b3a"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-0595533fb445468e9f43bc8fb98b2b3a#summary]\n方案ID：plan-0595533fb445468e9f43bc8fb98b2b3a\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:57+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-0595533fb445468e9f43bc8fb98b2b3a#summary",
+        "quote": "方案ID：plan-0595533fb445468e9f43bc8fb98b2b3a\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:57+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "plan:plan-0595533fb445468e9f43bc8fb98b2b3a#summary",
+        "kind": "saved_plan",
+        "title": "方案与来源",
+        "classification": "saved_demo_plan",
+        "content": "方案ID：plan-0595533fb445468e9f43bc8fb98b2b3a\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:57+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。",
+        "version": "2",
+        "sha256": "6b5099e622a1bb0c26ef170d555dbba03d594ab1d05f72a86ea4c3a77291ab0b",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-0595533fb445468e9f43bc8fb98b2b3a",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

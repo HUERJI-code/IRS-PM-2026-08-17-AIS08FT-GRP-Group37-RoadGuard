@@ -1,0 +1,77 @@
+{
+  "case_id": "a06",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": "停用 crew-02",
+  "plan_id": "plan-5943cd5ccfd6422998a1e81e3638397f",
+  "input_revision": 0,
+  "expected": "task_changed",
+  "actual": {
+    "contract_version": "c-assistant-change-v1",
+    "change_id": "change-e83e9de9013d4b1fab77d5f393e44e4b",
+    "actor_id": "36e3b15d5aa84f0497a0634eca46a905",
+    "client_key": "23fc917769a348f4a441f6d43ca2ed89",
+    "instruction": "停用 crew-02",
+    "based_on_plan_id": "plan-5943cd5ccfd6422998a1e81e3638397f",
+    "input_revision": 0,
+    "crew_id": "crew-02",
+    "crew_record_version": 1,
+    "before_available": true,
+    "after_available": false,
+    "status": "failed",
+    "record_version": 2,
+    "created_at": "2026-10-20T20:45:59.173562Z",
+    "expires_at": "2026-10-20T21:00:59.173562Z",
+    "confirmed_at": null,
+    "applied_revision": null,
+    "planning_input_changed": false,
+    "error_code": "stale_input_revision",
+    "replan_status": "not_requested",
+    "replan_attempts": [],
+    "replan_attempt_id": null,
+    "replan_lease_until": null,
+    "replan_error_code": null,
+    "result": null,
+    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+  },
+  "crew_state_after": {
+    "contract_version": "b-crew-v1",
+    "crews": [
+      {
+        "crew_id": "crew-01",
+        "name": "Crew 01",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-02",
+        "name": "Crew 02",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-03",
+        "name": "Crew 03",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-04",
+        "name": "Crew 04",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      }
+    ],
+    "input_revision": 1
+  }
+}

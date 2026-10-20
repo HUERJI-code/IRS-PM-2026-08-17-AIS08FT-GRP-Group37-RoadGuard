@@ -1,6 +1,6 @@
 # 演示规则与置信度分流
 
-document_id：`rg-kb-demo-rules`；document_version：`2`；owner：`A`。
+document_id：`rg-kb-demo-rules`；document_version：`3`；owner：`A`。
 
 <a id="demo-rule-table"></a>
 ## 精确演示映射
@@ -20,6 +20,8 @@ classification：`demo_assumption`。citation_id：`rg-kb-demo-rules#demo-rule-t
 | pothole | medium | P2 | 120 |
 | pothole_deep | high | P1 | 240 |
 
+中文检索名称（来自中央标签字典）：纵向裂缝（longitudinal_crack）；宽纵向裂缝（longitudinal_crack_wide）；横向裂缝（transverse_crack）；宽横向裂缝（transverse_crack_wide）；龟裂（网状裂缝）（alligator_crack）；下陷龟裂（alligator_crack_sunken）；坑洞（pothole）；深坑洞（pothole_deep）。
+
 来源：[src-demo-rules](../../config/demo_rules.example.json)、[src-label-schema](../../model/label_schema.json)。
 
 <a id="demo-gate-selection"></a>
@@ -38,8 +40,21 @@ classification：`demo_assumption`。citation_id：`rg-kb-demo-rules#demo-gate-s
 
 classification：`demo_assumption`。citation_id：`rg-kb-demo-rules#demo-null-provenance`。
 
-未知 service_minutes 用 null，不用零；配置当前八类工时都是演示分钟数。任务 due_at 当前保持 null，不生成期限或延期指标。巡检冻结完整规则快照，审核和任务标签修正继续使用该快照，而不是重启后新配置。引用检测时保留 Detection 的 model_version/is_demo，引用决策时读取 Inspection 的 decision_trace，引用任务时保留 Task 的 rule_version/is_demo；不能假设 Task 自带模型版本或完整决策过程。显式 demo 上传的检测仍来自指定合成案例；real 上传才调用实际检测器。服务分钟数不是任务期限或行程时间，不因有四队而除以四。
+未知 service_minutes 用 null，不用零；配置当前八类工时都是演示分钟数。任务 due_at 当前保持 null，没有期限则无法计算延误，不生成期限或延期指标。巡检冻结完整规则快照，审核和任务标签修正继续使用该快照，而不是重启后新配置。引用检测时保留 Detection 的 model_version/is_demo，引用决策时读取 Inspection 的 decision_trace，引用任务时保留 Task 的 rule_version/is_demo；不能假设 Task 自带模型版本或完整决策过程。显式 demo 上传的检测仍来自指定合成案例；real 上传才调用实际检测器。服务分钟数不是任务期限或行程时间，不因有四队而除以四。
 
 本包静态表格只解释 demo-rules-v2；运行记录可能使用覆盖配置的其他版本。不能用本包或最新规则表重算/解释不同版本的旧任务，须依据该记录保存的规则版本、decision_trace 和 history；没有相符证据时承认 insufficient_data。
 
 来源：[src-demo-rules](../../config/demo_rules.example.json)、[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)。
+
+<a id="routing-demo-settings"></a>
+## 当前调度演示参数
+
+classification：`demo_assumption`。citation_id：`rg-kb-demo-rules#routing-demo-settings`。
+
+B 的 routing.example.json 当前为 b-routing-demo-v1：四队默认共享 NUS-ISS，返基地 true，每队班次上限 480 分钟，默认 simulated 矩阵。这是 B 选定的演示假设，不能把项目公共配置中待确认的 null 解释为 false，也不能当作正式运营规则。
+
+b-objective-v1 先按未分配 P1、P2、P3 数量的字典序比较，再比较加权成本：1.0×最晚收工分钟 + 0.2×总行程分钟 + 0.5×可用队伍工作量标准差 + 0.5×优先级加权平均完工分钟。优先级权重 P1/P2/P3 为 3/2/1；加权完工不是延误。due_at 未知时不能生成延误或金额节省。
+
+在线 planning_service.seed_with_greedy=true，实验 ga.seed_with_greedy=false；不能混用在线 GA + Greedy 初始解和纯 GA 的结果。服务可按环境配置切换 Google，但失败不自动退回模拟。静态文件只说明默认值；回答某次安排必须读取其保存的 settings、algorithm_parameters、矩阵来源与方案版本。
+
+来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)、[src-routing-guide](../roadguard/routing/README.md)。

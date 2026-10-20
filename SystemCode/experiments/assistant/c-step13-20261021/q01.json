@@ -1,0 +1,101 @@
+{
+  "case_id": "q01",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "四队分别负责什么任务？",
+    "scope": "plan",
+    "plan_id": "plan-54332d414fc144678fec58364d59b7cf"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01]\n队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02]\n队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03]\n队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04]\n队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01",
+        "quote": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02",
+        "quote": "队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03",
+        "quote": "队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04",
+        "quote": "队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01",
+        "kind": "saved_plan",
+        "title": "crew-01 访问顺序",
+        "classification": "saved_demo_plan",
+        "content": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "version": "2",
+        "sha256": "d92de16b980c461c2411d92aeb796dfa6bec6d3bfd6bf95a006df64f8fed8736",
+        "provenance": []
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02",
+        "kind": "saved_plan",
+        "title": "crew-02 访问顺序",
+        "classification": "saved_demo_plan",
+        "content": "队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "version": "2",
+        "sha256": "0bcadf622ead733f55cc7f28d94e81ac1b674c66b99367d9caf19773f09e0f1d",
+        "provenance": []
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03",
+        "kind": "saved_plan",
+        "title": "crew-03 访问顺序",
+        "classification": "saved_demo_plan",
+        "content": "队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "version": "2",
+        "sha256": "3a105c475333ee38e7f58cb1cd6bf8c22c716bd31762731ae1c9ef96d01a86fc",
+        "provenance": []
+      },
+      {
+        "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04",
+        "kind": "saved_plan",
+        "title": "crew-04 访问顺序",
+        "classification": "saved_demo_plan",
+        "content": "队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "version": "2",
+        "sha256": "e23a14a0271f75f7e7bfed44332e21fd52d11270fe628abad170e8e4970c7427",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-54332d414fc144678fec58364d59b7cf",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

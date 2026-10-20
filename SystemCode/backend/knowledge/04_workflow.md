@@ -1,6 +1,6 @@
 # 巡检、审核与任务记录
 
-document_id：`rg-kb-workflow`；document_version：`5`；owner：`A`。
+document_id：`rg-kb-workflow`；document_version：`6`；owner：`A`。
 
 <a id="workflow-evidence"></a>
 ## 记录与人工复核
@@ -20,11 +20,14 @@ classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workfl
 
 classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-task-state`。
 
-只有 active 任务参加新的规划读取；completed/cancelled 保留历史，不物理删除、不重新激活。活动任务允许完成/取消、纠正 damage_label，或 latitude/longitude/road_type 一起修正。标签纠正由服务端按巡检冻结规则重新计算严重度、优先级、分钟数和建议；位置重新校验范围并保留巡检的原始位置。不接受自由填写 priority/service_minutes/due_at、空修改或显式 null。
+只有 active 任务参加新的规划读取；completed/cancelled 保留历史，不物理删除、不重新激活。调度员可将活动任务完成/取消、纠正 damage_label，或将 latitude/longitude/road_type 一起修正；施工队仅可完成服务端核验属于本队的任务。标签纠正由服务端按巡检冻结规则重新计算严重度、优先级、分钟数和建议；位置重新校验范围并保留巡检的原始位置。不接受自由填写 priority/service_minutes/due_at、空修改或显式 null。
 
-任务创建或真正修正/完成/取消会改变规划输入；巡检待复核、无检测、驳回不改变活动任务输入。B 应读取同一快照的 active 任务和共同 input_revision；多页有不同版本时不能拼成同一次规划。四队分配和路线结果由 B 的未来规划服务负责，不从任务记录推导已生成方案。
+任务创建或真正修正/完成/取消会改变规划输入；巡检待复核、无检测、驳回不改变活动任务输入。B 应读取同一快照的 active 任务和共同 input_revision；多页有不同版本时不能拼成同一次规划。四队分配和路线结果由已实现的 B 规划服务负责；任务改变后旧方案过期，需要调度员显式重算，不从任务记录推导已生成方案。
 
 来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)。
+
+
+补充来源：[src-routing-service](../roadguard/routing/service.py)、[src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md)。
 
 <a id="workflow-versions"></a>
 ## 版本与安全重试
@@ -36,3 +39,14 @@ record_version 是单条资源的乐观并发版本，审核/修改带 expected_
 planning_input_changed 只表示此次请求实际改变共同输入，replayed 表示安全重放；它们不表示路线计算成功。C 必须按 code/status 处理错误和冲突并重新读取资源，不能把旧方案或演示响应显示为新的真实结果。
 
 来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。
+
+<a id="workflow-account-roles"></a>
+## 账号角色与多角色流程
+
+classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-account-roles`。
+
+巡查员 inspector 只上传并查看本人巡检；施工队 crew 固定绑定一队，只看本队最新 GA 安排与相关任务/照片，并确认本队有效任务完成；中央调度员 dispatcher 处理审核、全局任务、队伍、规划和比较。助手静态检索首版仅调度员可用，不能用角色请求头或网址参数扩大权限。
+
+流程是巡查员上传 → 调度员复核/规划 → 施工队确认完成 → 调度员显式重算。最新保存的 GA 是施工队工作台依据，当前没有独立发布方案步骤。所有新业务接口默认拒绝，需加入现有角色权限表；会话使用 HttpOnly Cookie，POST/PATCH 等写方法还需 CSRF，即使检索 POST 不修改业务也遵守统一校验。账号属于运行数据库，不随 Git 拉取共享，没有默认密码。
+
+来源：[src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md)、[src-auth-permissions](../roadguard/auth/dependencies.py)。

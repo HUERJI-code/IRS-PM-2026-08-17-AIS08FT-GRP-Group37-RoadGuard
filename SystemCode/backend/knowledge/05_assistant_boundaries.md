@@ -1,17 +1,20 @@
 # 助手回答与修改的证据边界
 
-document_id：`rg-kb-assistant`；document_version：`2`；owner：`A`。
+document_id：`rg-kb-assistant`；document_version：`3`；owner：`A`。
 
 <a id="assistant-plan-facts"></a>
 ## 动态路线事实
 
 classification：`confirmed_project_fact`。citation_id：`rg-kb-assistant#assistant-plan-facts`。
 
-以下是已记录的项目对接要求，待 B/C 实现，不是本包提供的助手/规划功能。路线回答必须绑定 B 保存的 plan_id 与其 input_revision，使用对应 crew_routes、停靠顺序、未分配项、metrics、matrix_provider 和 stale 信息；比较须取明确的两个保存方案。A 的静态知识只能解释范围/标签/规则，不能提供当前队伍分配、到达时间或总行程分钟数。
+B 已提供持久化规划和队伍服务；C 第十步提供静态检索，GPT 回答和自然语言调整确认仍待后续实现。以下是助手回答的对接要求，不表示静态检索已读取运行方案或执行业务动作。路线回答必须绑定 B 保存的 plan_id 与其 input_revision，使用对应 crew_routes、停靠顺序、未分配项、metrics、matrix_provider 和 stale 信息；比较须取明确的两个保存方案。A 的静态知识只能解释范围/标签/规则，不能提供当前队伍分配、到达时间或总行程分钟数。
 
 无持久化方案或相关事实时返回 insufficient_data，列出缺少的方案和字段。不要从图片、任务排序、模型回答或样例造出路线；不能把示意直线当道路几何，也不能把模拟矩阵描述成 Google 实测。过期方案和失败必须明确显示，不替换成新的虚构结果。
 
 来源：[context-agents](../../../AGENTS.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)、[src-project-config](../../config/project.example.json)。
+
+
+补充来源：[src-routing-service](../roadguard/routing/service.py)。
 
 <a id="assistant-confirmation"></a>
 ## 队伍调整必须确认

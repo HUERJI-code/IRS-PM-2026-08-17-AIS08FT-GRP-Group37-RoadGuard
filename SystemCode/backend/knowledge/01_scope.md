@@ -1,6 +1,6 @@
 # 范围、基地与四队场景
 
-document_id：`rg-kb-scope`；document_version：`1`；owner：`A`。
+document_id：`rg-kb-scope`；document_version：`2`；owner：`A`。
 
 <a id="scope-baseline"></a>
 ## 项目任务范围
@@ -18,9 +18,12 @@ classification：`confirmed_project_fact`。citation_id：`rg-kb-scope#depot-cre
 
 一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。
 
-该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。四队配置已确定，不表示工程队服务和规划算法已经实现。
+该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。
 
 来源：[src-project-config](../../config/project.example.json)、[src-depot](../../../Miscellaneous/geography/nus-iss-depot.geojson)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。
+
+
+补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。
 
 <a id="road-evidence"></a>
 ## 道路声明的证据边界

@@ -1,0 +1,16 @@
+{
+  "case_id": "workflow",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "expected": "upload/review/plan/own-crew completion/stale/replan/change/replan",
+  "actual": {
+    "initial_input_revision": 2,
+    "after_completion_revision": 3,
+    "final_input_revision": 4,
+    "disabled_crew": "crew-02",
+    "remaining_task_count": 1,
+    "assistant_unconfigured_http": 503
+  }
+}

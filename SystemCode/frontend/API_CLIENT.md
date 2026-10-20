@@ -65,3 +65,16 @@ ApiError 保留 code、status、kind、details、outcomeUnknown。用户提示�
 ## 验证边界
 
 当前自动测试覆盖生成样例 schema、请求路径/字段、multipart、请求 ID 复用、版本冲突、无自动重试、超时/取消、非法响应、图片地址、分页、显式来源切换、禁止模拟写入、单位和时区。第 4 步已接入真实上传与详情页面，见 UPLOAD_GUIDE.md；第 5 步审核界面已接入，见 REVIEW_GUIDE.md；第 6 步任务编辑和第 7 步队伍控制已实现；重算显式调用并核对输入版本，见 TASK_GUIDE.md 与 PLANNING_GUIDE.md，不宣称完整调度业务端到端通过。
+
+## 第 10 步增量
+
+新增 `api.knowledgeSearch({query, limit, rule_version}, options)`，调用统一后端的 POST /assistant/knowledge/search。已同步 OpenAPI、生成类型和运行时响应校验。仅调度员可调用，POST 仍携带 CSRF 和会话；它不写业务数据，因此网络失败的 outcomeUnknown 为 false，且不会自动重试。独立 knowledge-fixture.json 是确定性检索样例，不是生成答案或线上查询记录。当前没有新增助手 UI，模拟模式也不伪装该接口已执行。详见[接口说明](../backend/roadguard/assistant/README.md)。
+
+## 第 11 步增量
+
+新增 assistantStatus 与 assistantQuery，保持会话/CSRF、JSON Schema 校验和无自动重试。assistantQuery 是只读 POST，网络失败不会标为未知业务写入；但已发送的模型请求可能产生用量。页面等待 60 秒，可取消等待；模拟来源不提交问答。assistant-fixture.json 来自显式 test-double 证据选择，不是线上 GPT 回答。助手页展示原文及静态/动态来源，当前没有修改队伍或重算按钮。
+
+
+## C 第 12 步增量：队伍调整
+
+新增 dispatcher 专用 `/api/v1/assistant/change-requests` 预览、查询及 confirm/cancel/replan 操作。预览不修改业务输入，确认与重算需分别明确提交，网络失败通过历史记录恢复。契约为 `c-assistant-change-v1`，数据库为 v5；完整状态、版本、幂等和迁移边界见 `SystemCode/backend/roadguard/assistant/README.md` 的第 12 步说明。前端已接入独立调整区，模拟来源禁止写入。该流程不调用 GPT。

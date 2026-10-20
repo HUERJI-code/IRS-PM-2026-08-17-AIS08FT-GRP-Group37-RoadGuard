@@ -155,3 +155,16 @@ B 读取 Task 时必须识别 null 时长/null 期限以及 is_demo，不凭 lab
 ## 账号权限增量（2026-10-18）
 
 本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。
+
+## C 第 10 步知识检索增量（2026-10-19）
+
+新增 `POST /api/v1/assistant/knowledge/search`，仅 dispatcher 使用现有会话和 CSRF 调用。请求 query、limit、可选 rule_version；返回版本化知识片段、稳定引用、来源校验信息和分类，不生成答案，不读写业务方案。知识不可用返回 503 / knowledge_unavailable；规则版本不匹配返回 200 / rule_version_unavailable 和空 hits。完整字段、限制和验证见[知识检索契约](../SystemCode/backend/roadguard/assistant/README.md)。此增量不代表此前助手生成/调整接口已实现。
+
+## C 第 11 步只读问答增量（2026-10-20）
+
+新增 dispatcher 专属 `GET /api/v1/assistant/status` 和 `POST /api/v1/assistant/query`。POST 使用 question、scope、可选 plan_id/rule_version；plan 模式强制指定保存方案，由 B 的查询服务取事实。响应 c-assistant-query-v1 返回已核验原文引用、静态/动态来源、版本及只读标记；不执行调整。未配置/上游不可用 503、证据不符 502、预算限制 429、上下文过大 422；详细状态和配置见[助手说明](../SystemCode/backend/roadguard/assistant/README.md)。首版为 GPT 选择原文的抽取式回答，不代表自由生成回答或调整接口已完成。
+
+
+## C 第 12 步增量：队伍调整
+
+新增 dispatcher 专用 `/api/v1/assistant/change-requests` 预览、查询及 confirm/cancel/replan 操作。预览不修改业务输入，确认与重算需分别明确提交，网络失败通过历史记录恢复。契约为 `c-assistant-change-v1`，数据库为 v5；完整状态、版本、幂等和迁移边界见 `SystemCode/backend/roadguard/assistant/README.md` 的第 12 步说明。前端已接入独立调整区，模拟来源禁止写入。该流程不调用 GPT。

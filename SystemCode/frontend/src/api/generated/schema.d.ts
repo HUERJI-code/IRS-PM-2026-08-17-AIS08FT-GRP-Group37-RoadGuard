@@ -341,6 +341,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assistant/knowledge/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Retrieve verified static knowledge sections (dispatcher only)
+         * @description Read-only lexical retrieval, not generated answers or business commands. Requires session cookie and CSRF token. Incompatible rule versions return no hits.
+         */
+        post: operations["search_knowledge_api_v1_assistant_knowledge_search_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Assistant Status */
+        get: operations["assistant_status_api_v1_assistant_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Read-only evidence-selected GPT answer; dispatcher session and CSRF required */
+        post: operations["query_assistant_api_v1_assistant_query_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/change-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Changes */
+        get: operations["list_changes_api_v1_assistant_change_requests_get"];
+        put?: never;
+        /** Preview Change */
+        post: operations["preview_change_api_v1_assistant_change_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/change-requests/{change_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Change */
+        get: operations["get_change_api_v1_assistant_change_requests__change_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/change-requests/{change_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Change */
+        post: operations["confirm_change_api_v1_assistant_change_requests__change_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/change-requests/{change_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Change */
+        post: operations["cancel_change_api_v1_assistant_change_requests__change_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/change-requests/{change_id}/replan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replan Change */
+        post: operations["replan_change_api_v1_assistant_change_requests__change_id__replan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -361,6 +501,108 @@ export interface components {
             /** Crew Id */
             crew_id: string | null;
         };
+        /** AnswerSource */
+        AnswerSource: {
+            /** Citation Id */
+            citation_id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "knowledge" | "saved_plan";
+            /** Title */
+            title: string;
+            /** Classification */
+            classification: string;
+            /** Content */
+            content: string;
+            /** Version */
+            version: string;
+            /** Sha256 */
+            sha256: string;
+            /** Provenance */
+            provenance: components["schemas"]["KnowledgeSource"][];
+        };
+        /** AssistantAnswer */
+        AssistantAnswer: {
+            /**
+             * Contract Version
+             * @default c-assistant-query-v1
+             * @constant
+             */
+            contract_version: "c-assistant-query-v1";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "supported" | "insufficient_data" | "rule_version_unavailable" | "stale_plan" | "model_refused";
+            /** Supported */
+            supported: boolean;
+            /** Answer */
+            answer: string;
+            /** Selections */
+            selections: components["schemas"]["EvidenceSelection"][];
+            /** Sources */
+            sources: components["schemas"]["AnswerSource"][];
+            /** Package Version */
+            package_version: string;
+            /** Manifest Sha256 */
+            manifest_sha256: string;
+            plan: components["schemas"]["PlanEvidenceSummary"] | null;
+            /** Model */
+            model: string | null;
+            /** Model Called */
+            model_called: boolean;
+            /**
+             * Answer Mode
+             * @default verified_extracts
+             * @constant
+             */
+            answer_mode: "verified_extracts";
+            /**
+             * Business Changes Applied
+             * @default false
+             * @constant
+             */
+            business_changes_applied: false;
+            /** Warnings */
+            warnings: string[];
+        };
+        /** AssistantQuery */
+        AssistantQuery: {
+            /** Question */
+            question: string;
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "knowledge" | "plan";
+            /** Plan Id */
+            plan_id?: string | null;
+            /** Rule Version */
+            rule_version?: string | null;
+        };
+        /** AssistantStatus */
+        AssistantStatus: {
+            /** Enabled */
+            enabled: boolean;
+            /** Configured */
+            configured: boolean;
+            /** Model */
+            model: string | null;
+            /** Max Output Tokens */
+            max_output_tokens: number;
+            /** Max Calls Per Process */
+            max_calls_per_process: number;
+            /** Calls Used */
+            calls_used: number;
+            /**
+             * Read Only
+             * @default true
+             * @constant
+             */
+            read_only: true;
+        };
         /** AutoAcceptance */
         AutoAcceptance: {
             /**
@@ -371,6 +613,107 @@ export interface components {
             policy_version: "single-primary-auto-v1";
             /** Confidence Threshold */
             confidence_threshold: number;
+        };
+        /** ChangeConfirm */
+        ChangeConfirm: {
+            /** Expected Version */
+            expected_version: number;
+        };
+        /** ChangeList */
+        ChangeList: {
+            /** Items */
+            items: components["schemas"]["ChangeRecord"][];
+        };
+        /** ChangePreview */
+        ChangePreview: {
+            /** Request Id */
+            request_id: string;
+            /** Based On Plan Id */
+            based_on_plan_id: string;
+            /** Instruction */
+            instruction: string;
+        };
+        /** ChangeRecord */
+        ChangeRecord: {
+            /**
+             * Contract Version
+             * @default c-assistant-change-v1
+             * @constant
+             */
+            contract_version: "c-assistant-change-v1";
+            /** Change Id */
+            change_id: string;
+            /** Actor Id */
+            actor_id: string;
+            /** Client Key */
+            client_key: string;
+            /** Instruction */
+            instruction: string;
+            /** Based On Plan Id */
+            based_on_plan_id: string;
+            /** Input Revision */
+            input_revision: number;
+            /** Crew Id */
+            crew_id: string;
+            /** Crew Record Version */
+            crew_record_version: number;
+            /** Before Available */
+            before_available: boolean;
+            /** After Available */
+            after_available: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "confirmed" | "cancelled" | "expired" | "failed";
+            /** Record Version */
+            record_version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Confirmed At */
+            confirmed_at?: string | null;
+            /** Applied Revision */
+            applied_revision?: number | null;
+            /**
+             * Planning Input Changed
+             * @default false
+             */
+            planning_input_changed: boolean;
+            /** Error Code */
+            error_code?: string | null;
+            /**
+             * Replan Status
+             * @default not_requested
+             * @enum {string}
+             */
+            replan_status: "not_requested" | "running" | "failed" | "succeeded";
+            /** Replan Attempts */
+            replan_attempts?: string[];
+            /** Replan Attempt Id */
+            replan_attempt_id?: string | null;
+            /** Replan Lease Until */
+            replan_lease_until?: string | null;
+            /** Replan Error Code */
+            replan_error_code?: string | null;
+            result?: components["schemas"]["RecalculationResult"] | null;
+            /**
+             * Warning
+             * @default 预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。
+             */
+            warning: string;
+        };
+        /** ChangeReplan */
+        ChangeReplan: {
+            /** Attempt Id */
+            attempt_id: string;
         };
         /** CrewList */
         CrewList: {
@@ -605,6 +948,13 @@ export interface components {
                 [key: string]: components["schemas"]["JsonValue"];
             } | null;
         };
+        /** EvidenceSelection */
+        EvidenceSelection: {
+            /** Citation Id */
+            citation_id: string;
+            /** Quote */
+            quote: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -748,6 +1098,110 @@ export interface components {
             task_id: string | null;
         };
         JsonValue: unknown;
+        /** KnowledgeHit */
+        KnowledgeHit: {
+            /** Citation Id */
+            citation_id: string;
+            /** Document Id */
+            document_id: string;
+            /** Section Id */
+            section_id: string;
+            /** Document Version */
+            document_version: string;
+            /** Document Sha256 */
+            document_sha256: string;
+            /** Document Path */
+            document_path: string;
+            /** Title */
+            title: string;
+            /**
+             * Classification
+             * @enum {string}
+             */
+            classification: "confirmed_project_fact" | "demo_assumption" | "pending_decision";
+            /** Text */
+            text: string;
+            /** Sources */
+            sources: components["schemas"]["KnowledgeSource"][];
+            /** Score */
+            score: number;
+            /** Matched Terms */
+            matched_terms: string[];
+        };
+        /** KnowledgeSearchRequest */
+        KnowledgeSearchRequest: {
+            /** Query */
+            query: string;
+            /**
+             * Limit
+             * @default 5
+             */
+            limit: number;
+            /** Rule Version */
+            rule_version?: string | null;
+        };
+        /** KnowledgeSearchResponse */
+        KnowledgeSearchResponse: {
+            /**
+             * Contract Version
+             * @default c-knowledge-search-v1
+             * @constant
+             */
+            contract_version: "c-knowledge-search-v1";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "matches" | "no_matches" | "rule_version_unavailable";
+            /** Package Id */
+            package_id: string;
+            /** Package Version */
+            package_version: string;
+            /** Manifest Sha256 */
+            manifest_sha256: string;
+            /** Versions */
+            versions: {
+                [key: string]: string;
+            };
+            /**
+             * Retrieval Method
+             * @default lexical-zh-bigram-tfidf-v1
+             * @constant
+             */
+            retrieval_method: "lexical-zh-bigram-tfidf-v1";
+            /**
+             * Evidence Scope
+             * @default static_knowledge_only
+             * @constant
+             */
+            evidence_scope: "static_knowledge_only";
+            /**
+             * Answer Generated
+             * @default false
+             * @constant
+             */
+            answer_generated: false;
+            /** Limitations */
+            limitations: string[];
+            /** Hits */
+            hits: components["schemas"]["KnowledgeHit"][];
+        };
+        /** KnowledgeSource */
+        KnowledgeSource: {
+            /** Source Id */
+            source_id: string;
+            /** Path */
+            path: string;
+            /**
+             * Integrity
+             * @enum {string}
+             */
+            integrity: "sha256_verified" | "unhashed_mutable_context";
+            /** Sha256 */
+            sha256?: string | null;
+            /** Version */
+            version?: string | null;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Username */
@@ -777,6 +1231,26 @@ export interface components {
             workload_std_minutes: number;
             /** Priority Weighted Completion Minutes */
             priority_weighted_completion_minutes: number;
+        };
+        /** PlanEvidenceSummary */
+        PlanEvidenceSummary: {
+            /** Plan Id */
+            plan_id: string;
+            /** Input Revision */
+            input_revision: number;
+            /**
+             * Algorithm
+             * @enum {string}
+             */
+            algorithm: "ga" | "greedy";
+            /** Matrix Provider */
+            matrix_provider: string;
+            /** Matrix Is Simulated */
+            matrix_is_simulated: boolean;
+            /** Is Demo */
+            is_demo: boolean;
+            /** Is Stale */
+            is_stale: boolean;
         };
         /** PlanMetrics */
         PlanMetrics: {
@@ -2852,6 +3326,685 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RoutePlan"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    search_knowledge_api_v1_assistant_knowledge_search_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KnowledgeSearchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgeSearchResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    assistant_status_api_v1_assistant_status_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantStatus"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    query_assistant_api_v1_assistant_query_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantQuery"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantAnswer"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_changes_api_v1_assistant_change_requests_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeList"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    preview_change_api_v1_assistant_change_requests_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePreview"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_change_api_v1_assistant_change_requests__change_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    confirm_change_api_v1_assistant_change_requests__change_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeConfirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    cancel_change_api_v1_assistant_change_requests__change_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeConfirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    replan_change_api_v1_assistant_change_requests__change_id__replan_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeReplan"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeRecord"];
                 };
             };
             /** @description Authentication required */

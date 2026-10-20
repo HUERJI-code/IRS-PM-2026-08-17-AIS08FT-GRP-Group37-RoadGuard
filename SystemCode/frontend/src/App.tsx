@@ -17,7 +17,7 @@ import TaskPage from './pages/TaskPage'
 import ReviewPage from './pages/ReviewPage'
 import UploadPage from './pages/UploadPage'
 import InspectionPage from './pages/InspectionPage'
-import WorkspacePage from './pages/WorkspacePage'
+import AssistantPage from './pages/AssistantPage'
 import WorkflowGuide from './components/WorkflowGuide'
 import CrewPage from './pages/CrewPage'
 import AuthProvider from './auth/AuthProvider'
@@ -149,7 +149,7 @@ function Workspace() {
             >
               <span className="nav-number">{page.number}</span>
               {page.short}
-              {page.path === '/assistant' ? <span className="nav-soon">开发中</span> : <span className="nav-arrow" aria-hidden="true">›</span>}
+              {page.path === '/assistant' ? <span className="nav-soon">助手</span> : <span className="nav-arrow" aria-hidden="true">›</span>}
             </NavLink>
             </div>
           ))}
@@ -175,7 +175,9 @@ function Workspace() {
                 key={page.path}
                 path={page.path}
                 element={
-                  !canOpen(account.role, page.path) ? <Navigate to={home} replace /> : page.path === '/crew' ? (
+                  !canOpen(account.role, page.path) ? <Navigate to={home} replace /> : page.path === '/assistant' ? (
+                    <AssistantPage />
+                  ) : page.path === '/crew' ? (
                     <CrewPage />
                   ) : page.path === '/comparison' ? (
                     <ComparisonPage />
@@ -188,7 +190,7 @@ function Workspace() {
                   ) : page.path === '/inspections/new' ? (
                     <UploadPage />
                   ) : (
-                    <WorkspacePage {...page} next={{ path: home, label: '返回工作区' }} />
+                    null
                   )
                 }
               />

@@ -18,7 +18,7 @@ from functools import wraps
 import logging
 import sqlite3
 import uuid
-from typing import Literal
+from typing import Callable, Literal
 
 from pydantic import ValidationError
 
@@ -102,7 +102,8 @@ class PlanningService:
                            "Travel times could not be obtained. No route plan was saved.", 503, details) from None
 
     @_db_operation
-    def recalculate(self, payload: RecalculateRequest) -> RecalculationResult:
+    def recalculate(self, payload: RecalculateRequest, *,
+                    on_saved: Callable[[sqlite3.Connection, RecalculationResult], None] | None = None) -> RecalculationResult:
         with self.database.connect() as connection:
             snapshot = self.tasks.snapshot(payload.expected_revision, connection=connection)
             crews = self.crews.read_planning_crews(connection)
@@ -118,14 +119,7 @@ class PlanningService:
             plan_routes(planning_input, matrix, "ga", ga_parameters=online_ga,
                         random_seed=self.config.planning_service.ga_seed, plan_id=f"plan-{uuid.uuid4().hex}")[0],
         ]
-        created_at = datetime.now(timezone.utc).isoformat()
-        # Raises StaleRevisionError (409) before writing if tasks/crews changed meanwhile.
-        with self.database.transaction(expected_revision=snapshot.input_revision) as connection:
-            for plan in plans:
-                connection.execute("INSERT INTO route_plans VALUES (?,?,?,?,?)",
-                                   (plan.plan_id, plan.algorithm, plan.input_revision, created_at,
-                                    plan.model_dump_json()))
-        return RecalculationResult(
+        result = RecalculationResult(
             input_revision=snapshot.input_revision, planning_start_at=start, task_count=snapshot.total,
             matrix_provider=matrix.provider, matrix_is_simulated=matrix.is_simulated,
             matrix_generated_at=matrix.generated_at,
@@ -134,6 +128,17 @@ class PlanningService:
                                unassigned_task_count=p.metrics.unassigned_task_count,
                                objective_value=p.metrics.objective_value) for p in plans],
         )
+        created_at = datetime.now(timezone.utc).isoformat()
+        # Raises StaleRevisionError (409) before writing if tasks/crews changed meanwhile.
+        with self.database.transaction(expected_revision=snapshot.input_revision) as connection:
+            for plan in plans:
+                connection.execute("INSERT INTO route_plans VALUES (?,?,?,?,?)",
+                                   (plan.plan_id, plan.algorithm, plan.input_revision, created_at,
+                                    plan.model_dump_json()))
+            if on_saved is not None:
+                on_saved(connection, result)
+        return result
+
 
 
 class RouteQueryService:
@@ -153,14 +158,17 @@ class RouteQueryService:
         return plan.model_copy(update={"is_stale": plan.input_revision != read_revision(connection)})
 
     @_db_operation
-    def get(self, plan_id: str) -> RoutePlan:
-        with self.database.connect() as connection:
-            row = connection.execute(
-                "SELECT plan_id,plan_json,algorithm,input_revision FROM route_plans WHERE plan_id=?",
-                (plan_id,)).fetchone()
-            if row is None:
-                raise AppError("route_plan_not_found", "No saved route plan matches the request.", 404)
-            return self._load(connection, row)
+    def get(self, plan_id: str, *, connection: sqlite3.Connection | None = None) -> RoutePlan:
+        """Optionally join C's preview transaction to read a consistent revision."""
+        if connection is None:
+            with self.database.connect() as owned:
+                return self.get(plan_id, connection=owned)
+        row = connection.execute(
+            "SELECT plan_id,plan_json,algorithm,input_revision FROM route_plans WHERE plan_id=?",
+            (plan_id,)).fetchone()
+        if row is None:
+            raise AppError("route_plan_not_found", "No saved route plan matches the request.", 404)
+        return self._load(connection, row)
 
     @_db_operation
     def latest(self, algorithm: Algorithm) -> RoutePlan:

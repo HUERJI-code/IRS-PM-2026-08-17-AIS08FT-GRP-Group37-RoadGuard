@@ -1,0 +1,105 @@
+{
+  "case_id": "a11",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": "停用 crew-02",
+  "plan_id": "plan-ccfa02c5bfbf4d52a6001fe6a62a3df6",
+  "input_revision": 0,
+  "expected": "failure_recovery",
+  "actual": {
+    "contract_version": "c-assistant-change-v1",
+    "change_id": "change-1eae517fff5b467c9d9198f19c88d796",
+    "actor_id": "c4c0cf56b4834087bb839977d8eb96c0",
+    "client_key": "30c434908b924d70b23045dda949ef88",
+    "instruction": "停用 crew-02",
+    "based_on_plan_id": "plan-ccfa02c5bfbf4d52a6001fe6a62a3df6",
+    "input_revision": 0,
+    "crew_id": "crew-02",
+    "crew_record_version": 1,
+    "before_available": true,
+    "after_available": false,
+    "status": "confirmed",
+    "record_version": 6,
+    "created_at": "2026-10-20T20:46:00.818290Z",
+    "expires_at": "2026-10-20T21:01:00.818290Z",
+    "confirmed_at": "2026-10-20T20:46:00.821435Z",
+    "applied_revision": 1,
+    "planning_input_changed": true,
+    "error_code": null,
+    "replan_status": "succeeded",
+    "replan_attempts": [
+      "first",
+      "recovery"
+    ],
+    "replan_attempt_id": "recovery",
+    "replan_lease_until": null,
+    "replan_error_code": null,
+    "result": {
+      "contract_version": "b-recalculation-v1",
+      "status": "completed",
+      "input_revision": 1,
+      "planning_start_at": "2026-10-20T20:46:00Z",
+      "task_count": 0,
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "matrix_generated_at": "2026-10-20T20:46:00.828885Z",
+      "plans": [
+        {
+          "algorithm": "greedy",
+          "plan_id": "plan-634b55f2472d430c9ed67abe88bd6a9a",
+          "assigned_task_count": 0,
+          "unassigned_task_count": 0,
+          "objective_value": 0.0
+        },
+        {
+          "algorithm": "ga",
+          "plan_id": "plan-68c1e37547e54a0bb32b83f4bf82b1c0",
+          "assigned_task_count": 0,
+          "unassigned_task_count": 0,
+          "objective_value": 0.0
+        }
+      ]
+    },
+    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+  },
+  "crew_state_after": {
+    "contract_version": "b-crew-v1",
+    "crews": [
+      {
+        "crew_id": "crew-01",
+        "name": "Crew 01",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-02",
+        "name": "Crew 02",
+        "available": false,
+        "depot_id": "depot-nus-iss",
+        "record_version": 2,
+        "updated_at": "2026-10-20T20:46:00.821263Z"
+      },
+      {
+        "crew_id": "crew-03",
+        "name": "Crew 03",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      },
+      {
+        "crew_id": "crew-04",
+        "name": "Crew 04",
+        "available": true,
+        "depot_id": "depot-nus-iss",
+        "record_version": 1,
+        "updated_at": null
+      }
+    ],
+    "input_revision": 1
+  }
+}

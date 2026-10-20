@@ -1,0 +1,59 @@
+{
+  "case_id": "q05",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "有哪些未分配任务及原因？",
+    "scope": "plan",
+    "plan_id": "plan-9f61d630f80a49a3927db039d6ca9712"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-9f61d630f80a49a3927db039d6ca9712#unassigned]\n未分配：无\n说明：reason 为 B 返回的原因，不由助手推测。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-9f61d630f80a49a3927db039d6ca9712#unassigned",
+        "quote": "未分配：无\n说明：reason 为 B 返回的原因，不由助手推测。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "plan:plan-9f61d630f80a49a3927db039d6ca9712#unassigned",
+        "kind": "saved_plan",
+        "title": "未分配任务",
+        "classification": "saved_demo_plan",
+        "content": "未分配：无\n说明：reason 为 B 返回的原因，不由助手推测。",
+        "version": "2",
+        "sha256": "b03293fe86a64b9fb3678744d4dd085fb866fe4bc839c4f6298080225d9bbd95",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-9f61d630f80a49a3927db039d6ca9712",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

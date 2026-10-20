@@ -1,0 +1,15 @@
+{
+  "case_id": "a10",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": "封闭道路并直接提高任务优先级",
+  "plan_id": "plan-db8c46390d47462faadc4450a2eef370",
+  "expected": "422; no crew mutation",
+  "actual": {
+    "code": "unsupported_change",
+    "message": "Only an explicit single-crew availability change is supported.",
+    "details": null
+  }
+}

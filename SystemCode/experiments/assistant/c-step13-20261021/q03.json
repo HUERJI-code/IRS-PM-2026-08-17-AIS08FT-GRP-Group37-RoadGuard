@@ -1,0 +1,109 @@
+{
+  "case_id": "q03",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "为什么从 NUS-ISS 出发？",
+    "scope": "plan",
+    "plan_id": "plan-97fc28acc68f4704a99c5cd61f998fd0"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary]\n方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。\n\n[rg-kb-scope#depot-crews]\n## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary",
+        "quote": "方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。"
+      },
+      {
+        "citation_id": "rg-kb-scope#depot-crews",
+        "quote": "## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "rg-kb-scope#depot-crews",
+        "kind": "knowledge",
+        "title": "模拟部门、基地与队伍",
+        "classification": "confirmed_project_fact",
+        "content": "## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
+        "version": "2",
+        "sha256": "cd5d22d16938ac83f3ecf739e3f352b1e972a7843f318174ad36f58da931da1f",
+        "provenance": [
+          {
+            "source_id": "src-project-config",
+            "path": "SystemCode/config/project.example.json",
+            "integrity": "sha256_verified",
+            "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+            "version": "jurong-je-jw-mp2025-v1"
+          },
+          {
+            "source_id": "src-depot",
+            "path": "Miscellaneous/geography/nus-iss-depot.geojson",
+            "integrity": "sha256_verified",
+            "sha256": "20dc4ddcfdd3c72434a1f84e17f99824fc052eeb887fe57e67b1e3269c0bf182",
+            "version": "nus-iss-v1"
+          },
+          {
+            "source_id": "context-scope",
+            "path": "Miscellaneous/PROJECT_SCOPE.md",
+            "integrity": "unhashed_mutable_context",
+            "sha256": null,
+            "version": null
+          },
+          {
+            "source_id": "src-routing-config",
+            "path": "SystemCode/config/routing.example.json",
+            "integrity": "sha256_verified",
+            "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+            "version": "b-routing-demo-v1"
+          },
+          {
+            "source_id": "src-routing-service",
+            "path": "SystemCode/backend/roadguard/routing/service.py",
+            "integrity": "sha256_verified",
+            "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366",
+            "version": "b-recalculation-v1"
+          }
+        ]
+      },
+      {
+        "citation_id": "plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary",
+        "kind": "saved_plan",
+        "title": "方案与来源",
+        "classification": "saved_demo_plan",
+        "content": "方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。",
+        "version": "2",
+        "sha256": "18b0e1c90a5ac54283de990666e9457257859e7dd64e667b598cd318c5932116",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-97fc28acc68f4704a99c5cd61f998fd0",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

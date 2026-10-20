@@ -60,7 +60,7 @@ export function createApiClient(
   ): Promise<Model<K>> {
     const controller = new AbortController()
     const method = init.method ?? 'GET'
-    const write = method !== 'GET' && path !== '/demo/assessments'
+    const write = method !== 'GET' && path !== '/demo/assessments' && path !== '/assistant/knowledge/search' && path !== '/assistant/query'
     let dispatched = false
     let timedOut = false
     const abort = () => controller.abort()
@@ -175,6 +175,16 @@ export function createApiClient(
     login: (username: string, password: string, o?: RequestOptions) => request('/auth/login', 'SessionResponse', json('POST', { username, password }), o),
     logout: (o?: RequestOptions) => request('/auth/logout', 'LogoutResponse', json('POST', {}), o),
     crewWorkspace: (o?: RequestOptions) => request('/crew/workspace', 'CrewWorkspaceResponse', {}, o),
+    changeRequests: (o?: RequestOptions) => request('/assistant/change-requests', 'ChangeList', {}, o),
+    changeRequest: (value: string, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}`, 'ChangeRecord', {}, o),
+    previewChange: (payload: Model<'ChangePreview'>, o?: RequestOptions) => request('/assistant/change-requests', 'ChangeRecord', json('POST', payload), o),
+    confirmChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/confirm`, 'ChangeRecord', json('POST', payload), o),
+    cancelChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/cancel`, 'ChangeRecord', json('POST', payload), o),
+    replanChange: (value: string, payload: Model<'ChangeReplan'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/replan`, 'ChangeRecord', json('POST', payload), o),
+    assistantStatus: (o?: RequestOptions) => request('/assistant/status', 'AssistantStatus', {}, o),
+    assistantQuery: (payload: Model<'AssistantQuery'>, o?: RequestOptions) => request('/assistant/query', 'AssistantAnswer', json('POST', payload), o),
+    knowledgeSearch: (payload: Model<'KnowledgeSearchRequest'>, o?: RequestOptions) =>
+      request('/assistant/knowledge/search', 'KnowledgeSearchResponse', json('POST', payload), o),
     health: (o?: RequestOptions) => request('/health', 'HealthResponse', {}, o),
     demoScenarios: (o?: RequestOptions) =>
       request('/demo/scenarios', 'DemoScenarioCatalogue', {}, o),

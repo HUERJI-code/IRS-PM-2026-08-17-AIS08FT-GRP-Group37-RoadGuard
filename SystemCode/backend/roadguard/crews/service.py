@@ -76,32 +76,38 @@ class CrewService:
 
     @_db_operation
     def update(self, crew_id: str, payload: CrewPatch) -> CrewMutation:
+        with self.database.transaction() as connection:
+            return self.update_in_transaction(connection, crew_id, payload)
+
+    def update_in_transaction(self, connection: sqlite3.Connection, crew_id: str, payload: CrewPatch) -> CrewMutation:
+        """Use the caller's transaction for atomic C confirmation; never commit here."""
+        if not connection.in_transaction:
+            raise RuntimeError("Crew changes require a caller-owned transaction.")
         payload = CrewPatch.model_validate(payload.model_dump())
         scope = "crew:" + crew_id
         fingerprint = hashlib.sha256(json.dumps(payload.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()
-        with self.database.transaction() as connection:
-            # Same idempotency table and semantics as A's task mutations.
-            stored = connection.execute("SELECT payload_hash FROM operation_keys WHERE scope=? AND request_key=?",
-                                        (scope, payload.request_id)).fetchone()
-            if stored is not None:
-                if stored[0] != fingerprint:
-                    raise AppError("idempotency_conflict", "The request key was already used for different input.", 409)
-                return CrewMutation(crew=self._get(connection, crew_id), input_revision=read_revision(connection),
-                                    planning_input_changed=False, replayed=True)
-            crew = self._get(connection, crew_id)
-            if crew.record_version != payload.expected_version:
-                raise AppError("stale_record_version", "The crew has changed. Reload it before retrying.", 409)
-            changed = crew.available != payload.available
-            if changed:
-                # Availability and the shared revision change in one transaction.
-                connection.execute(
-                    "INSERT INTO crews VALUES (?,?,?,?,?,?) ON CONFLICT(crew_id) DO UPDATE SET "
-                    "available=excluded.available, record_version=excluded.record_version, "
-                    "updated_at=excluded.updated_at",
-                    (crew.crew_id, crew.name, int(payload.available), crew.depot_id, crew.record_version + 1,
-                     _now().isoformat()))
-                increment_revision(connection)
-            connection.execute("INSERT INTO operation_keys VALUES (?,?,?,?,?)",
-                               (scope, payload.request_id, fingerprint, crew_id, _now().isoformat()))
+        # Same idempotency table and semantics as A's task mutations.
+        stored = connection.execute("SELECT payload_hash FROM operation_keys WHERE scope=? AND request_key=?",
+                                    (scope, payload.request_id)).fetchone()
+        if stored is not None:
+            if stored[0] != fingerprint:
+                raise AppError("idempotency_conflict", "The request key was already used for different input.", 409)
             return CrewMutation(crew=self._get(connection, crew_id), input_revision=read_revision(connection),
-                                planning_input_changed=changed, replayed=False)
+                                planning_input_changed=False, replayed=True)
+        crew = self._get(connection, crew_id)
+        if crew.record_version != payload.expected_version:
+            raise AppError("stale_record_version", "The crew has changed. Reload it before retrying.", 409)
+        changed = crew.available != payload.available
+        if changed:
+            # Availability and the shared revision change in one transaction.
+            connection.execute(
+                "INSERT INTO crews VALUES (?,?,?,?,?,?) ON CONFLICT(crew_id) DO UPDATE SET "
+                "available=excluded.available, record_version=excluded.record_version, "
+                "updated_at=excluded.updated_at",
+                (crew.crew_id, crew.name, int(payload.available), crew.depot_id, crew.record_version + 1,
+                 _now().isoformat()))
+            increment_revision(connection)
+        connection.execute("INSERT INTO operation_keys VALUES (?,?,?,?,?)",
+                           (scope, payload.request_id, fingerprint, crew_id, _now().isoformat()))
+        return CrewMutation(crew=self._get(connection, crew_id), input_revision=read_revision(connection),
+                            planning_input_changed=changed, replayed=False)

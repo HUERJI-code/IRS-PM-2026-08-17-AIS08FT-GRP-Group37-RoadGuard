@@ -1,0 +1,43 @@
+{
+  "case_id": "q07",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "GA 与 Greedy 哪项更好？",
+    "scope": "plan",
+    "plan_id": "plan-550d78232b9a4a7bb52be436678ad5f1"
+  },
+  "expected_status": "insufficient_data",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "insufficient_data",
+    "supported": false,
+    "answer": "现有证据不足以完整回答，请补充具体方案或缩小问题范围。",
+    "selections": [],
+    "sources": [],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-550d78232b9a4a7bb52be436678ad5f1",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}
