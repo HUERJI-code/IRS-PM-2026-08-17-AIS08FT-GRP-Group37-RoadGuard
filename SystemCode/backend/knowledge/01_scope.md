@@ -1,6 +1,6 @@
 # Scope, depot and four-crew scenario
 
-document_id: `rg-kb-scope`; document_version: `2`; owner: `A`.
+document_id: `rg-kb-scope`; document_version: `3`; owner: `A`.
 
 <a id="scope-baseline"></a>
 ## Project task scope
@@ -18,9 +18,9 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-scope#depot-crews`
 
 One fictional repair department uses four simulated crews: `crew-01`, `crew-02`, `crew-03`, `crew-04`. Their shared origin is NUS-ISS, 25 Heng Mui Keng Terrace, latitude `1.292149`, longitude `103.776551`, depot version `nus-iss-v1`. This is a simulated origin at a real address, not actual NUS-ISS repair operations.
 
-This specified depot may lie outside the task area. Travel from depot to first task must be counted, and routes may leave JE/JW. The exception applies only to the depot; a repair task submitted at NUS-ISS coordinates is still rejected. The building reference point has not been verified as a vehicle entrance. Return-to-depot policy remains null/pending confirmation and must not default to no return. Confirmed four-crew configuration does not imply that crew services and planning algorithms are implemented.
+This specified depot may lie outside the task area. Travel from depot to first task must be counted, and routes may leave JE/JW. The exception applies only to the depot; a repair task submitted at NUS-ISS coordinates is still rejected. The building reference point has not been verified as a vehicle entrance. The shared project return-to-depot policy remains null/pending confirmation and must not default to no return. The implemented routing demo independently selects return_to_depot=true and a 480-minute shift in b-routing-demo-v1; these are demo assumptions pending operational confirmation. Crew availability, Greedy/GA planning and plan persistence are implemented. The RAG assistant is still pending.
 
-Sources: [src-project-config](../../config/project.example.json), [src-depot](../../../Miscellaneous/geography/nus-iss-depot.geojson), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md).
+Sources: [src-project-config](../../config/project.example.json), [src-depot](../../../Miscellaneous/geography/nus-iss-depot.geojson), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-config](../../config/routing.example.json), [src-routing-service](../roadguard/routing/service.py), [src-crew-service](../roadguard/crews/service.py), [src-assistant-page](../../frontend/src/pages/WorkspacePage.tsx).
 
 <a id="road-evidence"></a>
 ## Evidence limits of road declarations

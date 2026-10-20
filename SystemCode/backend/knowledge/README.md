@@ -1,21 +1,45 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v9`; module owner: A. This is citable project material, without an LLM, embeddings, index, retriever or assistant execution service.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v10`; reviewed: 2026-10-20; content owner: A; retrieval/integration owner: C. This is a static RAG handoff, not an implemented LLM, embedding pipeline, index, retriever or assistant execution service.
 
-Read [manifest.json](manifest.json) first, then the six English documents listed in documents. Document paths are relative to this directory; sources/context_sources paths are relative to the repository root. Citations use fixed `document_id#section_id` references matching explicit ASCII anchors, independent of automatically generated heading anchors. Include package_version, document_version and relevant scope/rule/label versions to explain older answers.
+## Corpus map
 
-Each section's classification distinguishes `confirmed_project_fact` (recorded project decisions or current executable behavior), `demo_assumption` (explicitly uncalibrated demonstration parameters/policies), and `pending_decision` (unconfirmed options). A project convention may be settled while its service is still pending; the body makes that distinction. Do not describe planned interface requirements classified as project facts as running features.
+Read [manifest.json](manifest.json), then its eleven English documents:
 
-v6 synchronized the demo-rules-v2 service-time decision. On 2026-10-18, v7 synchronized source digests for upload-decoding isolation and corrected qa-03's obsolete requirement that all real detections need review: primary raw confidence >=0.60 automatically creates a task, while lower confidence requires review. The six document versions and business rules were unchanged. This maintenance did not implement an assistant or update all B/C knowledge; stage descriptions and runtime-plan provenance still need review before integration. Project-owner confirmation of parameters is not engineering approval; review metadata below only describes package consistency checks.
+| Document | Questions it supports |
+| --- | --- |
+| [01 Scope](01_scope.md) | Jurong boundary, depot, four crews and road evidence |
+| [02 Labels](02_labels.md) | Eight canonical damage labels and visual limitations |
+| [03 Demo rules](03_demo_rules.md) | Priority, service duration and demo selection policy |
+| [04 Workflow](04_workflow.md) | Real/demo detection, review, task states and versions |
+| [05 Answer boundaries](05_assistant_boundaries.md) | Static versus dynamic evidence and unsupported claims |
+| [06 Pending work](06_pending_decisions.md) | Operational validation and unfinished assistant work |
+| [07 Routing algorithms](07_routing_algorithms.md) | Greedy, GA encoding/operators, constraints, objective and demo settings |
+| [08 Saved plans](08_route_plans_and_comparisons.md) | Provenance, stale plans, unassigned reasons and fair comparisons |
+| [09 Accounts and operations](09_accounts_and_operations.md) | Permissions, workflow, installation and troubleshooting |
+| [10 Evaluation evidence](10_evaluation_evidence.md) | Historical routing/model results and their limits |
+| [11 RAG integration](11_assistant_integration.md) | Ingestion, authorized runtime facts, citations and future confirmation |
 
-review_basis is `repository_consistency_review`: a coding agent acting for A checks repository source/configuration consistency. This is neither A's personal signature nor engineering-expert approval, road permission or real experimental validation. The manifest explicitly records `human_or_expert_approval=false`.
+v10 corrects outdated claims that planning/crew APIs and experiments are still undelivered. The algorithms, saved-plan services and authenticated workspaces exist; GPT/RAG answers and assistant preview/confirm/cancel flows remain pending. It distinguishes the project's undecided operational return policy from the implemented return-to-depot/480-minute routing demo. Labels and demo-rule values are unchanged.
 
-sha256 hashes raw UTF-8 file bytes, with LF fixed by .gitattributes. Verify document, source and acceptance-file digests before ingestion. Digest/version mismatches require discontinuing the old material and having A update the package version. Rule changes also require rule-version and table updates. context_sources are explicitly unhashed mutable background documents and cannot replace hashed configuration/code facts. Never copy uploaded images, real inspection databases, credentials or runtime plans into this static package.
+## Evidence and citation contract
 
-[acceptance_cases.json](acceptance_cases.json) supplies ten future-assistant acceptance questions. `supported` means static evidence supports the listed explanation, not that a change was executed. `insufficient_data` means the question requires runtime facts, experiments or road-permission evidence absent from the package; acknowledge the gap and identify missing material. Expected points are acceptance specifications, not fabricated assistant-test results.
+Document paths are relative to this directory; source paths are relative to the repository root. Citations use stable `document_id#section_id` IDs with explicit ASCII anchors. Preserve package_version, document_version, source_ids, hashes and relevant scope/rule/label/routing versions. Static citations support explanations; live route claims also require the authorized saved plan/revision/fields. Current defaults never overwrite frozen historical task rules.
 
-Integrity command: `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`. It checks source digests, citation anchors, label/demo mappings and ten acceptance questions. C must implement retrieval/citations and use B's persisted plan facts for dynamic route answers.
+Classifications are `confirmed_project_fact`, `demo_assumption` and `pending_decision`. A confirmed project requirement may specify future behavior; read the implementation-status wording before claiming it exists. Routing configuration values are demonstration assumptions, not approved engineering policy.
 
-2026-10-18 v8 targeted update synchronized manual-action identity and workflow source hashes with account permissions; older records were not rewritten. See [account roles and CLI](../../../Miscellaneous/ACCOUNT_ROLES.md). Other stage descriptions pending assistant integration retained their existing limitations.
+review_basis is `repository_consistency_review`, performed by a coding agent on behalf of A; `human_or_expert_approval=false`. This is neither a personal signature nor expert approval, road permission, field validation or executed assistant evaluation.
 
-2026-10-19 v9 translates all package prose and acceptance questions into English, updates document versions/digests and the canonical label-display digest, and retains citation anchors and business rules. The label schema retains the legacy `display_name_zh` field key for compatibility; its values now display English. This translation does not validate previously pending services or change historical record semantics.
+## Ingestion and maintenance
+
+Verify raw-byte SHA-256 digests for documents, pinned sources, this guide and acceptance cases before ingestion. Knowledge files use UTF-8/LF with a final newline. A mismatch stops ingestion until the changed source and affected passages are reviewed and the package version/digests updated. Source `version` identifies the configuration or reviewed repository snapshot; hashes identify exact bytes. Mutable context_sources are explicitly unhashed background and cannot override pinned code/configuration.
+
+Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes proposed chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
+
+[acceptance_cases.json](acceptance_cases.json) contains 30 synthetic future-assistant cases. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
+
+Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. Implement and test the retrieval/answer/confirmation service separately before reporting RAG as complete.
+
+## Earlier revisions
+
+v6 synchronized demo-rules-v2; v7 corrected the real primary-confidence acceptance case and image-decoding hash; v8 aligned authenticated manual-action provenance; v9 translated the six original documents into English. These historical revisions remain history, not the current ingestion target. v10 extends the corpus to eleven documents and refreshes current B/C status while retaining stable existing citation anchors.

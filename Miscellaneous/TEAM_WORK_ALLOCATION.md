@@ -1,20 +1,20 @@
 # RoadGuard three-person work allocation and interface handoff
 
-Prepared: 2026-10-11; updated: 2026-10-14. Status: A's Steps 3–7 are complete. Step 8 adds the full-data pipeline, resumable training/evaluation and real detection integration; actual results are in the [acceptance record](STEP8_VISION_ACCEPTANCE.md). B/C develop their modules under the allocation below.
+Prepared: 2026-10-11; status updated: 2026-10-20. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. GPT/RAG and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
 
 All members and agents follow root [AGENTS.md](../AGENTS.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
 
-Scope: Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
+Planned scope (assistant work remains incomplete): Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
 
-A is the project initiator (you); B/C names remain to be filled. At your request, A carries more work, including backend foundations, business data and system integration, so B can focus on routes and C on UI/assistant work. Unless explicitly implemented or frozen, the following interfaces and acceptance criteria are future-development agreements.
+A is Hu Erji (project initiator); B is Yan GuanTing; C is Wu TaoYi. At your request, A carries more work, including backend foundations, business data and system integration, so B can focus on routes and C on UI/assistant work. Unless explicitly implemented or frozen, the following interfaces and acceptance criteria are future-development agreements.
 
 ## 1. Overall responsibilities
 
 | Member | Main responsibility | Additional work/boundary | Final deliverables |
 | --- | --- | --- | --- |
-| **A: you** | Vision, confidence routing, rules, inspection review and tasks | Shared backend/database, knowledge/demo data, interface/integration/report/submission coordination | Detection/business APIs, model/evaluation, rules, task database, examples and reproducible integrated workflow |
-| **B: TBD** | Four-crew dispatch, travel matrix, Greedy, GA, route evaluation | Crew/routing APIs; consume A's standard tasks; results usable directly by C | Independently runnable routing, crew/planning APIs, metrics, GA comparisons and algorithm chapter |
-| **C: TBD** | React, map, GPT/RAG assistant | Assistant in A's backend; A supplies knowledge, B route facts; do not reimplement priorities/routes | Website/map/assistant APIs and interactions, guide, UI/assistant tests and recordings |
+| **A: Hu Erji** | Vision, confidence routing, rules, inspection review and tasks | Shared backend/database, knowledge/demo data, interface/integration/report/submission coordination | Detection/business APIs, model/evaluation, rules, task database, examples and reproducible integrated workflow |
+| **B: Yan GuanTing** | Four-crew dispatch, travel matrix, Greedy, GA, route evaluation | Crew/routing APIs; consume A's standard tasks; results usable directly by C | Independently runnable routing, crew/planning APIs, metrics, GA comparisons and algorithm chapter |
+| **C: Wu TaoYi** | React, map, GPT/RAG assistant | Assistant in A's backend; A supplies knowledge, B route facts; do not reimplement priorities/routes | Website/map/assistant APIs and interactions, guide, UI/assistant tests and recordings |
 
 Each member owns module tests, usage documentation and report chapters. A compiles/integrates; module owners still fix defects.
 
@@ -77,7 +77,7 @@ Paths follow the current `roadguard` package. A owns shared directories; owners 
 | `SystemCode/model/` | A | Shared Detection output |
 | `SystemCode/backend/roadguard/main.py`, configuration/DB/errors | A | B/C routers centrally registered by A |
 | `SystemCode/backend/roadguard/vision/`, `rules/`, `inspections/` | A | inspections owns inspection/linked-task transactions; outputs reviews/tasks without requiring model internals |
-| `SystemCode/backend/roadguard/crews/`, `routing/` (pending) | B | A's query inputs; crew/plan business logic |
+| `SystemCode/backend/roadguard/crews/`, `routing/` | B | Implemented crew/plan services using A's consistent task snapshots |
 | `SystemCode/backend/roadguard/assistant/` (pending) | C | A/B facts; confirmed domain-service changes, no direct table writes |
 | `SystemCode/frontend/` | C | API business conclusions |
 | `SystemCode/backend/knowledge/` | A content/C retrieval | A reviews rules; C indexes/retrieves/cites |
@@ -120,19 +120,19 @@ These are proposed comparison definitions to freeze. B proposes fitness weights/
 
 ## 7. HTTP responsibilities
 
-Prefix `/api/v1`. Health, `/demo` previews and inspection/review/tasks are implemented; [Step 5](DEMO_DETECTION_AND_RULES.md), [Step 6](INSPECTION_REVIEW_TASK_WORKFLOW.md). Crews/route-plans/assistant remain for B/C. A maintains the [contract/errors](API_CONTRACT.md).
+Prefix `/api/v1`. Health, `/demo` previews, inspection/review/tasks, crews and persisted route plans are implemented; see the [contract/errors](API_CONTRACT.md) and [routing guide](../SystemCode/backend/roadguard/routing/README.md). The assistant rows below are proposed interfaces, not registered endpoints. Business API access follows the current [account permissions](ACCOUNT_ROLES.md).
 
 | Endpoint | Owner | Caller | Input | Output/behavior |
 | --- | --- | --- | --- | --- |
 | `GET /health` | A | C/startup | None | Availability; no fabricated model/API readiness |
-| `POST /inspections` | A | C | Image/demo case/coordinates/road declaration/idempotency key | InspectionMutation, task/revision; no fabricated plan |
+| `POST /inspections` | A | C | Image/demo case/coordinates/road declaration/idempotency key | a-workflow-v5 compact inspection_id/status/detection/task_id; obtain planning revision separately |
 | `GET /inspections?status=...` | A | C | Filter | Inspection/review list |
 | `GET /inspections/{id}` | A | C | ID | Detection/images/review/rules |
 | `POST /inspections/{id}/review` | A | C | `confirm`/`correct`/`dismiss`, request/expected revision, selected detection for confirm/correct | pending_review only; unique task for confirm/correct, none for dismiss; raw/history retained |
 | `GET /tasks?status=...` | A | C | Filter | Tasks/current revision |
 | `PATCH /tasks/{id}` | A | C | Request/expected revision, complete/cancel, label/full-location correction | TaskMutation/revision; no arbitrary priority/fake recalculation |
 | `GET /crews` | B | C/A | None | Four crews |
-| `PATCH /crews/{id}` | B | C/assistant confirmation | Availability; other settings under agreement | Updated Crew/revision/recalculation |
+| `PATCH /crews/{id}` | B | C; future assistant confirmation | request_id, expected_version, available | Updated crew/input_revision/planning_input_changed/replayed; no automatic recalculation |
 | `POST /route-plans/recalculate` | B | A/C | Current saved data/expected revision | Same-input GA/Greedy IDs/status |
 | `GET /route-plans/latest?algorithm=...` | B | C | `ga`/`greedy` | Latest plan/no-plan and staleness |
 | `GET /route-plans/{id}` | B | C/assistant | ID | Saved display/explanation/comparison facts |
@@ -151,12 +151,12 @@ The initial assistant changes only availability to reduce C's workload. Urgent n
 | --- | --- | --- | --- |
 | VisionService | A | A inspections | Explicit synthetic DemoDetector; real-image/released-model LocalVisionDetector; separate sources |
 | RuleService | A | A task/review; C read-only trace | Persisted; raw retained; explicit human mapping/frozen inspection rules |
-| TaskQueryService (implemented) | A | B/C assistant | snapshot(expected_revision=None, *, connection=None) returns all active Tasks/revision in one transaction; shared connection supports future crew reads; [Step 7](BC_HANDOFF.md) |
+| TaskQueryService (implemented) | A | B; future C assistant | snapshot(expected_revision=None, *, connection=None) returns all active Tasks/revision in one transaction; PlanningService uses the shared connection for crew reads; [handoff](BC_HANDOFF.md) |
 | Shared input revision (formerly draft PlanningRevisionService) | A | A/B | Task mutation increments same transaction; B follows for crews; [backend](../SystemCode/backend/README.md) |
 | PlanningService | B | A/C confirmation | Generate/save both algorithms from current tasks/crews |
-| CrewService | B | C confirmation/B API | Validate/update availability/request recalculation |
+| CrewService (implemented) | B | B API; future C confirmation | Validate/update availability with expected_version; return revision for a separate explicit recalculation |
 | RouteQueryService | B | C assistant | ID → saved facts/metrics |
-| KnowledgeRetrievalService (pending C) | C | C assistant | Question/context → A's versioned passages/sources; [knowledge](../SystemCode/backend/knowledge/README.md) checked against repository, not engineering approval |
+| KnowledgeRetrievalService (pending C) | C | C assistant | Question/context → versioned passages/sources; [a-knowledge-v10](../SystemCode/backend/knowledge/README.md) has eleven documents and 30 synthetic acceptance specifications, not executed RAG results or engineering approval |
 
 Owners add function signatures on freeze. A inspections and C assistant call B's service rather than duplicate dispatch algorithms.
 

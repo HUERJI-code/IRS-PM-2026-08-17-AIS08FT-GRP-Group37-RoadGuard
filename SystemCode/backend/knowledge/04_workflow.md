@@ -1,6 +1,6 @@
 # Inspection, review and task records
 
-document_id: `rg-kb-workflow`; document_version: `6`; owner: `A`.
+document_id: `rg-kb-workflow`; document_version: `7`; owner: `A`.
 
 <a id="workflow-evidence"></a>
 ## Records and manual review
@@ -22,9 +22,9 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-
 
 Only active tasks participate in new planning reads. completed/cancelled tasks retain history without physical deletion or reactivation. Active tasks may be completed/cancelled, have damage_label corrected, or have latitude/longitude/road_type corrected together. The server recalculates severity, priority, minutes and recommendation from the inspection's frozen rules after label correction. Locations are validated again while preserving original inspection locations. Arbitrary priority/service_minutes/due_at, empty changes and explicit null are rejected.
 
-Task creation or actual correction/completion/cancellation changes planning input. Pending review, no detection and dismissal do not change active-task input. B must read active tasks and shared input_revision from one snapshot; pages with different revisions cannot form one planning input. Four-crew allocation and route results belong to B's future planning service; task records do not establish that a plan has been generated.
+Task creation or actual correction/completion/cancellation changes planning input. Pending review, no detection and dismissal do not change active-task input. B must read active tasks and shared input_revision from one snapshot; pages with different revisions cannot form one planning input. Four-crew allocation, Greedy/GA planning and saved plan queries are implemented in B's PlanningService/RouteQueryService. Recalculation is explicit: task records or a successful task mutation do not establish that a new plan has been generated. Saved plans are marked stale after actual input changes. Crew completion is limited to the account's current latest-GA assignment and checked transactionally.
 
-Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md).
+Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-routing-service](../roadguard/routing/service.py), [src-auth-access](../roadguard/auth/access.py).
 
 <a id="workflow-versions"></a>
 ## Versions and safe retries

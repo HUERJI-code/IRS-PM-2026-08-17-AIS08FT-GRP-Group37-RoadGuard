@@ -43,13 +43,13 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v9"
+    assert MANIFEST["package_version"] == "a-knowledge-v10"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
     assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"
     assert MANIFEST["review"]["human_or_expert_approval"] is False
     assert MANIFEST["hash_algorithm"] == "sha256_raw_file_bytes"
-    assert 4 <= len(MANIFEST["documents"]) <= 6
+    assert len(MANIFEST["documents"]) == 11
     assert len({document["document_id"] for document in MANIFEST["documents"]}) == len(MANIFEST["documents"])
     assert len(CITATIONS) == sum(len(document["sections"]) for document in MANIFEST["documents"])
     assert len(SOURCES) == len(MANIFEST["sources"]) + len(MANIFEST["context_sources"])
@@ -87,7 +87,7 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
     content = path.read_text(encoding="utf-8")
     assert digest(path) == document["sha256"]
     assert document["owner"] == "A"
-    versions = {'rg-kb-scope': '2', 'rg-kb-labels': '3', 'rg-kb-demo-rules': '3', 'rg-kb-workflow': '6', 'rg-kb-assistant': '3', 'rg-kb-pending': '5'}
+    versions = {'rg-kb-scope': '3', 'rg-kb-labels': '3', 'rg-kb-demo-rules': '3', 'rg-kb-workflow': '7', 'rg-kb-assistant': '4', 'rg-kb-pending': '6'}
     assert document["document_version"] == versions.get(document["document_id"], "1")
     assert document["review_basis"] == "repository_consistency_review"
     assert f'document_id: `{document["document_id"]}`' in content
@@ -172,7 +172,7 @@ def test_scope_numbers_crews_unknown_return_and_evidence_limits_match_config():
     assert "not road-network verification" in content and "user_declared" in content
 
 
-def test_ten_acceptance_cases_use_valid_sources_and_grounded_support_statuses():
+def test_acceptance_cases_use_valid_sources_and_grounded_support_statuses():
     entry = MANIFEST["acceptance_cases"]
     path = local_path(PACKAGE, entry["path"])
     assert digest(path) == entry["sha256"]
@@ -180,8 +180,8 @@ def test_ten_acceptance_cases_use_valid_sources_and_grounded_support_statuses():
     assert suite["package_version"] == MANIFEST["package_version"]
     assert suite["purpose"] == "synthetic_acceptance_specs_not_executed_assistant_results"
     cases = suite["cases"]
-    assert len(cases) == entry["case_count"] == 10
-    assert len({case["case_id"] for case in cases}) == 10
+    assert len(cases) == entry["case_count"] == 30
+    assert {case["case_id"] for case in cases} == {f"qa-{number:02d}" for number in range(1, 31)}
     assert {case["expected_status"] for case in cases} == {"supported", "insufficient_data"}
     for case in cases:
         assert case["is_synthetic_case"] is True

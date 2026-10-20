@@ -1,6 +1,6 @@
 # B routing module: four crews, simulated travel, Greedy and GA
 
-Owner: B. Status (2026-10-15): B-1 through B-5 and B6 complete. B-1 through B-5 cover the pure algorithm core, custom GA, experiments, database tables, crew/planning services, HTTP APIs and optional Google Routes matrix (section 10). Online service still defaults to simulated matrices. B6 compares GA/Greedy for 10/15/20 tasks with simulated and Google matrices (section 12). Online GA starts from Greedy to guarantee no worse results; experiments retain pure GA (section 13). Not started: B7 report chapters/video material.
+Owner: B. Implementation milestone: 2026-10-15; documentation status updated: 2026-10-20. B-1 through B-5 and B6 cover the pure algorithm core, custom GA, experiments, database tables, crew/planning services, HTTP APIs and optional Google Routes matrix (section 10). Online service still defaults to simulated matrices. B6 compares GA/Greedy for 10/15/20 tasks with simulated and Google matrices (section 12). Online GA starts from Greedy to preserve a result no worse under the shared evaluator; experiments retain pure GA (section 13). The final report is available; video submission remains pending. The [RAG knowledge package](../../knowledge/README.md) now explains GA, saved-plan provenance and recorded experiments; assistant retrieval/generation is still unimplemented.
 
 ## 1. Demo assumptions: centralized configuration
 
