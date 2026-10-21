@@ -2125,7 +2125,7 @@
           "Knowledge retrieval"
         ],
         "summary": "Retrieve verified static knowledge sections (dispatcher only)",
-        "description": "Read-only lexical retrieval, not generated answers or business commands. Requires session cookie and CSRF token. Incompatible rule versions return no hits.",
+        "description": "Read-only local E5 embeddings and Chroma cosine retrieval. Requires session cookie and CSRF token. Incompatible rule versions return no hits.",
         "operationId": "search_knowledge_api_v1_assistant_knowledge_search_post",
         "security": [
           {
@@ -4874,9 +4874,9 @@
         "properties": {
           "contract_version": {
             "type": "string",
-            "const": "c-knowledge-search-v1",
+            "const": "c-knowledge-search-v2",
             "title": "Contract Version",
-            "default": "c-knowledge-search-v1"
+            "default": "c-knowledge-search-v2"
           },
           "status": {
             "type": "string",
@@ -4908,9 +4908,9 @@
           },
           "retrieval_method": {
             "type": "string",
-            "const": "lexical-zh-bigram-tfidf-v1",
+            "const": "chroma-e5-cosine-v1",
             "title": "Retrieval Method",
-            "default": "lexical-zh-bigram-tfidf-v1"
+            "default": "chroma-e5-cosine-v1"
           },
           "evidence_scope": {
             "type": "string",

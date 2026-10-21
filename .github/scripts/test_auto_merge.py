@@ -129,9 +129,9 @@ class AutoMergeTests(unittest.TestCase):
     def test_draft_fork_closed_wrong_base_and_nonenglish_are_skipped(self):
         changes = [lambda p: p.update(draft=True), lambda p: p.update(state="closed"),
                    lambda p: p["head"].update(repo={"full_name": "stranger/fork"}),
-                   lambda p: p["base"].update(ref="other"), lambda p: p.update(title="中文标题"),
+                   lambda p: p["base"].update(ref="other"), lambda p: p.update(title="\u4e2d\u6587\u6807\u9898"),
                    lambda p: p.update(body=""), lambda p: p.update(title=""),
-                   lambda p: p.update(body="Fix the issue 中文"), lambda p: p["head"].update(repo=None)]
+                   lambda p: p.update(body="Fix the issue \u4e2d\u6587"), lambda p: p["head"].update(repo=None)]
         for change in changes:
             with self.subTest(change=change):
                 self.client = FakeClient()

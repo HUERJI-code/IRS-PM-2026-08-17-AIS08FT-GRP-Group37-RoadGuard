@@ -1,161 +1,161 @@
-# RoadGuard 数据集与八类标签核对
+# RoadGuard dataset and eight-class label audit
 
-版本：1.0 · 核验日期：2026-10-12 · 负责人：A。
+Version 1.0; verified 2026-10-12; owner A.
 
-本页保留第 2 步的历史核验范围。2026-10-13 的全量内容检查、新增 EXIF 隔离、分组划分与训练证据见[第 8 步验收](STEP8_VISION_ACCEPTANCE.md)，不把后续结果回填为当时已完成。
+This preserves Step 2's historical scope. See [Step 8 acceptance](STEP8_VISION_ACCEPTANCE.md) for 2026-10-13 full-content checks, EXIF quarantine, grouped splits and training evidence. Later results are not retroactively claimed as completed here.
 
-本项目采用 **Juuso 在 Kaggle 发布的 RDD2022ES 第 1 版**作为视觉数据来源。八类编号已通过发布说明和压缩包内的 `classes.txt` 双重核对，可以作为 A／B／C 共同使用的标签字典。该数据不是新加坡或 Jurong 实拍数据；数据集中的视觉类别也不等于项目的维修优先级。
+Vision data uses **Juuso's Kaggle RDD2022ES version 1**. Release information and archive `classes.txt` independently verify eight IDs for A/B/C's shared dictionary. These are neither Singapore/Jurong field images nor repair priorities.
 
-本次完成**来源核对、发布包全量文件目录核验、八类标签确认和定向内容抽样**。尚未下载完整数据集、统计全部类别频次、生成训练划分或训练模型。本文件对应 A 的准备步骤“2. 核对数据集与标签”，不代表总体实现计划中的基础工程已完成。
+This step completed **source checks, full release-file inventory, eight-label confirmation and targeted sampling**. It had not downloaded the full dataset, counted all class frequencies, generated training splits or trained a model. This is A's preparation Step 2, not completion of overall foundation implementation.
 
-## 1. 数据来源与版本
+## 1. Source and version
 
-| 项目 | 核验结果 |
+| Item | Verified result |
 | --- | --- |
-| 发布者／标识 | Juuso；`juusos/rdd2022es`；Kaggle 数据集 ID `7353702` |
-| 名称 | RDD2022ES，Severity Extended RDD2022 |
-| 本项目锁定版本 | 第 1 版，发布时间字段为 `2025-05-07T08:54:20.383Z` |
-| 原始来源 | RDD2022；ES 发布者说明对原四类人工重标，并扩展为八类 |
-| ES 涵盖国家 | 美国、印度、日本、捷克；不包含新加坡 |
-| 压缩包大小 | 2,611,933,018 字节；解压条目合计 2,740,407,610 字节 |
-| 发布目录 | `combined_annotatedv2/`，图片与标注混放，另有 `classes.txt` |
-| 格式 | JPG 图片＋YOLO 检测 TXT 标注；未发现发布的 YAML 或 train／val／test 目录 |
-| 标签字典 | [label_schema.json](../SystemCode/model/label_schema.json)，版本 `rdd2022es-v1-labels-1` |
+| Publisher/identifier | Juuso; `juusos/rdd2022es`; Kaggle ID `7353702` |
+| Name | RDD2022ES, Severity Extended RDD2022 |
+| Pinned version | Version 1, release field `2025-05-07T08:54:20.383Z` |
+| Original source | RDD2022; ES publisher reports manual relabeling of four classes into eight |
+| Countries | United States, India, Japan, Czech Republic; no Singapore |
+| Archive | 2,611,933,018 bytes; uncompressed members total 2,740,407,610 |
+| Directory | `combined_annotatedv2/`, mixed images/labels plus `classes.txt` |
+| Format | JPG plus YOLO detection TXT; no published YAML or train/val/test directories found |
+| Dictionary | [label_schema.json](../SystemCode/model/label_schema.json), `rdd2022es-v1-labels-1` |
 
-来源：[ES 发布页](https://www.kaggle.com/datasets/juusos/rdd2022es)、[Kaggle 公开元数据](https://www.kaggle.com/api/v1/datasets/view/juusos/rdd2022es)、[固定第 1 版下载入口](https://www.kaggle.com/api/v1/datasets/download/juusos/rdd2022es?datasetVersionNumber=1)。本次通过 ZIP 字节范围读取获取目录和少量成员文件，未将整个压缩包下载到本地。
+Sources: [ES release](https://www.kaggle.com/datasets/juusos/rdd2022es), [Kaggle metadata](https://www.kaggle.com/api/v1/datasets/view/juusos/rdd2022es), [fixed v1 download](https://www.kaggle.com/api/v1/datasets/download/juusos/rdd2022es?datasetVersionNumber=1). ZIP byte-range reads retrieved directory information and a few members, not the whole local archive.
 
-**不要混用 RDD2022 与 RDD2022ES。** 原版 RDD2022 是六国、四类数据，其公开训练标注采用 Pascal VOC XML；原版比赛测试部分仅提供图片。ES 是另一个发布者的派生版本，使用八类编号和 TXT。不能把原版的总量、四类编号或比赛测试划分直接写成 ES 的属性。[原版项目说明](https://github.com/sekilab/RoadDamageDetector)
+**Do not conflate RDD2022 and RDD2022ES.** Original RDD2022 has six countries/four classes, public Pascal VOC XML training labels and image-only competition test data. ES is another publisher's derivative with eight IDs/TXT. Original totals, IDs and competition splits are not ES properties. [Original project](https://github.com/sekilab/RoadDamageDetector)
 
-## 2. 八类标签与编号
+## 2. Eight labels and IDs
 
-下表英文名及顺序与包内 `combined_annotatedv2/classes.txt` 一致，中文显示名由项目维护。编号固定为 **0～7**。
+English names/order below match `combined_annotatedv2/classes.txt`; project display names are maintained locally. IDs are fixed **0-7**. Display values were translated into English on 2026-10-19; source IDs/names remain unchanged.
 
-| ID | 来源英文名 | 项目中文显示名 | 原版损坏大类 | 视觉修饰 |
+| ID | Source English name | Project display name | Base family | Visual qualifier |
 | --- | --- | --- | --- | --- |
-| 0 | longitudinal crack | 纵向裂缝 | D00 | 未额外细分 |
-| 1 | longitudinal crack wide | 宽纵向裂缝 | D00 | wide |
-| 2 | transverse crack | 横向裂缝 | D10 | 未额外细分 |
-| 3 | transverse crack wide | 宽横向裂缝 | D10 | wide |
-| 4 | alligator crack | 龟裂（网状裂缝） | D20 | 未额外细分 |
-| 5 | alligator crack sunken | 下陷龟裂 | D20 | sunken |
-| 6 | pothole | 坑洞 | D40 | 未额外细分 |
-| 7 | pothole deep | 深坑洞 | D40 | deep |
+| 0 | longitudinal crack | Longitudinal crack | D00 | unspecified |
+| 1 | longitudinal crack wide | Wide longitudinal crack | D00 | wide |
+| 2 | transverse crack | Transverse crack | D10 | unspecified |
+| 3 | transverse crack wide | Wide transverse crack | D10 | wide |
+| 4 | alligator crack | Alligator crack (network cracking) | D20 | unspecified |
+| 5 | alligator crack sunken | Sunken alligator crack | D20 | sunken |
+| 6 | pothole | Pothole | D40 | unspecified |
+| 7 | pothole deep | Deep pothole | D40 | deep |
 
-来源：[ES 发布信息](https://www.kaggle.com/datasets/juusos/rdd2022es)及本次抽取的 `classes.txt`；原文件哈希见[样本清单](dataset-audit/rdd2022es-v1-sample-manifest.json)。D00／D10／D20／D40 仅表示损坏家族对应关系，不能用作 ES 的数值类别 ID。
+Sources: [ES release](https://www.kaggle.com/datasets/juusos/rdd2022es) and extracted `classes.txt`; original hash in [sample manifest](dataset-audit/rdd2022es-v1-sample-manifest.json). D00/D10/D20/D40 express family correspondence, not ES numeric IDs.
 
-这些是单张图片上的类别标签。`wide`、`sunken`、`deep` 没有在已核验的发布说明中给出毫米、厘米或现场测量阈值，不能从一个类别直接声称裂缝宽度或坑洞深度已被测量。无额外修饰的类别也不自动意味着“轻微”。
+These are image labels. Verified release information supplies no millimeter/centimeter/field-measurement thresholds for `wide`, `sunken`, `deep`; classes do not establish measured crack width or pothole depth. Unqualified classes do not automatically mean minor damage.
 
-**P1／P2／P3、业务严重度、维修分钟数、任务期限和置信度阈值均留给下一步业务规则确定。** 不将旧演示图中的 High／P1 等项目映射当成数据集原生标注。保持八类训练输出，后续业务规则可以基于类别进行映射，但不静默合并或重排训练标签。
+**P1/P2/P3, business severity, service minutes, deadlines and confidence thresholds remain for the next business-rule step.** Historical High/P1 demo mappings are not native dataset labels. Keep eight training outputs; future rules may map them without silently merging/reordering labels.
 
-## 3. 发布包文件清点与异常
+## 3. Release inventory and anomalies
 
-本次读取了第 1 版 ZIP 的完整中央目录，正确解析 ZIP64 条目长度。以下是**发布包目录统计**，并非全量图片解码或全量标注内容检查。
+The complete v1 ZIP central directory was read with correct ZIP64 member lengths. These are **archive-directory counts**, not full decoding/content validation.
 
-| 内容 | 数量 |
+| Content | Count |
 | --- | ---: |
-| ZIP 文件条目 | 51,200 |
-| JPG 图片 | 25,600 |
-| 原图／`xmirror_` 图片 | 12,800／12,800 |
-| TXT 总数 | 25,600 |
-| 其中 `classes.txt` | 1 |
-| 每图标注 TXT | 25,599 |
-| 图片与同名标注可配对 | 25,598 |
-| 标注文件为零字节 | 8,317，其中 1 个没有对应图片 |
-| 配对图片中的空标注／非空标注 | 8,316／17,282 |
+| ZIP members | 51,200 |
+| JPG images | 25,600 |
+| Originals / `xmirror_` | 12,800 /12,800 |
+| TXT total | 25,600 |
+| `classes.txt` | 1 |
+| Per-image TXT | 25,599 |
+| Image/same-name annotation pairs | 25,598 |
+| Zero-byte annotations | 8,317; one without image |
+| Paired empty/nonempty annotations | 8,316 /17,282 |
 
-按图片文件名的国家前缀统计，数量包含原图和镜像：
+Image country-prefix counts, including originals/mirrors:
 
-| 前缀 | 原图 | 镜像 | 合计 |
+| Prefix | Original | Mirror | Total |
 | --- | ---: | ---: | ---: |
 | Czech | 3,364 | 3,364 | 6,728 |
 | India | 2,533 | 2,533 | 5,066 |
 | Japan | 3,990 | 3,990 | 7,980 |
 | United_States | 2,913 | 2,913 | 5,826 |
 
-发现以下配对异常，后续准备数据时按清单隔离，保留原始文件，不自动删除或补造标注：
+Pair anomalies below must be quarantined during preparation, preserving originals without automatic deletion/invented labels:
 
-| 文件，均位于 `combined_annotatedv2/` | 实际问题 | 准备数据时的处理 |
+| File under `combined_annotatedv2/` | Problem | Preparation treatment |
 | --- | --- | --- |
-| `Czech_001003.jpg` | 没有同名 TXT | 暂不纳入训练／评估；缺失标注不能直接认定为无损坏 |
-| `xmirror_Czech_001003.jpg` | 没有同名 TXT | 与原图整组隔离 |
-| `India_001032.txt` | 没有同名 JPG；抽取确认内容为空 | 记录为孤立标注，暂不纳入准备后的数据 |
+| `Czech_001003.jpg` | No matching TXT | Exclude provisionally; missing annotation does not establish no damage |
+| `xmirror_Czech_001003.jpg` | No matching TXT | Quarantine with original |
+| `India_001032.txt` | No matching JPG; extracted content confirmed empty | Record orphan, exclude from prepared data |
 
-排除上述不匹配项后，**候选**图片—标注对为 25,598，对应 12,799 个原图／镜像组。此数字只是配对候选量，还没有经过完整图片解码、逐框检查和近重复清理，不能称为最终训练集大小。
+Removing mismatches gives **25,598 candidate pairs**, or 12,799 original/mirror groups. This is not final training size before full image decoding, box validation and near-duplicate handling.
 
-空标注代表“该文件没有标注框”，不证明道路没有损坏。允许保留经过来源与抽样核对的空标注负样本，不新增“无损坏”类别，也不只保留有框图片而不说明抽样偏差。
+Empty annotations mean no boxes in that file, not road safety. Source-checked/sampled empty negatives may be retained; do not add a no-damage class or silently keep only boxed images without describing sampling bias.
 
-完整目录计数、目录哈希及异常文件名记录在[核验记录](dataset-audit/rdd2022es-v1-audit.json)。完整压缩包的 SHA-256 尚未取得，不能把目录哈希写成整个数据集的哈希。
+Full directory counts, directory hash and anomaly names: [audit](dataset-audit/rdd2022es-v1-audit.json). Full-archive SHA-256 was not yet available; directory hash must not be described as the entire dataset hash.
 
-## 4. 标注格式与内容抽样
+## 4. Annotation format and content sampling
 
-每个非空标注行有五项：
+Each nonempty line contains five fields:
 
 ```text
 class_id x_center y_center width height
 ```
 
-类别从 0 开始，后四项为按图片宽高归一化的中心位置与框宽高。每行对应一个框，同图允许多个框、多种类别；训练图片的标签格式与运行 API 未来使用的像素 `bbox_xyxy` 不同，需要按原图尺寸转换。[Ultralytics 格式说明](https://docs.ultralytics.com/datasets/detect/)
+IDs are zero-based; the remaining values are center coordinates and width/height normalized to image size. Each line is one box; images may contain multiple boxes/classes. Training labels differ from future API pixel `bbox_xyxy` and require image-size conversion. [Ultralytics format](https://docs.ultralytics.com/datasets/detect/)
 
-例如，发布包中的 `Czech_000004.jpg` 为 600×600，其标注为：
+For example, archive `Czech_000004.jpg` is600x600 with annotation:
 
 ```text
 1 0.225833 0.765833 0.288333 0.191667
 ```
 
-它表示类别 1，即宽纵向裂缝；对应像素框约为 `(49, 402, 222, 517)`。这是数据集原始标注，不是本项目模型的预测，也没有置信度字段。
+This means class1, wide longitudinal crack, approximately pixel `(49,402,222,517)`. This is source annotation, not our prediction, and has no confidence field.
 
-本次定向抽取 9 个原图／镜像组（18 张图片）、19 份标注（含上述孤立标注）及 `classes.txt`，共 38 个文件、约 1.93 MB。样例覆盖八类、四个国家前缀、空标注、多目标以及孤立标注。
+Targeted extraction: nine original/mirror groups (18 images),19 labels including orphan, and `classes.txt`: 38 files, about 1.93 MB. Coverage includes eight classes, four countries, empty labels, multiple objects and orphan labels.
 
-| 实际检查 | 结果 |
+| Actual check | Result |
 | --- | --- |
-| 抽取文件完整性 | 38 个文件长度与 ZIP CRC32 一致，分别保存 SHA-256 |
-| 图片解码 | 18 张均可解码；样例包含 600×600 和 720×720，不将全部数据尺寸写死 |
-| 标签内容 | 30 个框；五列格式、类别 0～7、有限数值、正宽高及框边界检查通过 |
-| 空标注 | 3 个：一组捷克原图／镜像标注及孤立 `India_001032.txt` |
-| 镜像标注 | 9 组类别／框数量保持一致；`x → 1−x` 的最大误差不超过 `5×10⁻⁷` |
-| 镜像图像 | 与原图水平翻转后的像素平均绝对差约 0.136～0.845（0～255 尺度），不是字节完全相同 |
-| 视觉查看 | 查看了捷克宽纵裂、日本龟裂／下陷、印度深坑及日本横裂样例，作为标签语义核对，不据此判定全库标注准确率 |
+| Integrity | All38 file lengths/ZIP CRC32 match; separate SHA-256 retained |
+| Image decode | All18 decode; sample sizes600x600/720x720, without assuming fixed dimensions for all data |
+| Labels | 30 boxes pass five-column, IDs0-7, finite-number, positive-size/boundary checks |
+| Empty labels | Three: Czech original/mirror plus orphan `India_001032.txt` |
+| Mirror labels | Nine groups retain class/count; maximum `x ->1-x` error <=`5x10^-7` |
+| Mirror pixels | Mean absolute difference from horizontal original flip about 0.136-0.845 on 0-255 scale, not byte-identical |
+| Visual review | Czech wide longitudinal, Japanese alligator/sunken, Indian deep-pothole and Japanese transverse samples checked for label meaning, not full-dataset accuracy |
 
-样本是为了覆盖类别和异常而选取，**不是随机质量样本**。不能用其中的类别比例作为全库分布，也不能据此宣布“全库无错标”“已无数据泄漏”。具体样例、检查数据和哈希保存在[核验记录](dataset-audit/rdd2022es-v1-audit.json)与[样本清单](dataset-audit/rdd2022es-v1-sample-manifest.json)。
+Samples target classes/anomalies, **not random quality estimation**. Their class proportions are not full-data frequencies and cannot prove no mislabeled data/leakage. Samples, checks and hashes: [audit](dataset-audit/rdd2022es-v1-audit.json), [manifest](dataset-audit/rdd2022es-v1-sample-manifest.json).
 
-## 5. 原图、镜像与后续划分
+## 5. Originals, mirrors and future splits
 
-全量目录中，每张原图都存在同名的 `xmirror_` 图片。已抽取的 9 组支持其为水平镜像；这不替代对全部镜像内容的验证。
+Every directory-listed original has an `xmirror_` partner. Nine extracted groups support horizontal mirroring, not validation of all mirror contents.
 
-后续数据准备必须遵守：
+Future preparation must:
 
-1. 移除文件名开头的 `xmirror_` 后，以剩余名称作为已知镜像组 ID；例如 `Japan_000003` 与 `xmirror_Japan_000003` 为同组。
-2. **先按组划分，再生成训练目录或清单**。同一组不能跨 train／val／test；比例与随机种子在正式准备时记录，目前未冻结具体值。
-3. 在已知镜像分组之外，检查完全重复、近重复及可能相邻场景；文件名不同不等于独立样本。
-4. 建议验证／测试只用每组原图，避免镜像重复计分；训练可用原图与镜像，需记录是否再做随机翻转。该评估选择在正式划分时确认。
-5. 保存每个样本的来源、原图组、国家前缀、文件哈希、划分和排除原因；同时报告图片数、组数、类别框数及含该类的图片数。
-6. 验证集用于阈值与模型选择，测试集留到最终评估；不得根据测试结果回头修改阈值并仍称其为独立测试。
+1. Strip leading `xmirror_` for known mirror-group IDs; e.g. `Japan_000003` and `xmirror_Japan_000003` share a group.
+2. **Split groups before creating training directories/manifests.** Groups cannot cross train/val/test. Record proportions/seed at formal preparation; neither is frozen here.
+3. Beyond mirrors, check exact/near duplicates and possible adjacent scenes; different filenames do not establish independence.
+4. Prefer original-only val/test to avoid mirror double-counting; training may use originals/mirrors with random-flip use recorded. Confirm this evaluation choice during formal splitting.
+5. Retain each source, group, country, hash, split/exclusion; report image/group/class-box counts and images per class.
+6. Use val for thresholds/model selection; reserve test for final evaluation. Tuning thresholds after test results invalidates claims of independent testing.
 
-目前没有发布方提供的 ES 训练划分，也没有本项目的划分文件。不能把随机拆开所有图片后生成的结果称为已满足防泄漏要求。
+Neither publisher ES splits nor project split files existed here. Randomly splitting all images is not evidence of leakage prevention.
 
-## 6. 许可信息差异
+## 6. Conflicting license information
 
-本次实时查询确认，同一发布者的两处声明不一致：
+Live queries found two inconsistent statements by the same publisher:
 
-| 位置 | 实际内容 |
+| Location | Recorded content |
 | --- | --- |
-| Kaggle API 的 `licenseName` | **CC BY-NC-SA 4.0** |
-| 发布说明正文 | **CC BY-SA 4.0** |
+| Kaggle API `licenseName` | **CC BY-NC-SA4.0** |
+| Release body | **CC BY-SA4.0** |
 
-两种许可都要求署名并约束改编材料的共享方式，带 **NC** 的版本还包含非商业限制。[BY-NC-SA 官方说明](https://creativecommons.org/licenses/by-nc-sa/4.0/)、[BY-SA 官方说明](https://creativecommons.org/licenses/by-sa/4.0/)
+Both require attribution and constrain sharing adaptations; **NC** additionally restricts commercial use. [BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/), [BY-SA](https://creativecommons.org/licenses/by-sa/4.0/)
 
-项目保留这两处声明，不自行消除冲突或声称商业使用已获许可；现阶段按含非商业限制的声明管理课程用数据。对外重新分发原图、改编数据或计划商业使用前，需要核实发布者授权。旧 presentation 图片来源说明中仅写“CC BY-SA 4.0”的记录不够完整，后续正式报告和复用图片时应补充此差异。本轮没有修改历史演示稿。
+Retain both statements without resolving the conflict or claiming commercial permission. Manage course data under the noncommercial statement for now. Verify publisher authorization before redistributing originals/adaptations or commercial use. Historical presentation attribution listing only CC BY-SA4.0 is incomplete; formal reports/reused images should disclose this difference. Historical slides were not changed this round.
 
-仓库只保存核验说明、标签字典和小型统计／哈希记录，抽取的原图、原始标签与 ZIP 索引保留在本地研究目录，不随项目文档加入 Git。
+Git retains audit prose, dictionary and small counts/hashes only. Extracted originals/labels/ZIP index remain in local research storage, outside committed project documents.
 
-## 7. 三人对接与下一步
+## 7. Team handoff and next steps
 
-| 成员 | 可以立即使用的成果 | 本阶段不应自行推定 |
+| Member | Available now | Do not infer at this stage |
 | --- | --- | --- |
-| A | 固定八类 ID、英文标签、中文显示名、格式说明、异常清单、镜像组规则 | 尚未定义的优先级、维修时长、置信度阈值；全库质量或模型性能 |
-| B | 八类标签的含义与稳定标识，供理解未来 Task 输入 | 不直接以类别编号大小作为紧急度；等待 A 输出规则计算后的优先级／维修时长 |
-| C | 标签字典中的中文显示名和英文键；空检测与模拟来源说明 | 不把 `deep` 显示成实测深度，也不把空标注显示为已证明道路安全 |
+| A | Fixed IDs, English labels/display names, format, anomalies, mirror rules | Undefined priorities/durations/thresholds; full-data quality/model performance |
+| B | Label meanings/stable keys for future Task inputs | Numeric IDs are not urgency; await A's calculated priority/service time |
+| C | English display names/keys; no-detection/simulated-provenance explanations | deep is not measured depth; empty labels do not prove road safety |
 
-下一项业务准备是由 A 建立“类别 → 项目严重度／优先级／预计维修时间／期限”的规则草案，与 B 对齐调度输入。完整训练数据准备另需完成下载版本与整体哈希、全量图片解码和逐框校验、类别分布统计、近重复检查及分组划分。
+Next A drafts class -> business severity/priority/service duration/deadline mappings with B. Full training preparation additionally needs full download/version/hash, all-image decoding/box checks, class statistics, near duplicates and grouped splits.
 
-本次没有训练、推理、模型权重、数据转换流水线或业务 API。`label_schema.json` 是共享静态字典，尚未接入运行中的服务。
+No training, inference, weights, transformation pipeline or business API was delivered here. `label_schema.json` was a shared static dictionary, not yet integrated into running services.

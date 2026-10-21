@@ -1,226 +1,226 @@
-# RoadGuard 三人分工与接口对接表
+# RoadGuard three-person work allocation and interface handoff
 
-编制日期：2026-10-11；更新：2026-10-14。状态：A 的第 3～7 步已完成；第 8 步增加全量数据流水线、恢复训练/评估和真实检测接入，运行结果见[验收记录](STEP8_VISION_ACCEPTANCE.md)。B/C 模块按以下分工推进。
+Prepared: 2026-10-11; status updated: 2026-10-20. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. GPT/RAG and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
 
-所有成员及其 agent 的共用开发规范见仓库根目录 [AGENTS.md](../AGENTS.md)。本表负责详细分工与接口草案，协作流程和验证要求统一由该规范维护。
+All members and agents follow root [AGENTS.md](../AGENTS.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
 
-项目范围：新加坡 Jurong East 与 Jurong West；一个模拟维修部门；四支工程队；共用 NUS-ISS 模拟起点（位于任务区域外）；单张照片输入；RDD2022ES / YOLO；规则与人工审核；GA 与 Greedy；React 网页；GPT + RAG 路线助手。地理资料和对接要求见[范围与基地文档](JURONG_SCOPE_AND_DEPOT.md)。
+Planned scope (assistant work remains incomplete): Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
 
-本表将 A 指定为项目发起人（你），B、C 的姓名待填。按照你的要求，A 承担较多工作，包括后端基础、业务数据与系统联调，让 B 集中做路线优化，让 C 集中做界面和助手。除明确注明已实现或已冻结的内容外，下文的接口与验收条件都是待开发约定。
+A is Hu Erji (project initiator); B is Yan GuanTing; C is Wu TaoYi. At your request, A carries more work, including backend foundations, business data and system integration, so B can focus on routes and C on UI/assistant work. Unless explicitly implemented or frozen, the following interfaces and acceptance criteria are future-development agreements.
 
-## 1. 三人职责总表
+## 1. Overall responsibilities
 
-| 成员 | 主责 | 额外承担 / 工作边界 | 最终需要交付 |
+| Member | Main responsibility | Additional work/boundary | Final deliverables |
 | --- | --- | --- | --- |
-| **A：你** | 视觉识别、置信度分流、业务规则、巡检审核和任务管理 | 搭建共用后端与数据库基础；整理知识库内容和演示数据；统筹接口、联调、报告与提交包 | 可调用的检测与业务接口、模型和评估、规则配置、任务数据库、对接样例、可复现的集成流程 |
-| **B：待填** | 四队调度、行程矩阵、Greedy、GA、路线评估 | 负责工程队配置与路线相关接口；接收 A 提供的标准任务；提供 C 可直接展示的路线结果 | 独立可运行的路线模块、四队管理与规划接口、统一指标、GA 对比实验和算法章节 |
-| **C：待填** | React 前端、地图展示、GPT/RAG 助手 | 助手服务运行在 A 搭好的后端中；业务知识由 A 提供，路线事实由 B 提供；不自行重写优先级和路线算法 | 完整网页、地图、助手接口与交互、用户指南、界面与助手测试、视频录屏素材 |
+| **A: Hu Erji** | Vision, confidence routing, rules, inspection review and tasks | Shared backend/database, knowledge/demo data, interface/integration/report/submission coordination | Detection/business APIs, model/evaluation, rules, task database, examples and reproducible integrated workflow |
+| **B: Yan GuanTing** | Four-crew dispatch, travel matrix, Greedy, GA, route evaluation | Crew/routing APIs; consume A's standard tasks; results usable directly by C | Independently runnable routing, crew/planning APIs, metrics, GA comparisons and algorithm chapter |
+| **C: Wu TaoYi** | React, map, GPT/RAG assistant | Assistant in A's backend; A supplies knowledge, B route facts; do not reimplement priorities/routes | Website/map/assistant APIs and interactions, guide, UI/assistant tests and recordings |
 
-每个成员负责自己模块的测试、使用说明和报告章节。A 负责汇总和集成；模块缺陷仍由相应负责人修复。
+Each member owns module tests, usage documentation and report chapters. A compiles/integrates; module owners still fix defects.
 
-## 2. A 的详细工作包：视觉、业务规则与后端基础
+## 2. A's work packages: vision, rules and backend foundation
 
-| 编号 | 模块 | 具体任务 | 交付物 | 完成标准 / 对接对象 |
+| ID | Module | Tasks | Deliverables | Completion/integration criteria |
 | --- | --- | --- | --- | --- |
-| A1 | 需求与共享数据约定 | 整理 Jurong 研究边界、模拟基地、八类标签、任务字段、状态、单位、阈值和规则版本；维护接口文档 | 范围说明、字段字典、配置说明、请求/响应样例 | B、C 使用同一套字段；未知业务参数明确标记，不能由各模块自行猜测 |
-| A2 | 数据准备 | 确认 RDD2022ES 来源与标签；统计类别；建立训练/验证/测试划分；原图与镜像图放在同一划分 | 数据准备脚本、划分清单、标签表、数据来源说明 | 划分可复现，无镜像泄漏；不将训练集描述为 Jurong 本地数据 |
-| A3 | YOLO 训练和推理 | 训练、验证、推理；输出检测框、类别和置信度；生成标注预览；提供清楚标识的模拟检测用于早期联调 | 训练/评估/推理入口、模型权重位置、检测结果样例 | B、C 无需等待训练完成即可使用模拟数据；最终能切换到实际模型 |
-| A4 | 置信度与业务规则 | 根据置信度决定自动接受或人工审核；标签映射严重程度、P1/P2/P3、维修建议和预计维修时间 | 规则配置、规则执行服务、触发规则与版本记录 | 同样的输入得到一致结果；审核修正后仍经过相同规则；阈值经过验证再确定 |
-| A5 | 巡检与审核接口 | 接收图片和位置；保存检测结果；支持查询、确认、纠正、驳回；处理无检测结果与错误输入 | 巡检上传/查询接口、审核接口、标注图访问方式 | 高置信度进入任务队列；低置信度在确认前不生成活动任务；重复确认不会重复建任务 |
-| A6 | 任务与数据库 | 建立任务创建、查询、完成、取消、类别/位置修正流程；维护业务数据与版本 | SQLite 表定义、任务接口、任务查询服务 | 每个任务有来源记录；优先级由规则计算；完成或取消的任务不再参与规划 |
-| A7 | 共用后端基础 | 搭建 FastAPI 入口、配置读取、数据库连接、统一异常响应、文件存储、路由注册和启动说明 | 后端基础工程与公共模块 | B、C 能按约定接入自己的模块，不需各搭一套服务；密钥留在服务端配置中 |
-| A8 | 业务知识与演示数据 | 整理优先级规则、维修说明、操作指南；准备审核案例与 Jurong 模拟任务；给 C 提供 RAG 原始文档 | 已核对的知识文件、正常/边界样例、固定任务集 | 来源和规则版本明确；模拟任务与真实照片来源分开标识；B、C 用相同样例 |
-| A9 | 联调、实验与交付统筹 | 连接巡检、任务、规划和前端；评估模型与规则；组织端到端测试；汇总报告和提交包 | 模型/规则结果、联调记录、最终报告与提交清单 | 能按用户指南复现完整演示；各模块的失败有清楚反馈；报告不混入旧项目结果 |
+| A1 | Requirements/shared data | Jurong boundary, simulated depot, eight labels, task fields/statuses/units, thresholds/versions; API documentation | Scope, field dictionary, configuration, request/response examples | Shared B/C fields; unknown parameters explicit, not independently guessed |
+| A2 | Data preparation | Verify RDD2022ES source/labels; class counts; train/validation/test splits; originals/mirrors together | Scripts, split manifests, label table, provenance | Reproducible, no mirror leakage; no claim of local Jurong training images |
+| A3 | YOLO training/inference | Train/validate/infer; boxes/classes/confidence; annotated previews; explicit mock detection for early integration | Entry points, weight locations, examples | B/C can use mocks before training, then switch to real model |
+| A4 | Confidence/rules | Automatic acceptance versus review; class mappings to severity, P1/P2/P3, repair advice/duration | Configuration/service, triggered rules/versions | Consistent inputs/outputs; corrections use same rules; validate threshold before finalizing |
+| A5 | Inspection/review | Image/location intake; save/query/confirm/correct/dismiss; no detection/invalid input | Upload/query/review APIs, annotated-image access | High confidence queued; low confidence creates no active task before confirmation; no duplicate on retry |
+| A6 | Tasks/database | Create/query/complete/cancel; label/location correction; data/revisions | SQLite definitions, APIs/query service | Provenance per task, rule priorities, completed/cancelled excluded from planning |
+| A7 | Shared backend | FastAPI entry/configuration/DB/errors/storage/route registration/startup | Foundation/shared modules | B/C integrate without separate services; server-side secrets |
+| A8 | Knowledge/demo data | Priority/repair/operation knowledge; review cases, Jurong synthetic tasks; C's RAG sources | Checked knowledge, normal/edge cases, fixed sets | Sources/versions explicit; synthetic tasks separate from real photo provenance; shared B/C examples |
+| A9 | Integration/experiments/delivery | Connect inspection/tasks/planning/UI; model/rule evaluation; end-to-end tests; report/package | Results, integration record, report/checklist | Reproducible complete demo, clear failure feedback, no old-project results |
 
-A 对 B 的核心交付：标准 Task 列表、研究边界和基地配置、预计维修时间和任务期限的业务定义、队列版本与更新通知、固定实验数据。
+A to B: standard Tasks, study boundary/depot, repair-duration/deadline definitions, queue revisions/change notifications and fixed experiments.
 
-A 对 C 的核心交付：巡检/审核/任务接口、检测与标注图样例、统一错误结构、规则与维修知识文档、界面所需字段说明。
+A to C: inspection/review/task APIs, detection/annotation examples, shared errors, rules/repair knowledge and UI field definitions.
 
-## 3. B 的详细工作包：四队路线与优化算法
+## 3. B's work packages: four-crew routes and optimization
 
-| 编号 | 模块 | 具体任务 | 交付物 | 完成标准 / 对接对象 |
+| ID | Module | Tasks | Deliverables | Completion/integration criteria |
 | --- | --- | --- | --- | --- |
-| B1 | 工程队配置 | 默认四队；维护队伍 ID、可用状态、出发点和班次限制；建议首版采用相同队伍能力 | 工程队数据模型、查询与可用状态更新接口 | 前端能显示四队；队伍停用后不获得任务；空闲队伍仍在结果中可见 |
-| B2 | 行程时间矩阵 | 按任务和基地生成节点；获取 Google 行程时间；提供可复现的模拟行程矩阵；明确失败处理和数据来源 | 行程矩阵提供器、节点映射、来源信息 | 行列与节点顺序一致；支持方向不同的行程时间；不可达不能当成零分钟 |
-| B3 | Greedy 基线 | 实现容易解释的初始分配和访问顺序；遵守与 GA 相同的约束 | Greedy 规划器及说明 | 每个已分配任务只出现一次；不满足约束的任务给出未分配原因 |
-| B4 | 自建 GA | 设计染色体、初始种群、选择、交叉、变异、修复、精英保留与停止条件；同时考虑分队和顺序 | GA 规划器、参数配置、适应度与约束说明 | 输出合法四队方案；使用固定随机种子可复现；不预设 GA 一定优于 Greedy |
-| B5 | 规划接口与重算 | 通过 A 的查询服务读取任务；生成两种算法结果；保存方案；任务或队伍变化后重新计算 | 规划服务、规划查询接口、方案与输入版本记录 | 新任务或队伍停用后有新方案；旧方案被标记为过期，不能被当作当前结果 |
-| B6 | 路线指标与实验 | 统一计算行程、维修时长、延误、工作量差异、未分配任务和运行时间；进行 10/15/20 任务实验 | 原始实验表、汇总图表、复现实验说明 | 默认四队；同一输入与矩阵比较 GA/Greedy；多随机种子；算法时间与 API 等待时间分开 |
-| B7 | 算法说明与视频素材 | 撰写编码、目标函数、约束、实验结果和局限；提供路线前后对比 | 报告算法章节、实验章节、技术演示素材 | 结论能追溯到实验数据；计算速度、完工速度和费用不混用 |
+| B1 | Crews | Four by default; IDs, availability, origins, shifts; identical capability recommended initially | Model/query/availability APIs | Four visible; unavailable unassigned; idle retained |
+| B2 | Travel matrix | Task/depot nodes, Google times, reproducible mocks, failures/provenance | Provider, node mapping, source metadata | Ordered rows/columns, asymmetric support; unreachable not zero |
+| B3 | Greedy | Explainable initial assignment/order; same constraints as GA | Planner/documentation | Each assigned task once; unassigned reasons |
+| B4 | Group-built GA | Chromosomes, population, selection, crossover, mutation, repair, elitism, stopping; assignment/order | Planner/configuration/fitness/constraints | Valid four-crew plans, reproducible seed; no assumed superiority |
+| B5 | Planning/recalculation | Query A's tasks; both algorithms; save; recalculate after task/crew changes | Services/query/plans/input revisions | Updated plans; old plans explicitly stale |
+| B6 | Metrics/experiments | Travel/repair/lateness/workload/unassigned/runtime; 10/15/20 tasks | Raw tables/charts/reproduction | Four crews, same inputs/matrix, multiple seeds; runtime separate from API wait |
+| B7 | Algorithm/video | Encoding/objective/constraints/results/limits; before/after routes | Report chapters/technical demo | Evidence-backed conclusions; computation/completion/cost distinguished |
 
-B 对 A 的核心交付：规划调用接口、队伍更新服务、重算状态和错误定义、目标函数与指标定义。
+B to A: planning API, crew-update service, recalculation status/errors, objective/metric definitions.
 
-B 对 C 的核心交付：路线查询接口、按顺序排列的停靠点、四队指标、未分配原因、方案 ID 和数据来源；路线几何若可取得则提供，否则给出明确的示意展示约定。
+B to C: query API, ordered stops, four-crew metrics, unassigned reasons, plan ID/provenance; geometry when available, otherwise explicit schematic convention.
 
-## 4. C 的详细工作包：前端与 GPT/RAG 助手
+## 4. C's work packages: frontend and GPT/RAG
 
-| 编号 | 模块 | 具体任务 | 交付物 | 完成标准 / 对接对象 |
+| ID | Module | Tasks | Deliverables | Completion/integration criteria |
 | --- | --- | --- | --- | --- |
-| C1 | 前端基础 | 搭建 React 项目、页面导航、统一 API 调用、加载/空白/错误状态；兼顾桌面和手机 | 前端工程、组件和页面结构 | 使用 A、B 提供的模拟响应即可独立开发；之后能切换真实接口 |
-| C2 | 巡检与审核页面 | 上传图片、选择位置、显示类别/置信度/检测框；审核确认、纠正、驳回 | 巡检提交页、检测结果页/区域、审核队列 | 界面遵守 A 返回的状态；审核成功后刷新任务；不能通过前端随意指定优先级 |
-| C3 | 任务与工程队页面 | 展示任务状态和规则说明；完成/取消任务；显示四队及其可用状态 | 任务列表/详情、四队配置页面 | 操作后展示后端结果和重算状态；不在浏览器维护第二套业务状态 |
-| C4 | 地图与路线比较 | 四队使用不同颜色；显示基地和访问顺序；展示 GA/Greedy 指标、未分配任务和过期提示 | 路线地图、队伍详情、算法比较区域 | 地图顺序与 B 的输出一致；直线示意不得标成实际道路导航线；区分模拟与 Google 行程数据 |
-| C5 | GPT/RAG 服务 | 整理 A 提供的文档为检索库；结合 B 的方案事实生成解释；返回引用/来源；处理无依据或不支持的问题 | 助手后端模块、检索配置、回答接口 | 解释能追溯到方案和知识来源；不把模型输出直接写成任务优先级或路线 |
-| C6 | 调整请求交互 | 首批实现工程队可用状态调整；解析为结构化请求，展示确认，确认后调用 B 的业务服务重算 | 请求预览、确认/取消接口与界面、调整后解释 | 确认前无业务修改；重复确认不重复执行；方案已过期时要求重新生成预览 |
-| C7 | 验证、用户指南和演示 | 测试前端流程与助手；整理安装后的操作指南和界面截图；协调录屏 | 助手问答记录、前端测试记录、用户指南、视频素材 | 正常和错误流程均可演示；各界面截图来自实际系统；视频内容由各模块负责人共同提供 |
+| C1 | Foundation | React/navigation/shared API/loading/empty/error; desktop/mobile | Project/components/pages | Independent mock development then real APIs |
+| C2 | Inspection/review | Upload/location/class/confidence/box; confirm/correct/dismiss | Submission/results/review queue | Follow A's status, refresh tasks, no arbitrary frontend priorities |
+| C3 | Tasks/crews | Status/rules; complete/cancel; four crews/availability | List/details/configuration | Display backend/recalculation results; no second browser business state |
+| C4 | Map/comparison | Crew colors, depot/order, GA/Greedy metrics, unassigned/stale | Map/details/comparison | B's order; schematic is not road navigation; mock/Google distinction |
+| C5 | GPT/RAG | Retrieve A's documents; B's facts; citations; unsupported questions | Backend/retrieval/answer API | Traceable knowledge/plan; no direct model writes to priorities/routes |
+| C6 | Change requests | Initially availability; structured preview/confirm/B recalculation | Preview/confirm/cancel APIs/UI/explanation | No pre-confirmation mutation/repeated execution; stale preview regenerated |
+| C7 | Verification/guide/demo | Test UI/assistant; guide/screenshots; recording coordination | Q&A/UI records/guide/video | Normal/error demo; actual screenshots; owners supply portions |
 
-C 对 A 的核心交付：页面所需字段反馈、接口错误案例、助手需要补充的知识清单、前端与助手测试结果。
+C to A: UI fields, API error cases, missing knowledge, frontend/assistant results.
 
-C 对 B 的核心交付：地图展示需求、路线指标展示需求、用户确认后的结构化队伍调整请求。
+C to B: map/metric requirements and confirmed structured crew changes.
 
-## 5. 代码与共享文件归属
+## 5. Code/shared-file ownership
 
-下列目录沿用当前 `roadguard` 后端包。公共目录由 A 维护，其余模块由负责人维护；未实现模块仍是归属建议。需要改动他人接口时同步接口样例和文档。
+Paths follow the current `roadguard` package. A owns shared directories; owners maintain their modules. Unimplemented paths remain proposed ownership. Synchronize interface examples/docs when changing another member's interface.
 
-| 路径 / 内容 | 主负责人 | 对接规则 |
+| Path/content | Owner | Integration |
 | --- | --- | --- |
-| `SystemCode/model/` | A | 模型输出遵守统一 Detection 格式 |
-| `SystemCode/backend/roadguard/main.py`、配置、数据库连接、公共异常 | A | B、C 提供各自路由，由 A 统一注册 |
-| `SystemCode/backend/roadguard/vision/`、`rules/`、`inspections/` | A | inspections 中统一维护巡检与关联任务事务；对外输出审核结果与任务，不要求 B/C 理解模型内部 |
-| `SystemCode/backend/roadguard/crews/`、`routing/`（待实现） | B | 通过 A 的任务查询服务获取输入；拥有队伍和方案业务逻辑 |
-| `SystemCode/backend/roadguard/assistant/`（待实现） | C | 通过 A、B 的服务读取事实；确认后调用领域服务，不直接改其数据库表 |
-| `SystemCode/frontend/` | C | 所有业务结论以 API 返回值为准 |
-| `SystemCode/backend/knowledge/` | A 提供内容，C 维护检索 | A 审核业务规则，C 负责索引、检索和引用 |
-| 数据库表与初始化 / 迁移入口 | A 统筹；B、C 提供所属模块表定义 | 公共入口单人维护，避免多人同时改数据库初始化逻辑 |
-| 依赖清单、公共配置和部署说明 | A 统筹；B、C 提供需要的依赖和设置 | 一套后端环境，避免重复应用入口 |
-| `SystemCode/experiments/`、模块测试 | 各自负责，A 汇总 | A：视觉/规则；B：调度；C：助手/前端 |
-| `ProjectReport/`、`Video/` | A 汇总；三人共同提供 | 不把全部报告与录屏工作压给 C |
+| `SystemCode/model/` | A | Shared Detection output |
+| `SystemCode/backend/roadguard/main.py`, configuration/DB/errors | A | B/C routers centrally registered by A |
+| `SystemCode/backend/roadguard/vision/`, `rules/`, `inspections/` | A | inspections owns inspection/linked-task transactions; outputs reviews/tasks without requiring model internals |
+| `SystemCode/backend/roadguard/crews/`, `routing/` | B | Implemented crew/plan services using A's consistent task snapshots |
+| `SystemCode/backend/roadguard/assistant/` (pending) | C | A/B facts; confirmed domain-service changes, no direct table writes |
+| `SystemCode/frontend/` | C | API business conclusions |
+| `SystemCode/backend/knowledge/` | A content/C retrieval | A reviews rules; C indexes/retrieves/cites |
+| DB tables/init/migration | A coordinates B/C definitions | One shared-entry maintainer avoids simultaneous initialization edits |
+| Dependencies/config/deployment | A coordinates B/C needs | One environment/application entry |
+| `SystemCode/experiments/`, tests | Each owner; A compiles | A vision/rules; B dispatch; C assistant/UI |
+| `ProjectReport/`, `Video/` | A compiles all members | Do not place all reporting/recording on C |
 
-## 6. 统一数据接口：首批冻结与后续草案
+## 6. Shared data: initial freeze and later drafts
 
-2026-10-12：A 的首批 `Detection`、`Inspection`、`Task`、`DecisionTrace`、`ErrorResponse`、`HealthResponse` 和 `PlanningRevision` 已落地。字段、约束、版本和样例的唯一维护入口为[接口契约](API_CONTRACT.md)及其链接的公共 schema；本表不再重复维护这些对象的字段。B/C 从该文档取固定样例开始开发。以下其余对象继续作为草案，不能声称整个 M0 已冻结。
+2026-10-12: A's initial `Detection`, `Inspection`, `Task`, `DecisionTrace`, `ErrorResponse`, `HealthResponse`, `PlanningRevision` are implemented. The [API contract](API_CONTRACT.md) and linked schemas are the sole maintenance point for fields/constraints/versions/examples; this table avoids duplication. B/C start from those fixtures. Other objects remain drafts; all M0 is not frozen.
 
-共同约定：ID 为字符串；坐标使用 `latitude` / `longitude`；置信度为 0 至 1；行程和维修时长单位为分钟；API 时间戳使用带时区的 ISO 8601，建议统一 UTC，前端按新加坡时间显示。RDD2022ES 第 1 版八类 ID 已由发布说明和包内 `classes.txt` 核验，统一读取[标签字典](../SystemCode/model/label_schema.json)；标签到项目严重度/优先级映射已沿用，模拟工时于 2026-10-14 定稿为 P3/P2/P1＝60/120/240 分钟；见[业务基线](BUSINESS_RULES_BASELINE.md)，不代表真实工程标准。
+Shared conventions: string IDs; `latitude`/`longitude`; confidence 0–1; travel/repair minutes; timezone-aware ISO 8601 API timestamps, preferably UTC with Singapore display. RDD2022ES v1 eight IDs were checked against release notes and packaged `classes.txt`; use the [label dictionary](../SystemCode/model/label_schema.json). Severity/priority mappings remain; P3/P2/P1 simulated durations finalized 2026-10-14 are 60/120/240 minutes. The [baseline](BUSINESS_RULES_BASELINE.md) is not a real engineering standard.
 
-| 数据对象 | 提供者 → 使用者 | 最少需要的字段 | 关键约定 |
+| Object | Provider → consumer | Minimum fields | Agreement |
 | --- | --- | --- | --- |
-| **Detection / Inspection / Task** | A → B/C | 见[接口契约](API_CONTRACT.md) | 原 DTO 及 a-workflow-v2 记录契约已实现；在线巡检/审核/任务仍采用演示规则 |
-| **Crew** | B → A/C | `crew_id`、`name`、`available`、出发点坐标、`shift_minutes` | 默认四个固定 ID；停用或没有任务的队伍仍保留；能力差异首版不扩展 |
-| **PlanningInput** | A/B → B | `input_revision`、`planning_start_at`、`tasks`、`crews`、班次/返基地设置、目标权重、`random_seed` | 一个规划批次使用一致输入；任务或队伍配置变化时通过共用方法更新输入版本 |
-| **TravelMatrix** | B 内部，摘要供 A/C | `node_ids`、`duration_minutes`、`provider`、`generated_at` | 第 i 行第 j 列表示 i→j；不假设对称；不可达用空值并显式处理；同一轮 GA/Greedy 共用矩阵 |
-| **RoutePlan** | B → A/C | `plan_id`、`input_revision`、`algorithm`、`planning_start_at`、`crew_routes`、`unassigned_tasks`、`metrics`、`matrix_provider`、`is_stale` | `algorithm` 为 `ga` 或 `greedy`；输出四队记录；未分配项包含任务 ID 和原因；方案保存后按 ID 查询 |
-| **CrewRoute / Stop** | B → C | 队伍 ID、按顺序的任务 ID、坐标、相对开始时间的到达/完成分钟数、行程/维修/总时长、可选路线几何 | 计入 NUS-ISS 至首个任务的行程；返基地策略确定后按配置计入；没有真实道路几何时前端显示带说明的示意线 |
-| **Explanation** | C → 前端 | `plan_id`、`answer`、`sources`、`supported` | 优先引用对应方案事实和 A 的知识文档；无依据时说明信息不足 |
-| **ChangeRequest** | C → 前端/B | `request_id`、`based_on_plan_id`、`input_revision`、`type`、结构化参数、`status`、确认后 `result_plan_id` | 首批类型为 `crew_availability`；状态至少区分 `pending` / `confirmed` / `cancelled` / `failed`；不能只凭自然语言直接修改业务数据 |
+| **Detection / Inspection / Task** | A → B/C | [Contract](API_CONTRACT.md) | Original DTO/a-workflow-v2 records implemented; live workflow uses demo rules |
+| **Crew** | B → A/C | `crew_id`, `name`, `available`, origin coordinates, `shift_minutes` | Four fixed IDs; unavailable/idle retained; no initial capability differences |
+| **PlanningInput** | A/B → B | `input_revision`, `planning_start_at`, `tasks`, `crews`, shift/return settings, objective weights, `random_seed` | Consistent batch; shared revision update after task/crew changes |
+| **TravelMatrix** | B internal; summary A/C | `node_ids`, `duration_minutes`, `provider`, `generated_at` | i,j means i→j; asymmetric; null unreachable explicitly handled; same GA/Greedy matrix |
+| **RoutePlan** | B → A/C | `plan_id`, `input_revision`, `algorithm`, `planning_start_at`, `crew_routes`, `unassigned_tasks`, `metrics`, `matrix_provider`, `is_stale` | `ga`/`greedy`; four crews; unassigned IDs/reasons; query saved ID |
+| **CrewRoute / Stop** | B → C | Crew ID, ordered tasks, coordinates, relative arrival/completion minutes, travel/repair/total, optional geometry | Count depot-to-first; return by finalized policy; labeled schematic without geometry |
+| **Explanation** | C → frontend | `plan_id`, `answer`, `sources`, `supported` | Prefer matching plan/A knowledge; state insufficient evidence |
+| **ChangeRequest** | C → frontend/B | `request_id`, `based_on_plan_id`, `input_revision`, `type`, structured parameters, `status`, post-confirmation `result_plan_id` | Initially `crew_availability`; `pending`/`confirmed`/`cancelled`/`failed`; no mutation solely from natural language |
 
-稳定检测 ID、选中对象、模拟来源和 UTC 时间规则已由公共 schema 校验。业务优先级与时长不能根据演示样例反推为正式规则。
+Schemas validate stable detection IDs, selected objects, demo sources and UTC. Demo samples do not establish formal priorities/durations.
 
-### 路线指标统一定义
+### Route metrics
 
-| 指标 | 建议定义 | 负责人 |
+| Metric | Proposed definition | Owner |
 | --- | --- | --- |
-| 总行程时间 | 各队行驶时间之和，包含 NUS-ISS 至首个任务的行程；返基地策略确定后按配置计算 | B |
-| 总完工时间 | 从统一规划开始时刻到最后一支队伍结束工作所需的时间 | B |
-| 任务延误 | 有期限任务的 `max(0, completion_at - due_at)`；同时报告延误任务数 | A 确认业务期限；B 计算 |
-| 工作量平衡 | 可用队伍总工作时长的标准差，包含行程与维修；闲置可用队伍按零计入 | B；A 确认业务含义 |
-| 算法运行时间 | 规划算法本身的耗时；另报矩阵准备/API 耗时 | B |
-| 未分配任务 | 未进入任何队伍路线的任务及原因，不能默默丢弃 | B |
+| Total travel | Sum across crews including NUS-ISS to first task; return according to finalized policy | B |
+| Overall completion | Common start until last crew finishes | B |
+| Lateness | `max(0, completion_at - due_at)` for deadline tasks; also late count | A deadlines; B calculation |
+| Workload balance | Standard deviation of travel+repair across available crews, including idle as zero | B; A business meaning |
+| Algorithm runtime | Planner itself; separate matrix/API preparation | B |
+| Unassigned | Tasks outside all routes and reasons; no omission | B |
 
-以上指标定义是建议冻结的比较口径。适应度的权重或归一化由 B 提案、A 复核，不将这些指标直接称为实际节省金额。
+These are proposed comparison definitions to freeze. B proposes fitness weights/normalization for A to review; do not label these actual monetary savings.
 
-## 7. HTTP 接口责任表
+## 7. HTTP responsibilities
 
-统一前缀 `/api/v1`。health、`/demo` 预览以及巡检/审核/任务接口已实现，详见[第 5 步指南](DEMO_DETECTION_AND_RULES.md)和[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)。下表 crews/route-plans/assistant 仍待 B/C 实现。A 维护[接口契约与统一错误结构](API_CONTRACT.md)。
+Prefix `/api/v1`. Health, `/demo` previews, inspection/review/tasks, crews and persisted route plans are implemented; see the [contract/errors](API_CONTRACT.md) and [routing guide](../SystemCode/backend/roadguard/routing/README.md). The assistant rows below are proposed interfaces, not registered endpoints. Business API access follows the current [account permissions](ACCOUNT_ROLES.md).
 
-| 接口 | 负责人 | 调用方 | 输入 | 输出 / 行为 |
+| Endpoint | Owner | Caller | Input | Output/behavior |
 | --- | --- | --- | --- | --- |
-| `GET /health` | A | C、启动检查 | 无 | 服务可用状态，不伪报模型/API 已就绪 |
-| `POST /inspections` | A | C | 图片、demo 案例、坐标、道路声明、幂等 key | InspectionMutation；关联任务与 input_revision，不返回虚构规划结果 |
-| `GET /inspections?status=...` | A | C | 状态筛选 | 巡检/审核列表 |
-| `GET /inspections/{id}` | A | C | 巡检 ID | 完整检测、原图/标注图、审核与规则记录 |
-| `POST /inspections/{id}/review` | A | C | `confirm` / `correct` / `dismiss`、请求 ID、预期记录版本；确认/纠正选定检测 | 仅审核 pending_review；确认/纠正创建唯一任务，驳回不创建；保留原始检测和审核历史 |
-| `GET /tasks?status=...` | A | C | 状态筛选 | 任务列表及当前输入版本 |
-| `PATCH /tasks/{id}` | A | C | 请求 ID、预期版本；完成/取消、标签或完整位置修正 | TaskMutation 与 input_revision；不接受自由优先级，不假报已重算 |
-| `GET /crews` | B | C、A | 无 | 四支工程队信息 |
-| `PATCH /crews/{id}` | B | C、助手确认流程 | 可用状态；其他配置由已约定规则控制 | 更新 Crew，递增输入版本并触发重算 |
-| `POST /route-plans/recalculate` | B | A、C | 以当前已保存业务数据重算；携带预期输入版本 | 同一输入下 GA/Greedy 的方案 ID 与重算状态 |
-| `GET /route-plans/latest?algorithm=...` | B | C | `ga` / `greedy` | 最新 RoutePlan 或无方案状态，含过期标志 |
-| `GET /route-plans/{id}` | B | C、助手服务 | 方案 ID | 对应的已保存方案，供展示、解释与前后比较 |
-| `POST /assistant/query` | C | C 的前端 | 问题、方案 ID；可选比较方案 ID | 有来源的 Explanation；后端读取方案事实 |
-| `POST /assistant/change-requests` | C | C 的前端 | 自然语言请求、当前方案 ID | 待确认的 ChangeRequest，不改变任务或队伍 |
-| `POST /assistant/change-requests/{id}/confirm` | C | C 的前端 | 用户明确确认 | 检查原输入版本，通过 B 的队伍服务执行并重算；返回新方案 ID |
-| `POST /assistant/change-requests/{id}/cancel` | C | C 的前端 | 请求 ID | 取消待确认请求，不改变业务数据 |
+| `GET /health` | A | C/startup | None | Availability; no fabricated model/API readiness |
+| `POST /inspections` | A | C | Image/demo case/coordinates/road declaration/idempotency key | a-workflow-v5 compact inspection_id/status/detection/task_id; obtain planning revision separately |
+| `GET /inspections?status=...` | A | C | Filter | Inspection/review list |
+| `GET /inspections/{id}` | A | C | ID | Detection/images/review/rules |
+| `POST /inspections/{id}/review` | A | C | `confirm`/`correct`/`dismiss`, request/expected revision, selected detection for confirm/correct | pending_review only; unique task for confirm/correct, none for dismiss; raw/history retained |
+| `GET /tasks?status=...` | A | C | Filter | Tasks/current revision |
+| `PATCH /tasks/{id}` | A | C | Request/expected revision, complete/cancel, label/full-location correction | TaskMutation/revision; no arbitrary priority/fake recalculation |
+| `GET /crews` | B | C/A | None | Four crews |
+| `PATCH /crews/{id}` | B | C; future assistant confirmation | request_id, expected_version, available | Updated crew/input_revision/planning_input_changed/replayed; no automatic recalculation |
+| `POST /route-plans/recalculate` | B | A/C | Current saved data/expected revision | Same-input GA/Greedy IDs/status |
+| `GET /route-plans/latest?algorithm=...` | B | C | `ga`/`greedy` | Latest plan/no-plan and staleness |
+| `GET /route-plans/{id}` | B | C/assistant | ID | Saved display/explanation/comparison facts |
+| `POST /assistant/query` | C | Frontend | Question/plan ID/optional comparison ID | Sourced Explanation; backend reads facts |
+| `POST /assistant/change-requests` | C | Frontend | Natural-language request/current ID | Pending request, no mutation |
+| `POST /assistant/change-requests/{id}/confirm` | C | Frontend | Explicit confirmation | Check revision, execute/recalculate through B, new ID |
+| `POST /assistant/change-requests/{id}/cancel` | C | Frontend | Request ID | Cancel pending, no business change |
 
-为避免路由歧义，`latest` 和 `recalculate` 这类固定路径需要优先于 `/{id}` 动态路径注册。共用 `/health` 的完整地址为 `/api/v1/health`。
+Register fixed `latest`/`recalculate` before dynamic `/{id}`. Shared health URL is `/api/v1/health`.
 
-首版助手仅对接工程队可用状态调整，降低 C 的工作量。新增紧急任务仍走 A 的巡检/审核/规则流程。封路、指定绕行或直接编辑访问顺序列为后续扩展，未经三人确认不纳入首版验收。
+The initial assistant changes only availability to reduce C's workload. Urgent new tasks use A's inspection/review/rules. Closures/detours/direct order edits are later extensions, outside initial acceptance without three-member confirmation.
 
-### 后端内部接口：不通过 HTTP 重复传递业务数据
+### Internal interfaces: avoid HTTP duplication of business data
 
-| 服务约定 | 提供者 | 使用者 | 对接内容 |
+| Service | Provider | Consumer | Integration |
 | --- | --- | --- | --- |
-| VisionService | A | A 的巡检模块 | DemoDetector 返回明确合成案例，LocalVisionDetector 已支持真实图片与发布模型；两者来源不混用 |
-| RuleService | A | A 的任务/审核模块；C 可只读使用规则记录 | 已接入持久化流程；原检测保留，审核使用明确的人工复核映射及巡检冻结规则 |
-| TaskQueryService（已实现） | A | B、C 的助手服务 | snapshot(expected_revision=None, *, connection=None) 在同一事务返回全部活动 Task 及 input_revision；支持共用连接读取未来队伍数据；见[第 7 步交接](BC_HANDOFF.md) |
-| 共享输入版本基础（原 PlanningRevisionService 草案） | A | A、B | 任务创建/修改同事务递增已实现；B 接入队伍变更时遵循同一规则，见[后端说明](../SystemCode/backend/README.md) |
-| PlanningService | B | A、C 的确认流程 | 基于当前任务和队伍，生成并保存两种算法的方案 |
-| CrewService | B | C 的确认流程、B 的 API | 检查队伍变更，更新可用状态并请求重算 |
-| RouteQueryService | B | C 的助手服务 | 方案 ID → 保存的方案事实与指标 |
-| KnowledgeRetrievalService（待 C 实现） | C | C 的助手服务 | 问题与上下文 → A 交付的版本化知识片段及来源；[知识包](../SystemCode/backend/knowledge/README.md)已按仓库事实核对，不代表工程专家审批 |
+| VisionService | A | A inspections | Explicit synthetic DemoDetector; real-image/released-model LocalVisionDetector; separate sources |
+| RuleService | A | A task/review; C read-only trace | Persisted; raw retained; explicit human mapping/frozen inspection rules |
+| TaskQueryService (implemented) | A | B; future C assistant | snapshot(expected_revision=None, *, connection=None) returns all active Tasks/revision in one transaction; PlanningService uses the shared connection for crew reads; [handoff](BC_HANDOFF.md) |
+| Shared input revision (formerly draft PlanningRevisionService) | A | A/B | Task mutation increments same transaction; B follows for crews; [backend](../SystemCode/backend/README.md) |
+| PlanningService | B | A/C confirmation | Generate/save both algorithms from current tasks/crews |
+| CrewService (implemented) | B | B API; future C confirmation | Validate/update availability with expected_version; return revision for a separate explicit recalculation |
+| RouteQueryService | B | C assistant | ID → saved facts/metrics |
+| KnowledgeRetrievalService (pending C) | C | C assistant | Question/context → versioned passages/sources; [a-knowledge-v10](../SystemCode/backend/knowledge/README.md) has eleven documents and 30 synthetic acceptance specifications, not executed RAG results or engineering approval |
 
-具体函数签名由负责人在接口冻结时补充。A 的巡检处理和 C 的助手都调用 B 的规划服务，不各自实现一套调度算法。
+Owners add function signatures on freeze. A inspections and C assistant call B's service rather than duplicate dispatch algorithms.
 
-## 8. 跨模块联调案例与验收负责人
+## 8. Integration cases and acceptance
 
-| 场景 | A 的责任 | B 的责任 | C 的责任 | 验收结果 |
+| Scenario | A | B | C | Acceptance |
 | --- | --- | --- | --- | --- |
-| 高置信度损坏照片 | 检测、规则、建任务、保存后触发重算 | 接收新队列，更新四队方案 | 展示检测、任务和新路线 | 任务有规则来源；在约束允许时只被分配一次，否则明确未分配原因 |
-| 低置信度照片 | 进入审核，确认前不建活动任务 | 审核前不把该巡检作为任务；确认后重算 | 显示审核操作和状态变化 | 确认、纠正、驳回均符合业务规则 |
-| 完成或取消任务 | 修改活动队列与输入版本 | 从新方案中移除该任务 | 刷新列表和路线 | 任务留有历史记录，但不再占用新方案资源 |
-| 一支工程队不可用 | 提供稳定任务数据与共同版本机制 | 停用队伍、重新分配或标记未分配 | 通过管理页或助手确认后执行 | 四队仍可见，停用队伍不接新任务 |
-| 请求解释路线 | 提供业务规则和知识 | 提供方案事实与指标 | 检索、回答、展示引用 | 不虚构队伍、任务和指标；说明对应方案 |
-| API 或模型不可用 | 检测模式与错误明确；已接受任务不丢失 | 行程数据来源明确；重算失败标记旧方案过期 | 给出可理解的失败/模拟提示 | 错误可见；不能把旧方案标成最新或把模拟结果称为真实结果 |
-| 重复点击审核或确认 | 审核不会重复建任务 | 队伍更新/重算有确定结果 | 请求确认只执行一次 | 无重复任务、重复业务修改或不一致状态 |
+| High confidence | Detection/rules/task/recalculate after save | Queue/four-crew plan | Display result/task/routes | Rule source; assigned once if feasible, otherwise reason |
+| Low confidence | Review, no active task before confirmation | Exclude before, recalculate after | Review/status | Confirm/correct/dismiss follow rules |
+| Complete/cancel | Queue/revision | Remove from new plans | Refresh | History retained, no new resource use |
+| Unavailable crew | Stable tasks/revisions | Disable/reassign/unassigned | Management or confirmed assistant | Four visible; no new tasks for disabled crew |
+| Explanation | Rules/knowledge | Facts/metrics | Retrieve/answer/cite | No inventions; identify plan |
+| API/model failure | Mode/errors; accepted data retained | Source clear; old plan stale on failure | Clear failure/mock notice | No old-as-current/mock-as-real |
+| Repeated review/confirm | No duplicate task | Deterministic update/recalculation | Execute once | No duplicate tasks/mutations/inconsistency |
 
-统一错误结构和基础错误码已在[接口契约](API_CONTRACT.md)中定义。新增业务错误码在同一 PR 中更新契约，不让前端匹配自然语言消息。
+Shared/base errors are in the [contract](API_CONTRACT.md); new business codes in the same PR, not natural-language matching.
 
-## 9. 交付次序：先约定接口，再并行开发
+## 9. Delivery: agree interfaces, then develop in parallel
 
-| 阶段 | A 交付 | B 交付 | C 交付 | 进入下一阶段的条件 |
+| Stage | A | B | C | Exit condition |
 | --- | --- | --- | --- | --- |
-| M0：业务与接口冻结 | 标签/任务/审核样例、数据库公共约定、范围与规则草案 | Crew/PlanningInput/RoutePlan 样例、指标与约束草案 | 页面字段清单、助手请求/回答样例 | 三人用同一套样例；开放业务问题有明确负责人 |
-| M1：独立开发 | 后端基础、模拟检测、规则、任务接口；同时准备训练 | 用固定任务和矩阵完成 Greedy，再开发 GA | 用模拟 API 完成主要页面和四队地图 | 各模块能独立演示，接口格式一致 |
-| M2：核心流程联调 | 巡检/审核/任务与规划调用接通 | GA、Greedy、四队管理和重算接口接通 | 真实接口替换模拟数据，完成核心操作流程 | 上传 → 审核/接受 → 任务 → 四队路线可完整演示 |
-| M3：模型、助手与实验 | 接入真实模型；评估置信度/规则；交付知识库内容 | 完成同输入的路线实验、多种子结果和指标检查 | 接入 GPT/RAG，完成队伍调整确认流程与助手测试 | 三类技术能力有可展示功能和评估证据 |
-| M4：最终交付 | 统筹回归、报告与提交包 | 完成算法/实验章节，复核结论 | 完成用户指南、截图与录屏整理 | 用户指南可复现；两段视频与报告内容一致 |
+| M0: freeze | Label/task/review samples, DB conventions, scope/rules | Crew/input/plan examples, metrics/constraints | UI fields, assistant request/answer examples | Shared examples; open decisions owned |
+| M1: independent | Backend/mock/rules/tasks; training preparation | Fixed-data Greedy, then GA | Mock pages/four-crew map | Independent demos, matching interfaces |
+| M2: integration | Inspection/review/tasks/planning | Algorithms/crews/recalculation | Real APIs/core operations | Upload → review/accept → task → routes |
+| M3: model/assistant/experiments | Real model, confidence/rules, knowledge | Same-input experiments/seeds/metrics | GPT/RAG/confirmation/tests | Three capabilities have functionality/evidence |
+| M4: delivery | Regression/report/package | Algorithm/results/conclusions | Guide/screenshots/recordings | Reproducible guide, two consistent videos |
 
-A 优先交付数据格式、模拟检测和公共后端，训练可并行进行。B 使用固定任务集开发，不等待训练完成。C 使用约定的模拟响应开发，不等待全部后端完成。每次变更接口时同时更新示例与文档，并通知受影响成员。
+A prioritizes formats/mock detection/backend; training can run in parallel. B uses fixed tasks without waiting for training; C uses agreed mock responses without waiting for all backend. Update examples/docs and notify affected members on changes.
 
-## 10. 每个人需要提交的验收材料
+## 10. Each member's acceptance materials
 
-| 成员 | 最低交付清单 |
+| Member | Minimum deliverables |
 | --- | --- |
-| A | 数据集来源和划分说明；模型训练与推理入口；权重获取说明；逐类检测指标；置信度分流评估；20–30 个规则正常/边界案例；巡检/审核/任务 API；共用后端与启动说明；模拟样例与知识文件；集成记录；对应报告章节 |
-| B | 任务输入和路线输出样例；行程矩阵与来源说明；Greedy 和 GA 入口；编码/目标函数/约束说明；合法性测试；四队、10/15/20 任务、多随机种子的对比实验；原始数据和图表；路线模块使用说明；对应报告章节 |
-| C | 前端启动说明与六类页面/区域；模拟数据切换方式；地图展示；GPT/RAG 接口和检索来源；队伍调整预览/确认流程；10 个路线问题与10 个调整请求测试（含不支持、过期和重复确认案例）；用户指南；截图与视频素材；对应报告章节 |
+| A | Dataset/splits; training/inference; weight access; per-class metrics; confidence evaluation; 20–30 normal/edge rule cases; inspection/review/task APIs; backend/startup; mock/knowledge; integration; report |
+| B | Task/route examples; matrix/source; Greedy/GA; encoding/objective/constraints; validity tests; four crews, 10/15/20 tasks, multiple seeds; raw/charts; guide; report |
+| C | Frontend startup/six page-area types; mock switching; map; GPT/RAG/sources; preview/confirm; 10 route questions and 10 change requests including unsupported/stale/repeated; guide/screenshots/video |
 
-最终报告由 A 统稿；A/B/C 分别对自己的结果与技术章节负责。两个约五分钟的视频分别覆盖业务/用例和系统设计/技术说明，三人提供各自部分，C 协调录屏，A 统筹最终文件。按当前课程要求使用成员自己的讲解，不使用 AI 生成的演讲音频。
+A edits the report; A/B/C own their results and technical chapters. Two approximately five-minute videos cover business/use cases and design/technical explanation. All supply their portions, C coordinates recording, A final files. Use members' own narration, not AI speech, under current course requirements.
 
-## 11. 开发前要共同确认的业务选项
+## 11. Business options for joint confirmation
 
-Jurong 边界与 NUS-ISS 起点已于 2026-10-12 记录为本项目的地理基线。2026-10-14 业务模拟工时已定稿，未列为已确认的调度选项仍按草案处理，由 A/B 后续冻结；完成地理子步骤不等于完成整个 M0。
+Jurong/NUS-ISS were recorded 2026-10-12 as geography baseline; simulated durations finalized 2026-10-14. Unconfirmed dispatch options remain drafts for A/B. Geography completion does not complete M0.
 
-| 事项 | 建议首版处理 | 负责推动 |
+| Item | Proposed initial treatment | Lead |
 | --- | --- | --- |
-| Jurong 边界与起点（已记录） | JE／JW 的 URA MP2025 边界；共用区域外的 NUS-ISS 起点；详见[范围文档](JURONG_SCOPE_AND_DEPOT.md) | A 维护版本；B 后续核验车辆入口；C 展示边界和基地 |
-| 队伍能力与班次 | 四队同能力、共用基地、统一可配置班次；是否返基地写进配置 | B 提案，A 确认 |
-| 多个检测对应的任务数（已确认） | 真实上传按模型策略选定主框，≥0.60 自动建一个任务；HTTP 最多一框，原始候选保存在库 | A 维护；C 按当前接口接入 |
-| 无检测结果 | 保存巡检记录，不自动生成维修任务 | A |
-| 置信度阈值（项目已确认） | 主框 ≥0.60 自动建任务；低于阈值待审核；该值尚未经真实场景校准 | A |
-| 预计维修时长（已定稿）与期限（待定） | demo-rules-v2：P3/P2/P1＝60/120/240 分钟；due_at 保持 null，不得用工时代替期限 | A 维护；B 使用每条任务保存值 |
-| 任务规划语义 | 首版基于统一开始时刻重新规划当前活动任务，作为模拟调度；不包含真实在途车辆跟踪和已执行路段锁定 | A/B |
-| 助手调整范围 | 首批仅调整队伍可用状态；自然语言解释基于事实；新任务走标准巡检流程 | C 提案，A/B 复核 |
-| 实际路径与示意图 | 有道路几何时画真实路径；只有点间矩阵时标明示意连线 | B/C |
+| Boundary/origin (recorded) | JE/JW URA MP2025; NUS-ISS outside area; [scope](JURONG_SCOPE_AND_DEPOT.md) | A versions, B vehicle access, C display |
+| Capability/shifts | Four identical crews/shared depot/common configurable shift; configured return policy | B proposes/A confirms |
+| Multi-detection task count (confirmed) | Model-selected primary ≥0.60 creates one; one HTTP box; raw candidates saved | A maintains/C integrates |
+| No detection | Save inspection, no repair task | A |
+| Threshold (confirmed) | Primary ≥0.60 auto-task, below review; uncalibrated | A |
+| Duration (final)/deadline (pending) | demo-rules-v2 P3/P2/P1=60/120/240; due_at null; duration is not deadline | A maintains/B reads saved |
+| Planning semantics | Common-start active-task replanning/simulation; no live tracking/executed-route locks | A/B |
+| Assistant scope | Availability only initially; factual explanation; standard new-task workflow | C proposes/A/B review |
+| Actual/schematic path | Road geometry if available; labeled schematic for point matrix | B/C |
 
-未确定的业务选项在对应业务实现前冻结；已授权的公共后端和数据结构基础可先行。首批格式落地不使本表的业务假设自动生效。
+Freeze unresolved options before corresponding implementation. Authorized shared backend/data foundations may proceed. Initial formats do not automatically approve assumptions.
 
-## 12. 与现有项目资料的关系
+## 12. Existing materials
 
-- [当前项目范围](PROJECT_SCOPE.md)
-- [Jurong 具体范围与 NUS-ISS 模拟起点](JURONG_SCOPE_AND_DEPOT.md)
-- [数据集与八类标签核对](DATASET_AND_LABEL_AUDIT.md)
-- [总体开发计划](IMPLEMENTATION_PLAN.md)
-- [课程提交清单](SUBMISSION_CHECKLIST.md)
-- [课程技术映射](../ProjectReport/COURSE_MAPPING.md)
+- [Current scope](PROJECT_SCOPE.md)
+- [Jurong/NUS-ISS](JURONG_SCOPE_AND_DEPOT.md)
+- [Dataset/eight labels](DATASET_AND_LABEL_AUDIT.md)
+- [Implementation plan](IMPLEMENTATION_PLAN.md)
+- [Submission checklist](SUBMISSION_CHECKLIST.md)
+- [Course mapping](../ProjectReport/COURSE_MAPPING.md)
 
-规则/流程、进化优化、视觉及自然语言认知能力分别需要有实际功能和证据。当前公共契约和后端基础不代表上述业务能力或评估已经完成。
+Rules/workflow, evolutionary optimization, vision and natural-language cognition each need functionality/evidence. Contracts/backend foundations do not mean those capabilities/evaluations are complete.

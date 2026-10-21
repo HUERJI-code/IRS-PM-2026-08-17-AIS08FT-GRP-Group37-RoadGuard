@@ -8,7 +8,7 @@ import pytest
 
 from roadguard.assistant import provider
 from roadguard.assistant.query_models import ModelSelection
-from roadguard.assistant.query_service import plan_sources
+from roadguard.assistant.query_service import clean_text, plan_sources
 from roadguard.config import load_settings
 from roadguard.database import increment_revision
 from roadguard.errors import AppError
@@ -17,6 +17,19 @@ from roadguard.routing.service import RecalculateRequest
 
 URL = '/api/v1/assistant/query'
 QUESTION = {'question': '深坑洞演示维修工时', 'scope': 'knowledge'}
+
+
+@pytest.mark.parametrize('metadata', [
+    'classification: `demo_assumption`',
+    'classification\uff1a`demo_assumption`',
+    'Sources: [source](relative/source.py)',
+    'Implementation sources: [source](relative/source.py)',
+    '\u6765\u6e90\uff1a[source](relative/source.py)',
+])
+def test_merged_metadata_is_not_answer_evidence(metadata):
+    assert clean_text(metadata + '\nDeep potholes require 240 minutes.') == (
+        'Deep potholes require 240 minutes.'
+    )
 
 
 @pytest.fixture(autouse=True)

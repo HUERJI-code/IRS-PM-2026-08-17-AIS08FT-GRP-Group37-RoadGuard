@@ -1,37 +1,37 @@
 export function formatMinutes(value: number | null | undefined): string {
   return value == null
-    ? '未提供'
-    : `${new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 2 }).format(value)} 分钟`
+    ? 'Not provided'
+    : `${new Intl.NumberFormat('en-SG', { maximumFractionDigits: 2 }).format(value)} min`
 }
 export function formatRuntime(value: number | null | undefined): string {
   return value == null
-    ? '未提供'
-    : `${new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 2 }).format(value)} 毫秒`
+    ? 'Not provided'
+    : `${new Intl.NumberFormat('en-SG', { maximumFractionDigits: 2 }).format(value)} ms`
 }
 export function formatSingaporeTime(value: string | null | undefined): string {
-  if (value == null) return '未提供'
+  if (value == null) return 'Not provided'
   if (
     !/(?:Z|[+-]\d{2}:\d{2})$/.test(value) ||
     !Number.isFinite(Date.parse(value))
   )
-    return '无效时间'
+    return 'Invalid time'
   return (
-    new Intl.DateTimeFormat('zh-CN', {
+    new Intl.DateTimeFormat('en-SG', {
       timeZone: 'Asia/Singapore',
       dateStyle: 'medium',
       timeStyle: 'short',
       hourCycle: 'h23',
-    }).format(new Date(value)) + '（新加坡）'
+    }).format(new Date(value)) + ' (Singapore)'
   )
 }
 export function stopTime(start: string, offsetMinutes: number | null): string {
-  if (offsetMinutes === null) return '未提供'
+  if (offsetMinutes === null) return 'Not provided'
   if (
     !Number.isFinite(offsetMinutes) ||
     offsetMinutes < 0 ||
-    formatSingaporeTime(start) === '无效时间'
+    formatSingaporeTime(start) === 'Invalid time'
   )
-    return '无效时间'
+    return 'Invalid time'
   return formatSingaporeTime(
     new Date(Date.parse(start) + offsetMinutes * 60000).toISOString(),
   )

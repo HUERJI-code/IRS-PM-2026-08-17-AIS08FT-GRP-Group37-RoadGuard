@@ -39,7 +39,7 @@ export function resolveImageUrl(
   ) {
     throw new ApiError(
       'contract_mismatch',
-      '图片地址不符合约定。',
+      'The image URL does not match the contract.',
       0,
       'contract',
     )

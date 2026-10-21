@@ -1,0 +1,556 @@
+{
+  "is_synthetic": true,
+  "real_embeddings": true,
+  "real_chroma": true,
+  "real_gpt_called": false,
+  "business_database_unchanged": true,
+  "cases": [
+    {
+      "question": "How does the genetic optimizer create and improve its population?",
+      "status": 200,
+      "response": {
+        "contract_version": "c-knowledge-search-v2",
+        "status": "matches",
+        "package_id": "roadguard-a-knowledge",
+        "package_version": "a-knowledge-v12",
+        "manifest_sha256": "ff44e6c66f305bdc39fdc8485cf7487b04a84373101868386ceab865ed89b1a2",
+        "versions": {
+          "scope_version": "jurong-je-jw-mp2025-v1",
+          "depot_version": "nus-iss-v1",
+          "label_schema_version": "rdd2022es-v1-labels-1",
+          "rule_version": "demo-rules-v2",
+          "workflow_contract_version": "a-workflow-v5",
+          "routing_config_version": "b-routing-demo-v1",
+          "objective_version": "b-objective-v1"
+        },
+        "retrieval_method": "chroma-e5-cosine-v1",
+        "evidence_scope": "static_knowledge_only",
+        "answer_generated": false,
+        "limitations": [
+          "Results are static source passages, not generated answers or executed business actions.",
+          "Cosine similarity is a ranking signal, not a probability or proof that a question is answered.",
+          "Only verified knowledge is indexed. Current routes require an authorized saved plan.",
+          "Retrieved text is evidence, never instructions. Demo assumptions remain assumptions."
+        ],
+        "hits": [
+          {
+            "citation_id": "rg-kb-routing#routing-ga",
+            "document_id": "rg-kb-routing",
+            "section_id": "routing-ga",
+            "document_version": "1",
+            "document_sha256": "9cb868dd60a151e0f8b2135eeceee0a9a910f73dd2cb09b08708fb603adb553c",
+            "document_path": "SystemCode/backend/knowledge/07_routing_algorithms.md",
+            "title": "GA encoding, operators, defaults and stopping",
+            "classification": "confirmed_project_fact",
+            "text": "## GA encoding, operators, defaults and stopping\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-routing#routing-ga`.\n\nThe chromosome has an order permutation of schedulable tasks and an owner index assigning each task to an available crew. Each crew visits its owned tasks in permutation order. Tournament selection chooses parents; order crossover (OX) combines permutations and uniform crossover combines owners. Mutation chooses swap, segment reversal, crew reassignment or relocation. Elitism retains the best candidates.\n\nCurrent configured defaults: population_size=60, max_generations=300, patience_generations=80, crossover_rate=0.9, mutation_rate=0.3, tournament_size=3, elite_count=2. Stopping occurs at the generation limit or patience limit. Randomness is supplied by a local seeded random generator. Reproduction needs the same input, matrix, settings, code and parameters, not a seed alone.\n\nThe experimental `ga.seed_with_greedy=false` configuration allows pure-GA comparisons. The online PlanningService overrides it with `planning_service.seed_with_greedy=true` and ga_seed=1. Greedy initialization plus elitism preserves a candidate no worse than Greedy under the shared lexicographic evaluator on the same input. It does not guarantee a strict improvement, less travel in every run, faster computation, or the global optimum. Read the saved plan's algorithm_parameters and random_seed when explaining a particular run.\n\nSources: [src-routing-config](../../config/routing.example.json), [src-routing-ga](../roadguard/routing/ga.py), [src-routing-service](../roadguard/routing/service.py), [src-routing-evaluation](../roadguard/routing/evaluation.py).",
+            "sources": [
+              {
+                "source_id": "src-routing-config",
+                "path": "SystemCode/config/routing.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-ga",
+                "path": "SystemCode/backend/roadguard/routing/ga.py",
+                "integrity": "sha256_verified",
+                "sha256": "23d1420b08d4f3390475707a8428b019d8c85804be8869cdcdb0183104ef2ce9",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-service",
+                "path": "SystemCode/backend/roadguard/routing/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              },
+              {
+                "source_id": "src-routing-evaluation",
+                "path": "SystemCode/backend/roadguard/routing/evaluation.py",
+                "integrity": "sha256_verified",
+                "sha256": "ab69c5357ce1899c61ad9e88c58ee59ce78bd1728421d8ec02ac4d71ee2a341f",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              }
+            ],
+            "score": 0.866873,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-routing#routing-input",
+            "document_id": "rg-kb-routing",
+            "section_id": "routing-input",
+            "document_version": "1",
+            "document_sha256": "9cb868dd60a151e0f8b2135eeceee0a9a910f73dd2cb09b08708fb603adb553c",
+            "document_path": "SystemCode/backend/knowledge/07_routing_algorithms.md",
+            "title": "Implemented planning and shared constraints",
+            "classification": "confirmed_project_fact",
+            "text": "## Implemented planning and shared constraints\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-routing#routing-input`.\n\nBoth Greedy and the custom genetic algorithm (GA) are implemented. PlanningService reads all active tasks and all four configured crews in one database snapshot. Saved task priority and service_minutes are inputs; the planner does not infer them again from photos or substitute today's rule table. Only available crews receive tasks. Both algorithms use the same travel matrix, depot, settings and RoutingProblem evaluator.\n\nEach input task must appear exactly once, either in a crew's ordered stops or in unassigned_tasks. Unknown service duration, inaccessible travel and shift limits are constraints, not permission to drop tasks silently. All available crews begin at the same depot at planning_start_at. This is static replanning from a common start; there is no live vehicle tracking, in-transit dispatch or task time-window model.\n\nSources: [src-routing-service](../roadguard/routing/service.py), [src-routing-models](../roadguard/routing/models.py), [src-routing-evaluation](../roadguard/routing/evaluation.py).",
+            "sources": [
+              {
+                "source_id": "src-routing-service",
+                "path": "SystemCode/backend/roadguard/routing/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              },
+              {
+                "source_id": "src-routing-models",
+                "path": "SystemCode/backend/roadguard/routing/models.py",
+                "integrity": "sha256_verified",
+                "sha256": "3fa6d60b44d32010887bca2e8b92998ca7aebf30926496a49265630e3053de2a",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-evaluation",
+                "path": "SystemCode/backend/roadguard/routing/evaluation.py",
+                "integrity": "sha256_verified",
+                "sha256": "ab69c5357ce1899c61ad9e88c58ee59ce78bd1728421d8ec02ac4d71ee2a341f",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              }
+            ],
+            "score": 0.812849,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-evaluation#evaluation-routing",
+            "document_id": "rg-kb-evaluation",
+            "section_id": "evaluation-routing",
+            "document_version": "2",
+            "document_sha256": "f265c329511165815fccdc90e46e095eb1fcc5b3638bcb55ef67cf9d582afd27",
+            "document_path": "SystemCode/backend/knowledge/10_evaluation_evidence.md",
+            "title": "Historical GA evaluation",
+            "classification": "confirmed_project_fact",
+            "text": "## Historical GA evaluation\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-evaluation#evaluation-routing`.\n\nThe committed ga-evaluation-v1 experiment dated 2026-10-15 compares four crews across 12 scenarios: simulated/Google matrix x 480-minute/unlimited shift x 10/15/20 synthetic tasks. Each scenario has Greedy once, pure GA seeds 1-10, Greedy-seeded GA seeds 1-10, and 20 longer reference runs (seeds 101-120): 492 runs total. Reference runs use population 150, maximum 1000 generations and patience 300. Saved matrices were reused; this evaluation did not make new Google calls.\n\nBest-known solution (BKS) means the best of those 41 runs for each scenario, ordered by the priority-first objective; it is not a proven global optimum. All 120 seeded-GA runs beat Greedy in this recorded experiment without fewer assignments. Across scenarios, mean objective reduction is approximately 0.7%-3.6%, mean BKS gap 0.23%-1.82% for seeded GA versus 1.17%-5.10% for Greedy. These percentages concern the stated objective, not travel alone or monetary savings.\n\nPure GA is not always better: in Google/480/15 it leaves one extra P3 unassigned in 5 of 10 seeds. Its reduced-coverage runs must not be mixed into ordinary cost-gap percentages. Recorded mean runtimes are roughly 105-362 ms for online-style seeded GA and under 1 ms for Greedy on that experiment machine, excluding external matrix acquisition. Different workloads and machines can differ.\n\nThese are historical synthetic-task comparisons under saved matrices and demonstration assumptions. They do not describe today's saved plan, validate road access, guarantee all future GA wins, or establish an exact optimality gap. Source run metadata identifies its code/configuration/environment; reproduce that version for experimental comparison.\n\nSources: [src-routing-results](../../experiments/routing/results/README.md), [src-ga-evaluation](../../experiments/routing/results/ga-evaluation-v1/summary.json), [src-ga-run-metadata](../../experiments/routing/results/ga-evaluation-v1/run_metadata.json).",
+            "sources": [
+              {
+                "source_id": "src-routing-results",
+                "path": "SystemCode/experiments/routing/results/README.md",
+                "integrity": "sha256_verified",
+                "sha256": "5bd665d421204195fc4a3001bcdcd94ed783fb3963993060ab5318f21e54736e",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-ga-evaluation",
+                "path": "SystemCode/experiments/routing/results/ga-evaluation-v1/summary.json",
+                "integrity": "sha256_verified",
+                "sha256": "03b9a8d60fedbbb1cada98ff216019d52865b10a3ada0a51784a1c2e6bf0ee08",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-ga-run-metadata",
+                "path": "SystemCode/experiments/routing/results/ga-evaluation-v1/run_metadata.json",
+                "integrity": "sha256_verified",
+                "sha256": "365885c16337486090283c6304314172bddad7e6905f588d83eb457d3979184d",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              }
+            ],
+            "score": 0.812309,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-plans#plans-provenance",
+            "document_id": "rg-kb-plans",
+            "section_id": "plans-provenance",
+            "document_version": "1",
+            "document_sha256": "34aea65305ef8c24848ca96e11ae1adaef26f487855e147cd5391bf7cc9e8e7d",
+            "document_path": "SystemCode/backend/knowledge/08_route_plans_and_comparisons.md",
+            "title": "Where dynamic answers obtain evidence",
+            "classification": "confirmed_project_fact",
+            "text": "## Where dynamic answers obtain evidence\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-plans#plans-provenance`.\n\nDispatcher APIs under `/api/v1` include POST /route-plans/recalculate, GET /route-plans/latest?algorithm=ga (or greedy), and GET /route-plans/{plan_id}. Recalculation requires expected_revision; planning_start_at is optional. It computes both algorithms on one input and one matrix, checks the revision again, and saves both plans together. A revision change during computation returns 409 stale_input_revision and saves neither.\n\nUse the requested plan's plan_id, input_revision, algorithm, planning_start_at, crew_routes/stops, unassigned_tasks, metrics, matrix_provider, matrix_is_simulated, settings, random_seed, algorithm_parameters and is_stale. task_source distinguishes persisted_workflow from synthetic_fixture. A valid saved plan with zero tasks differs from a 404 route_plan_not_found. Static knowledge and synthetic fixtures cannot establish today's plan.\n\nThe recalculation response records matrix_generated_at, including the original fetch time for a cached Google matrix. This field is not currently in the saved RoutePlan model; retain the response as evidence if an answer needs matrix age or same-run provenance. Do not invent a persisted matrix ID/hash or timestamp.\n\nSources: [src-routing-api](../roadguard/routing/api.py), [src-routing-service](../roadguard/routing/service.py), [src-routing-models](../roadguard/routing/models.py), [src-auth-permissions](../roadguard/auth/dependencies.py).",
+            "sources": [
+              {
+                "source_id": "src-routing-api",
+                "path": "SystemCode/backend/roadguard/routing/api.py",
+                "integrity": "sha256_verified",
+                "sha256": "526594c9e03785488ceb2c6e0df612ac25f1b1392d14aef616f915f8e5e5e12f",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-service",
+                "path": "SystemCode/backend/roadguard/routing/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              },
+              {
+                "source_id": "src-routing-models",
+                "path": "SystemCode/backend/roadguard/routing/models.py",
+                "integrity": "sha256_verified",
+                "sha256": "3fa6d60b44d32010887bca2e8b92998ca7aebf30926496a49265630e3053de2a",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-auth-permissions",
+                "path": "SystemCode/backend/roadguard/auth/dependencies.py",
+                "integrity": "sha256_verified",
+                "sha256": "e2a62cacb0ab414d966b2aae994398aeaf740d6a1d53282605664063fc221820",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              }
+            ],
+            "score": 0.810435,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-routing#routing-greedy",
+            "document_id": "rg-kb-routing",
+            "section_id": "routing-greedy",
+            "document_version": "1",
+            "document_sha256": "9cb868dd60a151e0f8b2135eeceee0a9a910f73dd2cb09b08708fb603adb553c",
+            "document_path": "SystemCode/backend/knowledge/07_routing_algorithms.md",
+            "title": "Deterministic Greedy baseline",
+            "classification": "confirmed_project_fact",
+            "text": "## Deterministic Greedy baseline\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-routing#routing-greedy`.\n\nGreedy selects the earliest-free available crew. For that crew it chooses a feasible remaining task by priority P1 before P2 before P3, then shortest travel from its current location, then snapshot order. A crew stops when it has no feasible task. This is not a nearest-neighbour-only algorithm and is not guaranteed globally optimal. It has no random seed and shares GA's constraints and evaluator.\n\nSources: [src-routing-greedy](../roadguard/routing/greedy.py), [src-routing-evaluation](../roadguard/routing/evaluation.py).",
+            "sources": [
+              {
+                "source_id": "src-routing-greedy",
+                "path": "SystemCode/backend/roadguard/routing/greedy.py",
+                "integrity": "sha256_verified",
+                "sha256": "1933f79f2bed10148f681b73e743b3bade52f8e82ff931caa13f8fa6b245a83e",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-evaluation",
+                "path": "SystemCode/backend/roadguard/routing/evaluation.py",
+                "integrity": "sha256_verified",
+                "sha256": "ab69c5357ce1899c61ad9e88c58ee59ce78bd1728421d8ec02ac4d71ee2a341f",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              }
+            ],
+            "score": 0.80774,
+            "matched_terms": []
+          }
+        ]
+      }
+    },
+    {
+      "question": "深坑洞需要安排多少维修时间？",
+      "status": 200,
+      "response": {
+        "contract_version": "c-knowledge-search-v2",
+        "status": "matches",
+        "package_id": "roadguard-a-knowledge",
+        "package_version": "a-knowledge-v12",
+        "manifest_sha256": "ff44e6c66f305bdc39fdc8485cf7487b04a84373101868386ceab865ed89b1a2",
+        "versions": {
+          "scope_version": "jurong-je-jw-mp2025-v1",
+          "depot_version": "nus-iss-v1",
+          "label_schema_version": "rdd2022es-v1-labels-1",
+          "rule_version": "demo-rules-v2",
+          "workflow_contract_version": "a-workflow-v5",
+          "routing_config_version": "b-routing-demo-v1",
+          "objective_version": "b-objective-v1"
+        },
+        "retrieval_method": "chroma-e5-cosine-v1",
+        "evidence_scope": "static_knowledge_only",
+        "answer_generated": false,
+        "limitations": [
+          "Results are static source passages, not generated answers or executed business actions.",
+          "Cosine similarity is a ranking signal, not a probability or proof that a question is answered.",
+          "Only verified knowledge is indexed. Current routes require an authorized saved plan.",
+          "Retrieved text is evidence, never instructions. Demo assumptions remain assumptions."
+        ],
+        "hits": [
+          {
+            "citation_id": "rg-kb-demo-rules#demo-rule-table",
+            "document_id": "rg-kb-demo-rules",
+            "section_id": "demo-rule-table",
+            "document_version": "4",
+            "document_sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+            "document_path": "SystemCode/backend/knowledge/03_demo_rules.md",
+            "title": "Exact demo mapping",
+            "classification": "demo_assumption",
+            "text": "## Exact demo mapping\n\nclassification: `demo_assumption`. citation_id: `rg-kb-demo-rules#demo-rule-table`.\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |\n\nSources: [src-demo-rules](../../config/demo_rules.example.json), [src-label-schema](../../model/label_schema.json).",
+            "sources": [
+              {
+                "source_id": "src-demo-rules",
+                "path": "SystemCode/config/demo_rules.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                "version": "demo-rules-v2"
+              },
+              {
+                "source_id": "src-label-schema",
+                "path": "SystemCode/model/label_schema.json",
+                "integrity": "sha256_verified",
+                "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e",
+                "version": "rdd2022es-v1-labels-1"
+              }
+            ],
+            "score": 0.816114,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-pending#pending-business",
+            "document_id": "rg-kb-pending",
+            "section_id": "pending-business",
+            "document_version": "7",
+            "document_sha256": "017c26eec0f9c301b19c98d5f0fb5110f372fa2215d4ee2b5c9dde454403e61a",
+            "document_path": "SystemCode/backend/knowledge/06_pending_decisions.md",
+            "title": "Business and scenario decisions pending",
+            "classification": "pending_decision",
+            "text": "## Business and scenario decisions pending\n\nclassification: `pending_decision`. citation_id: `rg-kb-pending#pending-business`.\n\nOn 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic.\n\ndue_at=null means no defined task deadline; the shared project return_to_depot=null means no defined operational return policy, while the routing demo explicitly selects true. Unknown duration is not zero, no available plan is not a valid empty plan, and unreachable travel is not zero minutes.\n\nSources: [src-project-config](../../config/project.example.json), [src-demo-rules](../../config/demo_rules.example.json), [context-agents](../../../AGENTS.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-config](../../config/routing.example.json), [src-google-matrix](../roadguard/routing/google_matrix.py), [src-routing-results](../../experiments/routing/results/README.md).",
+            "sources": [
+              {
+                "source_id": "src-project-config",
+                "path": "SystemCode/config/project.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+                "version": "jurong-je-jw-mp2025-v1"
+              },
+              {
+                "source_id": "src-demo-rules",
+                "path": "SystemCode/config/demo_rules.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                "version": "demo-rules-v2"
+              },
+              {
+                "source_id": "context-agents",
+                "path": "AGENTS.md",
+                "integrity": "unhashed_mutable_context",
+                "sha256": null,
+                "version": null
+              },
+              {
+                "source_id": "context-scope",
+                "path": "Miscellaneous/PROJECT_SCOPE.md",
+                "integrity": "unhashed_mutable_context",
+                "sha256": null,
+                "version": null
+              },
+              {
+                "source_id": "src-routing-config",
+                "path": "SystemCode/config/routing.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-google-matrix",
+                "path": "SystemCode/backend/roadguard/routing/google_matrix.py",
+                "integrity": "sha256_verified",
+                "sha256": "926b498a17be641fb7f9a4f4e147931313a0bb39eaa6e52b403c361a903a7751",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-results",
+                "path": "SystemCode/experiments/routing/results/README.md",
+                "integrity": "sha256_verified",
+                "sha256": "5bd665d421204195fc4a3001bcdcd94ed783fb3963993060ab5318f21e54736e",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              }
+            ],
+            "score": 0.79935,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-demo-rules#demo-null-provenance",
+            "document_id": "rg-kb-demo-rules",
+            "section_id": "demo-null-provenance",
+            "document_version": "4",
+            "document_sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+            "document_path": "SystemCode/backend/knowledge/03_demo_rules.md",
+            "title": "Unknown values and provenance",
+            "classification": "demo_assumption",
+            "text": "## Unknown values and provenance\n\nclassification: `demo_assumption`. citation_id: `rg-kb-demo-rules#demo-null-provenance`.\n\nUnknown service_minutes is null, never zero; all eight current configured durations are demo minutes. Task due_at remains null, so no deadlines or lateness metrics are generated. Inspections freeze the complete rule snapshot; reviews and task-label corrections use it rather than new configuration after restart. Preserve Detection model_version/is_demo when citing detections, read Inspection decision_trace for decisions and retain Task rule_version/is_demo when citing tasks. Do not assume Task itself contains a model version or full decision process. Explicit demo uploads use named synthetic scenarios; only real uploads invoke the actual detector. Service minutes are neither a deadline nor travel time and are not divided by four because there are four crews.\n\nThis package's static table explains demo-rules-v2 only; runtime records may use overridden configurations with other versions. Do not use this package or the latest rule table to recalculate or explain older tasks from another version. Use each record's saved rule version, decision_trace and history; acknowledge insufficient_data without matching evidence.\n\nSources: [src-demo-rules](../../config/demo_rules.example.json), [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py).",
+            "sources": [
+              {
+                "source_id": "src-demo-rules",
+                "path": "SystemCode/config/demo_rules.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                "version": "demo-rules-v2"
+              },
+              {
+                "source_id": "src-workflow-service",
+                "path": "SystemCode/backend/roadguard/inspections/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "54aa78e74b3dca1b73695cf32e002fbc3a237723568ea30569b3c33b9c11f41d",
+                "version": "a-workflow-v5"
+              },
+              {
+                "source_id": "src-workflow-schema",
+                "path": "SystemCode/backend/roadguard/schemas/workflow.py",
+                "integrity": "sha256_verified",
+                "sha256": "fa0a27c874b408406fa13c884b82b71882a36febf0655b976b01d72b7c93041f",
+                "version": "a-workflow-v5"
+              }
+            ],
+            "score": 0.795201,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-scope#depot-crews",
+            "document_id": "rg-kb-scope",
+            "section_id": "depot-crews",
+            "document_version": "5",
+            "document_sha256": "f91265a811c143320e5ca64bc5c0b6f15fd39ac642668cd25edf591fa5e094fa",
+            "document_path": "SystemCode/backend/knowledge/01_scope.md",
+            "title": "Simulated department, depot and crews",
+            "classification": "confirmed_project_fact",
+            "text": "## Simulated department, depot and crews\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-scope#depot-crews`.\n\nOne fictional repair department uses four simulated crews: `crew-01`, `crew-02`, `crew-03`, `crew-04`. Their shared origin is NUS-ISS, 25 Heng Mui Keng Terrace, latitude `1.292149`, longitude `103.776551`, depot version `nus-iss-v1`. This is a simulated origin at a real address, not actual NUS-ISS repair operations.\n\nThis specified depot may lie outside the task area. Travel from depot to first task must be counted, and routes may leave JE/JW. The exception applies only to the depot; a repair task submitted at NUS-ISS coordinates is still rejected. The building reference point has not been verified as a vehicle entrance. The shared project return-to-depot policy remains null/pending confirmation and must not default to no return. The implemented routing demo independently selects return_to_depot=true and a 480-minute shift in b-routing-demo-v1; these are demo assumptions pending operational confirmation. Crew availability, Greedy/GA planning and plan persistence are implemented. Local knowledge retrieval, opt-in evidence answers and confirmed crew changes are implemented; real GPT acceptance remains pending.\n\nSources: [src-project-config](../../config/project.example.json), [src-depot](../../../Miscellaneous/geography/nus-iss-depot.geojson), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-config](../../config/routing.example.json), [src-routing-service](../roadguard/routing/service.py), [src-crew-service](../roadguard/crews/service.py), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).\n\nImplementation sources: [src-assistant-api](../roadguard/assistant/api.py).",
+            "sources": [
+              {
+                "source_id": "src-project-config",
+                "path": "SystemCode/config/project.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+                "version": "jurong-je-jw-mp2025-v1"
+              },
+              {
+                "source_id": "src-depot",
+                "path": "Miscellaneous/geography/nus-iss-depot.geojson",
+                "integrity": "sha256_verified",
+                "sha256": "20dc4ddcfdd3c72434a1f84e17f99824fc052eeb887fe57e67b1e3269c0bf182",
+                "version": "nus-iss-v1"
+              },
+              {
+                "source_id": "context-scope",
+                "path": "Miscellaneous/PROJECT_SCOPE.md",
+                "integrity": "unhashed_mutable_context",
+                "sha256": null,
+                "version": null
+              },
+              {
+                "source_id": "src-routing-config",
+                "path": "SystemCode/config/routing.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+              },
+              {
+                "source_id": "src-routing-service",
+                "path": "SystemCode/backend/roadguard/routing/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              },
+              {
+                "source_id": "src-crew-service",
+                "path": "SystemCode/backend/roadguard/crews/service.py",
+                "integrity": "sha256_verified",
+                "sha256": "80b06e27c2faa76d103d9eccce1d1566905980938d805ea7cc9709472f4f689e",
+                "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+              },
+              {
+                "source_id": "src-assistant-page",
+                "path": "SystemCode/frontend/src/pages/AssistantPage.tsx",
+                "integrity": "sha256_verified",
+                "sha256": "8af868e491e6b03408f3279106030554b4ec1891c827f9bdebfdcb2b7d708a33",
+                "version": "c-assistant-ui-20261021"
+              },
+              {
+                "source_id": "src-assistant-api",
+                "path": "SystemCode/backend/roadguard/assistant/api.py",
+                "integrity": "sha256_verified",
+                "sha256": "a12e25286c387680f930dd52fc644c09d11a8ddc12d4d78ec9ada73222326729",
+                "version": "c-assistant-merge-20261021"
+              }
+            ],
+            "score": 0.79509,
+            "matched_terms": []
+          },
+          {
+            "citation_id": "rg-kb-scope#scope-baseline",
+            "document_id": "rg-kb-scope",
+            "section_id": "scope-baseline",
+            "document_version": "5",
+            "document_sha256": "f91265a811c143320e5ca64bc5c0b6f15fd39ac642668cd25edf591fa5e094fa",
+            "document_path": "SystemCode/backend/knowledge/01_scope.md",
+            "title": "Project task scope",
+            "classification": "confirmed_project_fact",
+            "text": "## Project task scope\n\nclassification: `confirmed_project_fact`. citation_id: `rg-kb-scope#scope-baseline`.\n\nThe repair-task area is the union of frozen URA MP2025 polygons for Jurong East and Jurong West, Singapore, version `jurong-je-jw-mp2025-v1`. Coverage uses the full polygons, including outer and hole boundaries but excluding hole interiors; a bounding rectangle cannot establish task validity. Coordinates use WGS84 decimal degrees; GeoJSON order is longitude, latitude. Photos and positions are submitted separately and do not prove that a photo was captured in Jurong.\n\nSources: [src-project-config](../../config/project.example.json), [src-boundary](../../../Miscellaneous/geography/jurong-boundary-mp2025.geojson), [src-geography-code](../roadguard/geography.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md).",
+            "sources": [
+              {
+                "source_id": "src-project-config",
+                "path": "SystemCode/config/project.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+                "version": "jurong-je-jw-mp2025-v1"
+              },
+              {
+                "source_id": "src-boundary",
+                "path": "Miscellaneous/geography/jurong-boundary-mp2025.geojson",
+                "integrity": "sha256_verified",
+                "sha256": "f5bd23ee8dd54102199d36fdfee2633955ed69ff258f360c0ec8015520f86270",
+                "version": "jurong-je-jw-mp2025-v1"
+              },
+              {
+                "source_id": "src-geography-code",
+                "path": "SystemCode/backend/roadguard/geography.py",
+                "integrity": "sha256_verified",
+                "sha256": "13c47f4a341aed631e9e5e3d29f48104879b6d1990a2301b0181e6b9b609444e",
+                "version": "jurong-je-jw-mp2025-v1"
+              },
+              {
+                "source_id": "context-workflow-guide",
+                "path": "Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md",
+                "integrity": "unhashed_mutable_context",
+                "sha256": null,
+                "version": null
+              }
+            ],
+            "score": 0.789396,
+            "matched_terms": []
+          }
+        ]
+      }
+    },
+    {
+      "scope": "answer_with_provider_double",
+      "status": 200,
+      "response": {
+        "contract_version": "c-assistant-query-v1",
+        "status": "supported",
+        "supported": true,
+        "answer": "[rg-kb-demo-rules#demo-rule-table]\n## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_k",
+        "selections": [
+          {
+            "citation_id": "rg-kb-demo-rules#demo-rule-table",
+            "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_k"
+          }
+        ],
+        "sources": [
+          {
+            "citation_id": "rg-kb-demo-rules#demo-rule-table",
+            "kind": "knowledge",
+            "title": "Exact demo mapping",
+            "classification": "demo_assumption",
+            "content": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |",
+            "version": "4",
+            "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+            "provenance": [
+              {
+                "source_id": "src-demo-rules",
+                "path": "SystemCode/config/demo_rules.example.json",
+                "integrity": "sha256_verified",
+                "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                "version": "demo-rules-v2"
+              },
+              {
+                "source_id": "src-label-schema",
+                "path": "SystemCode/model/label_schema.json",
+                "integrity": "sha256_verified",
+                "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e",
+                "version": "rdd2022es-v1-labels-1"
+              }
+            ]
+          }
+        ],
+        "package_version": "a-knowledge-v12",
+        "manifest_sha256": "ff44e6c66f305bdc39fdc8485cf7487b04a84373101868386ceab865ed89b1a2",
+        "plan": null,
+        "model": "",
+        "model_called": true,
+        "answer_mode": "verified_extracts",
+        "business_changes_applied": false,
+        "warnings": [
+          "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+          "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+          "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+        ]
+      }
+    }
+  ]
+}

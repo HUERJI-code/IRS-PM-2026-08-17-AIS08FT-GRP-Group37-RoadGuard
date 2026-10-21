@@ -1,63 +1,63 @@
-# 第 8 步：真实视觉训练、恢复与评估
+# Step 8: real vision training, recovery and evaluation
 
-负责人 A。以下是可复现入口，不是已经取得的准确率结论。八类名称保持 `label_schema.json` 的原始顺序。RDD2022ES 第 1 版不是 Jurong 道路影像；来源许可证冲突继续按数据核对文档保留。
+Owner: A. These are reproducible entry points, not achieved accuracy claims. Eight class names retain the original `label_schema.json` order. RDD2022ES v1 is not Jurong road imagery; source-license conflicts remain documented in the data audit.
 
-使用仓库现有 `.venv`，正式本地训练环境是 Windows / Python 3.12 / RTX 5090。先按官方 CUDA 12.8 索引安装 PyTorch，再安装可选视觉依赖；普通后端 CI 不安装 torch，测试通过依赖注入检验恢复和清理契约。
+Use the existing repository `.venv`. The formal local training environment is Windows / Python 3.12 / RTX 5090. Install PyTorch from the official CUDA 12.8 index, then optional vision dependencies. Ordinary backend CI does not install torch; dependency-injected tests verify recovery and cleanup contracts.
 
 ```powershell
 .venv/Scripts/python.exe -m pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cu128
 .venv/Scripts/python.exe -m pip install -r SystemCode/model/requirements-vision.txt
 ```
 
-运行前用 `data_pipeline.py` 完成全量内容核验和分组划分。数据、官方预训练 `yolo11n.pt`、日志、权重、指标、工具缓存均保存在忽略的 `Dataset/` 下。预训练权重必须由操作者明确下载并保留来源和 SHA256；训练和后端不自动下载模型。训练入口在首次导入 Ultralytics 前设置离线环境、禁止自动安装，并关闭同步与云日志集成。
+Before running, complete full content verification and grouped splitting with `data_pipeline.py`. Data, official pretrained `yolo11n.pt`, logs, weights, metrics and tool caches stay under ignored `Dataset/`. The operator must explicitly download pretrained weights and retain provenance and SHA256; training/backend never download models automatically. Before first Ultralytics import, the entry sets offline environment, disables automatic installation and turns off sync/cloud logging integrations.
 
-配置校验将解析后的 `dataset_root` 限制在仓库 `Dataset/` 子树内。数据 YAML 本身和其中的 `path`、`train`、`val`、可选 `test` 路径同样必须留在该存储范围；现有 preparation／smoke 的绝对 `path` 和相对 image 目录直接支持。`path` 也可省略，此时使用 YAML 所在目录。相对 `path` 因依赖 Ultralytics 全局 datasets 设置而拒绝。为保持普通 CI 无额外解析依赖，仅接受生成器使用的逐行顶层键、JSON 标量／数组与普通本地目录字符串；拒绝复杂 YAML、重复／未知键、download 指令和间接 image-list 文件，并核验八类名称。路径解析检查能拒绝指向范围外的 symlink／junction；它不重新执行全量图像内容审计。
+Configuration validation confines resolved `dataset_root` to the repository `Dataset/` subtree. Data YAML and its `path`, `train`, `val` and optional `test` must stay there too; existing preparation/smoke absolute `path` and relative image directories are supported directly. Omitting `path` uses the YAML directory. Relative `path` is rejected because it depends on global Ultralytics datasets settings. To avoid parser dependencies in ordinary CI, only generator-style top-level line keys, JSON scalars/arrays and plain local-directory strings are accepted. Complex YAML, duplicate/unknown keys, download directives and indirect image-list files are rejected; eight class names are verified. Resolved-path checks reject external symlink/junction targets; they do not repeat the full image-content audit.
 
-`training.example.json` 保持初始示例：30 epoch、640 像素、batch 16、seed 42、patience 10。经后续优化授权，入口允许每个新运行最多 60 epoch、patience 1～60、imgsz 32～960 且必须为 32 的整数倍，batch 1～64、workers 0～4。整数参数与 seed 拒绝布尔值；禁止用隐式 stride 四舍五入改变冻结尺寸。上限是允许范围，不是每次运行的预算；实际运行仍须按本次授权配置。已冻结的 30 epoch n/s 比较协议保持不变。
+`training.example.json` retains its initial example: 30 epochs, 640 pixels, batch 16, seed 42, patience 10. Subsequent optimization authorization permits at most 60 epochs per new run, patience 1-60, imgsz 32-960 in multiples of 32, batch 1-64 and workers 0-4. Integer parameters and seed reject booleans; implicit stride rounding must not change frozen dimensions. Limits define permitted ranges, not each run's budget; use the configuration authorized for that run. The frozen 30-epoch n/s comparison protocol remains unchanged.
 
-`cache=false` 避免图像解码缓存，`fliplr=0` 避免重复镜像增强，AdamW 固定优化器。初始 `workers=0` 保守适配 Windows；经过 smoke 可改为 2 或 4。`amp=false` 避免库的自动 AMP 检查引入辅助权重下载。修改参数必须用新的运行名；恢复时配置哈希须完全一致。
+`cache=false` avoids decoded-image caching; `fliplr=0` avoids repeated mirrored augmentation; AdamW is fixed. Initial `workers=0` is conservative for Windows; after smoke testing it may be 2 or 4. `amp=false` avoids auxiliary weight downloads during automatic AMP checks. Parameter changes require a new run name; resume requires an identical configuration hash.
 
-在已有模型基础上进行高分辨率微调时，新配置的 `model` 可指向 `Dataset/runs/<父运行>/weights/best.pt`，使用全新的 `run_name` 和 `model_version`，然后只传 `--config` 运行。它是从父模型权重初始化的新实验，重新创建优化器、调度器和 epoch 计数；`identity.pretrained_sha256` 此时记录该父检查点的 SHA256（字段沿用历史命名），父权重必须保持不变，恢复新实验仍校验此哈希。不能通过 `--resume` 将已完成运行改为更长训练；resume 仅恢复同一新运行中断的、配置完全相同的完整检查点。父运行的 best / last / recovery、数据划分和旧模型清单保留。
+For higher-resolution fine-tuning from an existing model, new configuration `model` may reference `Dataset/runs/<parent-run>/weights/best.pt`, with new `run_name` and `model_version`; run with `--config` only. This is a new experiment initialized from parent weights, recreating optimizer, scheduler and epoch count. `identity.pretrained_sha256` records the parent checkpoint SHA256 (legacy field name); parent weights must remain unchanged, and resuming the new experiment verifies this hash. `--resume` cannot extend a completed run; it resumes an interrupted full checkpoint of the same new run with exactly matching configuration. Retain parent best/last/recovery, splits and old model manifests.
 
-保持现有八类和模型架构；微调后的 `evaluate.py --split val` 会通过实际加载器核对八个源名称、模型有限参数和报告，再导出新的实验清单。成功开始训练本身不能替代这一步。高分辨率是否同时改善 precision / recall 必须据实际验证记录判断，不能按配置承诺结果。
+Keep all eight classes and the model architecture. After fine-tuning, `evaluate.py --split val` uses the actual loader to verify eight source names, finite model parameters and reports before exporting a new experimental manifest. Merely starting training does not replace evaluation. Whether higher resolution improves both precision and recall must follow actual validation records, not configuration promises.
 
-先用 `make_smoke.py` 从已通过全量审计的冻结划分创建 64 张训练图和 32 张验证图的恢复测试子集，不读取测试集。生成配置为 2 epoch、320 像素、batch 8、workers 0，保留八类字典；不要将它的指标写成全量模型指标。正式运行配置另存于 `Dataset/`。已存在的 smoke 数据/配置不覆盖。
+First use `make_smoke.py` with the fully audited frozen splits to create 64 training and 32 validation images for recovery testing, without reading test data. Generated configuration is 2 epochs, 320 pixels, batch 8, workers 0 and the eight-class dictionary. Do not report its metrics as full-data results. Formal run configurations live separately in `Dataset/`. Existing smoke data/configuration are not overwritten.
 
 ```powershell
 .venv/Scripts/python.exe SystemCode/model/make_smoke.py
 .venv/Scripts/python.exe SystemCode/model/train.py --config Dataset/smoke-config.json --stop-after-epoch 1
-# 上条故意在完成并保存一个 epoch 后退出，退出码 75。
+# The preceding command deliberately exits after completing and saving one epoch, with exit code 75.
 .venv/Scripts/python.exe SystemCode/model/train.py --config Dataset/smoke-config.json --resume Dataset/runs/recovery-smoke/weights/resume-latest.pt
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config Dataset/smoke-config.json --split val
 .venv/Scripts/python.exe SystemCode/model/train.py --config SystemCode/model/training.example.json
 ```
 
-每个已完成 epoch 的 `on_model_save` 保存完整恢复状态，通过同目录临时文件、flush/fsync 和原子 replace 发布 `weights/resume-latest.pt`，上一份保留为 `resume-previous.pt`。Windows 保证文件替换发布边界；突然断电的最终持久性仍取决于文件系统与硬件。中途退出会丢失当前未完成 epoch，从最近完成的 epoch 恢复。最新损坏时必须显式指定 previous，禁止悄悄重新训练。
+At each completed epoch, `on_model_save` saves full recovery state to a same-directory temporary file, then flush/fsync and atomic replace publish `weights/resume-latest.pt`; the previous copy becomes `resume-previous.pt`. Windows guarantees the file-replacement publication boundary; sudden-power-loss durability still depends on filesystem/hardware. Interruption loses the unfinished epoch and resumes from the latest completed one. If latest is corrupt, explicitly select previous; never silently retrain.
 
-训练入口每个 epoch 开始（含 OOM 重试）核对实际 batch 与冻结配置一致；Ultralytics 自动减小 batch 后会明确失败，保留证据，不能继续声称相同 batch 比较。`effective_training.json` 原子记录实际 batch、库的 `nbs`、名义梯度累积和配置参数，训练结束再次更新。默认 `nbs=64` 时 batch 32 的 warmup 后名义累积为 2、有效名义 batch 为 64；warmup 期间累积可较小。
+At every epoch start, including OOM retries, the training entry checks actual batch against frozen configuration. If Ultralytics automatically reduces batch, fail explicitly and preserve evidence rather than claim an equal-batch comparison. `effective_training.json` atomically records actual batch, library `nbs`, nominal gradient accumulation and configured parameters, with a final update at training end. For default `nbs=64`, batch 32 yields nominal accumulation 2 and nominal effective batch 64 after warmup; warmup accumulation may be smaller.
 
-恢复检查配置、数据 YAML、manifest、预训练权重 SHA256 和 Python/主要包版本。完整状态包含 epoch、原精度 optimizer、AMP scaler、scheduler、实时模型、EMA、early-stop 状态、Python/NumPy/torch/CUDA RNG 和 dataloader generator。Ultralytics 自身恢复先运行；`on_pretrain_routine_end` 再恢复实时状态。`resume_verified.json` 记录下一 epoch 与 optimizer state 数量。多 worker 的预取与 GPU 运算意味着不保证中断运行与连续运行逐位相同。
+Resume checks configuration, data YAML, manifest, pretrained SHA256 and Python/key-package versions. Full state includes epoch, original-precision optimizer, AMP scaler, scheduler, live model, EMA, early-stop state, Python/NumPy/torch/CUDA RNG and dataloader generator. Ultralytics performs its own recovery first; `on_pretrain_routine_end` then restores live state. `resume_verified.json` records next epoch and optimizer-state count. Multiworker prefetch and GPU operations prevent a guarantee of bitwise equivalence between resumed and continuous runs.
 
-Ultralytics 完成训练时会移除 `last.pt`／`best.pt` 的优化器；这两份用于推理和选优，独立 recovery 权重不会被移除状态。已完成配置的最后 epoch 不允许用 resume 重新开始；应直接评估。默认不产生每 epoch 的历史副本，只保留 last、best、latest、previous 和相关证据。
+Ultralytics strips optimizers from `last.pt`/`best.pt` after training; these serve inference/selection. Independent recovery weights retain full state. Resume cannot restart the final epoch of a completed configuration; evaluate directly. No per-epoch historical copies are produced by default; retain last, best, latest, previous and supporting evidence.
 
-若最后 epoch 已保存，但库的最终验证／绘图阶段中断导致 `run_status.json` 仍为 interrupted/failed，现有入口不会仅凭最后检查点将其宣称完成。此时显式使用 `resume-previous.pt` 重放最后 epoch 并让完整训练流程结束，然后评估；不得手改状态绕过完成检查。
+If the last epoch was saved but final library validation/plotting was interrupted, leaving `run_status.json` interrupted/failed, the entry does not claim completion based only on the final checkpoint. Explicitly replay the final epoch from `resume-previous.pt` and let the whole training flow finish, then evaluate. Do not manually edit status to bypass completion checks.
 
 ```powershell
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config SystemCode/model/training.example.json --split val
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config SystemCode/model/training.example.json --split test
-# 清理预览；引用既有成功验证报告可避免再运行验证。
+# Cleanup preview; cite an existing successful validation report to avoid another validation run.
 .venv/Scripts/python.exe SystemCode/model/evaluate.py --config SystemCode/model/training.example.json --cleanup --existing-report Dataset/runs/yolo11n-rdd2022es-v1-seed42/evaluation-val.json
-# 人类已授权清理时添加 --apply-cleanup。
+# Add --apply-cleanup only when a human has authorized cleanup.
 ```
 
-评估输出 `evaluation-val.json`／`evaluation-test.json`，含整体和八类 P/R/F1/mAP50/mAP50-95、标注数量、九行九列的混淆矩阵（含背景）以及混淆类别例子。`evaluation-{split}/val_batch*.jpg` 是有限批次的预测与标签对照图，`predictions.json` 保存预测。缺失 ground truth 的类别指标为 null，并标记未评估。P/R/F1 使用库的最大平均 F1 曲线位置，测试集上此值仅用于描述，不能据此调整部署置信度；部署 `conf=0.25` 是明确的实验参数，不是已校准自动接受阈值。指标曲线收集固定 `conf=0.001,iou=0.7`。
+Evaluation outputs `evaluation-val.json`/`evaluation-test.json`: overall and eight-class P/R/F1/mAP50/mAP50-95, annotation counts, a 9x9 confusion matrix including background, and confusing-class examples. `evaluation-{split}/val_batch*.jpg` compares predictions/labels for a limited number of batches; `predictions.json` retains predictions. Classes without ground truth have null metrics and are marked unevaluated. P/R/F1 use the library's maximum mean-F1 curve location; on test data this is descriptive only and cannot tune deployment confidence. Deployment `conf=0.25` is an explicit experiment parameter, not a calibrated automatic-acceptance threshold. Metric curves use fixed `conf=0.001,iou=0.7`.
 
-数值检查通过只表示名称、样本和有限范围指标有效，`accuracy_acceptance=not_defined_not_claimed`；不会把低准确率或缺失类别包装成业务验收通过。val 成功后导出 `model_manifest.json`，状态始终 `experimental`，包含本地权重路径、SHA256、八类原名、模型／数据版本、数据 manifest 哈希、推理参数和验证报告位置。后端按共享 `roadguard-model-v1` 契约验证；未校准的真实结果保留人工复核。
+Numerical checks establish only valid names, samples and finite in-range metrics; `accuracy_acceptance=not_defined_not_claimed`. Low accuracy or missing classes cannot be packaged as business acceptance. Successful val exports `model_manifest.json`, always `experimental`, including local weights path, SHA256, eight source names, model/data versions, data-manifest hash, inference parameters and validation-report path. The backend validates shared `roadguard-model-v1`; uncalibrated real results retain manual review.
 
-清理默认 dry-run，且仅在训练结束、当前 best 权重验证成功、manifest 未变时允许。白名单是 `Dataset/prepared/labels/{train,val,test}.cache` 和 `Dataset/prepared/images/{train,val,test}/*.npy`；遇到 symlink/junction 路径拒绝。原始压缩包、源图片／标注、划分、manifest、audit、best/last/recovery、模型清单、日志、评估和指标均不属于清理范围。清理计划和实际释放字节写入运行目录。
+Cleanup defaults to dry-run and is allowed only after training completes, current best validates and manifest remains unchanged. The allowlist is `Dataset/prepared/labels/{train,val,test}.cache` and `Dataset/prepared/images/{train,val,test}/*.npy`; symlink/junction paths are rejected. Raw archives, source images/labels, splits, manifest, audit, best/last/recovery, model manifests, logs, evaluations and metrics are excluded from cleanup. Cleanup plans and actual freed bytes are written to the run directory.
 
-运行元数据记录实际包版本、Git HEAD、dirty 标志和训练／数据脚本 SHA256。未提交代码的训练不能被描述为由 HEAD 完全复现；交付时同时保留来源哈希与提交后的代码。真实训练结果由运行目录证据填写，不能根据 smoke 或假对象测试编造正式指标。
+Runtime metadata records actual package versions, Git HEAD, dirty status and training/data-script SHA256. Training with uncommitted code cannot be described as fully reproducible from HEAD; retain source hashes alongside subsequently committed code. Real training results must come from run-directory evidence, never fabricated from smoke runs or fake-object tests.
 
-实现依据：[Ultralytics Trainer 源码](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/engine/trainer.py)、[验证源码](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/models/yolo/detect/val.py)、[PyTorch 版本安装说明](https://pytorch.org/get-started/previous-versions/)。本地固定库版本的源文件是恢复 callback 和评估接口的最终核对依据。
+Implementation references: [Ultralytics Trainer source](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/engine/trainer.py), [validation source](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/models/yolo/detect/val.py), [PyTorch version installation](https://pytorch.org/get-started/previous-versions/). Source files from locally pinned versions are the final authority for recovery callbacks and evaluation interfaces.
 
-2026-10-13 实际完成上述恢复测试及全量 10 epoch 基线，详见[验收记录](../../Miscellaneous/STEP8_VISION_ACCEPTANCE.md)。30 epoch 示例不是本次已运行的配置。实际配置、每类指标、检查点摘要及局限见[实验摘要](../experiments/vision/step8_baseline_summary.json)。
+The recovery test and full-data 10-epoch baseline were actually completed on 2026-10-13; see [acceptance records](../../Miscellaneous/STEP8_VISION_ACCEPTANCE.md). The 30-epoch example was not that run's configuration. See the [experiment summary](../experiments/vision/step8_baseline_summary.json) for actual configuration, per-class metrics, checkpoint digests and limitations.

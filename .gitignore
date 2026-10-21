@@ -28,6 +28,7 @@ coverage/
 *.sqlite
 *.sqlite3
 SystemCode/backend/data/
+# Includes local Chroma vector segments, embedding weights/tokenizers and index locks.
 SystemCode/backend/uploads/
 SystemCode/datasets/
 SystemCode/model/datasets/

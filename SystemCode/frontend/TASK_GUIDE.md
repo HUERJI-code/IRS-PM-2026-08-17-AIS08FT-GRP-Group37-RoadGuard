@@ -1,47 +1,47 @@
-# C 第 6 步：任务列表、详情与状态管理
+# C step 6: Task list, details and status management
 
-2026-10-16，负责人 C。实现范围限 SystemCode/frontend；未修改 A/B 后端、接口或共享标签字典。
+2026-10-16; owner C. Scope is SystemCode/frontend only; A/B backend, APIs and the shared label dictionary are unchanged.
 
-## 已实现
+## Implemented behaviour
 
-- /tasks 展示活动、已完成、已取消和全部任务，服务端筛选及每页 20 条分页，显示本页输入版本。支持 /tasks?task={id} 直接进入审核结果关联的任务。
-- 详情重新读取最新记录，显示位置、标签、严重度、优先级、预计维修时长、期限、规则版本、维修建议和新加坡时间；原巡检链接提供检测与规则依据。
-- 活动任务允许完成、取消、纠正标签或纠正位置。标签读取共享八类字典；位置完整提交 latitude、longitude、road_type，并要求公共机动车道路声明。后端进行 Jurong 边界检查。
-- priority、service_minutes、due_at 不提供任意编辑入口。未知维修时长显示“未知”，期限为空显示“未设置”。
-- 终态任务保留历史，只读、不重新激活、不参加新规划。历史显示前后值与变化字段。
-- 每次修改带 request_id 和 expected_version；提交防重复，未知结果保留原请求重试。版本或状态冲突要求重新读取并检查，不自动套用旧修改。
-- 保存成功后刷新列表，保留保存结果；列表刷新失败不误报修改失败。规划输入变化或请求重放提示核对旧方案并重算，本页不自动重算。
-- 只读模拟来源禁止修改，不在服务失败时自动回退。
+- /tasks shows active, completed, cancelled or all tasks, with server filters, 20-record pagination and page input revision. /tasks?task={id} links directly to a review-created task.
+- Details reload the latest record and display location, label, severity, priority, estimated repair duration, deadline, rule version, recommendation and Singapore time. The original-inspection link provides detection/rule evidence.
+- Active tasks support completion, cancellation, label correction and location correction. Labels use the shared eight-class dictionary. Location submits latitude, longitude and road_type together and requires a public-motor-road declaration. Backend checks the Jurong boundary.
+- priority, service_minutes and due_at have no arbitrary edit controls. Unknown duration displays “Unknown”; null deadline displays “Not set”.
+- Final-state records retain history, are read-only, cannot reactivate and are excluded from new plans. History includes changed fields and before/after values.
+- Every change carries request_id and expected_version. Submission blocks duplicates; uncertain outcomes retain the original request for retry. Version/state conflicts require rereading/checking rather than applying old intent automatically.
+- Success refreshes the list and retains the save result. A subsequent list-read failure is not reported as a failed write. Input changes/replay prompt checking and replanning old routes; this page does not recalculate automatically.
+- Read-only mock sources block edits; failures never automatically fall back to mock.
 
-## 接口
+## API
 
-| 用途 | 请求 |
+| Purpose | Request |
 |---|---|
-| 列表 | GET /api/v1/tasks?status=active/completed/cancelled/all&limit=20&offset=0 |
-| 详情与历史 | GET /api/v1/tasks/{id} |
-| 修改 | PATCH /api/v1/tasks/{id}，request_id、expected_version 加本次允许的修改字段 |
+| List | GET /api/v1/tasks?status=active/completed/cancelled/all&limit=20&offset=0 |
+| Details/history | GET /api/v1/tasks/{id} |
+| Change | PATCH /api/v1/tasks/{id}; request_id, expected_version and permitted changed fields |
 
-## 变更文件
+## Files
 
-新增 TaskPage.tsx、TaskPage.test.tsx、task-fixtures.json、export_task_fixtures.py；更新 App.tsx 路由、样式及相关导航和数据来源测试。保持 Node 22/npm 和既有依赖，无新增依赖。
+Added TaskPage.tsx, TaskPage.test.tsx, task-fixtures.json and export_task_fixtures.py; updated App.tsx routing, styles, navigation and source tests. Node 22/npm and existing dependencies remain; no dependencies added.
 
-## 验证与限制
+## Validation and limitations
 
-后端临时数据库验证已执行：完成、取消、标签和位置纠正、无实际变化的修改、旧版本冲突、同请求重放。重放不重复历史；终态从活动快照排除。使用合成 PNG 与 demo 检测，没有运行真实模型或改变原项目业务数据。
+Temporary-backend validation covered completion, cancellation, label/location correction, no-op changes, stale-version conflict and replay. Replay did not duplicate history; final states left the active snapshot. Synthetic PNG/demo detection were used without running real models or changing ordinary project data.
 
-本轮中途项目目录写权限与本地服务启动权限被收回；原项目的代码改动仍保留。最终测试在允许写入目录中的同内容副本执行，结果见下方验收追加。浏览器曾读取活动列表；本步任务修改提交的浏览器验收尚未补做，自动化交互测试已通过。
+Project-write and local-server-start permissions were withdrawn during this stage; existing changes remained. Final checks ran on an identical copy in an allowed writable directory (results below). The browser read active tasks; task-submission browser acceptance had not yet been repeated at this stage, although automated interactions passed.
 
-未知结果重试仅保存在当前页面内存，请勿在结果不确定时切换来源、页面或刷新。构建仍有单包超过 500 kB 的优化提示。
+Unknown-outcome retry data lives only in page memory. Do not change sources/pages or refresh before resolving it. Build retains the >500 kB chunk warning.
 
-## 交付状态与下一步
+## Delivery and next steps
 
-feature/c-frontend-foundation 分支，本地未提交、未推送。第 2–6 步代码均保留；此次说明保存在 Codex outputs。仓库第六步说明已于 2026-10-17 写回。
+At this stage feature/c-frontend-foundation remained uncommitted/unpushed. Steps 2–6 were retained and this guide was saved in Codex outputs; the repository guide was restored on 2026-10-17.
 
-第七、八步已完成原项目写回与调度/地图浏览器验收，见 BROWSER_ACCEPTANCE.md。
+Steps 7–8 were subsequently restored to the original project and dispatch/map browser acceptance completed; see BROWSER_ACCEPTANCE.md.
 
-## 最终验收追加
+## Final acceptance addendum
 
-- 同内容副本：npm run lint 通过；6 个测试文件、72 项测试全部通过；npm run build 通过。源码及配置逐文件核对与原项目一致。
-- 新增任务交互测试 17 项，覆盖四种操作字段、完整位置声明、版本冲突刷新、原请求重试、防重复提交、终态只读、未知值、模拟禁写、筛选分页和列表刷新失败。
-- 构建 JS 536.82 kB，gzip 150.01 kB；保留超过 500 kB 的体积提示。
-- 原项目 git diff --check 通过，改动范围仍仅前端目录。
+- Identical copy: lint, all 72 tests in six files and build passed. Source/configuration matched the original project file by file.
+- Seventeen new interaction tests cover four action payloads, complete road declaration, conflict refresh, original-request retry, duplicate protection, final-state read-only behaviour, unknown values, mock-write blocking, filters/pagination and list-refresh failure.
+- JS 536.82 kB, gzip 150.01 kB; >500 kB warning retained.
+- Original-project git diff --check passed; changes stayed within frontend.

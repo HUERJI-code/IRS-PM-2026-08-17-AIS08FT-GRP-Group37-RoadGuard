@@ -1,122 +1,134 @@
-# RoadGuard 共用后端基础
+# RoadGuard shared backend
 
 See [released model installation and primary suggestions](../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) for the current default detector and client migration.
 
-部署权重已随 Git 提交到 `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`，普通 clone/pull 会同时取得，后端默认从该位置加载。新环境按模型接入说明安装后端与视觉依赖后启动即可，无需单独下载权重或修改模型路径。详见[后端模型目录](roadguard/model/README.md)。
+Deployment weights are committed at `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt` and arrive with normal clone/pull. The backend loads them there by default. Install backend and vision dependencies from the model integration guide in a new environment, then start; no separate download or model-path change is needed. See the [backend model directory](roadguard/model/README.md).
 
-A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v3 with B's `crews` and `route_plans` tables. The frontend is implemented; C steps 10–11 add read-only knowledge retrieval and opt-in GPT evidence selection (see [assistant guide](roadguard/assistant/README.md)). Real GPT acceptance and assistant adjustments remain pending. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
+A maintains one FastAPI application, configuration, SQLite connection layer, errors and router registration. Implemented features include health checks, stateless demo previews, persisted image inspections/review/tasks and opt-in trusted local real vision. Real primary confidence >= 0.60 creates one task; lower confidence requires review; business rules and tasks remain demo assumptions. B's crew availability and Greedy/GA route plans are implemented on a labelled simulated travel matrix by default, with an opt-in Google Routes travel matrix (B-5, see the [routing guide](roadguard/routing/README.md)); the database schema is now v5, retaining crews, saved plans, accounts, sessions and inspection ownership, and adding assistant change requests and audit records. The authenticated [React frontend](../frontend/README.md) and fixed-crew completion are implemented; the assistant provides local knowledge retrieval, opt-in GPT evidence selection and confirmed crew-change orchestration; real GPT acceptance remains outstanding. Public formats are in [API contract](../../Miscellaneous/API_CONTRACT.md); inspection responses now use a-workflow-v5, while a-task-query-v1 stays unchanged. See [real vision setup and API](../../Miscellaneous/REAL_VISION_API.md) for checkpoint provenance, optional dependencies, failure behavior and compatibility.
 
-上传成功体仅返回 `inspection_id`、`status`、`detection`、`task_id`；详情从 `GET /api/v1/inspections/{id}` 读取。数据库位置、PyCharm 查看方式与只读 SQL 见[数据库查看指南](../../Miscellaneous/DATABASE_VIEWING.md)。
+Successful upload returns only `inspection_id`, `status`, `detection`, `task_id`. Read details with `GET /api/v1/inspections/{id}`. See the [database viewing guide](../../Miscellaneous/DATABASE_VIEWING.md) for database location, PyCharm access and read-only SQL.
 
-## 环境与启动
+## Environment and startup
 
-CI 使用 Python 3.11。`requirements.txt` 固定 FastAPI、Pydantic、Uvicorn，以及图片解码所需 Pillow、multipart 解析所需 python-multipart；`requirements-ci.txt` 引用它并添加 HTTPX 和 pytest。SQLite 使用标准库。已有环境也应重新安装依赖清单以取得新增包。
+Use Python 3.12 for the full application with real vision; pinned NumPy 2.5.2 requires Python >=3.12. Recorded local acceptance used Python 3.12.14. Base CI uses Python 3.11 without the optional vision dependencies. `requirements.txt` pins FastAPI, Pydantic, Uvicorn, Pillow for image decoding and python-multipart for multipart parsing. `requirements-ci.txt` includes these plus HTTPX and pytest. SQLite uses the standard library. Reinstall requirements in existing environments to obtain new packages.
 
-以下命令在仓库根目录执行，首次运行创建并激活本地虚拟环境：
+Run these commands from the repository root; create and activate a Python 3.12 environment on first use. If an existing `.venv` uses another Python version, create a separate environment with 3.12 and use that environment consistently; do not recreate an environment in use. Provision accounts following the [complete installation guide](../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Fresh-machine installation has not been independently validated:
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r SystemCode/backend/requirements-ci.txt
+python -m pip install -r SystemCode/model/requirements-vision.txt
 python -m uvicorn roadguard.main:app --app-dir SystemCode/backend --host 127.0.0.1 --port 8000
 ```
 
-本地地址：`http://127.0.0.1:8000/api/v1/health`；交互文档 `/docs`，OpenAPI `/openapi.json`。当前还声明巡检上传/查询/图片/审核和任务查询/修改。`roadguard.main.create_app(settings=None)` 创建可隔离应用；工厂不初始化数据库。lifespan 验证配置、演示规则与冻结地理资料后，执行数据库迁移。配置、目录权限或数据库结构错误使启动失败，不静默重建已有业务数据。业务 API 已启用三类账号与会话鉴权；首次使用请按[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)创建巡查员、固定队伍账号和中央调度员。当前仍面向本地开发，未公开部署。
+Local health URL: `http://127.0.0.1:8000/api/v1/health`; interactive docs `/docs`; OpenAPI `/openapi.json`. Routes also cover inspection upload/query/images/review and task query/mutation. `roadguard.main.create_app(settings=None)` creates an isolated application without initializing the database. Lifespan validates configuration, demo rules and frozen geography before migrations. Configuration, directory-permission or schema errors fail startup without rebuilding existing business data. Business APIs authenticate three account roles and sessions; use the [account roles guide](../../Miscellaneous/ACCOUNT_ROLES.md) to provision inspectors, fixed-crew accounts and central dispatchers. Deployment remains local development, not public hosting.
 
-健康响应：
+Health response:
 
 ```json
 {"status":"ok","database":"ok","api_version":"v1","input_revision":0}
 ```
 
-此状态仅表示应用和 SQLite 基础可读，不表示模型、道路行程 API、GA 或助手已就绪。启动后数据库不可读、缺表或版本不兼容时返回 HTTP 503。
+This means only that the application and SQLite foundation are readable, not that the model, road-travel API, GA or assistant is ready. Unreadable databases, missing tables or incompatible versions after startup return HTTP 503.
 
-## 跑通第 5 步
+## Run Step 5
 
-在 `/docs` 中先调用 `GET /api/v1/demo/scenarios`，再向 `POST /api/v1/demo/assessments` 发送 `{"scenario_id":"high_confidence"}`。默认得到 P2、120 分钟的演示候选；`low_confidence` 得到 pending_review，`no_detection` 不产生候选。完整七个案例、阈值边界与八类演示映射见[模拟检测与规则指南](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md)。这些接口不接收图片、不创建数据库记录，也不更新 input_revision。
+In `/docs`, call `GET /api/v1/demo/scenarios`, then send `{"scenario_id":"high_confidence"}` to `POST /api/v1/demo/assessments`. The default yields a P2, 120-minute demo candidate; `low_confidence` yields pending_review and `no_detection` yields no candidate. See the [demo detection/rules guide](../../Miscellaneous/DEMO_DETECTION_AND_RULES.md) for seven scenarios, threshold boundaries and eight-class demo mappings. These endpoints accept no images, create no database records and do not update input_revision.
 
-## 第 7 步：任务和知识对接
+## Step 7: task and knowledge integration
 
-`GET /api/v1/tasks/snapshot` 一次返回全部活动 Task 及同一事务的 input_revision，支持 expected_revision 查询参数；`/tasks` 保留页面分页/TaskRecord 历史用途。B 的内部入口是 `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`，应用通过 `request.app.state.task_query_service` 提供实例。传入同数据库已有事务的连接可与 B 未来的队伍查询共用快照；服务不结束调用者事务。
+`GET /api/v1/tasks/snapshot` returns all active Tasks and input_revision from one transaction, with optional expected_revision. `/tasks` retains paginated page/TaskRecord-history uses. B's internal entry is `TaskQueryService(database).snapshot(expected_revision=None, *, connection=None)`, available as `request.app.state.task_query_service`. Supplying an existing transaction connection from the same database permits a shared snapshot with B's crew queries; the service does not end the caller's transaction.
 
-完整契约、计算/保存时的版本检查、固定 10/15/20 任务、C 知识资料和实际 HTTP 消费示例见 [B/C 交接说明](../../Miscellaneous/BC_HANDOFF.md)。知识来源按仓库事实核对，不是工程专家审批；没有实现路线、检索/生成或前端。没有新增依赖或数据库迁移。
+See the [B/C handoff](../../Miscellaneous/BC_HANDOFF.md) for contracts, revision checks during calculation/save, fixed 10/15/20-task sets and actual HTTP consumption examples. The current [a-knowledge-v10 corpus](knowledge/README.md) has eleven citable documents and 30 synthetic assistant acceptance specifications, including GA/Greedy, saved-plan explanations, account permissions, operations and historical evaluation evidence. Sources are checked against repository facts, not engineering-expert approval. The original Step 7 handoff introduced no dependencies or migrations; later routing/frontend integration is implemented, while retrieval/generation remains pending.
 
-当前课程模拟规则为 `demo-rules-v2`：P3/P2/P1＝60/120/240 分钟；新巡检使用启动时配置，旧记录继续使用冻结规则，不自动重算。业务定义与版本影响见[业务规则基线](../../Miscellaneous/BUSINESS_RULES_BASELINE.md)，本阶段检查见[联调验收清单](../../Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)。B/C 集成暂缓。
+Current course-simulation rules are `demo-rules-v2`: P3/P2/P1 = 60/120/240 minutes. New inspections use startup configuration; older records retain frozen rules without automatic recalculation. See the [business baseline](../../Miscellaneous/BUSINESS_RULES_BASELINE.md) for definitions/version effects and [integration checklist](../../Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) for this stage's checks. Frontend and planning integration is recorded in the [18 October acceptance](../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md); the assistant remains outside that acceptance.
 
-## 配置入口
+## Configuration entry points
 
 The original demo upload/review/task behavior is documented in the [workflow guide](../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md). Uploads explicitly select demo mode with a named scenario, or real mode without a scenario. Real mode requires the optional locally configured detector; the selected primary result creates one task at the configured confidence threshold (default 0.60), otherwise waits for review. All inspection HTTP responses contain at most one box, with raw evidence retained internally. See [every response field](../../Miscellaneous/INSPECTION_RESPONSE_FIELDS.md). Accepted tasks remain persisted demo business objects. Road type is user-declared. The [Step 8 guide](../../Miscellaneous/REAL_VISION_API.md) describes this extension.
 
-默认读取 `SystemCode/config/project.example.json` 与演示策略 `SystemCode/config/demo_rules.example.json`，默认数据库位置为 `SystemCode/backend/data/roadguard.sqlite3`。本地数据库不提交。支持以下环境变量：
+Defaults read `SystemCode/config/project.example.json` and `SystemCode/config/demo_rules.example.json`, with database `SystemCode/backend/data/roadguard.sqlite3`. Local databases are not committed. Supported environment variables:
 
-| 变量 | 用途 |
+| Variable | Purpose |
 | --- | --- |
-| `ROADGUARD_CONFIG_PATH` | 指向本地 UTF-8 JSON 项目配置 |
-| `ROADGUARD_DB_PATH` | 指向持久化 SQLite 文件 |
-| `ROADGUARD_DEMO_RULES_PATH` | 覆盖演示规则配置路径；启动校验，修改后重启并更新规则版本 |
-| `ROADGUARD_UPLOAD_PATH` | 图片保存目录，默认在数据库文件旁的 uploads 子目录；必须与数据库一起保存/备份 |
+| `ROADGUARD_CONFIG_PATH` | Local UTF-8 JSON project configuration |
+| `ROADGUARD_DB_PATH` | Persistent SQLite file |
+| `ROADGUARD_DEMO_RULES_PATH` | Override demo-rule path; validated at startup, requiring restart and rule-version update after changes |
+| `ROADGUARD_UPLOAD_PATH` | Image directory, default uploads beside the database; preserve/back up with the database |
 | `ROADGUARD_VISION_MANIFEST_PATH` | Defaults to `SystemCode/model/releases/roadguard-single-v1.json`, which loads the Git-bundled `SystemCode/backend/roadguard/model/roadguard-yolo11s-single-v1.pt`. Set `disabled` to turn off real inference. A local manifest path overrides the default. Relative paths resolve from the repository root. Model loading is lazy; restart after repairing a failed load. |
-| `ROADGUARD_TRAVEL_MATRIX_PROVIDER` | B 的行程矩阵来源：`simulated`（默认，见 routing 配置）或 `google_routes`。非法值启动失败；Google 失败时重算返回 503，不回退到模拟矩阵。 |
-| `ROADGUARD_GOOGLE_MAPS_API_KEY` | 仅在 `google_routes` 时使用的服务端 Routes API 密钥，由成员本地设置，不写入配置、日志或响应，不能放进前端。 |
+| `ROADGUARD_TRAVEL_MATRIX_PROVIDER` | B's travel matrix: `simulated` (default, routing configuration) or `google_routes`. Invalid values fail startup; Google failures return 503 on recalculation without simulated fallback. |
+| `ROADGUARD_GOOGLE_MAPS_API_KEY` | Server-side Routes API key used only with `google_routes`; set locally, never in configuration, logs, responses or frontend. |
 
-默认路径和相对覆盖值均相对仓库根目录解析，与启动时的工作目录无关；绝对路径仅作为用户本地覆盖值。路径留空、文件不可读、JSON 错误、重复键、非有限数字和基础对象结构错误会明确失败。`Settings` 不可变，其项目配置中的嵌套字典/列表也被冻结。基础校验只要求非空 `project_name` 及 `scenario`、`planning` 对象；未冻结的阈值、维修时长、班次和返基地策略不在此处猜测。示例配置的四队、地域和 `return_to_depot: null` 保持原义。未来模型/外部 API 凭据由所属模块定义环境变量，不写入示例文件或响应。
+Default and overridden relative paths resolve from repository root regardless of working directory; absolute paths are local user overrides only. Empty paths, unreadable files, invalid JSON, duplicate keys, non-finite numbers and malformed base objects fail explicitly. `Settings` and nested project dictionaries/lists are immutable. Base validation requires nonempty `project_name` plus `scenario` and `planning` objects; it does not guess unfrozen thresholds, service durations, shifts or return policy. The example's four crews, area and `return_to_depot: null` retain their meaning. Future model/external API credentials belong to module-defined environment variables, never example files or responses.
 
-## 统一 SQLite 与规划输入版本
+## Shared SQLite and planning input revision
 
-`roadguard.database.Database` 是各模块共用入口。每次操作获取独立连接并在退出时关闭；连接开启外键和 5000 毫秒 busy timeout。`connect()` 是只读事务，提供一致的查询快照；`transaction(expected_revision=None)` 使用 `BEGIN IMMEDIATE` 串行化写入，成功提交，异常回滚。不要在上下文内自行提交、回滚或关闭连接。
+`roadguard.database.Database` is shared across modules. Each operation obtains and closes its own connection with foreign keys enabled and a 5000-ms busy timeout. `connect()` supplies a read-only consistent transaction snapshot. `transaction(expected_revision=None)` serializes writes with `BEGIN IMMEDIATE`, commits on success and rolls back on exceptions. Do not manually commit, roll back or close inside these contexts.
 
-`initialize()` 是唯一迁移入口：基础 schema v1 原地迁移至 v2，保留 input_revision，新增 inspections、tasks、operation_keys 及索引；新数据库初始 revision=0。v2 重新启动使用只读事务校验已有结构，避免查看工具的长时间查询阻塞不必要的写提交；新建/迁移仍在写事务中重新校验并提交。未知版本或缺失业务表拒绝启动，不清空/重建记录。B/C 后续业务表仍由负责人提供增量，A 在同一迁移入口整合。
+`initialize()` is the sole migration entry. Base schema v1 migrates in place to v2, preserving input_revision and adding inspections, tasks, operation_keys and indexes; new databases start at revision=0. Restarting v2 validates existing structures in a read-only transaction so long-running viewer queries do not block unnecessary write commits; creation/migration still revalidates and commits in a write transaction. Unknown versions or missing business tables fail startup without clearing/rebuilding records. B/C provide incremental table definitions for A to integrate through this same entry.
 
-若报 `sqlite3.OperationalError: database is locked`，先按[数据库锁排查](../../Miscellaneous/DATABASE_VIEWING.md#遇到-database-is-locked)结束查看工具未完成的事务并断开数据库连接。只读启动校验不保证后续写入一定可用：独占锁仍会阻塞读取，实际迁移、上传保存和任务修改仍需要取得写锁。
+For `sqlite3.OperationalError: database is locked`, follow [database-lock troubleshooting](../../Miscellaneous/DATABASE_VIEWING.md#handling-database-is-locked), finish pending viewer transactions and disconnect. Read-only startup validation does not guarantee subsequent writes: exclusive locks block reads too, while migration, upload persistence and task mutation require write locks.
 
-供 A/B 共用的函数是 `read_revision(connection)`、`assert_revision(connection, expected_revision)` 和 `increment_revision(connection, expected_revision=None)`。输入变更与版本递增必须处于**同一个领域事务**，每次实际输入变更递增一次。不要使用独立计数器或事后第二次连接更新版本。例如，B 实现工程队状态服务时采用：
+Shared A/B functions are `read_revision(connection)`, `assert_revision(connection, expected_revision)` and `increment_revision(connection, expected_revision=None)`. Input mutation and revision increment must occur in **the same domain transaction**, once per actual input change. Do not use independent counters or a second later connection to update versions. For example, B's crew-status service should use:
 
 ```python
 from roadguard.database import increment_revision, read_revision
 
 with database.connect() as connection:
     input_revision = read_revision(connection)
-    # 从同一快照读取已实现的任务/工程队服务数据。
+    # Read implemented task/crew service data from the same snapshot.
 
 with database.transaction(expected_revision=input_revision) as connection:
-    # 在这里调用所属领域的数据写入方法；尚未实现。
+    # Call the owning domain's write methods here; not implemented in this example.
     new_revision = increment_revision(connection, expected_revision=input_revision)
 ```
 
-示例仅说明事务边界，不是工程队实现。`expected_revision` 在写事务开始时校验；旧版本抛出 `StaleRevisionError`（HTTP 409），调用方尚未修改数据。版本递增不自行提交，领域写入失败时版本一并回滚。规划结果保存时也应在写事务内核对其输入版本；保存方案本身不改变规划输入，因此不应递增输入版本。如何触发重算、存储方案和报告过期状态由 B 的后续服务实现。
+This illustrates transaction boundaries, not a crew implementation. `expected_revision` is checked when the write transaction starts; stale versions raise `StaleRevisionError` (HTTP 409) before caller mutations. Incrementing does not commit; domain failure rolls back revisions too. Plan persistence must also check its input revision inside its write transaction. Saving a plan does not change planning input and must not increment input_revision. B's implemented planning services own explicit recalculation, plan storage and stale-state reporting.
 
-## 错误与模块接入
+## Errors and module integration
 
-响应统一为 `{"code":"...","message":"...","details":null}`，details 可为 JSON 对象或列表。已实现错误：
+Responses use `{"code":"...","message":"...","details":null}`; details may be a JSON object or list. Implemented errors:
 
-| HTTP 状态 | code | 含义 |
+| HTTP status | code | Meaning |
 | --- | --- | --- |
-| 404 | `not_found` | 资源/路径不存在 |
-| 405 | `method_not_allowed` | HTTP 方法不支持；保留 Allow 响应头 |
-| 422 | `validation_error` | 请求验证失败，details 仅含 error_count |
-| 409 | `stale_input_revision` | 旧输入版本；details 含 expected_revision/current_revision |
-| 503 | `database_unavailable` | 健康检查无法读取有效基础数据库 |
-| 500 | `internal_error` | 未处理错误，固定安全消息 |
+| 404 | `not_found` | Resource/path missing |
+| 405 | `method_not_allowed` | Unsupported HTTP method; retain Allow header |
+| 422 | `validation_error` | Request validation failed; details contains only error_count |
+| 409 | `stale_input_revision` | Stale input revision; details includes expected_revision/current_revision |
+| 503 | `database_unavailable` | Health cannot read a valid base database |
+| 500 | `internal_error` | Unhandled error with a fixed safe message |
 
-其他 HTTPException 使用 `http_error` 及固定消息。错误响应不复制 URL、查询参数、验证输入、数据库路径、异常消息或 traceback。未来领域模块使用 `AppError(code, message, status_code, details)` 时，必须提供固定的可公开消息及安全的结构化 details，不能把异常或凭据传进去。未处理异常日志只记录异常类型。
+Other HTTPException responses use `http_error` and fixed messages. Errors never copy URLs, query parameters, validation inputs, database paths, exception messages or tracebacks. Future modules using `AppError(code, message, status_code, details)` must supply fixed public messages and safe structured details, never exceptions or credentials. Unhandled-exception logs record only exception type.
 
-B/C 提供各自 `APIRouter` 后由 A 在 `roadguard.api.create_api_router()` 统一注册到 `/api/v1`；数据库由 `request.app.state.database` 获取，配置由 `request.app.state.settings` 获取。领域服务负责业务语义和所属业务表，助手通过领域服务执行变更。当前不挂载空业务端点，也不在 API 服务失败时伪造模拟成功。
+A registers B/C `APIRouter` instances centrally under `/api/v1` in `roadguard.api.create_api_router()`. Database and settings are available through `request.app.state.database` and `request.app.state.settings`. Domain services own business semantics and tables; the future assistant must execute confirmed changes through them. Empty business endpoints are not mounted, and API failures never fabricate simulated success.
 
-## 验证
+## Validation
 
-仓库根目录执行与 CI 相同的入口：
+Run the same entry as CI from repository root:
 
 ```powershell
 python -m pytest SystemCode/tests -q
 ```
 
-基础测试覆盖配置、实际响应/OpenAPI、迁移、持久化、回滚和并发。vision/rules/demo API 验证固定案例、演示映射和预览不写库。第 6 步加入 geography/images/workflow/API 测试，覆盖图片/坐标、审核、任务状态、幂等、资源版本和历史规则快照。测试使用临时数据库和图片；它们不代表真实模型、道路网络核验、四队规划或完整系统已完成。
+Foundation tests cover configuration, actual responses/OpenAPI, migrations, persistence, rollback and concurrency. vision/rules/demo API tests verify fixed scenarios, demo mappings and previews without database writes. Step 6 added geography/images/workflow/API tests for images/coordinates, review, task state, idempotency, resource versions and historical rule snapshots. Tests use temporary databases/images; they do not establish real-model, road-network, four-crew-planning or whole-system completion.
 
-## 账号接口（2026-10-18）
+## Account endpoints (2026-10-18)
 
-`POST /api/v1/auth/login` 设置会话 Cookie，`GET /api/v1/auth/session` 返回当前账号，写请求需要 `X-CSRF-Token`。施工队使用 `GET /api/v1/crew/workspace` 读取本队快照；禁止匿名业务访问。Schema v4 增量迁移保留现有数据。账号开通、Swagger 测试及部署配置见[账号角色规范](../../Miscellaneous/ACCOUNT_ROLES.md)。
+`POST /api/v1/auth/login` sets a session cookie; `GET /api/v1/auth/session` returns the current account. Writes require `X-CSRF-Token`. Crews use `GET /api/v1/crew/workspace` for their own snapshots; anonymous business access is denied. Schema v4 migrates incrementally while preserving data. See [account roles](../../Miscellaneous/ACCOUNT_ROLES.md) for provisioning, Swagger tests and deployment settings.
 
+## Assistant retrieval, evidence answers and crew changes (2026-10-21)
 
-## C 第 12 步增量：队伍调整
+The dispatcher-only assistant uses the existing session, role and CSRF checks:
 
-新增 dispatcher 专用 `/api/v1/assistant/change-requests` 预览、查询及 confirm/cancel/replan 操作。预览不修改业务输入，确认与重算需分别明确提交，网络失败通过历史记录恢复。契约为 `c-assistant-change-v1`，数据库为 v5；完整状态、版本、幂等和迁移边界见 `SystemCode/backend/roadguard/assistant/README.md` 的第 12 步说明。前端已接入独立调整区，模拟来源禁止写入。该流程不调用 GPT。
+- `POST /api/v1/assistant/knowledge/search` returns versioned static passages, stable citations and source integrity metadata; it does not generate answers or read business plans. Rule-version mismatch returns empty hits; inconsistent knowledge returns `503 knowledge_unavailable`.
+- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v1` returns verified evidence extracts and provenance without business changes. Real GPT connectivity and semantic quality remain unverified.
+- `/api/v1/assistant/change-requests` provides preview/history and per-request confirm/cancel/replan operations under `c-assistant-change-v1`. Preview does not change planning input. Confirmation and recalculation are separate explicit actions; history supports uncertain-outcome recovery. This flow does not call GPT.
+
+Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
+
+See [assistant contracts and configuration](roadguard/assistant/README.md).
+
+## Chroma retrieval update (2026-10-21)
+
+The dispatcher search endpoint now returns `c-knowledge-search-v2` with `retrieval_method=chroma-e5-cosine-v1`. Static sources use local E5 embeddings and a versioned persistent Chroma index. Scores are cosine similarity; `matched_terms` is an empty compatibility field. Model/index failures are explicit 503 responses, and oversized encoder inputs return 422. The answer and crew-change contracts are unchanged. Follow the [setup and maintenance guide](roadguard/assistant/VECTOR_RETRIEVAL.md) before querying; runtime data stays outside Git.

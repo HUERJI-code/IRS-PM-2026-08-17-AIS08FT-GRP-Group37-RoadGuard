@@ -1,115 +1,80 @@
-最新状态：2026-10-17 第九步已完成，127 项前端测试、静态检查、生产构建和浏览器验收通过；详情见 COMPARISON_GUIDE.md。下方保留各步历史记录。
+Latest: 2026-10-17, step 9 completed with 127 frontend tests, lint, build and browser acceptance. See COMPARISON_GUIDE.md. Steps 7–8 were restored and browser-verified (BROWSER_ACCEPTANCE.md). Historical stage records follow.
 
-最新状态：2026-10-17 第七、八步已写回并完成浏览器验收，见 BROWSER_ACCEPTANCE.md。下方按日期保留历史记录。
+# C step 2 acceptance
 
-# C 第 2 步验收记录
+2026-10-15; owner C; main f8a2cf3; feature/c-frontend-foundation.
 
-2026-10-15，负责人 C；基于 main f8a2cf3，功能分支 feature/c-frontend-foundation。
-
-## 已执行
-
-| 检查 | 结果 |
+| Check | Result |
 |---|---|
-| Node / npm | Node 22.23.3、npm 10.9.9；Node 官方发行归档 SHA-256 校验通过 |
-| npm ci | 从唯一 package-lock.json 安装成功 |
-| npm run lint | 通过，无警告 |
-| npm run test:ci | 1 个测试文件，10 项通过 |
-| npm run build | TypeScript 与 Vite 构建通过 |
-| 本机真实健康接口 | Vite 5173 → FastAPI 8000，返回 status=ok、database=ok、api_version=v1、input_revision=0 |
-| 构建预览 | 4173 的 /comparison 深层页面和 /api/v1/health 均返回 200 |
-| 浏览器查看 | 桌面布局与 390×844 手机视口；手机文档宽度=视口宽度=390，无横向溢出；导航进入助手页正常 |
-| Git 范围与空白检查 | 仅前端目录新增/修改；git diff --check 通过 |
+| Node/npm | Node 22.23.3, npm 10.9.9; official Node archive SHA-256 verified |
+| npm ci | Installed from the single package-lock.json |
+| lint | Passed without warnings |
+| test:ci | One file, ten passing tests |
+| build | TypeScript and Vite passed |
+| Real local health | Vite 5173 → FastAPI 8000; status=ok, database=ok, api_version=v1, input_revision=0 |
+| Build preview | Port 4173 /comparison deep link and /api/v1/health returned 200 |
+| Browser | Desktop and 390×844; document width=viewport width=390, no overflow; assistant navigation worked |
+| Git scope/whitespace | Only frontend additions/changes; git diff --check passed |
 
-测试包括：默认任务入口；全部六页导航、激活态、标题与焦点；直接路由与 404 返回；连接加载、网络失败后重试、HTTP 失败、非 JSON/不合法 DTO、8 秒超时、卸载取消。组件测试使用显式 fetch 测试替身；浏览器连接另用现有真实 FastAPI 验证，没有把测试替身当作联调。
+Tests cover default task entry, all six navigation entries/active state/title/focus, direct routes, 404 return, health loading/network retry/HTTP failure, non-JSON/invalid DTO, eight-second timeout and unmount cancellation. Component tests use explicit fetch doubles; separate browser checks connected real FastAPI.
 
-本机健康验证使用 Python 3.12 临时虚拟环境和独立空 SQLite 数据库，未改动原业务数据库。项目 CI 的 Python 3.11 基线不变，本次未声称通过 Python 3.11 后端全量测试。视觉推理关闭，没有调用模型、Google 或 GPT；健康成功不代表这些能力就绪。
+Health checks used a temporary Python 3.12 environment and isolated empty SQLite, leaving ordinary data unchanged. Python 3.11 CI baseline is unchanged; full 3.11 backend acceptance was not claimed. Vision was disabled; no model/Google/GPT calls. Health success does not establish those capabilities.
 
-## 交付状态与后续
+At this stage local changes were uncommitted/unpushed with no PR/remote CI. Existing CI detects package.json and runs npm ci/lint/test:ci/build. Step 3 would build client/types/explicit mock modes; upload/review/task/map/comparison/assistant interactions were not yet connected. Cross-module assistant-confirmation dependencies remained in the step 1 open list.
 
-代码为本地未提交变更，未推送、未创建 PR，也未运行远端 CI。现有 CI 已有前端任务；新增 package.json 后会运行 npm ci、lint、test:ci、build。
+# Step 3 addendum
 
-第 3 步继续建立完整 API 类型、客户端和明确的模拟数据模式。上传、审核、任务、四队地图、算法比较和助手业务交互均尚未接入；助手确认事务等跨模块事项沿用第 1 步待对齐清单。
+2026-10-15: Continued the same local branch without overwriting others’ changes.
 
-# C 第 3 步验收追加
+Added backend-exported OpenAPI/generated types and matching JSON Schema validation; 16 JSON client methods plus image resolution for 17 endpoints (assistant proposals excluded); structured errors, cancellation/timeouts, operation-ID reuse, revisions, minute/millisecond and Singapore-time helpers; isolated synthetic snapshots for normal/empty/failure/conflict modes with all mock writes rejected; explicit source selector/manual read-only checks that cancel/clear on source changes.
 
-2026-10-15，在同一本地功能分支继续第 2 步的未提交成果；未覆盖他人改动。
-
-## 新增结果
-
-- 从当前 FastAPI 导出 OpenAPI，生成 TypeScript 类型；运行时使用同源 JSON Schema 校验响应。
-- 统一 16 个 JSON 调用方法及图片地址解析，覆盖当前 17 个 HTTP 接口；助手提案接口未加入。
-- 统一结构化错误、请求取消/超时、请求标识复用、版本字段、分钟/毫秒与新加坡时间工具。
-- 生成隔离后端的合成快照，提供正常、空数据、服务失败、版本冲突四种显式模拟模式；固定快照只读，所有写入拒绝且不接触真实后端。
-- 页面增加数据来源选择和可手动触发的只读接口检查；切换来源取消旧请求并清除旧数据。
-
-## 实际检查
-
-| 检查 | 结果 |
+| Check | Result |
 |---|---|
-| npm ci | 通过，锁文件可复现 |
-| npm run lint | 通过 |
-| npm run test:ci | 3 个文件，29 项通过（含原第 2 步测试） |
-| npm run build | 类型检查与生产构建通过 |
-| export_contract.py --check | 当前后端 OpenAPI 与快照一致 |
-| 全部正常/空样例 JSON Schema | 测试通过；样例由真实后端响应模型生成 |
-| 共享客户端真实 HTTP 验证 | 经 Vite 代理读取健康、空任务列表、活动快照、四队、七个 demo 案例均通过；无方案正确识别 404 route_plan_not_found |
-| git diff --check | 通过 |
+| npm ci | Reproducible lockfile passed |
+| lint | Passed |
+| test:ci | Three files, 29 tests including step 2 |
+| build | Types and production build passed |
+| export_contract.py --check | Backend OpenAPI matched snapshot |
+| Normal/empty schemas | Passed; examples generated from real backend response models |
+| Real HTTP client | Via Vite: health, empty tasks, snapshot, four crews, seven demo scenarios; missing plan correctly recognised 404 route_plan_not_found |
+| git diff --check | Passed |
 
-真实 HTTP 检查使用上一轮独立空测试数据库；未上传实际照片或修改业务数据。样例生成在另一个自动清理的临时库执行 demo 上传与模拟规划，无外部服务调用。生成环境沿用 Python 3.12，未声称跑过 Python 3.11 后端全量测试。
+HTTP used the previous isolated empty database without real-photo uploads/business changes. A separately cleaned temporary database generated demo uploads/simulated plans without external calls. Python remained 3.12; no full 3.11 test claim.
 
-浏览器检查工具本轮未能加载连接策略，未完成新增面板的浏览器视觉复核；来源切换及其交互已通过 Testing Library 测试，真实 HTTP 另外验证。此限制不应被记录为浏览器验收通过。
+Browser tooling could not load its connection policy in this stage, so the new panel’s visual review was incomplete. Testing Library source interactions and separate real HTTP checks passed; this limitation must not be recorded as browser acceptance.
 
-## 限制与交接
+API_CLIENT.md explains type updates/mock restrictions. Read-only snapshots do not implement a writable state machine; future upload demonstrations require isolated scenarios. Business pages were still skeletons, not end-to-end dispatch. A/B files/APIs unchanged. TypeScript changed to 5.9.3 for generator peer compatibility; Node/npm unchanged. Steps 2–3 stayed local with no PR/remote CI.
 
-完整 API 接入说明、类型更新方法、模拟限制见 API_CLIENT.md。模拟快照不模拟业务写入状态机；下一步上传界面若需要可写演示，须按其业务验收增加隔离场景。所有业务页面仍是骨架，当前基础不等于端到端巡检/调度完成。
+# Step 4 addendum
 
-A/B 文件和接口未修改。TypeScript 调整为 5.9.3 以满足类型生成器的 peer dependency；Node 22/npm 基线未变。第 2–3 步均保持本地未提交、未推送状态，无 PR 或远端 CI 结果。
+2026-10-16: Upload, result details, single overlay and linked-task reads connected.
 
-# C 第 4 步验收追加
+- After correcting a TypeScript conditional-rendering error, lint, 43 tests and build passed.
+- Real FastAPI through Vite verified three demo uploads: first 201, same-key replay 200, details/image/task links.
+- Browser completed demo upload; mobile overlay/image dimensions matched without overflow.
+- Only synthetic demo records in an isolated database; no ordinary-data changes or real inference.
+- Build passed with the visible >500 kB chunk warning.
 
-2026-10-16：图片上传、结果详情、唯一检测框、关联任务读取已接入。
+See UPLOAD_GUIDE.md. Steps 2–4 remained local/uncommitted/unpushed.
 
-- 修复上一轮 TypeScript 条件渲染错误后，lint、43 项测试、生产构建全部通过。
-- 真正经 Vite 代理调用现有 FastAPI 的三种 demo 上传，首次 201、同 key 重放 200；详情、图片、任务关联均验证。
-- 浏览器完成一次完整 demo 上传；手机视口检测图片与框尺寸一致，无横向溢出。
-- 仅在独立测试数据库创建合成 demo 记录；没有触碰原项目数据。真实模型推理未运行。
-- 构建成功但有单 JS 包 >500 kB 的优化提示，未隐藏提示。
+# Step 5 addendum
 
-详见 UPLOAD_GUIDE.md。第 2–4 步仍在同一本地功能分支，未提交、未推送。
+2026-10-16: Queue, latest details, confirm/correct/reject, history and conflicts connected.
 
-# C 第 5 步验收追加
+Lint, 55 tests in five files and build passed. Real HTTP verified all actions, stale 409, replay and single history entry. Browser correction created a task; 390-pixel layout had no overflow. Isolated synthetic demo data only; no real model/ordinary-data changes. Size warning retained; retry lives in memory. See REVIEW_GUIDE.md. Frontend only, local/uncommitted/unpushed; task management followed.
 
-2026-10-16：待审队列、最新详情、确认/纠正/驳回、审核历史与冲突处理已接入。
+# Steps 6–7 addendum
 
-- lint、5 个测试文件共 55 项测试、生产构建通过。
-- 真实 HTTP 的三种审核、旧版本 409、同请求重放及单次历史记录验证通过。
-- 浏览器完成纠正并创建关联任务；手机 390 像素无横向溢出。
-- 使用独立测试数据库与合成 demo 图片，未运行真实模型或修改原业务数据。
-- 构建保留 >500 kB 单包提示；未知结果重试只在当前页面内存保存。
+Step 6: 72 frontend tests passed. Step 7: 15 additions plus temporary-backend checks of stale revisions, idempotent crew save, stale plans, same-run recalculation and all crews unavailable. See PLANNING_GUIDE.md. At this point step 7 existed only in the Codex copy pending restoration; port permissions blocked browser acceptance.
 
-详见 REVIEW_GUIDE.md。仅前端目录改动，第 2–5 步仍为本地未提交、未推送成果；下一步为任务页面。
+# Step 8 addendum
 
-# C 第 6–7 步验收追加
+2026-10-17: Frozen boundaries, external depot, ordered crew lines/returns, map/details and unassigned tasks implemented in the working copy. Thirteen additions; see MAP_GUIDE.md. Original-project restoration/browser checking were still pending due to port restrictions.
 
-第 6 步任务管理：72 项前端测试通过。第 7 步队伍控制与显式重算：15 项新增测试，临时后端数据库验证旧版本、幂等队伍修改、过期方案、同轮重算与全队停用。最终测试结果见 PLANNING_GUIDE.md。第七步仅在 Codex 工作副本，待写回；端口权限限制，浏览器验收尚未完成。
+# Steps 7–8 restoration and browser acceptance
 
-# C 第 8 步验收追加
+2026-10-17: Cumulative patch applied to original groupwork1; steps 2–8 on local feature/c-frontend-foundation, uncommitted/unpushed. Do not reapply. Lint, 100 tests/eight files and build passed. JS 670.51 kB, gzip 179.93 kB; >500 kB warning retained.
 
-2026-10-17：冻结边界、区域外基地、四队按序示意线、返程、地图/详情联动及未分配任务展示已在工作副本接入。13 项新增测试；最终结果见 MAP_GUIDE.md。原项目仍待写回，浏览器视觉验收仍受本地端口限制。
+Browser used original Vite/FastAPI with isolated frontend-check.sqlite3, synthetic inspections/simulated matrix. Disabling crew-01 changed record 1→2/input 5→6; same-run recalculation assigned all five tasks to three other crews. Crew/stop-2 selection synchronised map, durations, times and task link. At 390×844 document width 375 ≤ 390; full Jurong/depot, wrapping, focus and reset worked. Restoring crew-01 advanced input to 7 and marked old plans stale; recalculation/algorithm switch worked. Default viewport restored, all crews available.
 
-# 第七、八步写回与浏览器验收
-
-2026-10-17：累积补丁已成功应用到原 groupwork1 项目。第 2–8 步代码现均在 feature/c-frontend-foundation 本地分支，未提交、未推送；无需重复应用旧补丁。
-
-原项目静态检查、8 个测试文件共 100 项测试、生产构建全部通过。JS 670.51 kB，gzip 179.93 kB，保留 >500 kB 体积提示。
-
-浏览器连接原项目 Vite 与 FastAPI，使用独立 frontend-check.sqlite3、合成巡检和模拟行程矩阵：
-- 停用 crew-01，记录版本从 1 到 2，输入版本从 5 到 6；显式重算返回同轮 GA/Greedy，5 项任务均分配给其余三队。
-- 点击队伍与第 2 停靠点，地图选中状态、维修时间、到达/完成时间和任务链接联动正常。
-- 390×844 手机视口文档宽度 375，不超过视口 390；视觉检查地图完整包含 Jurong 区域与 NUS-ISS，控件换行正常。地图定位与全域复位正常。
-- 恢复 crew-01 可用，输入版本到 7，旧地图和方案明确显示过期；再次重算生成新方案，GA/Greedy 地图切换正常。
-- 浏览器最后已恢复默认视口，测试队伍全部可用。
-
-最终测试方案：GA plan-313e2b682ae7447ab83b176acf463bb3；Greedy plan-e1a65a69915f4d558c4d3b72f69fb32f，输入版本 7。方案只存在于独立测试库，不作为算法评估结果。
-
-未调用真实模型、Google 或 GPT，未修改 A/B 源码或原业务数据库。第六步任务修改的浏览器提交验收未在本轮补做，其自动化测试已通过。后续开发为第九步同轮比较。
+Final isolated plans: GA plan-313e2b682ae7447ab83b176acf463bb3; Greedy plan-e1a65a69915f4d558c4d3b72f69fb32f; revision 7. Not algorithm evaluation data. No real model/Google/GPT calls, A/B edits or ordinary-database changes. Step 6 browser submission not repeated; automated tests passed. Step 9 comparison followed.

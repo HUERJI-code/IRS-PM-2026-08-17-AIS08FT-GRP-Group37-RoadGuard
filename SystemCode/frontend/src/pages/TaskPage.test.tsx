@@ -66,20 +66,20 @@ it('reveals a mobile selection after its asynchronous detail loads, only once', 
     const deferred = new Promise<Response>((resolve) => { resolveDetail = resolve })
     transport.mockImplementation(async (url) => url.includes('?') ? reply(list) : deferred)
     mount('')
-    const pane = screen.getByLabelText('任务详情工作区')
+    const pane = screen.getByLabelText('Task details workspace')
     const scroll = vi.fn()
     Object.defineProperty(pane, 'scrollIntoView', { value: scroll })
-    const button = await screen.findByRole('button', { name: new RegExp(`P[123].*活动.*${fixture.before.task_id}`) })
+    const button = await screen.findByRole('button', { name: new RegExp(`P[123].*Active.*${fixture.before.task_id}`) })
     await userEvent.click(button)
     expect(pane).toHaveFocus()
     expect(scroll).not.toHaveBeenCalled()
     await act(async () => resolveDetail(reply(fixture.before)))
-    expect(await screen.findByRole('heading', { name: '任务详情' })).toBeVisible()
+    expect(await screen.findByRole('heading', { name: 'Task details' })).toBeVisible()
     expect(scroll).toHaveBeenCalledExactlyOnceWith({ block: 'start', behavior: 'instant' })
     expect(button).toHaveAttribute('aria-current', 'true')
     transport.mockImplementation(async (url) => reply(url.includes('?') ? list : fixture.before))
-    await userEvent.click(screen.getByRole('button', { name: '重新读取并检查' }))
-    await screen.findByRole('heading', { name: '任务详情' })
+    await userEvent.click(screen.getByRole('button', { name: 'Reload and check' }))
+    await screen.findByRole('heading', { name: 'Task details' })
     expect(scroll).toHaveBeenCalledTimes(1)
     expect(writes()).toHaveLength(0)
   } finally {
@@ -101,41 +101,41 @@ it.each(['completed', 'cancelled', 'label', 'location'] as const)(
     )
     mount(sample.before.task_id)
     const user = userEvent.setup()
-    await user.selectOptions(await screen.findByLabelText('任务操作'), action)
+    await user.selectOptions(await screen.findByLabelText('Task action'), action)
     if (action === 'label')
       await user.selectOptions(
-        screen.getByLabelText('新的损伤标签'),
+        screen.getByLabelText('New damage label'),
         'pothole_deep',
       )
     if (action === 'location') {
-      await user.clear(screen.getByLabelText('纬度'))
-      await user.type(screen.getByLabelText('纬度'), '1.3406')
+      await user.clear(screen.getByLabelText('Latitude'))
+      await user.type(screen.getByLabelText('Latitude'), '1.3406')
       await user.click(screen.getByRole('checkbox'))
     }
-    await user.click(screen.getByRole('button', { name: '保存任务修改' }))
-    expect(await screen.findByText('任务已保存')).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Save task changes' }))
+    expect(await screen.findByText('Task saved')).toBeVisible()
     expect(JSON.parse(writes()[0][1].body as string)).toEqual({
       ...sample.request,
       request_id: expect.any(String),
     })
-    expect(screen.getByText(/已有路线可能过期/)).toBeVisible()
+    expect(screen.getByText(/Existing routes may be stale/)).toBeVisible()
     expect(
       transport.mock.calls.some(([url]) => url.includes('recalculate')),
     ).toBe(false)
     if (action === 'completed' || action === 'cancelled') {
-      expect(screen.getByText(/终态任务只读/)).toBeVisible()
-      expect(screen.queryByLabelText('任务操作')).not.toBeInTheDocument()
+      expect(screen.getByText(/Final-state tasks are read-only/)).toBeVisible()
+      expect(screen.queryByLabelText('Task action')).not.toBeInTheDocument()
     }
   },
 )
 it('requires coordinates and road declaration', async () => {
   mount()
   const user = userEvent.setup()
-  await user.selectOptions(await screen.findByLabelText('任务操作'), 'location')
-  await user.clear(screen.getByLabelText('纬度'))
-  await user.click(screen.getByRole('button', { name: '保存任务修改' }))
+  await user.selectOptions(await screen.findByLabelText('Task action'), 'location')
+  await user.clear(screen.getByLabelText('Latitude'))
+  await user.click(screen.getByRole('button', { name: 'Save task changes' }))
   expect(writes()).toHaveLength(0)
-  expect(screen.getByLabelText('纬度')).toBeInvalid()
+  expect(screen.getByLabelText('Latitude')).toBeInvalid()
   expect(screen.getByRole('checkbox')).toBeInvalid()
 })
 it('reloads after conflict without replaying old intent', async () => {
@@ -156,12 +156,12 @@ it('reloads after conflict without replaying old intent', async () => {
   })
   mount()
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '保存任务修改' }))
-  expect(await screen.findByRole('alert')).toHaveTextContent('记录已被修改')
-  expect(screen.getByRole('button', { name: '保存任务修改' })).toBeDisabled()
-  await user.click(screen.getByRole('button', { name: '重新读取并检查' }))
-  await user.click(await screen.findByRole('button', { name: '保存任务修改' }))
-  await screen.findByText('任务已保存')
+  await user.click(await screen.findByRole('button', { name: 'Save task changes' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('The record has changed')
+  expect(screen.getByRole('button', { name: 'Save task changes' })).toBeDisabled()
+  await user.click(screen.getByRole('button', { name: 'Reload and check' }))
+  await user.click(await screen.findByRole('button', { name: 'Save task changes' }))
+  await screen.findByText('Task saved')
   const bodies = writes().map(([, init]) => JSON.parse(init.body as string))
   expect(bodies).toHaveLength(2)
   expect(bodies[1].expected_version).toBe(2)
@@ -181,14 +181,14 @@ it('locks editing and retries the exact original operation after unknown outcome
   })
   mount()
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '保存任务修改' }))
+  await user.click(await screen.findByRole('button', { name: 'Save task changes' }))
   const retry = await screen.findByRole('button', {
-    name: '使用原请求重试任务',
+    name: 'Retry task with original request',
   })
-  expect(screen.getByLabelText('任务操作')).toBeDisabled()
-  expect(screen.getByLabelText('状态筛选')).toBeDisabled()
+  expect(screen.getByLabelText('Task action')).toBeDisabled()
+  expect(screen.getByLabelText('Status filter')).toBeDisabled()
   await user.click(retry)
-  await screen.findByText('已恢复原请求结果')
+  await screen.findByText('Original request result recovered')
   expect(writes()).toHaveLength(2)
   expect(writes()[1][1].body).toBe(writes()[0][1].body)
 })
@@ -200,7 +200,7 @@ it('blocks duplicate submission', async () => {
   )
   mount()
   const form = (
-    await screen.findByRole('button', { name: '保存任务修改' })
+    await screen.findByRole('button', { name: 'Save task changes' })
   ).closest('form')!
   fireEvent.submit(form)
   fireEvent.submit(form)
@@ -213,9 +213,9 @@ it.each(['completed', 'cancelled'] as const)(
       reply(url.includes('?') ? list : fixtures[status].response.task),
     )
     mount()
-    expect(await screen.findByText(/终态任务只读/)).toBeVisible()
-    expect(screen.queryByLabelText('任务操作')).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '任务历史' })).toBeVisible()
+    expect(await screen.findByText(/Final-state tasks are read-only/)).toBeVisible()
+    expect(screen.queryByLabelText('Task action')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Task history' })).toBeVisible()
   },
 )
 it('renders unknown time and unset due date', async () => {
@@ -227,14 +227,14 @@ it('renders unknown time and unset due date', async () => {
     ),
   )
   mount()
-  expect(await screen.findByText('未知')).toBeVisible()
-  expect(screen.getByText('未设置')).toBeVisible()
-  expect(screen.queryByLabelText('优先级')).not.toBeInTheDocument()
+  expect(await screen.findByText('Unknown')).toBeVisible()
+  expect(screen.getByText('Not set')).toBeVisible()
+  expect(screen.queryByLabelText('Priority')).not.toBeInTheDocument()
 })
 it('prohibits mock writes', async () => {
   mount(fixture.before.task_id, 'normal')
   expect(
-    await screen.findByRole('button', { name: '保存任务修改' }),
+    await screen.findByRole('button', { name: 'Save task changes' }),
   ).toBeDisabled()
 })
 it('resets server pagination when changing status', async () => {
@@ -247,9 +247,9 @@ it('resets server pagination when changing status', async () => {
   )
   mount('')
   const user = userEvent.setup()
-  await user.click(await screen.findByRole('button', { name: '下一页' }))
-  await screen.findByText('第 2 页')
-  await user.selectOptions(screen.getByLabelText('状态筛选'), 'cancelled')
+  await user.click(await screen.findByRole('button', { name: 'Next page' }))
+  await screen.findByText('Page 2')
+  await user.selectOptions(screen.getByLabelText('Status filter'), 'cancelled')
   await waitFor(() =>
     expect(
       transport.mock.calls.some(
@@ -273,10 +273,10 @@ it('preserves saved result if list refresh fails', async () => {
   })
   mount()
   await userEvent.click(
-    await screen.findByRole('button', { name: '保存任务修改' }),
+    await screen.findByRole('button', { name: 'Save task changes' }),
   )
-  expect(await screen.findByText('任务已保存')).toBeVisible()
-  expect(await screen.findByText(/保留上次列表/)).toBeVisible()
+  expect(await screen.findByText('Task saved')).toBeVisible()
+  expect(await screen.findByText(/Previous list retained/)).toBeVisible()
 })
 it('does not present a read failure as empty', async () => {
   transport.mockResolvedValue(
@@ -284,7 +284,7 @@ it('does not present a read failure as empty', async () => {
   )
   mount('')
   expect(await screen.findByRole('alert')).toBeVisible()
-  expect(screen.queryByText('当前筛选下没有任务。')).not.toBeInTheDocument()
+  expect(screen.queryByText('No tasks match this filter.')).not.toBeInTheDocument()
 })
 it('shows no input change for an acknowledged no-op', async () => {
   transport.mockImplementation(async (url, init) =>
@@ -298,11 +298,11 @@ it('shows no input change for an acknowledged no-op', async () => {
   )
   mount(fixtures.noop.before.task_id)
   const user = userEvent.setup()
-  await user.selectOptions(await screen.findByLabelText('任务操作'), 'label')
+  await user.selectOptions(await screen.findByLabelText('Task action'), 'label')
   await user.selectOptions(
-    screen.getByLabelText('新的损伤标签'),
+    screen.getByLabelText('New damage label'),
     fixtures.noop.before.damage_label,
   )
-  await user.click(screen.getByRole('button', { name: '保存任务修改' }))
-  expect(await screen.findByText(/本次未改变规划输入/)).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'Save task changes' }))
+  expect(await screen.findByText(/Planning inputs are unchanged/)).toBeVisible()
 })

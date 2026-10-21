@@ -1,6 +1,5 @@
 """Compose an answer only from validated quotations, using B's query service."""
 import hashlib
-import re
 
 from roadguard.errors import AppError
 from roadguard.routing.models import RoutePlan
@@ -8,6 +7,7 @@ from roadguard.routing.service import RouteQueryService
 from .knowledge import load_package
 from .models import KnowledgeSearchRequest
 from .retrieval import search
+from .content import clean_text
 from .query_models import AssistantQuery, AssistantAnswer, AnswerSource, PlanEvidenceSummary
 from . import provider
 
@@ -22,10 +22,6 @@ DECLINES = {
     'stale_plan': '任务或队伍输入已变化，指定方案已过期。请在路线页核对并重新规划。',
     'model_refused': '模型未返回可用的证据选择，本次没有生成回答。',
 }
-
-
-def clean_text(text):
-    return re.sub(r'^classification：.*$|^来源：.*$', '', text, flags=re.M).strip()
 
 
 def digest(text):
@@ -125,12 +121,8 @@ def answer_query(payload: AssistantQuery, user_id: str, queries: RouteQueryServi
                                                    rule_version=payload.rule_version))
     if not result.hits and plan is None:
         return decline('insufficient_data')
-    # Include sibling sections of matched documents: the small package can supply
-    # adjacent constraints missed by word overlap, without indexing mutable context.
-    docs = {hit.document_id for hit in result.hits}
-    selected = list(result.hits) + [c for c in package.chunks
-                                   if c.document_id in docs and c.citation_id not in
-                                   {h.citation_id for h in result.hits}]
+    # Use retrieved parent sections only; unrelated sibling sections inflate context.
+    selected = result.hits
     sources = [AnswerSource(citation_id=c.citation_id, kind='knowledge', title=c.title,
                             classification=c.classification, content=clean_text(c.text),
                             version=c.document_version, sha256=c.document_sha256,

@@ -352,7 +352,7 @@ export interface paths {
         put?: never;
         /**
          * Retrieve verified static knowledge sections (dispatcher only)
-         * @description Read-only lexical retrieval, not generated answers or business commands. Requires session cookie and CSRF token. Incompatible rule versions return no hits.
+         * @description Read-only local E5 embeddings and Chroma cosine retrieval. Requires session cookie and CSRF token. Incompatible rule versions return no hits.
          */
         post: operations["search_knowledge_api_v1_assistant_knowledge_search_post"];
         delete?: never;
@@ -1144,10 +1144,10 @@ export interface components {
         KnowledgeSearchResponse: {
             /**
              * Contract Version
-             * @default c-knowledge-search-v1
+             * @default c-knowledge-search-v2
              * @constant
              */
-            contract_version: "c-knowledge-search-v1";
+            contract_version: "c-knowledge-search-v2";
             /**
              * Status
              * @enum {string}
@@ -1165,10 +1165,10 @@ export interface components {
             };
             /**
              * Retrieval Method
-             * @default lexical-zh-bigram-tfidf-v1
+             * @default chroma-e5-cosine-v1
              * @constant
              */
-            retrieval_method: "lexical-zh-bigram-tfidf-v1";
+            retrieval_method: "chroma-e5-cosine-v1";
             /**
              * Evidence Scope
              * @default static_knowledge_only

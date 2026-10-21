@@ -1,21 +1,51 @@
-# A → C 知识资料包
+# A -> C knowledge package
 
-包 ID：`roadguard-a-knowledge`；版本：`a-knowledge-v9`；模块维护人：A。此包是可引用的项目资料，不包含 LLM、嵌入、索引、检索器或助手执行服务。
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v12`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT acceptance remains outstanding.
 
-先读取 [manifest.json](manifest.json)，再按 documents 列表读取六份中文资料。文档路径相对本目录；sources/context_sources 的路径相对仓库根目录。引用形式固定为 `document_id#section_id`，对应文档中的显式 ASCII anchor；不要依赖自动生成的中文标题 anchor。引用应同时携带 package_version、document_version 及相关 scope/rule/label 版本，便于解释旧答案。
+## Corpus map
 
-每个 section 的 classification 区分：`confirmed_project_fact` 是已记录的项目决定或当前可执行行为；`demo_assumption` 是明确未校准的演示参数/策略；`pending_decision` 是仍未确认的选项。项目约定可以已经确定而对应服务尚未实现，正文会明确区分。不能把分类为项目事实的“计划接口要求”描述成正在运行的功能。
+Read [manifest.json](manifest.json), then its eleven English documents:
 
-v6 同步 demo-rules-v2 的项目工时决定。2026-10-18 的 v7 同步上传解码隔离修复的源码摘要，并纠正 qa-03 中“真实检测全部先审核”的过期要求：主框原始置信度 ≥0.60 自动建任务，低于阈值待审核。六份正文版本和业务规则保持不变；此维护更新不代表助手实现或全部 B/C 知识已更新，接入前仍需核对阶段描述与运行方案来源。参数经项目发起人确认不等于工程有效性获批，下面的 review 元数据仅说明资料包核对方式。
+| Document | Questions it supports |
+| --- | --- |
+| [01 Scope](01_scope.md) | Jurong boundary, depot, four crews and road evidence |
+| [02 Labels](02_labels.md) | Eight canonical damage labels and visual limitations |
+| [03 Demo rules](03_demo_rules.md) | Priority, service duration and demo selection policy |
+| [04 Workflow](04_workflow.md) | Real/demo detection, review, task states and versions |
+| [05 Answer boundaries](05_assistant_boundaries.md) | Static versus dynamic evidence and unsupported claims |
+| [06 Pending work](06_pending_decisions.md) | Operational validation and unfinished assistant work |
+| [07 Routing algorithms](07_routing_algorithms.md) | Greedy, GA encoding/operators, constraints, objective and demo settings |
+| [08 Saved plans](08_route_plans_and_comparisons.md) | Provenance, stale plans, unassigned reasons and fair comparisons |
+| [09 Accounts and operations](09_accounts_and_operations.md) | Permissions, workflow, installation and troubleshooting |
+| [10 Evaluation evidence](10_evaluation_evidence.md) | Historical routing/model results and their limits |
+| [11 RAG integration](11_assistant_integration.md) | Ingestion, authorized runtime facts, citations and future confirmation |
 
-review_basis 为 `repository_consistency_review`：本轮 coding agent 代表 A 对照仓库源码/配置进行一致性核对，不代表 A 本人的人工签署、工程专家批准、道路许可或真实试验验证。manifest 明确记录 `human_or_expert_approval=false`。
+v10 corrects outdated claims that planning/crew APIs and experiments are still undelivered. The algorithms, saved-plan services and authenticated workspaces exist; GPT/RAG answers and assistant preview/confirm/cancel flows remain pending. It distinguishes the project's undecided operational return policy from the implemented return-to-depot/480-minute routing demo. Labels and demo-rule values are unchanged.
 
-sha256 使用文件原始 UTF-8 字节；仓库通过 .gitattributes 固定 LF。核验 documents、sources 和验收文件的摘要后再摄取。发现摘要/版本不一致应停止使用旧资料并由 A 更新包版本；规则变动还须更新规则版本及对应表格。context_sources 是显式不做摘要的可变背景文档，不能用它们代替带摘要的配置/代码事实。不要把上传图片、真实巡检数据库、凭据或运行方案复制进静态知识包。
+## Evidence and citation contract
 
-[acceptance_cases.json](acceptance_cases.json) 提供十个未来助手验收题。`supported` 表示有静态依据支持所列解释，不表示已经执行修改；`insufficient_data` 表示问题需要包中没有的运行事实/实验/道路权限证据，须承认不足并指出缺少的材料。期望要点是验收要求，不是伪造的助手测试结果。
+Document paths are relative to this directory; source paths are relative to the repository root. Citations use stable `document_id#section_id` IDs with explicit ASCII anchors. Preserve package_version, document_version, source_ids, hashes and relevant scope/rule/label/routing versions. Static citations support explanations; live route claims also require the authorized saved plan/revision/fields. Current defaults never overwrite frozen historical task rules.
 
-文档完整性测试为 `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q`，验证来源摘要、引用 anchor、标签/演示映射与十个验收题。C 后续自行实现检索与引用，并以 B 的持久化方案事实回答动态路线问题。
+Classifications are `confirmed_project_fact`, `demo_assumption` and `pending_decision`. A confirmed project requirement may specify future behavior; read the implementation-status wording before claiming it exists. Routing configuration values are demonstration assumptions, not approved engineering policy.
 
-2026-10-18 v8 定向更新：人工操作身份与工作流来源哈希同步账号权限实现；旧记录不改写。角色与 CLI 见[账号角色规范](../../../Miscellaneous/ACCOUNT_ROLES.md)。其余尚待助手接入核验的阶段描述保持原限制。
+review_basis is `repository_consistency_review`, performed by a coding agent on behalf of A; `human_or_expert_approval=false`. This is neither a personal signature nor expert approval, road permission, field validation or executed assistant evaluation.
 
-2026-10-19 v9：C 对 A 所属正文进行一致性维护，纠正规划服务/联调阶段描述，增加带固定来源的调度演示配置与账号工作流。资料包本身仍只有文档与 manifest；检索代码位于 roadguard/assistant。此轮维护不代表 A 人工批准或专家审核，不修改业务规则。第十步静态检索不等于 GPT 问答、自然语言执行或动态方案证据。
+## Ingestion and maintenance
+
+Verify raw-byte SHA-256 digests for documents, pinned sources, this guide and acceptance cases before ingestion. Knowledge files use UTF-8/LF with a final newline. A mismatch stops ingestion until the changed source and affected passages are reviewed and the package version/digests updated. Source `version` identifies the configuration or reviewed repository snapshot; hashes identify exact bytes. Mutable context_sources are explicitly unhashed background and cannot override pinned code/configuration.
+
+Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes proposed chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
+
+[acceptance_cases.json](acceptance_cases.json) contains 30 synthetic assistant acceptance specifications. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
+
+Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. Implement and test the retrieval/answer/confirmation service separately before reporting RAG as complete.
+
+## Earlier revisions
+
+v6 synchronized demo-rules-v2; v7 corrected the real primary-confidence acceptance case and image-decoding hash; v8 aligned authenticated manual-action provenance; v9 translated the six original documents into English. These historical revisions remain history, not the current ingestion target. v10 extends the corpus to eleven documents and refreshes current B/C status while retaining stable existing citation anchors.
+
+v11 reconciles C's feature with the eleven-document English corpus, preserves its two additional citation anchors and refreshes affected source hashes. Its 40 sections include routing, account roles and the current assistant boundaries. No historical experiment record is rewritten.
+
+## Chroma and embeddings
+
+v12 uses persistent ChromaDB and pinned local multilingual E5 embeddings. See the [vector retrieval guide](../roadguard/assistant/VECTOR_RETRIEVAL.md) for setup, reindexing and current contracts. The forty stable parent sections are split into token-bounded passages; live plans and account data remain outside the vector database. Rebuild the index after a reviewed manifest/source change.
