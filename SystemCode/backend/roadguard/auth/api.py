@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from roadguard.database import read_revision
 from roadguard.schemas import ErrorResponse
 from roadguard.schemas.workflow import TaskRecord
-from .access import active_actor, latest_ga
+from .access import active_actor, affinity_matches, latest_ga
 from .dependencies import access_control, current_user, validate_origin
 from .models import Account, CrewWorkspacePlan, CrewWorkspaceResponse, LoginRequest, LogoutResponse, SessionResponse
 from .service import SESSION_COOKIE, SESSION_SECONDS
@@ -52,6 +52,12 @@ def workspace(request: Request):
         tasks = []
         if plan:
             route = next((r for r in plan.crew_routes if r.crew_id == account.crew_id), None)
+            # A route containing a reassigned stop is no longer executable. Do not
+            # reveal its revoked location or invent metrics for a filtered route.
+            # Other crews' stale routes remain readable under the existing policy.
+            if route and any(not affinity_matches(connection, stop.task_id, account.crew_id)
+                             for stop in route.stops):
+                route = None
             scoped = CrewWorkspacePlan(**plan.model_dump(include=set(CrewWorkspacePlan.model_fields) - {"crew_routes"}),
                                        crew_routes=[route] if route else [])
             for stop in route.stops if route else []:

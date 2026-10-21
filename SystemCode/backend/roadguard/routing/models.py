@@ -13,6 +13,8 @@ NonNegativeMinutes = Annotated[FiniteNumber, Field(ge=0)]
 PositiveNumber = Annotated[FiniteNumber, Field(gt=0)]
 Priority = Literal["P1", "P2", "P3"]
 UnassignedReason = Literal[
+    "assigned_crew_unavailable",
+    "assigned_crew_infeasible",
     "unknown_service_minutes",  # service_minutes=None cannot be scheduled as zero
     "unreachable_from_depot",
     "unreachable_to_depot",  # only when return_to_depot is true
@@ -79,6 +81,7 @@ class PlanningInput(ContractModel):
     depot: Depot
     crews: list[Crew]
     tasks: list[Task]
+    task_crew_constraints: dict[str, str] = Field(default_factory=dict)
     settings: PlanningSettings
 
     @model_validator(mode="after")
@@ -122,6 +125,8 @@ class TravelMatrix(ContractModel):
 
 
 class Stop(ContractModel):
+    damage_label: str | None = None
+    locked_crew_id: str | None = None
     sequence: Annotated[int, Field(strict=True, ge=1)]
     task_id: NonEmptyString
     latitude: Latitude
@@ -134,6 +139,7 @@ class Stop(ContractModel):
 
 
 class CrewRoute(ContractModel):
+    shift_remaining_minutes: NonNegativeMinutes | None = None
     crew_id: NonEmptyString
     available: bool
     status: Literal["assigned", "idle", "unavailable"]

@@ -40,7 +40,9 @@ def assistant_status() -> AssistantStatus:
 
 @router.post('/assistant/query', response_model=AssistantAnswer,
              responses={code: {'model': ErrorResponse} for code in (401, 403, 404, 409, 422, 429, 502, 503)},
-             summary='Read-only evidence-selected GPT answer; dispatcher session and CSRF required')
+             summary='Read-only assistant answer or server model information (dispatcher only)',
+             description='Model identity and scope guidance use deterministic server responses without GPT or retrieval. '
+                         'Repair and saved-route answers retain evidence validation. Session and CSRF are required.')
 def query_assistant(request: Request, payload: AssistantQuery) -> AssistantAnswer:
     try:
         return answer_query(payload, request.state.account.user_id, request.app.state.route_query_service)
@@ -86,3 +88,29 @@ def cancel_change(request: Request, change_id: ChangePath, payload: ChangeConfir
 @router.post('/assistant/change-requests/{change_id}/replan', response_model=ChangeRecord, responses=CHANGE_ERRORS)
 def replan_change(request: Request, change_id: ChangePath, payload: ChangeReplan):
     return changes(request).replan(change_id, request.state.account.user_id, payload.attempt_id)
+
+
+from .task_change_models import TaskChangePreview, TaskChangeRecord, TaskChangeList
+from .task_change_service import TaskChangeService
+TaskChangePath = Annotated[str, Path(pattern=r"^task-change-[0-9a-f]{32}$")]
+def task_changes(request: Request):
+    state = request.app.state
+    return TaskChangeService(state.database, state.crew_service, state.route_query_service, state.planning_service, state.workflow_service)
+@router.get('/assistant/task-changes', response_model=TaskChangeList, responses=CHANGE_ERRORS)
+def list_task_changes(request: Request):
+    return task_changes(request).list(request.state.account.user_id)
+@router.post('/assistant/task-changes/preview', response_model=TaskChangeRecord, responses=CHANGE_ERRORS)
+def preview_task_change(request: Request, payload: TaskChangePreview):
+    return task_changes(request).preview(payload, request.state.account.user_id)
+@router.get('/assistant/task-changes/{change_id}', response_model=TaskChangeRecord, responses=CHANGE_ERRORS)
+def get_task_change(request: Request, change_id: TaskChangePath):
+    return task_changes(request).get(change_id, request.state.account.user_id)
+@router.post('/assistant/task-changes/{change_id}/confirm', response_model=TaskChangeRecord, responses=CHANGE_ERRORS)
+def confirm_task_change(request: Request, change_id: TaskChangePath, payload: ChangeConfirm):
+    return task_changes(request).confirm(change_id, request.state.account, payload.expected_version)
+@router.post('/assistant/task-changes/{change_id}/cancel', response_model=TaskChangeRecord, responses=CHANGE_ERRORS)
+def cancel_task_change(request: Request, change_id: TaskChangePath, payload: ChangeConfirm):
+    return task_changes(request).cancel(change_id, request.state.account.user_id, payload.expected_version)
+@router.post('/assistant/task-changes/{change_id}/replan', response_model=TaskChangeRecord, responses=CHANGE_ERRORS)
+def replan_task_change(request: Request, change_id: TaskChangePath, payload: ChangeReplan):
+    return task_changes(request).replan(change_id, request.state.account.user_id, payload.attempt_id)

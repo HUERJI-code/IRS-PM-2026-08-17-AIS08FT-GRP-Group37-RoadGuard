@@ -2293,7 +2293,8 @@
         "tags": [
           "Knowledge retrieval"
         ],
-        "summary": "Read-only evidence-selected GPT answer; dispatcher session and CSRF required",
+        "summary": "Read-only assistant answer or server model information (dispatcher only)",
+        "description": "Model identity and scope guidance use deterministic server responses without GPT or retrieval. Repair and saved-route answers retain evidence validation. Session and CSRF are required.",
         "operationId": "query_assistant_api_v1_assistant_query_post",
         "security": [
           {
@@ -3053,6 +3054,638 @@
           }
         }
       }
+    },
+    "/api/v1/assistant/task-changes": {
+      "get": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "List Task Changes",
+        "operationId": "list_task_changes_api_v1_assistant_task_changes_get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/task-changes/preview": {
+      "post": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "Preview Task Change",
+        "operationId": "preview_task_change_api_v1_assistant_task_changes_preview_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskChangePreview"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/task-changes/{change_id}": {
+      "get": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "Get Task Change",
+        "operationId": "get_task_change_api_v1_assistant_task_changes__change_id__get",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^task-change-[0-9a-f]{32}$",
+              "title": "Change Id"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/task-changes/{change_id}/confirm": {
+      "post": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "Confirm Task Change",
+        "operationId": "confirm_task_change_api_v1_assistant_task_changes__change_id__confirm_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^task-change-[0-9a-f]{32}$",
+              "title": "Change Id"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeConfirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/task-changes/{change_id}/cancel": {
+      "post": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "Cancel Task Change",
+        "operationId": "cancel_task_change_api_v1_assistant_task_changes__change_id__cancel_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^task-change-[0-9a-f]{32}$",
+              "title": "Change Id"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeConfirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/task-changes/{change_id}/replan": {
+      "post": {
+        "tags": [
+          "Knowledge retrieval"
+        ],
+        "summary": "Replan Task Change",
+        "operationId": "replan_task_change_api_v1_assistant_task_changes__change_id__replan_post",
+        "security": [
+          {
+            "APIKeyCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "change_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^task-change-[0-9a-f]{32}$",
+              "title": "Change Id"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for writes; returned by /auth/login or /auth/session.",
+              "title": "X-Csrf-Token"
+            },
+            "description": "Required for writes; returned by /auth/login or /auth/session."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReplan"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskChangeRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3163,9 +3796,9 @@
         "properties": {
           "contract_version": {
             "type": "string",
-            "const": "c-assistant-query-v1",
+            "const": "c-assistant-query-v3",
             "title": "Contract Version",
-            "default": "c-assistant-query-v1"
+            "default": "c-assistant-query-v3"
           },
           "status": {
             "type": "string",
@@ -3174,7 +3807,9 @@
               "insufficient_data",
               "rule_version_unavailable",
               "stale_plan",
-              "model_refused"
+              "model_refused",
+              "model_info",
+              "out_of_scope"
             ],
             "title": "Status"
           },
@@ -3201,11 +3836,25 @@
             "title": "Sources"
           },
           "package_version": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Package Version"
           },
           "manifest_sha256": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Manifest Sha256"
           },
           "plan": {
@@ -3235,9 +3884,13 @@
           },
           "answer_mode": {
             "type": "string",
-            "const": "verified_extracts",
+            "enum": [
+              "grounded_summary",
+              "server_configuration",
+              "scope_guidance"
+            ],
             "title": "Answer Mode",
-            "default": "verified_extracts"
+            "default": "grounded_summary"
           },
           "business_changes_applied": {
             "type": "boolean",
@@ -3640,7 +4293,7 @@
           "warning": {
             "type": "string",
             "title": "Warning",
-            "default": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+            "default": "Preview does not change crews. Confirmation saves availability only; recalculate separately. Planning failure does not undo the saved change."
           }
         },
         "additionalProperties": false,
@@ -3822,6 +4475,18 @@
       },
       "CrewRoute": {
         "properties": {
+          "shift_remaining_minutes": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shift Remaining Minutes"
+          },
           "crew_id": {
             "type": "string",
             "minLength": 1,
@@ -5992,6 +6657,28 @@
       },
       "Stop": {
         "properties": {
+          "damage_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damage Label"
+          },
+          "locked_crew_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked Crew Id"
+          },
           "sequence": {
             "type": "integer",
             "minimum": 1.0,
@@ -6250,6 +6937,303 @@
           "rule_version"
         ],
         "title": "TaskAuditValues"
+      },
+      "TaskChangeList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TaskChangeRecord"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "TaskChangeList"
+      },
+      "TaskChangePreview": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Request Id"
+          },
+          "based_on_plan_id": {
+            "type": "string",
+            "pattern": "^plan-[0-9a-f]{32}$",
+            "title": "Based On Plan Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "reassign",
+              "cancel_task"
+            ],
+            "title": "Action"
+          },
+          "task_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Task Id"
+          },
+          "target_crew_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Crew Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "based_on_plan_id",
+          "action",
+          "task_id"
+        ],
+        "title": "TaskChangePreview"
+      },
+      "TaskChangeRecord": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "const": "c-assistant-task-change-v1",
+            "title": "Contract Version",
+            "default": "c-assistant-task-change-v1"
+          },
+          "change_id": {
+            "type": "string",
+            "pattern": "^task-change-[0-9a-f]{32}$",
+            "title": "Change Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "client_key": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$",
+            "title": "Client Key"
+          },
+          "based_on_plan_id": {
+            "type": "string",
+            "pattern": "^plan-[0-9a-f]{32}$",
+            "title": "Based On Plan Id"
+          },
+          "input_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Input Revision"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "reassign",
+              "cancel_task"
+            ],
+            "title": "Action"
+          },
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "task_record_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Task Record Version"
+          },
+          "planning_config_fingerprint": {
+            "type": "string",
+            "title": "Planning Config Fingerprint"
+          },
+          "source_crew_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Crew Id"
+          },
+          "target_crew_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Crew Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "cancelled",
+              "expired"
+            ],
+            "title": "Status"
+          },
+          "record_version": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Record Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "applied_revision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Revision"
+          },
+          "before_routes": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRoute"
+            },
+            "type": "array",
+            "title": "Before Routes"
+          },
+          "after_routes": {
+            "items": {
+              "$ref": "#/components/schemas/CrewRoute"
+            },
+            "type": "array",
+            "title": "After Routes"
+          },
+          "shift_limit_minutes": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shift Limit Minutes"
+          },
+          "return_to_depot": {
+            "type": "boolean",
+            "title": "Return To Depot"
+          },
+          "replan_status": {
+            "type": "string",
+            "enum": [
+              "not_requested",
+              "running",
+              "failed",
+              "succeeded"
+            ],
+            "title": "Replan Status",
+            "default": "not_requested"
+          },
+          "replan_attempts": {
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,64}$"
+            },
+            "type": "array",
+            "title": "Replan Attempts"
+          },
+          "replan_attempt_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{1,64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replan Attempt Id"
+          },
+          "replan_lease_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replan Lease Until"
+          },
+          "replan_error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replan Error Code"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecalculationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "change_id",
+          "actor_id",
+          "client_key",
+          "based_on_plan_id",
+          "input_revision",
+          "action",
+          "task_id",
+          "task_record_version",
+          "planning_config_fingerprint",
+          "source_crew_id",
+          "status",
+          "record_version",
+          "created_at",
+          "expires_at",
+          "before_routes",
+          "after_routes",
+          "shift_limit_minutes",
+          "return_to_depot"
+        ],
+        "title": "TaskChangeRecord"
       },
       "TaskHistoryEntry": {
         "properties": {
@@ -6674,6 +7658,8 @@
           "reason": {
             "type": "string",
             "enum": [
+              "assigned_crew_unavailable",
+              "assigned_crew_infeasible",
               "unknown_service_minutes",
               "unreachable_from_depot",
               "unreachable_to_depot",

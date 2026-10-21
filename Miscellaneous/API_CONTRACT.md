@@ -161,7 +161,7 @@ HTTP examples now require login/X-CSRF-Token on writes. Inspectors upload/read o
 The dispatcher-only assistant uses the existing session, role and CSRF checks:
 
 - `POST /api/v1/assistant/knowledge/search` returns versioned static passages, stable citations and source integrity metadata; it does not generate answers or read business plans. Rule-version mismatch returns empty hits; inconsistent knowledge returns `503 knowledge_unavailable`.
-- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v1` returns verified evidence extracts and provenance without business changes. Real GPT connectivity and semantic quality remain unverified.
+- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v3` returns a natural-language answer (answer_mode=grounded_summary for RAG; see direct-response modes below), separately validated selections and source provenance without business changes. Real GPT connectivity and targeted rule-citation cases have now been exercised; broader semantic quality remains unverified. See the [local acceptance record](RAG_RULE_CITATION_ACCEPTANCE_20261021.md).
 - `/api/v1/assistant/change-requests` provides preview/history and per-request confirm/cancel/replan operations under `c-assistant-change-v1`. Preview does not change planning input. Confirmation and recalculation are separate explicit actions; history supports uncertain-outcome recovery. This flow does not call GPT.
 
 Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
@@ -171,3 +171,98 @@ See [assistant contracts](../SystemCode/backend/roadguard/assistant/README.md).
 ## Chroma retrieval update (2026-10-21)
 
 The dispatcher search endpoint now returns `c-knowledge-search-v2` with `retrieval_method=chroma-e5-cosine-v1`. Static sources use local E5 embeddings and a versioned persistent Chroma index. Scores are cosine similarity; `matched_terms` is an empty compatibility field. Model/index failures are explicit 503 responses, and oversized encoder inputs return 422. The answer and crew-change contracts are unchanged. Follow the [setup and maintenance guide](../SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md) before querying; runtime data stays outside Git.
+
+## Rule citation repair (2026-10-21, local)
+
+The public c-assistant-query-v1 fields remain unchanged. The internal provider
+returns at most six server-owned evidence IDs; the backend restores exact quotes
+and required context, producing up to twelve selections. Clients must render the
+selections array rather than assuming one table quote. Header/context and target
+rows retain separate citation entries, even when their parent citation_id matches.
+All source/substring/revision/role checks remain. Altered, unknown or incorrect
+named table evidence returns assistant_invalid_response (502); a comparison that
+omits a named class returns insufficient_data (200) without a partial answer.
+The [assistant guide](../SystemCode/backend/roadguard/assistant/README.md) describes
+bounded label aliases, knowledge-v13 reindexing and verification.
+
+### Answer-first query v2 (2026-10-21)
+
+Request fields and routes are unchanged. Response contract_version is now
+c-assistant-query-v2 and answer_mode is grounded_summary. answer contains readable
+prose; selections/sources retain exact quotations, hashes, versions and provenance.
+Update strict clients and generated OpenAPI/TypeScript together. Frontend evidence
+is hidden under a closed sources disclosure until requested. One provider call
+selects evidence IDs and drafts prose; canonical repair-row answers use server
+rendering. Other drafts have bounded number/priority/identifier checks, which do
+not prove full semantic correctness. All prior citation, permission, rule-version
+and saved-plan freshness checks remain. No business data is changed by a query.
+See [local acceptance](RAG_ANSWER_FIRST_ACCEPTANCE_20261021.md).
+
+## Persistent task adjustment v1 (2026-10-21, local)
+
+Dispatcher-only, existing session and CSRF requirements apply. No GPT call occurs.
+The frontend loads an explicit plan or the latest saved GA plan before previewing.
+
+| Endpoint under /api/v1/assistant/task-changes | Input | Result |
+| --- | --- | --- |
+| POST /preview | request_id, based_on_plan_id, action=reassign or cancel_task, task_id, target_crew_id only for reassign | TaskChangeRecord with before_routes, after_routes, shift_limit_minutes and return_to_depot |
+| GET / | None | Own latest 20 task-change records |
+| GET /{change_id} | None | Own persisted record and recovery state |
+| POST /{change_id}/confirm | expected_version | Persist assignment constraint or cancellation atomically; applied_revision; no automatic planning |
+| POST /{change_id}/cancel | expected_version | Discard pending preview; no business mutation |
+| POST /{change_id}/replan | attempt_id | Explicit planning with persisted retry/result receipt |
+
+A task move requires an assigned active task and another available crew. Active
+unassigned tasks can be cancelled. Preview keeps all other assigned tasks and
+checks travel + service + required depot return, including cancellation's remaining
+route. Over-capacity/unreachable changes return 409 task_change_infeasible. Stale
+plans return stale_input_revision; configuration/depot changes return
+stale_planning_settings. Other errors include task_not_assigned, invalid_target_crew,
+invalid_state, stale_record_version, change_not_pending and idempotency_conflict.
+
+TaskChangeRecord includes the action/task, nullable source_crew_id for unassigned
+cancellation, target_crew_id, task_record_version, planning_config_fingerprint,
+input revision, expiry/status, audit version and replan recovery fields. The
+fingerprint protects preview/confirm configuration consistency; clients do not
+calculate it. Persisted before/after routes are a feasibility preview, not a newly
+saved dispatch plan. Success requires explicit replanning to obtain new plan IDs.
+
+Schema v6 adds assistant_task_changes, assistant_task_change_events and
+task_crew_constraints. v5 migration preserves existing rows and input revision.
+Task cancellation uses WorkflowService within the same transaction and retains
+history. Confirmed reassignment increments input revision and stores a durable
+crew constraint. Greedy and GA read constraints in their task/crew snapshot;
+assigned_crew_unavailable and assigned_crew_infeasible are explicit unassigned
+reasons. No task silently switches crew to resolve infeasibility. Completion
+requires both latest-GA ownership and the current durable crew constraint.
+
+Additive routing fields: PlanningInput.task_crew_constraints defaults to {},
+Stop.damage_label and Stop.locked_crew_id default to null, and
+CrewRoute.shift_remaining_minutes defaults to null. Existing saved JSON remains
+readable. Strict JSON-schema consumers should update the shared planning schemas
+and generated OpenAPI/TypeScript snapshots together. No rule values, model weights,
+vision thresholds or upload contracts change. UI and generated answers use English;
+source validation and multilingual query aliases remain enabled.
+
+
+### Assistant intent routing v3 (2026-10-21, local)
+
+The request schema, dispatcher role and CSRF checks remain unchanged. The response
+contract is c-assistant-query-v3; clients must regenerate OpenAPI/TypeScript.
+
+| Question path | status | supported | answer_mode | Model/retrieval |
+| --- | --- | --- | --- | --- |
+| Standalone assistant model identity | model_info | true | server_configuration | Neither called |
+| Clearly unrelated topic | out_of_scope | false | scope_guidance | Neither called |
+| Repair, route or other project evidence question | Existing RAG statuses | Depends on evidence | grounded_summary | Existing verified flow |
+
+Direct responses have empty selections/sources, null package_version,
+manifest_sha256 and plan, and model_called=false. The model field contains the
+configured name only for configuration responses; it may be null if unset. This
+identifies backend configuration, not a verified model execution. It remains
+available with generation disabled or no key. Secrets are never included.
+
+Whole-question identity matching prevents mixed rule/route questions from taking
+that shortcut. Bounded unrelated-topic recognition gives scope examples; ambiguous
+questions use RAG. Failed citation, label, number or plan checks remain enforced.
+Question handling does not mutate business records or perform crew changes.

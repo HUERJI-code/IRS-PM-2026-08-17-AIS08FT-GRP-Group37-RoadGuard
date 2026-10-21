@@ -1,4 +1,4 @@
-"""Compose an answer only from validated quotations, using B's query service."""
+"""Validate selected evidence before composing a read-only grounded summary."""
 import hashlib
 
 from roadguard.errors import AppError
@@ -8,19 +8,22 @@ from .knowledge import load_package
 from .models import KnowledgeSearchRequest
 from .retrieval import search
 from .content import clean_text
+from .evidence import validate_selection
+from .answering import compose_answer
 from .query_models import AssistantQuery, AssistantAnswer, AnswerSource, PlanEvidenceSummary
 from . import provider
+from .intents import classify_intent, SCOPE_GUIDANCE
 
 WARNINGS = [
-    '回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。',
-    '演示规则、模拟行程与待定事项不能视为真实工程结论。',
-    '本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。',
+    'Answers use verified sources; rule values come from original evidence. Source validation does not guarantee every semantic judgment.',
+    'Demo rules, simulated travel and pending decisions are not real engineering conclusions.',
+    'This endpoint does not change crews, replan or write business records. Without a comparison plan, improvement cannot be inferred.',
 ]
 DECLINES = {
-    'insufficient_data': '现有证据不足以完整回答，请补充具体方案或缩小问题范围。',
-    'rule_version_unavailable': '知识包不包含所请求的规则版本，不能用当前规则替代旧规则。',
-    'stale_plan': '任务或队伍输入已变化，指定方案已过期。请在路线页核对并重新规划。',
-    'model_refused': '模型未返回可用的证据选择，本次没有生成回答。',
+    'insufficient_data': 'I could not find enough verified RoadGuard evidence to answer this question. ' + SCOPE_GUIDANCE,
+    'rule_version_unavailable': 'The knowledge package does not contain the requested rule version. Current rules cannot replace older rules.',
+    'stale_plan': 'Task or crew inputs have changed and the selected plan is stale. Review the Routes page and replan.',
+    'model_refused': 'The model returned no usable evidence selection. No answer was generated.',
 }
 
 
@@ -33,15 +36,15 @@ def readable_facts(data, indent=''):
     lines = []
     for key, value in data.items():
         if isinstance(value, dict):
-            lines.append(f'{indent}{key}：')
+            lines.append(f'{indent}{key}: ')
             lines.append(readable_facts(value, indent + '  '))
         elif isinstance(value, list):
-            lines.append(f'{indent}{key}：' + ('无' if not value else ''))
+            lines.append(f'{indent}{key}: ' + ('None' if not value else ''))
             for item in value:
                 lines.append(readable_facts(item, indent + '  '))
         else:
-            rendered = '未提供（未知）' if value is None else ('是' if value else '否') if isinstance(value, bool) else str(value)
-            lines.append(f'{indent}{key}：{rendered}')
+            rendered = 'Not provided (unknown)' if value is None else ('Yes' if value else 'No') if isinstance(value, bool) else str(value)
+            lines.append(f'{indent}{key}: {rendered}')
     return '\n'.join(lines)
 
 
@@ -49,46 +52,46 @@ def plan_sources(plan: RoutePlan) -> list[AnswerSource]:
     """Whitelisted projection: no images, coordinates, account data or arbitrary parameters."""
     prefix = f'plan:{plan.plan_id}'
     sections = {
-        'summary': ('方案与来源', {
-            '方案ID': plan.plan_id, '算法': plan.algorithm, '输入版本': plan.input_revision,
-            '统一开始时间UTC': plan.planning_start_at.isoformat(), '演示方案': plan.is_demo,
-            '行程来源': plan.matrix_provider, '模拟行程': plan.matrix_is_simulated,
-            '说明': '保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。',
+        'summary': ('Plan and provenance', {
+            'Plan ID': plan.plan_id, 'Algorithm': plan.algorithm, 'Input revision': plan.input_revision,
+            'Common start UTC': plan.planning_start_at.isoformat(), 'Demo plan': plan.is_demo,
+            'Travel source': plan.matrix_provider, 'Simulated travel': plan.matrix_is_simulated,
+            'Notes': 'Saved plan facts, not live vehicle status; individual task rule snapshots are not included.',
         }),
-        'metrics': ('方案指标', {
-            '已分配任务数': plan.metrics.assigned_task_count,
-            '未分配任务数': plan.metrics.unassigned_task_count,
-            '总行程分钟': plan.metrics.total_travel_minutes,
-            '总维修分钟': plan.metrics.total_service_minutes,
-            '最晚收工分钟偏移': plan.metrics.makespan_minutes,
-            '工作量标准差分钟': plan.metrics.workload_std_minutes,
-            '有期限任务数': plan.metrics.tasks_with_due_at,
-            '总延误分钟': plan.metrics.total_lateness_minutes,
-            '算法耗时毫秒': plan.metrics.algorithm_runtime_ms,
-            '说明': 'null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。',
+        'metrics': ('Plan metrics', {
+            'Assigned task count': plan.metrics.assigned_task_count,
+            'Unassigned task count': plan.metrics.unassigned_task_count,
+            'Total travel minutes': plan.metrics.total_travel_minutes,
+            'Total service minutes': plan.metrics.total_service_minutes,
+            'Makespan minute offset': plan.metrics.makespan_minutes,
+            'Workload standard deviation minutes': plan.metrics.workload_std_minutes,
+            'Tasks with deadlines': plan.metrics.tasks_with_due_at,
+            'Total lateness minutes': plan.metrics.total_lateness_minutes,
+            'Algorithm runtime milliseconds': plan.metrics.algorithm_runtime_ms,
+            'Notes': 'null means unknown, not zero. Lateness cannot be calculated without deadlines. Algorithm runtime is distinct from travel or repair duration.',
         }),
-        'settings': ('保存的演示约束', {
-            '配置版本': plan.settings.config_version, '演示配置': plan.settings.is_demo,
-            '返基地': plan.settings.return_to_depot, '班次': plan.settings.shift_limit.model_dump(),
-            '目标版本': plan.settings.objective_version, '目标权重': plan.settings.weights.model_dump(),
-            '说明': '仅为该方案保存的演示设置，不能视为正式运营批准。',
+        'settings': ('Saved demo constraints', {
+            'Configuration version': plan.settings.config_version, 'Demo configuration': plan.settings.is_demo,
+            'Return to depot': plan.settings.return_to_depot, 'Shift': plan.settings.shift_limit.model_dump(),
+            'Objective version': plan.settings.objective_version, 'Objective weights': plan.settings.weights.model_dump(),
+            'Notes': 'These are saved demo settings for this plan, not approval for real operations.',
         }),
-        'unassigned': ('未分配任务', {
-            '未分配': [item.model_dump() for item in plan.unassigned_tasks],
-            '说明': 'reason 为 B 返回的原因，不由助手推测。',
+        'unassigned': ('Unassigned tasks', {
+            'Unassigned': [item.model_dump() for item in plan.unassigned_tasks],
+            'Notes': 'reason is returned by the routing service and is not inferred by the assistant.',
         }),
     }
     for route in plan.crew_routes:
-        sections[f'crew-{route.crew_id}'] = (f'{route.crew_id} 访问顺序', {
-            '队伍': route.crew_id, '可用': route.available, '状态': route.status,
-            '按顺序停靠': [
-                {'顺序': s.sequence, '任务ID': s.task_id, '优先级': s.priority,
-                 '上一站行程分钟': s.travel_minutes_from_previous, '到达分钟偏移': s.arrival_minute,
-                 '维修分钟': s.service_minutes, '完成分钟偏移': s.completion_minute}
+        sections[f'crew-{route.crew_id}'] = (f'{route.crew_id} Visit order', {
+            'Crew': route.crew_id, 'Available': route.available, 'Status': route.status,
+            'Ordered stops': [
+                {'Sequence': s.sequence, 'Task ID': s.task_id, 'Priority': s.priority,
+                 'Travel minutes from previous stop': s.travel_minutes_from_previous, 'Arrival minute offset': s.arrival_minute,
+                 'Service minutes': s.service_minutes, 'Completion minute offset': s.completion_minute}
                 for s in route.stops],
-            '总行程分钟': route.travel_minutes, '返程分钟': route.return_travel_minutes,
-            '总工作分钟': route.total_work_minutes,
-            '说明': '时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。',
+            'Total travel minutes': route.travel_minutes, 'Return travel minutes': route.return_travel_minutes,
+            'Total work minutes': route.total_work_minutes,
+            'Notes': 'Times are offsets from the common start. This is a saved simulated maintenance schedule without real road geometry.',
         })
     output = []
     for key, (title, data) in sections.items():
@@ -101,6 +104,18 @@ def plan_sources(plan: RoutePlan) -> list[AnswerSource]:
 
 
 def answer_query(payload: AssistantQuery, user_id: str, queries: RouteQueryService) -> AssistantAnswer:
+    intent = classify_intent(payload.question)
+    if intent in {'model_info', 'out_of_scope'}:
+        model = (provider.config_from_env().model or None) if intent == 'model_info' else None
+        answer = (f'The server is configured to use {model}. This reports configuration; no model was called for this answer.'
+                  if model else 'No assistant model name is configured on this server. No model was called for this answer.')
+        return AssistantAnswer(
+            status=intent, supported=intent == 'model_info',
+            answer=answer if intent == 'model_info' else SCOPE_GUIDANCE,
+            selections=[], sources=[], package_version=None, manifest_sha256=None,
+            plan=None, model=model, model_called=False,
+            answer_mode='server_configuration' if intent == 'model_info' else 'scope_guidance',
+            warnings=[])
     package = load_package()
     plan = queries.get(payload.plan_id) if payload.plan_id else None
     summary = PlanEvidenceSummary(
@@ -156,10 +171,12 @@ def answer_query(payload: AssistantQuery, user_id: str, queries: RouteQueryServi
                 or (item.citation_id, item.quote) in seen):
             raise provider.invalid_response()
         seen.add((item.citation_id, item.quote))
+    if not validate_selection(payload.question, evidence, selection):
+        return decline('insufficient_data')
     if plan and not any(by_id[s.citation_id].kind == 'saved_plan' for s in selection.selections):
         return decline('insufficient_data')
     used = {item.citation_id for item in selection.selections}
-    answer = '\n\n'.join(f'[{item.citation_id}]\n{item.quote}' for item in selection.selections)
+    answer = compose_answer(payload.question, payload.scope, selection)
     return AssistantAnswer(status='supported', supported=True, answer=answer,
                            selections=selection.selections, sources=[s for s in sources if s.citation_id in used],
                            **common)

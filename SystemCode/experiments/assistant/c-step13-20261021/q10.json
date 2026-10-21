@@ -5,7 +5,7 @@
   "real_model_called": false,
   "real_travel_provider_called": false,
   "input": {
-    "question": "没有期限时能否判断延误？",
+    "question": "\u6ca1\u6709\u671f\u9650\u65f6\u80fd\u5426\u5224\u65ad\u5ef6\u8bef？",
     "scope": "plan",
     "plan_id": "plan-2fecbf089e7a449b9ff063273ddb3a80"
   },
@@ -14,20 +14,20 @@
     "contract_version": "c-assistant-query-v1",
     "status": "supported",
     "supported": true,
-    "answer": "[plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics]\n已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。",
+    "answer": "[plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics]\n\u5df2\u5206\u914d\u4efb\u52a1\u6570：2\n\u672a\u5206\u914d\u4efb\u52a1\u6570：0\n\u603b\u884c\u7a0b\u5206\u949f：125.2\n\u603b\u7ef4\u4fee\u5206\u949f：240.0\n\u6700\u665a\u6536\u5de5\u5206\u949f\u504f\u79fb：182.6\n\u5de5\u4f5c\u91cf\u6807\u51c6\u5dee\u5206\u949f：91.3\n\u6709\u671f\u9650\u4efb\u52a1\u6570：0\n\u603b\u5ef6\u8bef\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u7b97\u6cd5\u8017\u65f6\u6beb\u79d2：15.09975001681596\n\u8bf4\u660e：null \u8868\u793a\u672a\u77e5，\u4e0d\u80fd\u5f53\u4f5c\u96f6；\u65e0\u671f\u9650\u4e0d\u80fd\u8ba1\u7b97\u5ef6\u8bef；\u7b97\u6cd5\u8017\u65f6\u4e0d\u7b49\u4e8e\u884c\u7a0b\u6216\u7ef4\u4fee\u65f6\u957f。",
     "selections": [
       {
         "citation_id": "plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics",
-        "quote": "已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。"
+        "quote": "\u5df2\u5206\u914d\u4efb\u52a1\u6570：2\n\u672a\u5206\u914d\u4efb\u52a1\u6570：0\n\u603b\u884c\u7a0b\u5206\u949f：125.2\n\u603b\u7ef4\u4fee\u5206\u949f：240.0\n\u6700\u665a\u6536\u5de5\u5206\u949f\u504f\u79fb：182.6\n\u5de5\u4f5c\u91cf\u6807\u51c6\u5dee\u5206\u949f：91.3\n\u6709\u671f\u9650\u4efb\u52a1\u6570：0\n\u603b\u5ef6\u8bef\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u7b97\u6cd5\u8017\u65f6\u6beb\u79d2：15.09975001681596\n\u8bf4\u660e：null \u8868\u793a\u672a\u77e5，\u4e0d\u80fd\u5f53\u4f5c\u96f6；\u65e0\u671f\u9650\u4e0d\u80fd\u8ba1\u7b97\u5ef6\u8bef；\u7b97\u6cd5\u8017\u65f6\u4e0d\u7b49\u4e8e\u884c\u7a0b\u6216\u7ef4\u4fee\u65f6\u957f。"
       }
     ],
     "sources": [
       {
         "citation_id": "plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics",
         "kind": "saved_plan",
-        "title": "方案指标",
+        "title": "\u65b9\u6848\u6307\u6807",
         "classification": "saved_demo_plan",
-        "content": "已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。",
+        "content": "\u5df2\u5206\u914d\u4efb\u52a1\u6570：2\n\u672a\u5206\u914d\u4efb\u52a1\u6570：0\n\u603b\u884c\u7a0b\u5206\u949f：125.2\n\u603b\u7ef4\u4fee\u5206\u949f：240.0\n\u6700\u665a\u6536\u5de5\u5206\u949f\u504f\u79fb：182.6\n\u5de5\u4f5c\u91cf\u6807\u51c6\u5dee\u5206\u949f：91.3\n\u6709\u671f\u9650\u4efb\u52a1\u6570：0\n\u603b\u5ef6\u8bef\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u7b97\u6cd5\u8017\u65f6\u6beb\u79d2：15.09975001681596\n\u8bf4\u660e：null \u8868\u793a\u672a\u77e5，\u4e0d\u80fd\u5f53\u4f5c\u96f6；\u65e0\u671f\u9650\u4e0d\u80fd\u8ba1\u7b97\u5ef6\u8bef；\u7b97\u6cd5\u8017\u65f6\u4e0d\u7b49\u4e8e\u884c\u7a0b\u6216\u7ef4\u4fee\u65f6\u957f。",
         "version": "2",
         "sha256": "51a50aa18ab9073ac37aec53557afcc549a9109020533d24563055cc61acf7dc",
         "provenance": []
@@ -49,9 +49,9 @@
     "answer_mode": "verified_extracts",
     "business_changes_applied": false,
     "warnings": [
-      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
-      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
-      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+      "\u56de\u7b54\u7531\u6a21\u578b\u9009\u62e9\u7684\u539f\u6587\u8bc1\u636e\u7ec4\u6210；\u5f15\u7528\u6821\u9a8c\u4e0d\u7b49\u4e8e\u8bed\u4e49\u5145\u5206\u6027\u6216\u5de5\u7a0b\u4e13\u5bb6\u5ba1\u6279。",
+      "\u6f14\u793a\u89c4\u5219、\u6a21\u62df\u884c\u7a0b\u4e0e\u5f85\u5b9a\u4e8b\u9879\u4e0d\u80fd\u89c6\u4e3a\u771f\u5b9e\u5de5\u7a0b\u7ed3\u8bba。",
+      "\u672c\u63a5\u53e3\u4e0d\u8c03\u6574\u961f\u4f0d、\u4e0d\u91cd\u7b97、\u4e0d\u5199\u4e1a\u52a1\u8bb0\u5f55；\u672a\u63d0\u4f9b\u6bd4\u8f83\u65b9\u6848，\u4e0d\u80fd\u63a8\u5bfc\u4f18\u5316\u63d0\u5347。"
     ]
   },
   "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",

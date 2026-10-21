@@ -11,6 +11,7 @@ from PIL import Image
 import pytest
 
 from roadguard.assistant import provider
+from roadguard.assistant.evidence import build_catalogue, resolve_ids
 from roadguard.assistant.change_service import ChangeService
 from roadguard.assistant.query_models import ModelSelection
 from roadguard.auth import service as auth_module
@@ -23,24 +24,24 @@ BASE = '/api/v1'
 CHANGE = BASE + '/assistant/change-requests'
 PASSWORD = 'synthetic-c13-local-only'
 QUESTIONS = [
-    ('q01', '四队分别负责什么任务？', 'crews'),
-    ('q02', 'crew-01 的访问顺序是什么？', 'crew'),
-    ('q03', '为什么从 NUS-ISS 出发？', 'depot'),
-    ('q04', 'crew-01 的任务预计何时到达和完成？', 'crew'),
-    ('q05', '有哪些未分配任务及原因？', 'unassigned'),
-    ('q06', '哪个队最忙？请列出四队工作分钟供核对。', 'crews'),
-    ('q07', 'GA 与 Greedy 哪项更好？', 'unsupported'),
-    ('q08', '为什么这个方案已经过期？', 'stale'),
-    ('q09', '当前矩阵是否来自 Google？', 'summary'),
-    ('q10', '没有期限时能否判断延误？', 'metrics'),
+    ('q01', '\u56db\u961f\u5206\u522b\u8d1f\u8d23\u4ec0\u4e48\u4efb\u52a1？', 'crews'),
+    ('q02', 'crew-01 \u7684\u8bbf\u95ee\u987a\u5e8f\u662f\u4ec0\u4e48？', 'crew'),
+    ('q03', '\u4e3a\u4ec0\u4e48\u4ece NUS-ISS \u51fa\u53d1？', 'depot'),
+    ('q04', 'crew-01 \u7684\u4efb\u52a1\u9884\u8ba1\u4f55\u65f6\u5230\u8fbe\u548c\u5b8c\u6210？', 'crew'),
+    ('q05', '\u6709\u54ea\u4e9b\u672a\u5206\u914d\u4efb\u52a1\u53ca\u539f\u56e0？', 'unassigned'),
+    ('q06', '\u54ea\u4e2a\u961f\u6700\u5fd9？\u8bf7\u5217\u51fa\u56db\u961f\u5de5\u4f5c\u5206\u949f\u4f9b\u6838\u5bf9。', 'crews'),
+    ('q07', 'GA \u4e0e Greedy \u54ea\u9879\u66f4\u597d？', 'unsupported'),
+    ('q08', '\u4e3a\u4ec0\u4e48\u8fd9\u4e2a\u65b9\u6848\u5df2\u7ecf\u8fc7\u671f？', 'stale'),
+    ('q09', '\u5f53\u524d\u77e9\u9635\u662f\u5426\u6765\u81ea Google？', 'summary'),
+    ('q10', '\u6ca1\u6709\u671f\u9650\u65f6\u80fd\u5426\u5224\u65ad\u5ef6\u8bef？', 'metrics'),
 ]
 CHANGES = [
-    ('a01','停用 crew-02','disable'), ('a02','启用 crew-02','enable'),
-    ('a03','停用 crew-02','cancel'), ('a04','停用 crew-02','replay'),
-    ('a05','停用 crew-02','concurrent'), ('a06','停用 crew-02','task_changed'),
-    ('a07','停用 crew-02','crew_changed'), ('a08','启用 crew-02','noop'),
-    ('a09','停用第二队','ambiguous'), ('a10','封闭道路并直接提高任务优先级','unsupported'),
-    ('a11','停用 crew-02','failure_recovery'),
+    ('a01','\u505c\u7528 crew-02','disable'), ('a02','\u542f\u7528 crew-02','enable'),
+    ('a03','\u505c\u7528 crew-02','cancel'), ('a04','\u505c\u7528 crew-02','replay'),
+    ('a05','\u505c\u7528 crew-02','concurrent'), ('a06','\u505c\u7528 crew-02','task_changed'),
+    ('a07','\u505c\u7528 crew-02','crew_changed'), ('a08','\u542f\u7528 crew-02','noop'),
+    ('a09','\u505c\u7528\u7b2c\u4e8c\u961f','ambiguous'), ('a10','\u5c01\u95ed\u9053\u8def\u5e76\u76f4\u63a5\u63d0\u9ad8\u4efb\u52a1\u4f18\u5148\u7ea7','unsupported'),
+    ('a11','\u505c\u7528 crew-02','failure_recovery'),
 ]
 
 
@@ -142,8 +143,11 @@ def test_route_questions_with_explicit_provider_double(client, monkeypatch, case
         suffixes={'crew':['#crew-crew-01'],'crews':[f'#crew-crew-0{n}' for n in range(1,5)],
             'summary':['#summary'],'metrics':['#metrics'],'unassigned':['#unassigned'],
             'depot':['#summary','#depot-crews']}[kind]
-        selected=[next(s for s in sources if s['citation_id'].endswith(suffix)) for suffix in suffixes]
-        return ModelSelection(supported=True,selections=[{'citation_id':s['citation_id'],'quote':s['content']} for s in selected])
+        units=build_catalogue(text,sources)
+        selected=[next(u.evidence_id for u in units if u.citation_id.endswith(suffix)) for suffix in suffixes]
+        result = resolve_ids(selected, units)
+        result.answer = 'The selected saved plan supplies the requested route information.'
+        return result
     monkeypatch.setattr(provider,'select_evidence',select)
     with c.app.state.database.connect() as db: before=list(db.iterdump())
     r=c.post(BASE+'/assistant/query',json=request)
@@ -251,9 +255,9 @@ def test_complete_multi_role_workflow(client):
     fresh=plan(c)
     assert task_id not in [s['task_id'] for r in fresh['crew_routes'] for s in r['stops']]
     assert fresh['metrics']['assigned_task_count']==1
-    query=c.post(BASE+'/assistant/query',json={'question':'当前行程来源是什么？','scope':'plan','plan_id':fresh['plan_id']})
+    query=c.post(BASE+'/assistant/query',json={'question':'\u5f53\u524d\u884c\u7a0b\u6765\u6e90\u662f\u4ec0\u4e48？','scope':'plan','plan_id':fresh['plan_id']})
     assert query.status_code==503 and query.json()['code']=='assistant_not_configured'
-    record=preview(c,'停用 crew-02',fresh['plan_id']).json()
+    record=preview(c,'\u505c\u7528 crew-02',fresh['plan_id']).json()
     assert confirm(c,record).json()['status']=='confirmed'
     result=c.post(CHANGE+'/'+record['change_id']+'/replan',json={'attempt_id':'final'}).json()
     assert result['replan_status']=='succeeded'

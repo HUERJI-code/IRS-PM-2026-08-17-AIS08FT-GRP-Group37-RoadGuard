@@ -43,7 +43,7 @@ def local_path(base, relative):
 
 def test_manifest_records_versions_and_truthful_review_basis():
     assert MANIFEST["package_id"] == "roadguard-a-knowledge"
-    assert MANIFEST["package_version"] == "a-knowledge-v12"
+    assert MANIFEST["package_version"] == "a-knowledge-v16"
     assert MANIFEST["owner"] == "A"
     assert MANIFEST["review_basis"] == "repository_consistency_review"
     assert MANIFEST["review"]["performed_by"] == "coding_agent_on_behalf_of_A"
@@ -87,7 +87,7 @@ def test_document_hashes_metadata_anchors_classifications_and_sources(document):
     content = path.read_text(encoding="utf-8")
     assert digest(path) == document["sha256"]
     assert document["owner"] == "A"
-    versions = {'rg-kb-scope': '5', 'rg-kb-labels': '3', 'rg-kb-demo-rules': '4', 'rg-kb-workflow': '8', 'rg-kb-assistant': '6', 'rg-kb-pending': '7', 'rg-kb-routing': '1', 'rg-kb-plans': '1', 'rg-kb-operations': '2', 'rg-kb-evaluation': '2', 'rg-kb-integration': '3'}
+    versions = {'rg-kb-scope': '5', 'rg-kb-labels': '3', 'rg-kb-demo-rules': '4', 'rg-kb-workflow': '8', 'rg-kb-assistant': '9', 'rg-kb-pending': '7', 'rg-kb-routing': '2', 'rg-kb-plans': '2', 'rg-kb-operations': '2', 'rg-kb-evaluation': '2', 'rg-kb-integration': '7'}
     assert document["document_version"] == versions.get(document["document_id"], "1")
     assert document["review_basis"] == "repository_consistency_review"
     assert f'document_id: `{document["document_id"]}`' in content

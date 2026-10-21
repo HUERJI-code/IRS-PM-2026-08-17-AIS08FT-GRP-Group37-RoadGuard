@@ -5,7 +5,7 @@
   "real_model_called": false,
   "real_travel_provider_called": false,
   "input": {
-    "question": "四队分别负责什么任务？",
+    "question": "\u56db\u961f\u5206\u522b\u8d1f\u8d23\u4ec0\u4e48\u4efb\u52a1？",
     "scope": "plan",
     "plan_id": "plan-54332d414fc144678fec58364d59b7cf"
   },
@@ -14,32 +14,32 @@
     "contract_version": "c-assistant-query-v1",
     "status": "supported",
     "supported": true,
-    "answer": "[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01]\n队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02]\n队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03]\n队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04]\n队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+    "answer": "[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01]\n\u961f\u4f0d：crew-01\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：e857ae535cb04674b5bbb8d39e4cb63c\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02]\n\u961f\u4f0d：crew-02\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03]\n\u961f\u4f0d：crew-03\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。\n\n[plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04]\n\u961f\u4f0d：crew-04\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。",
     "selections": [
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01",
-        "quote": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+        "quote": "\u961f\u4f0d：crew-01\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：e857ae535cb04674b5bbb8d39e4cb63c\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。"
       },
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02",
-        "quote": "队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+        "quote": "\u961f\u4f0d：crew-02\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。"
       },
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03",
-        "quote": "队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+        "quote": "\u961f\u4f0d：crew-03\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。"
       },
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04",
-        "quote": "队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+        "quote": "\u961f\u4f0d：crew-04\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。"
       }
     ],
     "sources": [
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-01",
         "kind": "saved_plan",
-        "title": "crew-01 访问顺序",
+        "title": "crew-01 \u8bbf\u95ee\u987a\u5e8f",
         "classification": "saved_demo_plan",
-        "content": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：e857ae535cb04674b5bbb8d39e4cb63c\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "content": "\u961f\u4f0d：crew-01\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：e857ae535cb04674b5bbb8d39e4cb63c\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。",
         "version": "2",
         "sha256": "d92de16b980c461c2411d92aeb796dfa6bec6d3bfd6bf95a006df64f8fed8736",
         "provenance": []
@@ -47,9 +47,9 @@
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-02",
         "kind": "saved_plan",
-        "title": "crew-02 访问顺序",
+        "title": "crew-02 \u8bbf\u95ee\u987a\u5e8f",
         "classification": "saved_demo_plan",
-        "content": "队伍：crew-02\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "content": "\u961f\u4f0d：crew-02\n\u53ef\u7528：\u662f\n\u72b6\u6001：assigned\n\u6309\u987a\u5e8f\u505c\u9760：\n  \u987a\u5e8f：1\n  \u4efb\u52a1ID：d146cae6d72a4b0ca74521ff47d5b4fe\n  \u4f18\u5148\u7ea7：P2\n  \u4e0a\u4e00\u7ad9\u884c\u7a0b\u5206\u949f：31.3\n  \u5230\u8fbe\u5206\u949f\u504f\u79fb：31.3\n  \u7ef4\u4fee\u5206\u949f：120.0\n  \u5b8c\u6210\u5206\u949f\u504f\u79fb：151.3\n\u603b\u884c\u7a0b\u5206\u949f：62.6\n\u8fd4\u7a0b\u5206\u949f：31.3\n\u603b\u5de5\u4f5c\u5206\u949f：182.6\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。",
         "version": "2",
         "sha256": "0bcadf622ead733f55cc7f28d94e81ac1b674c66b99367d9caf19773f09e0f1d",
         "provenance": []
@@ -57,9 +57,9 @@
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-03",
         "kind": "saved_plan",
-        "title": "crew-03 访问顺序",
+        "title": "crew-03 \u8bbf\u95ee\u987a\u5e8f",
         "classification": "saved_demo_plan",
-        "content": "队伍：crew-03\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "content": "\u961f\u4f0d：crew-03\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。",
         "version": "2",
         "sha256": "3a105c475333ee38e7f58cb1cd6bf8c22c716bd31762731ae1c9ef96d01a86fc",
         "provenance": []
@@ -67,9 +67,9 @@
       {
         "citation_id": "plan:plan-54332d414fc144678fec58364d59b7cf#crew-crew-04",
         "kind": "saved_plan",
-        "title": "crew-04 访问顺序",
+        "title": "crew-04 \u8bbf\u95ee\u987a\u5e8f",
         "classification": "saved_demo_plan",
-        "content": "队伍：crew-04\n可用：是\n状态：idle\n按顺序停靠：无\n总行程分钟：0.0\n返程分钟：未提供（未知）\n总工作分钟：0.0\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "content": "\u961f\u4f0d：crew-04\n\u53ef\u7528：\u662f\n\u72b6\u6001：idle\n\u6309\u987a\u5e8f\u505c\u9760：\u65e0\n\u603b\u884c\u7a0b\u5206\u949f：0.0\n\u8fd4\u7a0b\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u603b\u5de5\u4f5c\u5206\u949f：0.0\n\u8bf4\u660e：\u65f6\u95f4\u76f8\u5bf9\u7edf\u4e00\u5f00\u59cb\u65f6\u523b；\u4ec5\u4e3a\u4fdd\u5b58\u7684\u6a21\u62df\u7ef4\u4fee\u5b89\u6392，\u6ca1\u6709\u771f\u5b9e\u9053\u8def\u51e0\u4f55。",
         "version": "2",
         "sha256": "e23a14a0271f75f7e7bfed44332e21fd52d11270fe628abad170e8e4970c7427",
         "provenance": []
@@ -91,9 +91,9 @@
     "answer_mode": "verified_extracts",
     "business_changes_applied": false,
     "warnings": [
-      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
-      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
-      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+      "\u56de\u7b54\u7531\u6a21\u578b\u9009\u62e9\u7684\u539f\u6587\u8bc1\u636e\u7ec4\u6210；\u5f15\u7528\u6821\u9a8c\u4e0d\u7b49\u4e8e\u8bed\u4e49\u5145\u5206\u6027\u6216\u5de5\u7a0b\u4e13\u5bb6\u5ba1\u6279。",
+      "\u6f14\u793a\u89c4\u5219、\u6a21\u62df\u884c\u7a0b\u4e0e\u5f85\u5b9a\u4e8b\u9879\u4e0d\u80fd\u89c6\u4e3a\u771f\u5b9e\u5de5\u7a0b\u7ed3\u8bba。",
+      "\u672c\u63a5\u53e3\u4e0d\u8c03\u6574\u961f\u4f0d、\u4e0d\u91cd\u7b97、\u4e0d\u5199\u4e1a\u52a1\u8bb0\u5f55；\u672a\u63d0\u4f9b\u6bd4\u8f83\u65b9\u6848，\u4e0d\u80fd\u63a8\u5bfc\u4f18\u5316\u63d0\u5347。"
     ]
   },
   "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",

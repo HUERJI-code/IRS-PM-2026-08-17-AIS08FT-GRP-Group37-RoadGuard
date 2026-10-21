@@ -1,0 +1,318 @@
+{
+  "kind": "live_local_assistant_acceptance",
+  "date": "2026-10-21",
+  "contract_version": "c-assistant-query-v3",
+  "direct_cases": [
+    {
+      "question": "\u4f60\u662f\u4ec0\u4e48\u6a21\u578b",
+      "http_status": 200,
+      "response": {
+        "contract_version": "c-assistant-query-v3",
+        "status": "model_info",
+        "supported": true,
+        "answer": "The server is configured to use gpt-4.1-mini. This reports configuration; no model was called for this answer.",
+        "selections": [],
+        "sources": [],
+        "package_version": null,
+        "manifest_sha256": null,
+        "plan": null,
+        "model": "gpt-4.1-mini",
+        "model_called": false,
+        "answer_mode": "server_configuration",
+        "business_changes_applied": false,
+        "warnings": []
+      }
+    },
+    {
+      "question": "What model are you?",
+      "http_status": 200,
+      "response": {
+        "contract_version": "c-assistant-query-v3",
+        "status": "model_info",
+        "supported": true,
+        "answer": "The server is configured to use gpt-4.1-mini. This reports configuration; no model was called for this answer.",
+        "selections": [],
+        "sources": [],
+        "package_version": null,
+        "manifest_sha256": null,
+        "plan": null,
+        "model": "gpt-4.1-mini",
+        "model_called": false,
+        "answer_mode": "server_configuration",
+        "business_changes_applied": false,
+        "warnings": []
+      }
+    },
+    {
+      "question": "What is the weather in Singapore?",
+      "http_status": 200,
+      "response": {
+        "contract_version": "c-assistant-query-v3",
+        "status": "out_of_scope",
+        "supported": false,
+        "answer": "I can help with RoadGuard road damage, demo repair priorities and durations, detection confidence, and saved route plans. Try asking how deep potholes are prioritized, or select a saved plan and ask about crew visit order. For other topics, please use a general-purpose assistant.",
+        "selections": [],
+        "sources": [],
+        "package_version": null,
+        "manifest_sha256": null,
+        "plan": null,
+        "model": null,
+        "model_called": false,
+        "answer_mode": "scope_guidance",
+        "business_changes_applied": false,
+        "warnings": []
+      }
+    },
+    {
+      "question": "Who won the World Cup?",
+      "http_status": 200,
+      "response": {
+        "contract_version": "c-assistant-query-v3",
+        "status": "out_of_scope",
+        "supported": false,
+        "answer": "I can help with RoadGuard road damage, demo repair priorities and durations, detection confidence, and saved route plans. Try asking how deep potholes are prioritized, or select a saved plan and ask about crew visit order. For other topics, please use a general-purpose assistant.",
+        "selections": [],
+        "sources": [],
+        "package_version": null,
+        "manifest_sha256": null,
+        "plan": null,
+        "model": null,
+        "model_called": false,
+        "answer_mode": "scope_guidance",
+        "business_changes_applied": false,
+        "warnings": []
+      }
+    }
+  ],
+  "direct_provider_calls": 0,
+  "grounded": {
+    "cases": [
+      {
+        "request": {
+          "question": "What are the repair priority and service duration for a deep pothole?",
+          "scope": "knowledge"
+        },
+        "http_status": 200,
+        "response": {
+          "contract_version": "c-assistant-query-v3",
+          "status": "supported",
+          "supported": true,
+          "answer": "Deep pothole has priority P1, an estimated repair time of 240 minutes and high severity.\n\nThese estimates follow the current project rules and are project assumptions.",
+          "selections": [
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |"
+            },
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "quote": "| pothole_deep | high | P1 | 240 |"
+            },
+            {
+              "citation_id": "rg-kb-pending#pending-business",
+              "quote": "On 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic."
+            }
+          ],
+          "sources": [
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "kind": "knowledge",
+              "title": "Exact demo mapping",
+              "classification": "demo_assumption",
+              "content": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |",
+              "version": "4",
+              "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+              "provenance": [
+                {
+                  "source_id": "src-demo-rules",
+                  "path": "SystemCode/config/demo_rules.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                  "version": "demo-rules-v2"
+                },
+                {
+                  "source_id": "src-label-schema",
+                  "path": "SystemCode/model/label_schema.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e",
+                  "version": "rdd2022es-v1-labels-1"
+                }
+              ]
+            },
+            {
+              "citation_id": "rg-kb-pending#pending-business",
+              "kind": "knowledge",
+              "title": "Business and scenario decisions pending",
+              "classification": "pending_decision",
+              "content": "## Business and scenario decisions pending\n\n\n\nOn 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic.\n\ndue_at=null means no defined task deadline; the shared project return_to_depot=null means no defined operational return policy, while the routing demo explicitly selects true. Unknown duration is not zero, no available plan is not a valid empty plan, and unreachable travel is not zero minutes.",
+              "version": "7",
+              "sha256": "017c26eec0f9c301b19c98d5f0fb5110f372fa2215d4ee2b5c9dde454403e61a",
+              "provenance": [
+                {
+                  "source_id": "src-project-config",
+                  "path": "SystemCode/config/project.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+                  "version": "jurong-je-jw-mp2025-v1"
+                },
+                {
+                  "source_id": "src-demo-rules",
+                  "path": "SystemCode/config/demo_rules.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                  "version": "demo-rules-v2"
+                },
+                {
+                  "source_id": "context-agents",
+                  "path": "AGENTS.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "context-scope",
+                  "path": "Miscellaneous/PROJECT_SCOPE.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "src-routing-config",
+                  "path": "SystemCode/config/routing.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-google-matrix",
+                  "path": "SystemCode/backend/roadguard/routing/google_matrix.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "926b498a17be641fb7f9a4f4e147931313a0bb39eaa6e52b403c361a903a7751",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-routing-results",
+                  "path": "SystemCode/experiments/routing/results/README.md",
+                  "integrity": "sha256_verified",
+                  "sha256": "5bd665d421204195fc4a3001bcdcd94ed783fb3963993060ab5318f21e54736e",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                }
+              ]
+            }
+          ],
+          "package_version": "a-knowledge-v16",
+          "manifest_sha256": "fbcd98c8bd2a68961c358427a7ff493244673f829ef50f7dc0a1812a82346118",
+          "plan": null,
+          "model": "gpt-4.1-mini",
+          "model_called": true,
+          "answer_mode": "grounded_summary",
+          "business_changes_applied": false,
+          "warnings": [
+            "Answers use verified sources; rule values come from original evidence. Source validation does not guarantee every semantic judgment.",
+            "Demo rules, simulated travel and pending decisions are not real engineering conclusions.",
+            "This endpoint does not change crews, replan or write business records. Without a comparison plan, improvement cannot be inferred."
+          ]
+        }
+      },
+      {
+        "request": {
+          "question": "What are the total travel minutes and total service minutes in this saved plan?",
+          "scope": "plan",
+          "plan_id": "plan-02372313f4f5475187499a8061d20d0a"
+        },
+        "http_status": 200,
+        "response": {
+          "contract_version": "c-assistant-query-v3",
+          "status": "supported",
+          "supported": true,
+          "answer": "The saved plan (plan-02372313f4f5475187499a8061d20d0a) shows total travel minutes of 98.8 and total service minutes of 165.0. These totals represent the combined travel and service durations across all assigned crews in the plan. The total travel minutes include all travel legs, including returns to the depot, and service minutes represent the aggregate of task service durations assigned within the plan.",
+          "selections": [
+            {
+              "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#metrics",
+              "quote": "Assigned task count: 2\nUnassigned task count: 0\nTotal travel minutes: 98.8\nTotal service minutes: 165.0\nMakespan minute offset: 169.4\nWorkload standard deviation minutes: 69.30826469877569\nTasks with deadlines: 0\nTotal lateness minutes: Not provided (unknown)\nAlgorithm runtime milliseconds: 25.324800051748753\nNotes: null means unknown, not zero. Lateness cannot be calculated without deadlines. Algorithm runtime is distinct from travel or repair duration."
+            },
+            {
+              "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#summary",
+              "quote": "Plan ID: plan-02372313f4f5475187499a8061d20d0a\nAlgorithm: ga\nInput revision: 7\nCommon start UTC: 2026-10-18T09:28:32+00:00\nDemo plan: Yes\nTravel source: simulated_haversine_v1\nSimulated travel: Yes\nNotes: Saved plan facts, not live vehicle status; individual task rule snapshots are not included."
+            }
+          ],
+          "sources": [
+            {
+              "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#summary",
+              "kind": "saved_plan",
+              "title": "Plan and provenance",
+              "classification": "saved_demo_plan",
+              "content": "Plan ID: plan-02372313f4f5475187499a8061d20d0a\nAlgorithm: ga\nInput revision: 7\nCommon start UTC: 2026-10-18T09:28:32+00:00\nDemo plan: Yes\nTravel source: simulated_haversine_v1\nSimulated travel: Yes\nNotes: Saved plan facts, not live vehicle status; individual task rule snapshots are not included.",
+              "version": "7",
+              "sha256": "f02f22cfe4cd65e67a7b65b7de91043b436e0c185c82fb3c75f2dd9251198d21",
+              "provenance": []
+            },
+            {
+              "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#metrics",
+              "kind": "saved_plan",
+              "title": "Plan metrics",
+              "classification": "saved_demo_plan",
+              "content": "Assigned task count: 2\nUnassigned task count: 0\nTotal travel minutes: 98.8\nTotal service minutes: 165.0\nMakespan minute offset: 169.4\nWorkload standard deviation minutes: 69.30826469877569\nTasks with deadlines: 0\nTotal lateness minutes: Not provided (unknown)\nAlgorithm runtime milliseconds: 25.324800051748753\nNotes: null means unknown, not zero. Lateness cannot be calculated without deadlines. Algorithm runtime is distinct from travel or repair duration.",
+              "version": "7",
+              "sha256": "0639b776c44212c6cc1b97c8928b09aaeb8498ff8f2ac027c39e5834c97a8265",
+              "provenance": []
+            }
+          ],
+          "package_version": "a-knowledge-v16",
+          "manifest_sha256": "fbcd98c8bd2a68961c358427a7ff493244673f829ef50f7dc0a1812a82346118",
+          "plan": {
+            "plan_id": "plan-02372313f4f5475187499a8061d20d0a",
+            "input_revision": 7,
+            "algorithm": "ga",
+            "matrix_provider": "simulated_haversine_v1",
+            "matrix_is_simulated": true,
+            "is_demo": true,
+            "is_stale": false
+          },
+          "model": "gpt-4.1-mini",
+          "model_called": true,
+          "answer_mode": "grounded_summary",
+          "business_changes_applied": false,
+          "warnings": [
+            "Answers use verified sources; rule values come from original evidence. Source validation does not guarantee every semantic judgment.",
+            "Demo rules, simulated travel and pending decisions are not real engineering conclusions.",
+            "This endpoint does not change crews, replan or write business records. Without a comparison plan, improvement cannot be inferred."
+          ]
+        }
+      }
+    ],
+    "provider_calls": 2,
+    "business_snapshots_unchanged": true,
+    "plan_id": "plan-02372313f4f5475187499a8061d20d0a",
+    "plan_metrics": {
+      "assigned_task_count": 2,
+      "unassigned_task_count": 0,
+      "unassigned_by_priority": {
+        "P1": 0,
+        "P2": 0,
+        "P3": 0
+      },
+      "total_travel_minutes": 98.8,
+      "total_service_minutes": 165.0,
+      "makespan_minutes": 169.4,
+      "workload_std_minutes": 69.30826469877569,
+      "priority_weighted_completion_minutes": 107.19999999999999,
+      "tasks_with_due_at": 0,
+      "total_lateness_minutes": null,
+      "late_task_count": null,
+      "objective_value": 277.41413234938784,
+      "algorithm_runtime_ms": 25.324800051748753
+    }
+  },
+  "final_index_check": {
+    "package_version": "a-knowledge-v16",
+    "manifest_sha256": "7ea93552655307cd27e8d39c1738030ff3904f0fa02452b91c7dfd90117fba08",
+    "retrieval_http_status": 200,
+    "citation_ids": [
+      "rg-kb-demo-rules#demo-rule-table",
+      "rg-kb-demo-rules#demo-gate-selection",
+      "rg-kb-labels#label-table"
+    ],
+    "provider_calls": 0
+  },
+  "note": "Live grounded calls preceded LF-only source normalization. Final normalized source hashes were reviewed and local retrieval rechecked without repeating GPT calls. No historical answer records were changed. This is targeted acceptance, not full semantic validation."
+}

@@ -1,0 +1,224 @@
+{
+  "date": "2026-10-21",
+  "model": "gpt-4.1-mini",
+  "is_synthetic": false,
+  "model_calls": 7,
+  "unique_cases": 6,
+  "delivery": "local_only",
+  "api_cases": [
+    {
+      "case": "comparison",
+      "question": "\u666e\u901a\u7eb5\u5411\u88c2\u7f1d\u548c\u5bbd\u7eb5\u5411\u88c2\u7f1d\u7684\u7ef4\u4fee\u65f6\u95f4、\u4f18\u5148\u7ea7\u5206\u522b\u662f\u4ec0\u4e48？",
+      "scope": "knowledge",
+      "http": 200,
+      "seconds": 4.73,
+      "passed": true,
+      "status": "supported",
+      "answer": "\u7eb5\u5411\u88c2\u7f1d：\u4f18\u5148\u7ea7\u4e3a P3，\u9884\u8ba1\u7ef4\u4fee\u65f6\u95f4\u4e3a 60 \u5206\u949f，\u4e25\u91cd\u5ea6\u4e3a\u4f4e（low）。\n\n\u5bbd\u7eb5\u5411\u88c2\u7f1d：\u4f18\u5148\u7ea7\u4e3a P2，\u9884\u8ba1\u7ef4\u4fee\u65f6\u95f4\u4e3a 120 \u5206\u949f，\u4e25\u91cd\u5ea6\u4e3a\u4e2d\u7b49（medium）。\n\n\u4ee5\u4e0a\u4f9d\u636e\u9879\u76ee\u5f53\u524d\u7ef4\u4fee\u89c4\u5219；\u5de5\u65f6\u662f\u9879\u76ee\u8bbe\u5b9a\u7684\u9884\u8ba1\u503c。",
+      "contract_version": "c-assistant-query-v2",
+      "manifest_sha256": "96b289154d7a88918a5e2ebd072953681e306d3ddc7d57e604f0130404525a8a",
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table"
+      ],
+      "selections": [
+        {
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |"
+        },
+        {
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "quote": "| longitudinal_crack | low | P3 | 60 |"
+        },
+        {
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "quote": "| longitudinal_crack_wide | medium | P2 | 120 |"
+        }
+      ],
+      "source_checks": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "business_tables_unchanged": true
+    },
+    {
+      "case": "english",
+      "question": "What are the repair duration and priority for a deep pothole?",
+      "scope": "knowledge",
+      "http": 200,
+      "seconds": 2.3,
+      "passed": true,
+      "status": "supported",
+      "answer": "Deep pothole has priority P1, an estimated repair time of 240 minutes and high severity.\n\nThese estimates follow the current project rules and are project assumptions.",
+      "contract_version": "c-assistant-query-v2",
+      "manifest_sha256": "96b289154d7a88918a5e2ebd072953681e306d3ddc7d57e604f0130404525a8a",
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table",
+        "rg-kb-pending#pending-business",
+        "rg-kb-labels#label-table",
+        "rg-kb-labels#label-limits"
+      ],
+      "selections": [
+        {
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |"
+        },
+        {
+          "citation_id": "rg-kb-demo-rules#demo-rule-table",
+          "quote": "| pothole_deep | high | P1 | 240 |"
+        },
+        {
+          "citation_id": "rg-kb-pending#pending-business",
+          "quote": "On 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic."
+        },
+        {
+          "citation_id": "rg-kb-labels#label-table",
+          "quote": "## Canonical label dictionary\n\n\n\nThe sole label dictionary is `rdd2022es-v1-labels-1`, from version 1 of Juuso's `juusos/rdd2022es`, member `combined_annotatedv2/classes.txt`. This package rechecks IDs and names already verified in the repository; it neither redownloads data nor claims full training-data quality acceptance. IDs are 0-7. Base RDD2022 D00/D10/D20/D40 are damage-family codes, not substitutes for these eight class IDs.\n\n| class_id | source_name | label_key | English display | Base family code | Visual qualifier |\n| --- | --- | --- | --- | --- | --- |"
+        },
+        {
+          "citation_id": "rg-kb-labels#label-table",
+          "quote": "| 7 | pothole deep | pothole_deep | Deep pothole | D40 | deep |"
+        },
+        {
+          "citation_id": "rg-kb-labels#label-limits",
+          "quote": "`wide`, `sunken` and `deep` are visual categories in the source dataset, not measured crack widths, subsidence/pothole depths or structural diagnoses. An unqualified category does not prove minor damage either. The label dictionary does not directly provide severity, priority, service_minutes or due_at. Current mappings are defined only by demo rules, not the dataset or formal engineering standards. Cite actual delivery evidence for the relevant model version when discussing training splits, real inference or per-class metrics; these cannot be inferred from the label dictionary."
+        }
+      ],
+      "source_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "business_tables_unchanged": true
+    },
+    {
+      "case": "depot",
+      "question": "\u9879\u76ee\u7684\u8d77\u59cb\u8c03\u5ea6\u70b9\u5728\u54ea\u91cc？\u6709\u591a\u5c11\u652f\u5de5\u7a0b\u961f？",
+      "scope": "knowledge",
+      "http": 200,
+      "seconds": 2.5,
+      "passed": true,
+      "status": "supported",
+      "answer": "\u8be5\u9879\u76ee\u7684\u8d77\u59cb\u8c03\u5ea6\u70b9\u4e3a\u5171\u4eab\u7684\u8d77\u70b9，\u5730\u5740\u662f\u65b0\u52a0\u5761\u56fd\u7acb\u5927\u5b66\u4fe1\u606f\u7cfb\u7edf\u5b66\u9662（NUS-ISS），\u5177\u4f53\u4f4d\u7f6e\u4e3a25 Heng Mui Keng Terrace，\u7eac\u5ea61.292149，\u7ecf\u5ea6103.776551，\u8be5\u5730\u70b9\u4f5c\u4e3a\u865a\u62df\u8d77\u70b9，\u5e76\u975e\u771f\u6b63\u7684\u7ef4\u4fee\u4f5c\u4e1a\u5730\u5740。\u9879\u76ee\u4e2d\u5171\u67094\u652f\u5de5\u7a0b\u961f，\u7f16\u53f7\u4e3acrew-01\u81f3crew-04。\u8fd9\u4e9b\u5de5\u7a0b\u961f\u5747\u4ece\u8be5\u5171\u540c\u8d77\u70b9\u51fa\u53d1\u5f00\u5c55\u4efb\u52a1。",
+      "contract_version": "c-assistant-query-v2",
+      "manifest_sha256": "96b289154d7a88918a5e2ebd072953681e306d3ddc7d57e604f0130404525a8a",
+      "citations": [
+        "rg-kb-scope#depot-crews",
+        "rg-kb-demo-rules#routing-demo-settings",
+        "rg-kb-routing#routing-input"
+      ],
+      "selections": [
+        {
+          "citation_id": "rg-kb-scope#depot-crews",
+          "quote": "One fictional repair department uses four simulated crews: `crew-01`, `crew-02`, `crew-03`, `crew-04`. Their shared origin is NUS-ISS, 25 Heng Mui Keng Terrace, latitude `1.292149`, longitude `103.776551`, depot version `nus-iss-v1`. This is a simulated origin at a real address, not actual NUS-ISS repair operations."
+        },
+        {
+          "citation_id": "rg-kb-routing#routing-input",
+          "quote": "Each input task must appear exactly once, either in a crew's ordered stops or in unassigned_tasks. Unknown service duration, inaccessible travel and shift limits are constraints, not permission to drop tasks silently. All available crews begin at the same depot at planning_start_at. This is static replanning from a common start; there is no live vehicle tracking, in-transit dispatch or task time-window model."
+        },
+        {
+          "citation_id": "rg-kb-demo-rules#routing-demo-settings",
+          "quote": "The b-routing-demo-v1 configuration uses four crews, the shared NUS-ISS depot, return_to_depot=true, a 480-minute shift and a simulated matrix by default. These demonstration assumptions do not resolve the shared operational policy's null values."
+        }
+      ],
+      "source_checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "business_tables_unchanged": true
+    },
+    {
+      "case": "plan",
+      "question": "\u8fd9\u4efd\u65b9\u6848\u7684\u603b\u884c\u7a0b\u5206\u949f\u6570\u548c\u5df2\u5206\u914d\u4efb\u52a1\u6570\u5206\u522b\u662f\u591a\u5c11？",
+      "scope": "plan",
+      "http": 200,
+      "seconds": 1.72,
+      "passed": true,
+      "status": "supported",
+      "answer": "\u8fd9\u4efd\u65b9\u6848\u7684\u603b\u884c\u7a0b\u65f6\u95f4\u4e3a98.8\u5206\u949f，\u5df2\u5206\u914d\u7684\u4efb\u52a1\u6570\u662f2\u4e2a。",
+      "contract_version": "c-assistant-query-v2",
+      "manifest_sha256": "96b289154d7a88918a5e2ebd072953681e306d3ddc7d57e604f0130404525a8a",
+      "citations": [
+        "plan:plan-02372313f4f5475187499a8061d20d0a#summary",
+        "plan:plan-02372313f4f5475187499a8061d20d0a#metrics"
+      ],
+      "selections": [
+        {
+          "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#metrics",
+          "quote": "\u5df2\u5206\u914d\u4efb\u52a1\u6570：2\n\u672a\u5206\u914d\u4efb\u52a1\u6570：0\n\u603b\u884c\u7a0b\u5206\u949f：98.8\n\u603b\u7ef4\u4fee\u5206\u949f：165.0\n\u6700\u665a\u6536\u5de5\u5206\u949f\u504f\u79fb：169.4\n\u5de5\u4f5c\u91cf\u6807\u51c6\u5dee\u5206\u949f：69.30826469877569\n\u6709\u671f\u9650\u4efb\u52a1\u6570：0\n\u603b\u5ef6\u8bef\u5206\u949f：\u672a\u63d0\u4f9b（\u672a\u77e5）\n\u7b97\u6cd5\u8017\u65f6\u6beb\u79d2：25.324800051748753\n\u8bf4\u660e：null \u8868\u793a\u672a\u77e5，\u4e0d\u80fd\u5f53\u4f5c\u96f6；\u65e0\u671f\u9650\u4e0d\u80fd\u8ba1\u7b97\u5ef6\u8bef；\u7b97\u6cd5\u8017\u65f6\u4e0d\u7b49\u4e8e\u884c\u7a0b\u6216\u7ef4\u4fee\u65f6\u957f。"
+        },
+        {
+          "citation_id": "plan:plan-02372313f4f5475187499a8061d20d0a#summary",
+          "quote": "\u65b9\u6848ID：plan-02372313f4f5475187499a8061d20d0a\n\u7b97\u6cd5：ga\n\u8f93\u5165\u7248\u672c：7\n\u7edf\u4e00\u5f00\u59cb\u65f6\u95f4UTC：2026-10-18T09:28:32+00:00\n\u6f14\u793a\u65b9\u6848：\u662f\n\u884c\u7a0b\u6765\u6e90：simulated_haversine_v1\n\u6a21\u62df\u884c\u7a0b：\u662f\n\u8bf4\u660e：\u4fdd\u5b58\u65b9\u6848\u4e8b\u5b9e，\u4e0d\u662f\u5b9e\u65f6\u8f66\u8f86\u72b6\u6001；\u4e0d\u5305\u542b\u5355\u6761\u4efb\u52a1\u7684\u51bb\u7ed3\u89c4\u5219\u8bc1\u636e。"
+        }
+      ],
+      "source_checks": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "business_tables_unchanged": true
+    },
+    {
+      "case": "unrelated-initial-failure",
+      "question": "\u8bf7\u63a8\u8350\u660e\u5929\u5e94\u8be5\u4e70\u5165\u54ea\u53ea\u80a1\u7968\u4ee5\u53ca\u5177\u4f53\u4e70\u5165\u4ef7\u683c。",
+      "scope": "knowledge",
+      "http": 502,
+      "seconds": 2.36,
+      "passed": false,
+      "status": "assistant_invalid_response",
+      "answer": null,
+      "contract_version": null,
+      "manifest_sha256": null,
+      "citations": [],
+      "selections": [],
+      "source_checks": [],
+      "business_tables_unchanged": true
+    },
+    {
+      "case": "unrelated",
+      "question": "\u8bf7\u63a8\u8350\u660e\u5929\u5e94\u8be5\u4e70\u5165\u54ea\u53ea\u80a1\u7968\u4ee5\u53ca\u5177\u4f53\u4e70\u5165\u4ef7\u683c。",
+      "scope": "knowledge",
+      "http": 200,
+      "seconds": 3.31,
+      "passed": true,
+      "status": "insufficient_data",
+      "answer": "\u73b0\u6709\u8bc1\u636e\u4e0d\u8db3\u4ee5\u5b8c\u6574\u56de\u7b54，\u8bf7\u8865\u5145\u5177\u4f53\u65b9\u6848\u6216\u7f29\u5c0f\u95ee\u9898\u8303\u56f4。",
+      "contract_version": "c-assistant-query-v2",
+      "manifest_sha256": "8fa0b84acc9c5940fb4e057b8856d195c284ecdbcff366832c09894b4042004e",
+      "citations": [],
+      "selections": [],
+      "source_checks": [],
+      "business_tables_unchanged": true
+    }
+  ],
+  "browser_case": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "answer": "\u6df1\u5751\u6d1e：\u4f18\u5148\u7ea7\u4e3a P1，\u9884\u8ba1\u7ef4\u4fee\u65f6\u95f4\u4e3a 240 \u5206\u949f，\u4e25\u91cd\u5ea6\u4e3a\u9ad8（high）。\u4ee5\u4e0a\u4f9d\u636e\u9879\u76ee\u5f53\u524d\u7ef4\u4fee\u89c4\u5219；\u5de5\u65f6\u662f\u9879\u76ee\u8bbe\u5b9a\u7684\u9884\u8ba1\u503c。",
+    "scrollWidth": 375,
+    "sourcesOpen": false,
+    "width": 375,
+    "sourceDisclosureChecked": true,
+    "sourceMetadataChecked": true,
+    "expanded_scroll_width": 375,
+    "viewport_restored": true
+  },
+  "note": "The initial unsupported-question failure is retained. One corrective live retest passed. Browser supported-answer display was checked before the refusal-only correction; the final identifier guard was verified with automated tests.",
+  "final_manifest_sha256": "30dcfbb325101c18301079ab16b30f8b2ed099be4ace843f653cba101a4f6f95"
+}

@@ -249,3 +249,13 @@ it('focuses selected task on mobile and keeps focus stable after rereading', asy
     await waitFor(() => expect(scroll).toHaveBeenCalledTimes(2))
   } finally { HTMLElement.prototype.scrollIntoView = previous }
 })
+it('explains that a revoked stale route requires dispatcher recalculation before completion', async () => {
+  transport.mockImplementation(async () => {
+    const data = workspace()
+    return reply({ ...data, tasks: [], plan: { ...data.plan, is_stale: true, crew_routes: [] } })
+  })
+  mount()
+  expect(await screen.findByText(/Your saved route is stale and no longer available/)).toHaveTextContent('Ask the dispatcher to recalculate')
+  expect(screen.queryByRole('region', { name: 'Current repair task' })).not.toBeInTheDocument()
+  expect(patches()).toHaveLength(0)
+})

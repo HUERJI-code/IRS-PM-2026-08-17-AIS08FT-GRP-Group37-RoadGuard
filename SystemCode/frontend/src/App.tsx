@@ -162,7 +162,7 @@ function Workspace() {
       <div className="main-shell">
         <header className="topbar">
           <span className="breadcrumbs">Road maintenance <span>/</span> <strong>{currentPage?.short ?? 'Inspection result'}</strong></span>
-          <div className="account-controls"><span>{account.display_name}<small>{roleNames[account.role]}{account.crew_id ? ` · ${account.crew_id}` : ''}</small></span><button className="text-button" disabled={loggingOut} onClick={() => void logout()}>{loggingOut ? 'Signing out…' : 'Sign out'}</button></div>
+          <div className="account-controls"><span>{account.username}<small>{roleNames[account.role]}{account.crew_id ? ` · ${account.crew_id}` : ''}</small></span><button className="text-button" disabled={loggingOut} onClick={() => void logout()}>{loggingOut ? 'Signing out…' : 'Sign out'}</button></div>
         </header>
         {logoutError && <p className="account-error" role="alert">{logoutError}</p>}
         <div className="service-strip">{account.role === 'dispatcher' && <DataSource />}<HealthStatus /></div>

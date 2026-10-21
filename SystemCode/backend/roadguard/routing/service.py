@@ -25,6 +25,7 @@ from pydantic import ValidationError
 from roadguard.crews.service import CrewService
 from roadguard.database import Database, DatabaseStateError, read_revision
 from roadguard.errors import AppError
+from roadguard.schemas.workflow import TaskRecord
 from roadguard.schemas.common import ContractModel, NonEmptyString, NonNegativeInt, UTCTimestamp
 from roadguard.tasks import TaskQueryService
 
@@ -107,8 +108,10 @@ class PlanningService:
         with self.database.connect() as connection:
             snapshot = self.tasks.snapshot(payload.expected_revision, connection=connection)
             crews = self.crews.read_planning_crews(connection)
+            constraints = dict(connection.execute("SELECT task_id,crew_id FROM task_crew_constraints"))
         start = payload.planning_start_at or datetime.now(timezone.utc).replace(microsecond=0)
         planning_input = build_planning_input(snapshot, crews, self.depot, self.config.settings, start)
+        planning_input = planning_input.model_copy(update={"task_crew_constraints": constraints})
         matrix = self._travel_matrix(planning_input)
         # The online GA may start from the Greedy solution (planning_service.seed_with_greedy);
         # the plan's algorithm_parameters record which setting produced it.
@@ -155,7 +158,25 @@ class RouteQueryService:
             raise DatabaseStateError("Stored route plan is invalid.") from None
         if (plan.plan_id, plan.algorithm, plan.input_revision) != (row[0], row[2], row[3]):
             raise DatabaseStateError("Stored route plan columns do not match the record.")
-        return plan.model_copy(update={"is_stale": plan.input_revision != read_revision(connection)})
+        stale = plan.input_revision != read_revision(connection)
+        labels, constraints = {}, {}
+        if not stale:
+            try:
+                labels = {row[0]: TaskRecord.model_validate_json(row[1]).damage_label
+                          for row in connection.execute("SELECT task_id,record_json FROM tasks")}
+            except ValidationError:
+                raise DatabaseStateError("Stored task labels are invalid.") from None
+            constraints = dict(connection.execute("SELECT task_id,crew_id FROM task_crew_constraints"))
+        limit = plan.settings.shift_limit.minutes
+        routes = []
+        for route in plan.crew_routes:
+            stops = [stop.model_copy(update={"damage_label": labels.get(stop.task_id, stop.damage_label),
+                                            "locked_crew_id": constraints.get(stop.task_id)})
+                     if not stale else stop for stop in route.stops]
+            routes.append(route.model_copy(update={
+                "shift_remaining_minutes": max(0.0, limit-route.total_work_minutes)
+                if limit is not None and route.available else None, "stops": stops}))
+        return plan.model_copy(update={"is_stale": stale, "crew_routes": routes})
 
     @_db_operation
     def get(self, plan_id: str, *, connection: sqlite3.Connection | None = None) -> RoutePlan:

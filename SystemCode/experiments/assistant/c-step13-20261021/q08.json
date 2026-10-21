@@ -5,7 +5,7 @@
   "real_model_called": false,
   "real_travel_provider_called": false,
   "input": {
-    "question": "为什么这个方案已经过期？",
+    "question": "\u4e3a\u4ec0\u4e48\u8fd9\u4e2a\u65b9\u6848\u5df2\u7ecf\u8fc7\u671f？",
     "scope": "plan",
     "plan_id": "plan-0e5c55f9751f483e929349df33712a94"
   },
@@ -14,7 +14,7 @@
     "contract_version": "c-assistant-query-v1",
     "status": "stale_plan",
     "supported": false,
-    "answer": "任务或队伍输入已变化，指定方案已过期。请在路线页核对并重新规划。",
+    "answer": "\u4efb\u52a1\u6216\u961f\u4f0d\u8f93\u5165\u5df2\u53d8\u5316，\u6307\u5b9a\u65b9\u6848\u5df2\u8fc7\u671f。\u8bf7\u5728\u8def\u7ebf\u9875\u6838\u5bf9\u5e76\u91cd\u65b0\u89c4\u5212。",
     "selections": [],
     "sources": [],
     "package_version": "a-knowledge-v9",
@@ -33,9 +33,9 @@
     "answer_mode": "verified_extracts",
     "business_changes_applied": false,
     "warnings": [
-      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
-      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
-      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+      "\u56de\u7b54\u7531\u6a21\u578b\u9009\u62e9\u7684\u539f\u6587\u8bc1\u636e\u7ec4\u6210；\u5f15\u7528\u6821\u9a8c\u4e0d\u7b49\u4e8e\u8bed\u4e49\u5145\u5206\u6027\u6216\u5de5\u7a0b\u4e13\u5bb6\u5ba1\u6279。",
+      "\u6f14\u793a\u89c4\u5219、\u6a21\u62df\u884c\u7a0b\u4e0e\u5f85\u5b9a\u4e8b\u9879\u4e0d\u80fd\u89c6\u4e3a\u771f\u5b9e\u5de5\u7a0b\u7ed3\u8bba。",
+      "\u672c\u63a5\u53e3\u4e0d\u8c03\u6574\u961f\u4f0d、\u4e0d\u91cd\u7b97、\u4e0d\u5199\u4e1a\u52a1\u8bb0\u5f55；\u672a\u63d0\u4f9b\u6bd4\u8f83\u65b9\u6848，\u4e0d\u80fd\u63a8\u5bfc\u4f18\u5316\u63d0\u5347。"
     ]
   },
   "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",

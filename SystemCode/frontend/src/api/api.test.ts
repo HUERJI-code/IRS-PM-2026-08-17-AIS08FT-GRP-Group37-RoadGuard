@@ -337,7 +337,7 @@ describe('endpoint adapters', () => {
 it('retrieves static evidence with the existing cookie and CSRF client', async () => {
   const transport = vi.fn<Transport>().mockResolvedValue(reply(knowledgeFixture))
   const api = createApiClient(transport, 8000, { csrfToken: () => 'test-csrf', onUnauthorized: vi.fn() })
-  const result = await api.knowledgeSearch({ query: '施工队账号', limit: 2, rule_version: 'demo-rules-v2' })
+  const result = await api.knowledgeSearch({ query: 'crew account', limit: 2, rule_version: 'demo-rules-v2' })
   expect(result.answer_generated).toBe(false)
   expect(result.hits[0].citation_id).toContain('#')
   const [url, init] = transport.mock.calls[0]
@@ -349,6 +349,6 @@ it('retrieves static evidence with the existing cookie and CSRF client', async (
 
 it('does not label a failed read-only search as an uncertain business write', async () => {
   const transport = vi.fn<Transport>().mockRejectedValue(new TypeError('offline'))
-  await expect(createApiClient(transport).knowledgeSearch({ query: '维修规则', limit: 5 })).rejects.toMatchObject({ outcomeUnknown: false })
+  await expect(createApiClient(transport).knowledgeSearch({ query: 'repair rules', limit: 5 })).rejects.toMatchObject({ outcomeUnknown: false })
   expect(transport).toHaveBeenCalledTimes(1)
 })

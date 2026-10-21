@@ -173,7 +173,7 @@ function CrewRoute({ crew, plan, revision, onLock }: {
   const failed = stops.filter((item) => reads[item.task_id]?.error !== undefined).length
   const stale = plan.is_stale || plan.input_revision !== readRevision || !!saved
   const nextTask = remaining.find((item) => item.task_id !== selected)
-  if (!route) return <EmptyState message="This saved plan has no record for your crew. Contact the dispatcher." />
+  if (!route) return <EmptyState message={stale ? "Your saved route is stale and no longer available after a task or crew change. Ask the dispatcher to recalculate, then refresh your workspace. Task completion requires a current assigned route." : "This saved plan has no record for your crew. Contact the dispatcher."} />
   return (
     <>
       <section className="crew-banner" style={{ '--crew-accent': crewColor(crew.crew_id) } as CSSProperties} aria-label="Crew work overview">

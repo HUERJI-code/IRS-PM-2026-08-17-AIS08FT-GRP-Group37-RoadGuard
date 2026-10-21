@@ -1,6 +1,6 @@
 # Saved plans, route explanations and comparisons
 
-document_id: `rg-kb-plans`; document_version: `1`; owner: `A`.
+document_id: `rg-kb-plans`; document_version: `2`; owner: `A`.
 
 <a id="plans-provenance"></a>
 ## Where dynamic answers obtain evidence
@@ -10,6 +10,8 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-plans#plans-proven
 Dispatcher APIs under `/api/v1` include POST /route-plans/recalculate, GET /route-plans/latest?algorithm=ga (or greedy), and GET /route-plans/{plan_id}. Recalculation requires expected_revision; planning_start_at is optional. It computes both algorithms on one input and one matrix, checks the revision again, and saves both plans together. A revision change during computation returns 409 stale_input_revision and saves neither.
 
 Use the requested plan's plan_id, input_revision, algorithm, planning_start_at, crew_routes/stops, unassigned_tasks, metrics, matrix_provider, matrix_is_simulated, settings, random_seed, algorithm_parameters and is_stale. task_source distinguishes persisted_workflow from synthetic_fixture. A valid saved plan with zero tasks differs from a 404 route_plan_not_found. Static knowledge and synthetic fixtures cannot establish today's plan.
+
+Routes expose shift_remaining_minutes (null for an unlimited shift); stops may expose damage_label and locked_crew_id. Older snapshots can lack optional stop metadata. Current nonstale plans can be enriched from matching active task/constraint records on read; historical stale plans must not inherit today's labels or locks. Display the selected plan ID and separate travel, service, return and total work rather than guessing capacity in the browser.
 
 The recalculation response records matrix_generated_at, including the original fetch time for a cached Google matrix. This field is not currently in the saved RoutePlan model; retain the response as evidence if an answer needs matrix age or same-run provenance. Do not invent a persisted matrix ID/hash or timestamp.
 
@@ -41,6 +43,8 @@ Use the specific plan entry's reason, not a guessed explanation from task priori
 | no_available_crew | No configured crew is currently available for planning. |
 | exceeds_shift_limit | The task or attempted route cannot fit the configured shift including required return. |
 | no_feasible_route_position | The evaluated placement cannot satisfy travel/route constraints. |
+| assigned_crew_unavailable | A confirmed task-to-crew constraint points to an unavailable crew. |
+| assigned_crew_infeasible | The task cannot fit a feasible route on its locked crew under this input. |
 
 An unassigned reason describes this input and evaluated plan. It is not a mathematical proof that every possible permutation is infeasible. Do not claim a task was cancelled or completed merely because it is unassigned. Unknown or unreachable travel is not zero; changing a demo duration to force assignment is not authorized.
 

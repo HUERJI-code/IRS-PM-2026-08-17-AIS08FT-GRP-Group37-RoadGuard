@@ -1,5 +1,6 @@
 """Transactional demo workflow. Detected facts and frozen policies are retained."""
 
+from contextlib import nullcontext
 from datetime import datetime, timezone
 from contextlib import contextmanager
 from functools import wraps
@@ -8,6 +9,7 @@ import json
 import logging
 import re
 import sqlite3
+from pathlib import Path
 from threading import Lock
 from uuid import uuid4
 
@@ -366,7 +368,13 @@ class WorkflowService:
             return self._inspection_result(connection, inspection_id, changed=candidate is not None)
 
     @_db_operation
-    def update_task(self, task_id: str, payload: TaskPatch, *, actor=None) -> TaskMutation:
+    def update_task(self, task_id: str, payload: TaskPatch, *, actor=None, connection=None) -> TaskMutation:
+        if connection is not None:
+            if not isinstance(connection, sqlite3.Connection) or not connection.in_transaction:
+                raise AppError("validation_error", "An active shared transaction is required.", 422)
+            main = next((row for row in connection.execute("PRAGMA database_list") if row[1] == "main"), None)
+            if main is None or not main[2] or Path(main[2]).resolve() != self.database.path.resolve():
+                raise AppError("validation_error", "The connection must belong to the shared database.", 422)
         task_id = self._resource_id(task_id)
         payload = _validated(TaskPatch, payload, patch=True)
         key_scope, fingerprint = "task:" + task_id, _hash(payload.model_dump(mode="json", exclude_unset=True))
@@ -374,7 +382,7 @@ class WorkflowService:
             key_scope += ":" + actor.user_id
             if actor.role == "crew" and (payload.status != "completed" or payload.model_fields_set - {"request_id", "expected_version", "status"}):
                 denied()
-        with self.database.transaction() as connection:
+        with (nullcontext(connection) if connection is not None else self.database.transaction()) as connection:
             replay_id = self._lookup_key(connection, key_scope, payload.request_id, fingerprint)
             plan_id = check_task(connection, actor, task_id, writing=True, replay=bool(replay_id)) if actor else None
             if replay_id:

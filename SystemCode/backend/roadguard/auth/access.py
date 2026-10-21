@@ -28,6 +28,12 @@ def active_actor(connection, actor: Account):
         raise AppError("authentication_required", "Sign in to continue.", 401)
 
 
+def affinity_matches(connection, task_id: str, crew_id: str) -> bool:
+    """A confirmed dispatcher constraint takes effect before explicit replanning."""
+    row = connection.execute("SELECT crew_id FROM task_crew_constraints WHERE task_id=?", (task_id,)).fetchone()
+    return row is None or row[0] == crew_id
+
+
 def check_task(connection, actor: Account, task_id: str, *, writing: bool = False, replay: bool = False):
     active_actor(connection, actor)
     if actor.role == "dispatcher":
@@ -36,7 +42,8 @@ def check_task(connection, actor: Account, task_id: str, *, writing: bool = Fals
         denied()
     plan = latest_ga(connection)
     route = next((r for r in plan.crew_routes if r.crew_id == actor.crew_id), None) if plan else None
-    assigned = route is not None and any(stop.task_id == task_id for stop in route.stops)
+    assigned = (route is not None and any(stop.task_id == task_id for stop in route.stops)
+                and affinity_matches(connection, task_id, actor.crew_id))
     receipt = connection.execute("SELECT 1 FROM auth_audit WHERE resource_id=? AND crew_id=? AND action='task.completed'",
                                  (task_id, actor.crew_id)).fetchone()
     if not assigned and not (receipt and (not writing or replay)):

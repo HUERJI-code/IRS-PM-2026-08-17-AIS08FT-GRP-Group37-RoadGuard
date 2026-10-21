@@ -4,7 +4,7 @@
   "is_synthetic": true,
   "real_model_called": false,
   "real_travel_provider_called": false,
-  "input": "停用 crew-02",
+  "input": "\u505c\u7528 crew-02",
   "plan_id": "plan-f7486e41768d4ca2b7f9f63644dab747",
   "input_revision": 0,
   "expected": "cancel",
@@ -13,7 +13,7 @@
     "change_id": "change-6ce56a6cc18c4d49874551b19f4a881b",
     "actor_id": "2392fca50cb843b4930a74a8e1fda888",
     "client_key": "1d640310992c46ea8b89f1d656204d6f",
-    "instruction": "停用 crew-02",
+    "instruction": "\u505c\u7528 crew-02",
     "based_on_plan_id": "plan-f7486e41768d4ca2b7f9f63644dab747",
     "input_revision": 0,
     "crew_id": "crew-02",
@@ -34,7 +34,7 @@
     "replan_lease_until": null,
     "replan_error_code": null,
     "result": null,
-    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+    "warning": "\u9884\u89c8\u4e0d\u4f1a\u6539\u53d8\u961f\u4f0d。\u786e\u8ba4\u53ea\u4fdd\u5b58\u53ef\u7528\u72b6\u6001；\u91cd\u7b97\u987b\u53e6\u884c\u70b9\u51fb，\u5931\u8d25\u4e0d\u4f1a\u81ea\u52a8\u64a4\u9500\u5df2\u4fdd\u5b58\u7684\u72b6\u6001。"
   },
   "crew_state_after": {
     "contract_version": "b-crew-v1",
