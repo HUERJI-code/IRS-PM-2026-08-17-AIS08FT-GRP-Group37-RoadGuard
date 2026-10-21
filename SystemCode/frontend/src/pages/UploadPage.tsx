@@ -73,7 +73,7 @@ export default function UploadPage() {
     setError('')
     try {
       if (!operation.current) {
-        if (!file) throw new Error('请选择一张道路照片。')
+        if (!file) throw new Error('Select a road photo.')
         const metadata = uploadMetadata(
           mode,
           latitude,
@@ -104,7 +104,7 @@ export default function UploadPage() {
           ? errorMessage(err)
           : err instanceof Error
             ? err.message
-            : '上传失败。',
+            : 'Upload failed.',
       )
       const unknown = err instanceof ApiError && err.outcomeUnknown
       setUncertain(unknown)
@@ -118,23 +118,23 @@ export default function UploadPage() {
   return (
     <>
       <div className="page-heading">
-        <p className="eyebrow">巡检 / 01</p>
-        <h1>上传与结果</h1>
+        <p className="eyebrow">INSPECTION / 01</p>
+        <h1>Upload and results</h1>
         <p className="description">
-          记录照片与拍摄位置，检测结果以服务端返回为准。
+          Record the photo and its location. Detection results come from the server.
         </p>
       </div>
       {source !== 'live' && (
         <p role="status" className="notice">
-          当前为只读模拟快照，不能上传。请切换到“实时后端接口”；模拟检测请在下方选择
-          demo 模式。
+          This is a read-only mock snapshot; uploads are disabled. Switch to“Live backend API”; For mock detection, select
+          demo mode below.
         </p>
       )}
       <div className="upload-workspace">
       <form onSubmit={(event) => void submit(event)} className="upload-form">
         <fieldset disabled={locked || source !== 'live'}>
-          <legend>1. 检测来源与照片</legend>
-          <label htmlFor="inspection-mode">检测模式</label>
+          <legend>1. Detection source and photo</legend>
+          <label htmlFor="inspection-mode">Detection mode</label>
           <select
             id="inspection-mode"
             value={mode}
@@ -143,22 +143,22 @@ export default function UploadPage() {
               setScenario('')
             }}
           >
-            <option value="real">真实图片推理（实验模型）</option>
-            <option value="demo">模拟检测（固定合成结果）</option>
+            <option value="real">Real image inference (experimental model)</option>
+            <option value="demo">Mock detection (fixed synthetic result)</option>
           </select>
           <p className="field-note">
-            真实推理按当前业务规则处理；模拟检测不分析图片内容，也会保存巡检记录。
+            Real inference follows current business rules. Mock detection does not analyse image contents but still saves an inspection record.
           </p>
           {mode === 'demo' && (
             <div>
-              <label htmlFor="scenario">模拟检测案例</label>
+              <label htmlFor="scenario">Mock detection scenario</label>
               <select
                 id="scenario"
                 value={scenario}
                 onChange={(event) => setScenario(event.target.value)}
                 disabled={!catalogue || !!catalogueError}
               >
-                <option value="">请选择案例</option>
+                <option value="">Select a scenario</option>
                 {catalogue?.scenarios.map((item) => (
                   <option key={item.scenario_id} value={item.scenario_id}>
                     {item.description}
@@ -166,7 +166,7 @@ export default function UploadPage() {
                 ))}
               </select>
               {!catalogue && !catalogueError && (
-                <p role="status">正在读取模拟案例…</p>
+                <p role="status">Loading mock scenarios…</p>
               )}
               {catalogueError && (
                 <>
@@ -175,7 +175,7 @@ export default function UploadPage() {
                     type="button"
                     onClick={() => setCatalogueAttempt((n) => n + 1)}
                   >
-                    重试读取案例
+                    Retry loading scenarios
                   </button>
                 </>
               )}
@@ -183,7 +183,7 @@ export default function UploadPage() {
           )}
           <div className="photo-picker">
           <span className="photo-symbol" aria-hidden="true">＋</span>
-          <label htmlFor="photo">道路照片</label>
+          <label htmlFor="photo">Road photo</label>
           <input
             id="photo"
             type="file"
@@ -191,42 +191,42 @@ export default function UploadPage() {
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
           <p className="field-note">
-            一张 JPEG/PNG，最多 8 MiB、20 MP。上传后展示后端校正方向的图片。
+            One JPEG/PNG, up to 8 MiB and 20 MP. The server-corrected image orientation is displayed after upload.
           </p>
           {file && (
             <p>
-              已选：{file.name} · {(file.size / 1024 / 1024).toFixed(2)} MiB
+              Selected: {file.name} · {(file.size / 1024 / 1024).toFixed(2)} MiB
             </p>
           )}
           </div>
         </fieldset>
         <fieldset disabled={locked || source !== 'live'}>
-          <legend>2. 拍摄位置与道路声明</legend>
+          <legend>2. Photo location and road declaration</legend>
           <div className="coordinate-fields">
             <div>
-              <label htmlFor="latitude">纬度（latitude）</label>
+              <label htmlFor="latitude">Latitude (latitude)</label>
               <input
                 id="latitude"
                 inputMode="decimal"
                 value={latitude}
                 onChange={(event) => setLatitude(event.target.value)}
-                placeholder="填写拍摄纬度"
+                placeholder="Enter photo latitude"
               />
             </div>
             <div>
-              <label htmlFor="longitude">经度（longitude）</label>
+              <label htmlFor="longitude">Longitude (longitude)</label>
               <input
                 id="longitude"
                 inputMode="decimal"
                 value={longitude}
                 onChange={(event) => setLongitude(event.target.value)}
-                placeholder="填写拍摄经度"
+                placeholder="Enter photo longitude"
               />
             </div>
           </div>
           <p className="field-note">
-            使用 WGS84 坐标。任务限 Jurong East /
-            West；后端校验冻结边界。请填写照片拍摄位置，当前使用坐标输入。
+            Use WGS84 coordinates. Tasks are limited to Jurong East /
+            West. The backend checks the frozen boundary. Enter the photo location using coordinates.
           </p>
           <label className="checkbox-label">
             <input
@@ -234,9 +234,9 @@ export default function UploadPage() {
               checked={declared}
               onChange={(event) => setDeclared(event.target.checked)}
             />
-            我声明此位置属于允许的公共机动车道路，不是高速公路主线/匝道或私有、受限道路。
+            I declare that this location is an eligible public motor road, excluding expressway mainlines/ramps and private or restricted roads.
           </label>
-          <p className="field-note">这是用户声明，不代表系统已核验道路权限。</p>
+          <p className="field-note">This is a user declaration. The system has not verified road eligibility.</p>
         </fieldset>
         {error && (
           <p role="alert" className="notice">
@@ -245,7 +245,7 @@ export default function UploadPage() {
         )}
         {uncertain && (
           <p className="notice">
-            请留在此页，使用原请求重试以取得确定结果。原图片、位置与请求标识已保留；不要另开页面重复上传。离开页面后无法恢复所选本地文件。
+            Stay here and retry the original request to obtain a definite outcome. The photo, location and request ID are retained. Do not upload again in another page. Leaving this page loses the selected local file.
           </p>
         )}
         <button
@@ -254,26 +254,26 @@ export default function UploadPage() {
           disabled={busy || source !== 'live'}
         >
           {busy
-            ? '正在上传与检测…'
+            ? 'Uploading and detecting…'
             : uncertain
-              ? '使用原请求重试'
-              : '上传并检测'}
+              ? 'Retry original request'
+              : 'Upload and detect'}
         </button>
         {busy && (
           <p role="status">
-            正在处理照片，最多等待两分钟。请勿重复提交或切换数据来源。
+            Processing the photo; allow up to two minutes. Do not resubmit or change data sources.
           </p>
         )}
       </form>
       <aside className="upload-help">
-        <p className="eyebrow">提交前准备</p>
-        <h2>一张照片，一处主要损伤</h2>
-        <p>拍摄时让损伤和周边路面都清晰可见，避免遮挡、模糊或距离过远。</p>
-        <ol className="help-checklist"><li><strong>选择照片</strong><span>JPEG 或 PNG，最大 8 MiB。</span></li><li><strong>填写实际拍摄坐标</strong><span>服务范围为 Jurong East 与 West。</span></li><li><strong>确认道路声明</strong><span>仅允许范围内的公共机动车道路。</span></li></ol>
+        <p className="eyebrow">BEFORE SUBMISSION</p>
+        <h2>One photo, one primary defect</h2>
+        <p>Keep the defect and surrounding road surface visible. Avoid obstructions, blur and distant shots.</p>
+        <ol className="help-checklist"><li><strong>Select a photo</strong><span>JPEG or PNG, up to 8 MiB.</span></li><li><strong>Enter the actual photo coordinates</strong><span>The service area covers Jurong East and West.</span></li><li><strong>Confirm road declaration</strong><span>Only public motor roads within the area are eligible.</span></li></ol>
         <div className="help-divider" />
-        <h3>提交后会发生什么？</h3>
-        <p>后端返回一个主要检测框，并告知是已创建任务、需要审核，还是没有检测到损伤。</p>
-        <p className="field-note">真实推理使用实验模型，检测结果仍需结合照片判断。模拟模式使用固定结果，不分析照片。</p>
+        <h3>What happens after submission?</h3>
+        <p>The backend returns one primary detection box and reports whether a task was created, review is needed or no damage was detected.</p>
+        <p className="field-note">Real inference uses an experimental model; assess results alongside the photo. Mock mode uses fixed results without analysing the photo.</p>
       </aside>
       </div>
     </>

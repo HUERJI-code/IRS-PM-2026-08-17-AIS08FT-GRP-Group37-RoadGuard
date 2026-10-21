@@ -1,27 +1,27 @@
-# 未定选项与后续证据
+# Pending choices and further evidence
 
-document_id：`rg-kb-pending`；document_version：`5`；owner：`A`。
+document_id: `rg-kb-pending`; document_version: `7`; owner: `A`.
 
 <a id="pending-business"></a>
-## 业务与场景待确认
+## Business and scenario decisions pending
 
-classification：`pending_decision`。citation_id：`rg-kb-pending#pending-business`。
+classification: `pending_decision`. citation_id: `rg-kb-pending#pending-business`.
 
-2026-10-14 已定稿课程模拟规则 demo-rules-v2：保持八类的严重度/优先级映射，P3/P2/P1 的预计维修时长分别为 60/120/240 分钟。单主框 ≥ 0.60 自动建一个任务，低于阈值待审核。上述工时不是任务期限或测量值；正式工程规则与真实场景校准仍缺证据。待 A/B 确认班次长度、是否返基地、工程队能力假设、任务期限/延误定义及目标权重。NUS-ISS 建筑参考坐标仍需 B 核验车辆出入口，任务道路资格与真实矩阵来源另需证据。
+On 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic.
 
-due_at=null 时没有已定义的任务期限；return_to_depot=null 时没有已定义的返程策略。未知时长不是零，无可用方案不是空的有效方案，不可达行程不是零分钟。
+due_at=null means no defined task deadline; the shared project return_to_depot=null means no defined operational return policy, while the routing demo explicitly selects true. Unknown duration is not zero, no available plan is not a valid empty plan, and unreachable travel is not zero minutes.
 
-来源：[src-project-config](../../config/project.example.json)、[src-demo-rules](../../config/demo_rules.example.json)、[context-agents](../../../AGENTS.md)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。
+Sources: [src-project-config](../../config/project.example.json), [src-demo-rules](../../config/demo_rules.example.json), [context-agents](../../../AGENTS.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-config](../../config/routing.example.json), [src-google-matrix](../roadguard/routing/google_matrix.py), [src-routing-results](../../experiments/routing/results/README.md).
 
 <a id="pending-evaluation"></a>
-## 算法、模型与联调证据
+## Algorithm, model and integration evidence
 
-classification：`pending_decision`。citation_id：`rg-kb-pending#pending-evaluation`。
+classification: `pending_decision`. citation_id: `rg-kb-pending#pending-evaluation`.
 
-主要比较场景为四队和 10/15/20 个任务；GA 与 Greedy 使用相同输入、行程矩阵和约束。B 已交付编码、参数、停止条件、目标函数和多种子实验；具体结论必须读取对应实验原始记录，本包不复制或扩展实验数值，不预先宣称 GA 更优。报告算法运行时间、外部 API 等待、行程/维修时长时必须分开，不以更多队伍推断算法更快。
+The main comparison uses four crews and 10/15/20 tasks, with identical inputs, travel matrices and constraints for GA and Greedy. B has delivered encoding, parameters, stopping conditions, objective weights, multi-seed experiments and persisted plans. The new routing/evaluation documents explain their evidence and limits; general superiority or optimality is not established. Report algorithm runtime, external API waiting and travel/service durations separately. More crews do not imply faster algorithm execution.
 
-完整数据内容验证、划分与真实模型训练/held-out 指标须引用第 8 步对应运行的实际记录。模型数值有效不等于达到业务准确率要求，实验模型不能被描述为已校准的自动接受系统。B 已有持久化方案，队友已记录主流程联调；C 第十步提供静态检索，GPT 问答和调整确认仍待实现和分别验收。本知识包的完整性测试和验收题不能当作这些能力已经完成的证据。
+Full data-content verification, splits and real-model training/held-out metrics must cite actual records of the corresponding Step 8 run. Valid model numbers do not establish business accuracy acceptance; experimental models are not calibrated automatic-acceptance systems. The committed primary-label confirmation metrics are below both 70% targets and reuse validation data; independent local evaluation is still needed. B's persisted plans and the local inspection-to-planning integration exist. C's lexical retrieval, citations, authorized saved-plan context and preview/confirm/replan flow are implemented. Provider-double acceptance does not establish real GPT connectivity or answer quality. No embedding or vector service is used; those are optional future choices. Package integrity tests and acceptance questions do not prove those capabilities are complete.
 
-来源：[src-project-config](../../config/project.example.json)、[context-agents](../../../AGENTS.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)、[context-scope](../../../Miscellaneous/PROJECT_SCOPE.md)。
+Sources: [src-project-config](../../config/project.example.json), [context-agents](../../../AGENTS.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-service](../roadguard/routing/service.py), [src-ga-evaluation](../../experiments/routing/results/ga-evaluation-v1/summary.json), [src-vision-evaluation](../../experiments/vision/single_damage_summary.json), [src-integration-record](../../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
 
-补充来源：[src-routing-guide](../roadguard/routing/README.md)。
+Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).

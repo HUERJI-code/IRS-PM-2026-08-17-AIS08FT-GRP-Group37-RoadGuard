@@ -67,46 +67,46 @@ export default function RouteMap({
   }
   const [depotX, depotY] = project(depot)
   return (
-    <section className="route-map-panel" aria-label="路线地图与详情">
-      <h2>Jurong 与四队路线地图</h2>
+    <section className="route-map-panel" aria-label="Route map and details">
+      <h2>Jurong and four-crew route map</h2>
       <p className="notice">
-        路线顺序示意，非道路导航。线段连接保存的停靠点，不代表真实道路或可通行路径。
+        Route order diagram, not road navigation. Lines connect saved stops and do not represent actual roads or accessible paths.
       </p>
       {readFailed && (
-        <p role="alert">方案读取失败，当前地图保留旧快照，未经重新验证。</p>
+        <p role="alert">Plan loading failed. The map retains an old snapshot that has not been revalidated.</p>
       )}
-      {stale && <p role="status">当前地图方案已过期，不能作为最新调度结果。</p>}
+      {stale && <p role="status">The displayed plan is stale and cannot be used as the latest dispatch result.</p>}
       {plan ? (
         <details className="map-provenance">
-          <summary>{plan.algorithm.toUpperCase()} · 输入版本 {plan.input_revision} · {plan.matrix_is_simulated ? '模拟行程矩阵' : '外部行程数据'} · 查看来源</summary>
-          <p>方案{' '}
-          <span className="record-id">{plan.plan_id}</span> · 输入版本{' '}
-          {plan.input_revision} · 开始{' '}
+          <summary>{plan.algorithm.toUpperCase()} · Input revision {plan.input_revision} · {plan.matrix_is_simulated ? 'Simulated travel matrix' : 'External travel data'} · View source</summary>
+          <p>Plan{' '}
+          <span className="record-id">{plan.plan_id}</span> · Input revision{' '}
+          {plan.input_revision} · Start{' '}
           {formatSingaporeTime(plan.planning_start_at)} ·{' '}
-          {plan.matrix_is_simulated ? '模拟行程矩阵' : '外部行程数据'}（
-          {plan.matrix_provider}）
+          {plan.matrix_is_simulated ? 'Simulated travel matrix' : 'External travel data'} (
+          {plan.matrix_provider})
           </p>
         </details>
       ) : (
-        <p>尚无可展示方案；仅显示冻结服务区域和基地，不虚构任务或路线。</p>
+        <p>No plan is available to display. Only the frozen service area and depot are shown; no tasks or routes are invented.</p>
       )}
-      {plan && <div className="plan-at-a-glance" aria-label="所选方案概览">
-        <div><span>已分配任务</span><strong>{plan.metrics.assigned_task_count}<small> 项</small></strong></div>
-        <div><span>未分配任务</span><strong>{plan.metrics.unassigned_task_count}<small> 项</small></strong></div>
-        <div><span>总行程</span><strong>{formatMinutes(plan.metrics.total_travel_minutes)}</strong></div>
+      {plan && <div className="plan-at-a-glance" aria-label="Selected plan overview">
+        <div><span>Assigned tasks</span><strong>{plan.metrics.assigned_task_count}<small> {plan.metrics.assigned_task_count === 1 ? 'task' : 'tasks'}</small></strong></div>
+        <div><span>Unassigned tasks</span><strong>{plan.metrics.unassigned_task_count}<small> {plan.metrics.unassigned_task_count === 1 ? 'task' : 'tasks'}</small></strong></div>
+        <div><span>Total travel</span><strong>{formatMinutes(plan.metrics.total_travel_minutes)}</strong></div>
       </div>}
-      <div className="map-controls" aria-label="地图视野控制">
+      <div className="map-controls" aria-label="Map view controls">
         <button
           onClick={() => setZoom((value) => Math.min(8, value * 1.5))}
           disabled={zoom >= 8}
         >
-          放大
+          Zoom in
         </button>
         <button
           onClick={() => setZoom((value) => Math.max(1, value / 1.5))}
           disabled={zoom <= 1}
         >
-          缩小
+          Zoom out
         </button>
         <button
           onClick={() => {
@@ -114,28 +114,28 @@ export default function RouteMap({
             setZoom(1)
           }}
         >
-          全域与基地
+          Full area and depot
         </button>
         <button
-          aria-label="向西移动地图"
+          aria-label="Pan map west"
           onClick={() => setCenter(([x, y]) => [x - 100 / zoom, y])}
         >
           ←
         </button>
         <button
-          aria-label="向北移动地图"
+          aria-label="Pan map north"
           onClick={() => setCenter(([x, y]) => [x, y - 100 / zoom])}
         >
           ↑
         </button>
         <button
-          aria-label="向南移动地图"
+          aria-label="Pan map south"
           onClick={() => setCenter(([x, y]) => [x, y + 100 / zoom])}
         >
           ↓
         </button>
         <button
-          aria-label="向东移动地图"
+          aria-label="Pan map east"
           onClick={() => setCenter(([x, y]) => [x + 100 / zoom, y])}
         >
           →
@@ -145,9 +145,9 @@ export default function RouteMap({
         className="route-map"
         viewBox={`${center[0] - 450 / zoom} ${center[1] - 280 / zoom} ${900 / zoom} ${560 / zoom}`}
         role="group"
-        aria-label="Jurong 地理示意图，北朝上"
+        aria-label="Jurong Geographic diagram, north up"
       >
-        <title>Jurong East、Jurong West 与 NUS-ISS 基地，北朝上</title>
+        <title>Jurong East, Jurong West and NUS-ISS depot, north up</title>
         <rect
           x="-10000"
           y="-10000"
@@ -225,8 +225,8 @@ export default function RouteMap({
               vectorEffect="non-scaling-stroke"
             >
               <title>
-                {route.crew_id} 按保存顺序的示意线
-                {plan?.settings.return_to_depot ? '，包含返程' : ''}
+                {route.crew_id} Diagram lines in saved order
+                {plan?.settings.return_to_depot ? ', Includes return journey' : ''}
               </title>
             </polyline>
           )
@@ -238,7 +238,7 @@ export default function RouteMap({
               key={stop.task_id}
               role="button"
               tabIndex={0}
-              aria-label={`${stop.crew_id} 第 ${stop.sequence} 站 ${stop.task_id}`}
+              aria-label={`${stop.crew_id} Stop ${stop.sequence} ${stop.task_id}`}
               aria-pressed={selected === stop.task_id}
               onClick={() => choose(stop.task_id, stop.crew_id)}
               onKeyDown={(event) => {
@@ -280,7 +280,7 @@ export default function RouteMap({
               key={item.task_id}
               role="button"
               tabIndex={0}
-              aria-label={`未分配 ${item.task_id}`}
+              aria-label={`Unassigned ${item.task_id}`}
               onClick={() => choose(item.task_id, '')}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
@@ -317,28 +317,28 @@ export default function RouteMap({
             fill="#202b26"
           />
           <text x={depotX - 8} y={depotY + 28} textAnchor="end" fontSize="13">
-            NUS-ISS 基地
+            NUS-ISS Depot
           </text>
         </g>
       </svg>
       <p className="field-note">
-        北 ↑ · 绿色区域：Jurong East /
-        West；菱形：基地；彩色圆点：队伍停靠序号；灰色方点：未分配任务。重合点可用下方任务列表逐一选择。
+        N ↑ · Green area: Jurong East /
+        West; Diamond: depot; coloured circles: crew stop numbers; grey squares: unassigned tasks. Select overlapping points individually from the task list below.
       </p>
-      <details className="map-provenance"><summary>地图范围、基地与数据来源</summary><p>
-        边界：URA Master Plan 2025，冻结版本 jurong-je-jw-mp2025-v1，获取于
-        2026-10-12。
+      <details className="map-provenance"><summary>Map coverage, depot and data sources</summary><p>
+        Boundary: URA Master Plan 2025, frozen version jurong-je-jw-mp2025-v1, retrieved
+        2026-10-12.
         <a href="https://data.gov.sg/datasets/d_2cc750190544007400b2cfd5d7f53209/view">
-          数据来源
+          Data source
         </a>{' '}
         ·{' '}
         <a href="https://data.gov.sg/open-data-licence">
           Singapore Open Data Licence
         </a>
-        。规划边界不代表道路维修权限。基地为 NUS-ISS
-        建筑参考点，模拟调度用途，不是已验证驾驶入口。
+        . Planning boundaries do not establish road maintenance authority. The depot is the NUS-ISS
+        building reference point for simulated dispatch, not a verified vehicle entrance.
       </p></details>
-      <div className="map-legend" aria-label="队伍图例">
+      <div className="map-legend" aria-label="Crew legend">
         {routes.map((route) => (
           <button
             key={route.crew_id}
@@ -351,7 +351,7 @@ export default function RouteMap({
             <span style={{ background: crewColor(route.crew_id) }} />
             {route.crew_id} ·{' '}
             {
-              { assigned: '已分配', idle: '闲置', unavailable: '停用' }[
+              { assigned: 'Assigned', idle: 'Idle', unavailable: 'Unavailable' }[
                 route.status
               ]
             }
@@ -359,85 +359,85 @@ export default function RouteMap({
         ))}
       </div>
       {selectedRoute && (
-        <section className="notice" aria-label="选中队伍">
-          <h3>{selectedRoute.crew_id} 路线详情</h3>
+        <section className="notice" aria-label="Selected crew">
+          <h3>{selectedRoute.crew_id} Route details</h3>
           <p>
-            行程 {formatMinutes(selectedRoute.travel_minutes)} · 维修{' '}
-            {formatMinutes(selectedRoute.service_minutes)} · 总工作{' '}
+            Travel {formatMinutes(selectedRoute.travel_minutes)} · Repair{' '}
+            {formatMinutes(selectedRoute.service_minutes)} · Total work{' '}
             {formatMinutes(selectedRoute.total_work_minutes)}
           </p>
           <p>
-            返基地：
+            Return to depot:
             {plan?.settings.return_to_depot
-              ? '本方案要求返程'
-              : '本方案不要求返程'}{' '}
-            · 返程行驶{' '}
+              ? 'Return required by this plan'
+              : 'Return not required by this plan'}{' '}
+            · Return travel{' '}
             {selectedRoute.return_travel_minutes === null
-              ? '未提供'
+              ? 'Not provided'
               : formatMinutes(selectedRoute.return_travel_minutes)}{' '}
-            · 结束{' '}
+            · End{' '}
             {plan && stopTime(plan.planning_start_at, selectedRoute.end_minute)}
           </p>
         </section>
       )}
       {selectedStop && plan && (
-        <section className="notice" aria-label="选中停靠点">
+        <section className="notice" aria-label="Selected stop">
           <h3>
-            第 {selectedStop.sequence} 站 · {selectedStop.crew_id}
+            Stop {selectedStop.sequence} · {selectedStop.crew_id}
           </h3>
           <p>
-            {selectedStop.task_id} · {selectedStop.priority} · 位置{' '}
+            {selectedStop.task_id} · {selectedStop.priority} · Location{' '}
             {selectedStop.latitude}, {selectedStop.longitude}
           </p>
           <p>
-            上一点至本站{' '}
-            {formatMinutes(selectedStop.travel_minutes_from_previous)} · 维修{' '}
+            Travel from previous stop{' '}
+            {formatMinutes(selectedStop.travel_minutes_from_previous)} · Repair{' '}
             {formatMinutes(selectedStop.service_minutes)}
           </p>
           <p>
-            到达 {stopTime(plan.planning_start_at, selectedStop.arrival_minute)}{' '}
-            · 完成{' '}
+            Arrival {stopTime(plan.planning_start_at, selectedStop.arrival_minute)}{' '}
+            · Completion{' '}
             {stopTime(plan.planning_start_at, selectedStop.completion_minute)}
           </p>
           <Link to={`/tasks?task=${selectedStop.task_id}`}>
-            查看当前任务详情
+            View current task details
           </Link>
-          <p>地图时间与位置来自保存方案；当前任务可能已发生修改。</p>
+          <p>Map times and locations come from the saved plan. Current tasks may have changed.</p>
           <button onClick={() => focusPoint(selectedStop)}>
-            定位所选停靠点
+            Focus selected stop
           </button>
         </section>
       )}
       {selectedUnassigned && (
-        <section className="notice" aria-label="选中未分配任务">
-          <h3>未分配任务</h3>
+        <section className="notice" aria-label="Selected unassigned task">
+          <h3>Unassigned tasks</h3>
           <p>
-            {selectedUnassigned.task_id}：
+            {selectedUnassigned.task_id}:
             {unassignedReasons[selectedUnassigned.reason] ??
               selectedUnassigned.reason}
           </p>
           <Link to={`/tasks?task=${selectedUnassigned.task_id}`}>
-            查看当前任务详情
+            View current task details
           </Link>
           {selectedUnassigned.point ? (
             <button onClick={() => focusPoint(selectedUnassigned.point!)}>
-              定位未分配任务
+              Focus unassigned task
             </button>
           ) : (
-            <p>缺少同版本位置，未在地图上标点。</p>
+            <p>No location from the same revision; not plotted on the map.</p>
           )}
         </section>
       )}
       {routes.map((route) => (
         <details key={route.crew_id} open={crew === route.crew_id}>
           <summary>
-            {route.crew_id} 保存的停靠顺序（{route.stops.length} 站）
+            {route.crew_id} Saved stop order (Stops: {route.stops.length})
           </summary>
           {!route.stops.length ? (
             <p>
               {route.available
-                ? '该队闲置，没有路线。'
-                : '该队停用，没有路线。'}
+                ? 'This crew is idle and has no route.'
+                : 'This crew is unavailable and has no route.'}
             </p>
           ) : (
             <ol>
@@ -450,7 +450,7 @@ export default function RouteMap({
                       aria-pressed={selected === stop.task_id}
                       onClick={() => choose(stop.task_id, route.crew_id)}
                     >
-                      第 {stop.sequence} 站：{stop.task_id}
+                      Stop {stop.sequence}: {stop.task_id}
                     </button>{' '}
                     · {stop.priority}
                   </li>
@@ -459,11 +459,11 @@ export default function RouteMap({
           )}
         </details>
       ))}
-      <section aria-label="地图未分配任务">
-        <h3>未分配任务（{unassigned.length}）</h3>
+      <section aria-label="Unassigned map tasks">
+        <h3>Unassigned tasks ({unassigned.length})</h3>
         {unassigned.length > 0 && !sameSnapshot && (
           <p>
-            方案未保存未分配任务坐标，当前快照版本不一致或不可用；全部任务仍列出，但不混用新坐标标点。
+            The plan has no saved coordinates for unassigned tasks, and the current snapshot is unavailable or has a different revision. All tasks remain listed; newer coordinates are not mixed into this map.
           </p>
         )}
         <ul>
@@ -475,8 +475,8 @@ export default function RouteMap({
               >
                 {item.task_id}
               </button>
-              ：{unassignedReasons[item.reason] ?? item.reason}
-              {!item.point ? ' · 位置不可用' : ''}
+              : {unassignedReasons[item.reason] ?? item.reason}
+              {!item.point ? ' · Location unavailable' : ''}
             </li>
           ))}
         </ul>

@@ -25,7 +25,10 @@ DECLINES = {
 
 
 def clean_text(text):
-    return re.sub(r'^classification：.*$|^来源：.*$', '', text, flags=re.M).strip()
+    return re.sub(
+        r'^(?:classification|Sources|Implementation sources|\u6765\u6e90)\s*[:\uff1a].*$',
+        '', text, flags=re.M,
+    ).strip()
 
 
 def digest(text):

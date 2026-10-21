@@ -9,10 +9,10 @@ import { homeFor, useAuth } from '../auth/context'
 import labels from '../../../model/label_schema.json'
 
 const statusNames = {
-  accepted: '已接受',
-  pending_review: '待人工审核',
-  no_detection: '未检测到损伤',
-  rejected: '已驳回',
+  accepted: 'Accepted',
+  pending_review: 'Pending manual review',
+  no_detection: 'No damage detected',
+  rejected: 'Rejected',
 }
 
 export default function InspectionPage() {
@@ -77,58 +77,58 @@ export default function InspectionPage() {
   return (
     <>
       <div className="page-heading">
-        <p className="eyebrow">巡检 / 检测结果</p>
-        <h1>巡检结果</h1>
-        <p className="record-id">巡检 ID：{inspectionId}</p>
+        <p className="eyebrow">INSPECTION / DETECTION RESULT</p>
+        <h1>Inspection result</h1>
+        <p className="record-id">Inspection ID:{inspectionId}</p>
       </div>
       {compact && (
         <p role="status" className="notice">
-          上传已成功 · {statusNames[compact.status]}
-          。后续读取失败不会重新上传照片。
+          Upload successful · {statusNames[compact.status]}
+          . Subsequent read failures will not upload the photo again.
         </p>
       )}
       {loading && <LoadingState />}
       {failure !== null && <ErrorState error={failure} />}
       {!loading && (failure !== null || taskFailure !== null) && (
         <button className="button" onClick={retry}>
-          重新读取详情
+          Reload details
         </button>
       )}
       {detail && (
         <div className="inspection-result">
           <section className={`result-summary inspection-status status-${detail.status}`}>
-            <p className="eyebrow">本次巡检的下一步</p>
+            <p className="eyebrow">Next step for this inspection</p>
             <h2>{statusNames[detail.status]}</h2>
             {detail.status === 'no_detection' && (
-              <p>未创建任务。没有检测结果不等于道路安全。</p>
+              <p>No task created. No detection does not establish that the road is safe.</p>
             )}
             {detail.status === 'pending_review' && (
               <>
-                <p>确认前不会创建活动任务。请等待人工复核。</p>
+                <p>No active task is created before confirmation. Wait for manual review.</p>
                 {role === 'dispatcher' && <Link
                   className="button"
                   to={`/reviews?inspection=${detail.inspection_id}`}
                 >
-                  前往审核工作区
+                  Go to review workspace
                 </Link>}
               </>
             )}
             {detail.status === 'accepted' && (
               <><p>
-                已关联任务；任务与队伍变化后，已有路线可能需要重新规划。本页不会自动重算。
-              </p>{role === 'dispatcher' && detail.task_id && <Link className="button" to={`/tasks?task=${detail.task_id}`}>查看维修任务 →</Link>}</>
+                A task is linked. Task or crew changes may require route replanning; this page does not recalculate automatically.
+              </p>{role === 'dispatcher' && detail.task_id && <Link className="button" to={`/tasks?task=${detail.task_id}`}>View repair task →</Link>}</>
             )}
             {detail.status === 'rejected' && (
-              <p>此巡检已驳回，保留记录供查看。</p>
+              <p>This inspection was rejected. Its record remains available.</p>
             )}
             <p className="field-note">
-              推理来源：
+              Inference source:
               {detail.mode === 'real'
-                ? '真实图片 · 实验模型'
-                : '固定模拟检测'}
+                ? 'Real image · Experimental model'
+                : 'Fixed mock detection'}
             </p>
             {detail.review_history.length > 0 && (
-              <><p>已有人工审核记录：{detail.review_history.length} 条。</p><p className="field-note">图片中的标签与置信度保留原始模型输出；人工纠正后的损伤类型见关联任务。</p></>
+              <><p>Manual reviews recorded:{detail.review_history.length} records.</p><p className="field-note">Image labels and confidence retain the original model output. See the linked task for the corrected damage type.</p></>
             )}
           </section>
           <InspectionImage
@@ -137,39 +137,39 @@ export default function InspectionPage() {
           />
           {taskFailure !== null && (
             <section>
-              <h2>关联任务读取失败</h2>
+              <h2>Linked task could not load</h2>
               <ErrorState error={taskFailure} />
             </section>
           )}
           {task && (
             <section className="result-summary">
-              <h2>关联任务</h2>
-              {role === 'dispatcher' && <Link to="/routes">核对队伍与重算路线</Link>}
+              <h2>Linked task</h2>
+              {role === 'dispatcher' && <Link to="/routes">Check crews and recalculate routes</Link>}
               <p className="record-id">{task.task_id}</p>
               <p>
-                标签：{labels.classes.find((item) => item.label_key === task.damage_label)?.display_name_zh ?? task.damage_label} · 优先级：{task.priority} · 预计维修：
+                Label: {labels.classes.find((item) => item.label_key === task.damage_label)?.display_name_zh ?? task.damage_label} · Priority: {task.priority} · Estimated repair:
                 {formatMinutes(task.service_minutes)}
               </p>
               <p>{task.repair_recommendation}</p>
               <p>
-                规则版本：{task.rule_version} · 当前任务状态：{{ active: '活动', completed: '已完成', cancelled: '已取消' }[task.status]}
+                Rule version:{task.rule_version} · Current task status:{{ active: 'Active', completed: 'Completed', cancelled: 'Cancelled' }[task.status]}
               </p>
               {role === 'dispatcher' && <Link className="button" to={`/tasks?task=${task.task_id}`}>
-                前往任务工作区
+                Go to task workspace
               </Link>}
             </section>
           )}
-          <details className="inspection-metadata"><summary>巡检来源、位置与模型记录</summary>
-            <dl className="task-facts"><div><dt>拍摄坐标（用户声明）</dt><dd>{detail.latitude}, {detail.longitude}</dd></div><div><dt>创建时间</dt><dd>{formatSingaporeTime(detail.created_at)}</dd></div><div><dt>模型版本</dt><dd>{detail.model_version}</dd></div><div><dt>记录版本</dt><dd>{detail.record_version}</dd></div></dl>
-            <p>道路类型由用户声明，系统未自动核验道路权限。</p>
-            {detail.auto_acceptance && <p>自动接受策略：{detail.auto_acceptance.policy_version} · 阈值 {detail.auto_acceptance.confidence_threshold}（不是准确率）</p>}
+          <details className="inspection-metadata"><summary>Inspection source, location and model record</summary>
+            <dl className="task-facts"><div><dt>Photo coordinates (user-declared)</dt><dd>{detail.latitude}, {detail.longitude}</dd></div><div><dt>Created</dt><dd>{formatSingaporeTime(detail.created_at)}</dd></div><div><dt>Model version</dt><dd>{detail.model_version}</dd></div><div><dt>Record version</dt><dd>{detail.record_version}</dd></div></dl>
+            <p>Road type is user-declared. The system has not automatically verified road eligibility.</p>
+            {detail.auto_acceptance && <p>Auto-acceptance policy:{detail.auto_acceptance.policy_version} · Threshold {detail.auto_acceptance.confidence_threshold} (not accuracy)</p>}
           </details>
           <details className="inspection-rule-record">
-            <summary>规则决策记录（后端原始依据）</summary>
+            <summary>Rule decision record (original backend evidence)</summary>
             <ul>
               {detail.decision_trace.map((trace, index) => (
                 <li key={index}>
-                  {trace.message}（{trace.rule_version ?? '未提供版本'}）
+                  {trace.message} ({trace.rule_version ?? 'Version not provided'})
                 </li>
               ))}
             </ul>
@@ -178,11 +178,11 @@ export default function InspectionPage() {
       )}
       <div className="workflow-note">
         <Link className="button" to={homeFor(role)}>
-          {role === 'inspector' ? '上传另一张照片' : role === 'crew' ? '返回本队工作台' : '返回任务工作区'}
+          {role === 'inspector' ? 'Upload another photo' : role === 'crew' ? 'Return to crew workspace' : 'Return to task workspace'}
         </Link>
         {detail && !loading && (
           <button className="text-button" onClick={retry}>
-            刷新详情
+            Refresh details
           </button>
         )}
       </div>

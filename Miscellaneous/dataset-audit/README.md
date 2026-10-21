@@ -1,13 +1,13 @@
-# RDD2022ES 第 1 版核验记录
+# RDD2022ES version 1 audit records
 
-说明见[数据集与标签核对](../DATASET_AND_LABEL_AUDIT.md)。这些文件记录 2026-10-12 的来源、全量 ZIP 目录检查和定向样本检查，不是训练集或模型结果。
+See the [dataset and label audit](../DATASET_AND_LABEL_AUDIT.md). These files record sources, full ZIP-directory inspection and targeted sample checks on 2026-10-12; they are not training data or model results.
 
-| 文件 | 用途 |
+| File | Purpose |
 | --- | --- |
-| [rdd2022es-v1-audit.json](rdd2022es-v1-audit.json) | 来源版本、许可差异、目录计数、配对异常、样本检查及未完成项目 |
-| [rdd2022es-v1-sample-manifest.json](rdd2022es-v1-sample-manifest.json) | 抽取的 38 个发布包成员的大小、CRC32 和 SHA-256；按原始解压字节计算 |
-| [label_schema.json](../../SystemCode/model/label_schema.json) | 已核验的 0～7 标签编号、来源名称及项目显示名 |
+| [rdd2022es-v1-audit.json](rdd2022es-v1-audit.json) | Source version, licence discrepancy, directory counts, pairing anomalies, sample checks and unfinished items |
+| [rdd2022es-v1-sample-manifest.json](rdd2022es-v1-sample-manifest.json) | Sizes, CRC32 and SHA-256 for 38 extracted archive members, calculated from original decompressed bytes |
+| [label_schema.json](../../SystemCode/model/label_schema.json) | Verified label IDs 0–7, source names and project display names |
 
-全量目录核验不等于全量图片／标注内容核验。样本有意覆盖八类和异常，不能用其比例推断整个数据集的类别分布。CRC32 用于检查抽取内容与目录记录一致，不替代完整压缩包的 SHA-256。
+A full directory audit is not a full image/annotation-content audit. Samples deliberately cover all eight classes and anomalies; their proportions cannot estimate dataset-wide class distribution. CRC32 checks agreement between extracted content and directory records, without replacing SHA-256 of the complete archive.
 
-数据来源：[Juuso / RDD2022ES](https://www.kaggle.com/datasets/juusos/rdd2022es)。发布者正文写 CC BY-SA 4.0，元数据标注 CC BY-NC-SA 4.0；差异尚未解决，详见主文档。原图和原始标签未加入仓库。
+Source: [Juuso / RDD2022ES](https://www.kaggle.com/datasets/juusos/rdd2022es). Publisher prose says CC BY-SA 4.0 while metadata says CC BY-NC-SA 4.0. This discrepancy remains unresolved; see the main document. Original images and labels are not included in the repository.

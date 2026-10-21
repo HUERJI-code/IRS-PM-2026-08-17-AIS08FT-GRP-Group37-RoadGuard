@@ -126,7 +126,7 @@ function ReviewRecord({
           if (!detection)
             throw new ApiError(
               'invalid_detection_selection',
-              '没有可审核的检测对象。',
+              'No detection is available for review.',
               422,
               'http',
             )
@@ -136,7 +136,7 @@ function ReviewRecord({
           if (!labels.classes.some((item) => item.label_key === label))
             throw new ApiError(
               'validation_error',
-              '请选择纠正标签。',
+              'Select the corrected label.',
               422,
               'http',
             )
@@ -181,86 +181,86 @@ function ReviewRecord({
       <>
         <ErrorState error={readError} />
         <button className="button" onClick={reload}>
-          重新读取巡检
+          Reload inspection
         </button>
       </>
     )
   const pending = inspection.status === 'pending_review'
   return (
-    <section className="review-record" aria-label="选中巡检">
-      <div className="record-heading"><div><p className="eyebrow">#{inspection.inspection_id.slice(0, 8)} · {formatSingaporeTime(inspection.created_at)}</p><h2>巡检详情</h2></div><span className="status-badge">{pending ? '待审核' : '已处理'}</span></div>
+    <section className="review-record" aria-label="Selected inspection">
+      <div className="record-heading"><div><p className="eyebrow">#{inspection.inspection_id.slice(0, 8)} · {formatSingaporeTime(inspection.created_at)}</p><h2>Inspection details</h2></div><span className="status-badge">{pending ? 'Pending review' : 'Processed'}</span></div>
       <div className="review-body">
       <div className="review-evidence">
       <InspectionImage key={`${id}-${attempt}`} inspection={inspection} />
       <details className="review-provenance">
-        <summary>检测来源与记录</summary>
-        <p>推理来源：{inspection.mode === 'real' ? '真实图片 · 实验模型' : '固定模拟检测'}</p>
-        <p>模型：{inspection.model_version}</p>
-        <p className="record-id">{inspection.inspection_id} · 记录版本 {inspection.record_version}</p>
+        <summary>Detection source and record</summary>
+        <p>Inference source:{inspection.mode === 'real' ? 'Real image · Experimental model' : 'Fixed mock detection'}</p>
+        <p>Model:{inspection.model_version}</p>
+        <p className="record-id">{inspection.inspection_id} · Record version {inspection.record_version}</p>
       </details>
       <details>
-        <summary>查看规则依据</summary>
+        <summary>View rule evidence</summary>
         <ul>
           {inspection.decision_trace.map((trace, index) => (
             <li key={index}>
-              {trace.message}（{trace.rule_version ?? '未提供版本'}）
+              {trace.message} ({trace.rule_version ?? 'Version not provided'})
             </li>
           ))}
         </ul>
       </details>
       {result && (
-        <section className="notice" aria-label="审核结果">
+        <section className="notice" aria-label="Review result">
           <p>
-            图片标签和置信度保留原始检测输出，纠正后的标签见关联任务和审核历史。
+            Image labels and confidence retain the original detection output. Corrected labels appear in the linked task and review history.
           </p>
-          <h3>{result.replayed ? '已恢复原请求结果' : '审核已保存'}</h3>
+          <h3>{result.replayed ? 'Original request result recovered' : 'Review saved'}</h3>
           <p>
-            巡检状态：
+            Inspection status:
             {result.inspection.status === 'rejected'
-              ? '已驳回'
+              ? 'Rejected'
               : result.inspection.status === 'accepted'
-                ? '已接受'
+                ? 'Accepted'
                 : result.inspection.status}{' '}
-            · 输入版本 {result.input_revision}
+            · Input revision {result.input_revision}
           </p>
           {result.task ? (
             <>
-              <p>关联任务：{result.task.task_id}</p>
+              <p>Linked task:{result.task.task_id}</p>
               <p>
-                后端标签：{result.task.damage_label} · {result.task.priority} ·
-                预计维修 {formatMinutes(result.task.service_minutes)}
+                Backend label:{result.task.damage_label} · {result.task.priority} ·
+                Estimated repair {formatMinutes(result.task.service_minutes)}
               </p>
-              <p>规则版本：{result.task.rule_version}</p>
-              <Link to="/routes">核对队伍与重算路线</Link>
+              <p>Rule version:{result.task.rule_version}</p>
+              <Link to="/routes">Check crews and recalculate routes</Link>
               <Link to={`/tasks?task=${result.task.task_id}`}>
-                查看任务工作区
+                View task workspace
               </Link>
             </>
           ) : (
-            <p>本次结果没有关联任务。</p>
+            <p>No task is linked to this result.</p>
           )}
           {result.planning_input_changed ? (
-            <p>规划输入已变化，已有路线需要重新规划；本页没有自动重算。</p>
+            <p>Planning inputs have changed. Existing routes require replanning; this page has not recalculated them automatically.</p>
           ) : (
-            <p>本次响应未标记规划输入变化。路线状态仍以后端方案为准。</p>
+            <p>This response does not flag a planning-input change. The backend plan remains authoritative for route status.</p>
           )}
         </section>
       )}
       {!pending && (
         <p role="status" className="notice">
-          此巡检已处理（{inspection.status}），当前为只读，不能再次审核。
+          This inspection has been processed ({inspection.status}), Read-only; it cannot be reviewed again.
         </p>
       )}
       {inspection.review_history.length > 0 && (
         <section>
-          <h3>审核历史</h3>
+          <h3>Review history</h3>
           <ul>
             {inspection.review_history.map((item) => (
               <li key={item.request_id}>
-                {item.action} · {formatSingaporeTime(item.recorded_at)} · 原标签{' '}
-                {item.original_damage_label ?? '无'} → 纠正标签{' '}
-                {item.corrected_damage_label ?? '未纠正'}
-                {item.note && ` · 备注：${item.note}`}
+                {item.action} · {formatSingaporeTime(item.recorded_at)} · Original label{' '}
+                {item.original_damage_label ?? 'None'} → Corrected label{' '}
+                {item.corrected_damage_label ?? 'Not corrected'}
+                {item.note && ` · Notes:${item.note}`}
               </li>
             ))}
           </ul>
@@ -273,12 +273,12 @@ function ReviewRecord({
           className="upload-form review-form"
         >
           {mode !== 'live' && (
-            <p className="notice">当前是只读模拟快照，不能保存审核。</p>
+            <p className="notice">This is a read-only mock snapshot. Reviews cannot be saved.</p>
           )}
           <fieldset disabled={busy || uncertain || conflict || mode !== 'live'}>
-            <legend>人工审核决定</legend>
-            <p className="review-instruction">核对照片中的损伤，再选择处理方式。</p>
-            <label htmlFor="review-action">操作</label>
+            <legend>Manual review decision</legend>
+            <p className="review-instruction">Check the damage in the photo, then choose an action.</p>
+            <label htmlFor="review-action">Action</label>
             <select
               id="review-action"
               value={action}
@@ -286,20 +286,20 @@ function ReviewRecord({
                 setAction(event.target.value as typeof action)
               }
             >
-              <option value="confirm">确认当前检测标签</option>
-              <option value="correct">纠正损伤标签后接受</option>
-              <option value="dismiss">驳回，不创建任务</option>
+              <option value="confirm">Confirm current detection label</option>
+              <option value="correct">Correct damage label and accept</option>
+              <option value="dismiss">Reject without creating a task</option>
             </select>
             {action === 'correct' && (
               <>
-                <label htmlFor="correct-label">纠正后的标签</label>
+                <label htmlFor="correct-label">Corrected label</label>
                 <select
                   id="correct-label"
                   value={label}
                   required
                   onChange={(event) => setLabel(event.target.value)}
                 >
-                  <option value="">请选择标签</option>
+                  <option value="">Select a label</option>
                   {labels.classes.map((item) => (
                     <option key={item.label_key} value={item.label_key}>
                       {item.display_name_zh} · {item.label_key}
@@ -307,12 +307,12 @@ function ReviewRecord({
                   ))}
                 </select>
                 <p className="field-note">
-                  标签来自共享字典 {labels.schema_version}
-                  ；严重度、优先级和工时由后端规则计算。
+                  Labels come from the shared dictionary {labels.schema_version}
+                  ; Severity, priority and repair duration are calculated by backend rules.
                 </p>
               </>
             )}
-            <label htmlFor="review-note">审核备注（可选，最多 500 字符）</label>
+            <label htmlFor="review-note">Review notes (optional, up to 500 characters)</label>
             <textarea
               id="review-note"
               rows={3}
@@ -320,17 +320,17 @@ function ReviewRecord({
               value={note}
               onChange={(event) => setNote(event.target.value)}
             />
-            <p className="field-note review-outcome">{action === 'dismiss' ? '驳回后保留巡检记录，不创建维修任务。' : '接受后创建维修任务，原始检测与审核记录保留。'}</p>
+            <p className="field-note review-outcome">{action === 'dismiss' ? 'Rejection retains the inspection without creating a repair task.' : 'Acceptance creates a repair task and retains the original detection and review records.'}</p>
           </fieldset>
           {error !== null && <ErrorState error={error} />}
           {conflict && (
             <p className="notice">
-              记录或请求已变化。请先重新读取并检查，再作出新的审核决定；不会自动重放旧决定。
+              The record or request has changed. Reload and check before making a new review decision; the old decision is not replayed automatically.
             </p>
           )}
           {uncertain && (
             <p className="notice">
-              保存结果尚不确定。请留在本页，用原请求重试；不要切换记录、来源或重复创建新审核。刷新页面不能恢复当前重试标识。
+              The save outcome is uncertain. Stay here and retry the original request. Do not switch records or sources or submit another review. Refreshing loses the current retry ID.
             </p>
           )}
           <button
@@ -346,12 +346,12 @@ function ReviewRecord({
             }
           >
             {busy
-              ? '正在保存审核…'
+              ? 'Saving review…'
               : uncertain
-                ? '使用原请求重试审核'
-                : '保存审核决定'}
+                ? 'Retry review with original request'
+                : 'Save review decision'}
           </button>
-          {busy && <p role="status">正在保存，请勿离开当前记录。</p>}
+          {busy && <p role="status">Saving. Stay on the current record.</p>}
         </form>
       )}
       </div>
@@ -361,9 +361,9 @@ function ReviewRecord({
           disabled={busy || uncertain}
           onClick={reload}
         >
-          重新读取并检查
+          Reload and check
         </button>
-        <Link to={`/inspections/${id}`}>查看巡检结果页</Link>
+        <Link to={`/inspections/${id}`}>View inspection result</Link>
       </div>
     </section>
   )
@@ -438,36 +438,36 @@ export default function ReviewPage() {
     <div className="review-workspace">
       <div className="page-heading">
         <div>
-        <p className="eyebrow">巡检复核</p>
-        <h1>人工审核</h1>
+        <p className="eyebrow">INSPECTION REVIEW</p>
+        <h1>Manual review</h1>
         <p className="description">
-          核对损伤照片，让需要维修的问题进入任务队列。
+          Check damage photos and move confirmed repairs into the task queue.
         </p>
         </div>
-        <Link className="button secondary" to="/tasks">查看已接受任务 →</Link>
+        <Link className="button secondary" to="/tasks">View accepted tasks →</Link>
       </div>
       <div className="queue-workspace">
-      <section className="review-queue" aria-label="待审队列">
-        <div className="queue-heading"><h2>待审核巡检</h2><span className="queue-count">{!loading && !error && queue ? queue.total : '—'}</span></div>
+      <section className="review-queue" aria-label="Review queue">
+        <div className="queue-heading"><h2>Inspections awaiting review</h2><span className="queue-count">{!loading && !error && queue ? queue.total : '—'}</span></div>
         <button className="text-button" disabled={loading} onClick={refresh}>
-          刷新待审队列
+          Refresh review queue
         </button>
         {loading && <LoadingState />}
         {error !== null && (
           <>
             <ErrorState error={error} />
-            {queue && <p>保留上次列表，可能已过时；进入记录后会重新读取。</p>}
+            {queue && <p>Previous list retained and may be stale. Opening a record reloads it.</p>}
           </>
         )}
         {queue && (
           <>
-            <p className="queue-meta">共 {queue.total} 条待审记录 · 按提交时间排列</p>
+            <p className="queue-meta">Total {queue.total} pending records · Ordered by submission time</p>
             {!loading && !error && !queue.items.length && (
               <EmptyState
                 message={
                   offset
-                    ? '当前页已无待审记录，请返回上一页。'
-                    : '当前没有待审核巡检。'
+                    ? 'No pending records remain on this page. Go to the previous page.'
+                    : 'No inspections are awaiting review.'
                 }
               />
             )}
@@ -476,7 +476,7 @@ export default function ReviewPage() {
                 <li key={item.inspection_id}>
                   <button
                     className="queue-item-button"
-                    aria-label={`${labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? '无检测'}，待审核，巡检 ${item.inspection_id}`}
+                    aria-label={`${labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? 'No detection'}, Pending review, inspection ${item.inspection_id}`}
                     disabled={recordLocked}
                     aria-current={
                       selected === item.inspection_id ? 'true' : undefined
@@ -485,8 +485,8 @@ export default function ReviewPage() {
                       setParams({ inspection: item.inspection_id })
                     }
                   >
-                    <span className="queue-item-title"><strong>{labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? '无检测'}</strong><span className="status-badge">待审核</span></span>
-                    <span className="queue-item-meta">{item.detections[0] ? `${(item.detections[0].confidence * 100).toFixed(1)}% 置信度` : '无检测框'} · {item.mode === 'real' ? '真实推理' : '模拟检测'}</span>
+                    <span className="queue-item-title"><strong>{labels.classes.find((label) => label.label_key === item.detections[0]?.label)?.display_name_zh ?? item.detections[0]?.label ?? 'No detection'}</strong><span className="status-badge">Pending review</span></span>
+                    <span className="queue-item-meta">{item.detections[0] ? `${(item.detections[0].confidence * 100).toFixed(1)}% Confidence` : 'No detection box'} · {item.mode === 'real' ? 'Real inference' : 'Mock detection'}</span>
                     <span className="queue-item-id" title={item.inspection_id}>#{item.inspection_id.slice(0, 8)} <span aria-hidden="true">↗</span></span>
                   </button>
                   <span>
@@ -500,20 +500,20 @@ export default function ReviewPage() {
                 disabled={loading || offset === 0}
                 onClick={() => page(Math.max(0, offset - 20))}
               >
-                上一页
+                Previous page
               </button>
-              <span>第 {Math.floor(offset / 20) + 1} 页</span>
+              <span>Page {Math.floor(offset / 20) + 1}</span>
               <button
                 disabled={loading || offset + 20 >= queue.total}
                 onClick={() => page(offset + 20)}
               >
-                下一页
+                Next page
               </button>
             </div>
           </>
         )}
       </section>
-      <div className="record-pane" ref={detailRef} tabIndex={-1} aria-label="审核详情工作区">
+      <div className="record-pane" ref={detailRef} tabIndex={-1} aria-label="Review details workspace">
       {selected ? (
         <ReviewRecord
           key={selected}
@@ -523,7 +523,7 @@ export default function ReviewPage() {
           onReady={revealSelection}
         />
       ) : (
-        <div className="selection-empty"><span className="selection-icon" aria-hidden="true">{!loading && !error && queue?.total === 0 ? '✓' : '↖'}</span><h2>{!loading && !error && queue?.total === 0 ? '待审队列已清空' : '选择一条巡检，开始审核'}</h2><p>{!loading && !error && queue?.total === 0 ? '新的待审巡检会在这里出现。已接受的巡检可在维修任务中查看。' : '先核对照片与模型判断，再确认、纠正或驳回。'}</p><div className="selection-steps"><span><strong>确认</strong> 损伤类型判断正确</span><span><strong>纠正</strong> 修改类型后接受</span><span><strong>驳回</strong> 保留记录，不创建任务</span></div></div>
+        <div className="selection-empty"><span className="selection-icon" aria-hidden="true">{!loading && !error && queue?.total === 0 ? '✓' : '↖'}</span><h2>{!loading && !error && queue?.total === 0 ? 'Review queue cleared' : 'Select an inspection to review'}</h2><p>{!loading && !error && queue?.total === 0 ? 'New pending inspections appear here. View accepted inspections in repair tasks.' : 'Check the photo and model output, then confirm, correct or reject.'}</p><div className="selection-steps"><span><strong>Confirm</strong> Damage type is correct</span><span><strong>Correct</strong> Change the type and accept</span><span><strong>Reject</strong> Retain record without creating a task</span></div></div>
       )}
       </div>
       </div>

@@ -1,14 +1,14 @@
 # RoadGuard
 
-**Status: persisted workflows, B/C handoff and Step 8 real-vision tooling delivered; experimental training evidence is tracked separately.**
+**Status (2026-10-20): the authenticated inspection-to-completion prototype, four-crew planning and final group report are delivered. GPT/RAG and the two presentation videos remain pending.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Routing and frontend remain pending.
+This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Four-crew Greedy/GA planning and the React frontend are implemented, including inspector, dispatcher and fixed-crew access. See the [integration record](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) and [frontend guide](SystemCode/frontend/README.md).
 
-> 当前地理基线：维修任务限于 Jurong East 与 Jurong West，默认四队从 NUS-ISS 模拟起点出发。A 的第 3～7 步已完成公共基础、模拟业务流程、同版本任务快照和 B/C 资料交付。第 8 步支持真实检测，主框 ≥0.60 自动建任务，低于阈值复核；业务规则仍为课程模拟；道路类型声明及合成任务点不能替代道路核验。
+> Current geographic baseline: repair tasks are restricted to Jurong East and Jurong West, with four crews departing from the NUS-ISS simulated origin by default. A's Steps 3–7 delivered shared foundations, simulated workflows, consistent task snapshots and B/C handoff materials. Step 8 supports real detection: a primary box ≥0.60 automatically creates a task; lower confidence requires review. Business rules remain course simulations; road declarations and synthetic task points do not replace road verification.
 
-2026-10-14：[业务规则定稿](Miscellaneous/BUSINESS_RULES_BASELINE.md)采用 `demo-rules-v2`，P3/P2/P1＝60/120/240 分钟；[联调验收清单](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md)覆盖 A 当前检查和 B/C 就绪后的场景。B/C 接入整合暂缓，已有记录保留旧规则。
+2026-10-14: The [finalized business rules](Miscellaneous/BUSINESS_RULES_BASELINE.md) use `demo-rules-v2`, with P3/P2/P1=60/120/240 minutes. The [integration acceptance checklist](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) covers A's current checks and scenarios after B/C are ready. The later [18 October acceptance](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) verifies integration with planning and the frontend; existing records retain their frozen rules.
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -20,7 +20,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Persisted inspection/review/task workflow; opt-in real inference; planning pending |
+| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; assistant and videos pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -31,15 +31,15 @@ Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
-RoadGuard is a planned web application that connects road damage observations to maintenance decisions. An inspector submits a road image and its location. A YOLO detector identifies damage type, basic severity and confidence. A confidence gate sends uncertain results for human review, while accepted results pass through explicit priority rules and enter the maintenance queue.
+RoadGuard is a working local web prototype that connects road damage observations to maintenance decisions. An inspector submits a road image and its location. A YOLO detector supplies a damage label, box and confidence; versioned demonstration rules map the label to severity, priority and repair duration. A confidence gate sends uncertain results for human review, while accepted results pass through explicit priority rules and enter the maintenance queue.
 
 The completed [30-epoch YOLO11n/YOLO11s comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md) selects YOLO11s by validation mAP50-95. It improves recall at the fixed confidence threshold while increasing false positives and CPU latency; the current user-selected workflow accepts the primary detection at confidence >= 0.60; lower confidence requires review. This setting does not improve model accuracy. See [one-box responses and fields](Miscellaneous/INSPECTION_RESPONSE_FIELDS.md).
 
-The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md) completed another 40 fine-tuning epochs and compared four validation candidates. The selected checkpoint reaches 50.5% Precision and 52.0% Recall at confidence 0.25 with correct eight-class, IoU 0.5 matching, versus 48.6% / 51.2% for the parent. The requested simultaneous 70% target remains unmet, and some damage types regressed. The local recommendation remains experimental and opt-in.
+The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md) completed another 40 fine-tuning epochs and compared four validation candidates. The selected checkpoint reaches 50.5% Precision and 52.0% Recall at confidence 0.25 with correct eight-class, IoU 0.5 matching, versus 48.6% / 51.2% for the parent. The requested simultaneous 70% target remains unmet, and some damage types regressed. The deployed single-v1 model uses those balanced weights, original-only 832-pixel inference and area-quarter primary selection at inference confidence 0.20. Eight-class primary image-type Precision/Recall are 61.63%/61.99% on reused validation confirmation data, not an independent local test. See the [model release](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) and [single-damage evaluation](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md).
 
-A group-built genetic algorithm (GA) will assign accepted tasks to four repair crews and determine their visit order. A greedy planner will provide a baseline using the same tasks, travel-time matrix and constraints. Evaluation will report travel time, urgent-task delay, workload balance, feasibility and computation time separately.
+A group-built genetic algorithm (GA) assigns accepted tasks to four crews and determines visit order. Greedy uses the same task snapshot, travel matrix and evaluator. Changes mark saved plans stale; dispatchers explicitly recalculate. Evaluation compares priority-first coverage, a weighted scheduling objective, travel, workload and runtime. No task deadlines are supplied, so priority-weighted completion is not lateness. See the [routing experiments](SystemCode/experiments/routing/README.md).
 
-Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES is the proposed image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
+Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
 
 Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
 
@@ -47,9 +47,11 @@ Measured vision results must be read with the corresponding experimental run and
 
 | Official full name | Student ID | Work items / contribution | Email (optional) |
 | --- | --- | --- | --- |
-| TBD | TBD | TBD | |
+| Hu Erji | A0305480L | Vision/data experiments, business rules, shared backend, integration, authentication and later interface refinement | |
+| Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
+| Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and assistant placeholder | |
 
-Replace the placeholder with the confirmed team roster. Contributions must describe work actually completed. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
+These contributions follow Table 5 of the final report; the assistant backend remains unimplemented. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
@@ -64,7 +66,7 @@ See [Video/README.md](Video/README.md) for naming and recording requirements.
 
 ## SECTION 5 : USER GUIDE
 
-Run the backend using the [backend installation and startup guide](SystemCode/backend/README.md), then open `/docs`. The [step 6 workflow guide](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md) covers image uploads, review and task management. The separate [step 5 demo endpoints](Miscellaneous/DEMO_DETECTION_AND_RULES.md) still provide stateless previews. There is no frontend yet. Use the [API contract](Miscellaneous/API_CONTRACT.md) for the new record/request schemas and the [fixed DTO examples](SystemCode/contracts/README.md) for the original snapshots. See the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for the delivery boundary.
+Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. The assistant page is a placeholder. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
 
 Repository layout:
 
@@ -98,29 +100,30 @@ IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
 
 Start by reviewing the [project scope](Miscellaneous/PROJECT_SCOPE.md), [example configuration](SystemCode/config/project.example.json) and [implementation plan](Miscellaneous/IMPLEMENTATION_PLAN.md).
 
-All contributors and coding agents should first read the shared [project and agent collaboration rules (中文)](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
+All contributors and coding agents should first read the shared [project and agent collaboration rules](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [report outline](ProjectReport/REPORT_OUTLINE.md) reserves the sections required by the course. The final group report will be delivered as DOCX or PDF in `ProjectReport/`.
+The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
 
 Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
 
 ## SECTION 7 : MISCELLANEOUS
 
-- [Project and agent collaboration rules (中文)](AGENTS.md)
-- [Feature branches, pull requests and CI (中文)](Miscellaneous/GITHUB_WORKFLOW.md)
+- [Project and agent collaboration rules](AGENTS.md)
+- [Feature branches, pull requests and CI](Miscellaneous/GITHUB_WORKFLOW.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
-- [Jurong boundary and NUS-ISS simulated dispatch origin (中文)](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
-- [RDD2022ES version and eight-class label audit (中文)](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
-- [Validation error analysis and 30-epoch model comparison (中文)](Miscellaneous/VISION_30_EPOCH_COMPARISON.md)
-- [Balanced Precision/Recall optimization and unmet 70% target (中文)](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md)
-- [Frozen initial API contracts and demo examples (中文)](Miscellaneous/API_CONTRACT.md)
-- [Run demo detection and business rules (中文)](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
-- [Upload, review and manage persisted tasks (中文)](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
-- [B/C task snapshots, fixed inputs and knowledge handoff (中文)](Miscellaneous/BC_HANDOFF.md)
+- [Jurong boundary and NUS-ISS simulated dispatch origin](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
+- [RDD2022ES version and eight-class label audit](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
+- [Validation error analysis and 30-epoch model comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md)
+- [Balanced Precision/Recall optimization and unmet 70% target](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md)
+- [Frozen initial API contracts and demo examples](Miscellaneous/API_CONTRACT.md)
+- [Run demo detection and business rules](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
+- [Upload, review and manage persisted tasks](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
+- [B/C task snapshots, fixed inputs and knowledge handoff](Miscellaneous/BC_HANDOFF.md)
+- [RAG knowledge corpus: GA, plans, operations, evidence and integration requirements](SystemCode/backend/knowledge/README.md)
 - [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
-- [Three-person work allocation and interface draft (中文)](Miscellaneous/TEAM_WORK_ALLOCATION.md)
+- [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)

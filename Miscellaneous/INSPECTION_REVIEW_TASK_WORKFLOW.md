@@ -1,54 +1,54 @@
-# 第 6 步：巡检、审核与任务
+# Step 6: inspections, review and tasks
 
-负责人：A；原第 6 步日期：2026-10-12；本页说明原 `a-workflow-v1` 的 demo 请求与流程。第 8 步已扩展为 `a-workflow-v2`，具体 real 请求及新增字段见[真实视觉接口](REAL_VISION_API.md)。下表是原 demo 分流；当前 a-workflow-v5 的 real 分流已按用户要求改为主框 confidence ≥ 0.60 自动建任务，低于阈值待审核，接口最多返回一个框，见[最新字段与行为](INSPECTION_RESPONSE_FIELDS.md)。2026-10-14 当前规则已更新为 `demo-rules-v2`（P3/P2/P1＝60/120/240 分钟），见[业务基线](BUSINESS_RULES_BASELINE.md)；旧记录保留冻结的 v1 规则，业务参数仍标记为演示。不调用 Google 或 GPT，不生成路线。
+Owner: A; original date: 2026-10-12. This page describes original `a-workflow-v1` demo requests/workflows. Step 8 extends to `a-workflow-v2`; see [real vision API](REAL_VISION_API.md) for real requests/additions. The table below is original demo routing; current a-workflow-v5 real routing uses primary confidence ≥0.60 for automatic tasks, lower for review, and at most one response box; see [current fields/behavior](INSPECTION_RESPONSE_FIELDS.md). On 2026-10-14 current rules became `demo-rules-v2` (P3/P2/P1=60/120/240 minutes), per the [baseline](BUSINESS_RULES_BASELINE.md); old records retain frozen v1 rules. Parameters remain demo, with no Google/GPT/routes.
 
-## 1. 巡检与任务的区别
+## 1. Inspections versus tasks
 
-有效提交保存一条 `InspectionRecord`。它保留图片地址、坐标、原始检测框/标签/置信度、模型来源、规则决策过程、审核历史和记录版本。只有接受的巡检才关联一条 `TaskRecord`；数据库对 `task.inspection_id` 加唯一约束，防止重复建任务。
+A valid submission saves `InspectionRecord`, retaining image reference/location/raw boxes/labels/confidence/model provenance/rule decisions/review history/revision. Only accepted inspections link a `TaskRecord`; a unique task.inspection_id constraint prevents duplication.
 
-| 检测结果 | 巡检状态 | 任务与规划输入版本 |
+| Detection | Inspection status | Task/input revision |
 | --- | --- | --- |
-| 无检测 | `no_detection` | 保存巡检；没有任务；不递增 input_revision |
-| 任一检测低于演示阈值 | `pending_review` | 保存所有检测；等待审核；不递增 |
-| 所有检测达到演示阈值 | `accepted` | 按演示规则选择一个候选并创建任务；递增一次 |
-| 待审核巡检确认或纠正 | `accepted` | 根据明确选择的检测及审核结果创建一个任务；递增一次 |
-| 待审核巡检驳回 | `rejected` | 保留记录和审核说明；没有任务；不递增 |
+| None | `no_detection` | Save inspection; no task/increment |
+| Any below demo threshold | `pending_review` | Retain all, await review; no increment |
+| All meet demo threshold | `accepted` | Select one candidate/create task; increment once |
+| Confirm/correct pending | `accepted` | Selected detection/review create one task; increment once |
+| Dismiss pending | `rejected` | Retain record/note; no task/increment |
 
-一条巡检最多对应一个任务的行为沿用第 5 步的演示策略，不表示正式多检测业务决策已经验证。无检测记录不能通过审核接口凭空补出检测；需要重新提交。已接受/驳回的巡检不重新审核；接受后如需修正，走任务修改接口。任务完成或取消保留历史，不物理删除，也不允许重新激活。
+At most one task per inspection follows Step 5's demo policy, not a validated formal multiple-detection decision. No-detection records cannot acquire invented detections through review; resubmit. Accepted/rejected inspections cannot be reviewed again; corrections after acceptance use task patching. Completed/cancelled tasks retain history without deletion/reactivation.
 
-人工确认不会把原始置信度改成 1.0；纠正也不会覆盖模型原始标签。`review_history` 单独保存选中检测、原标签、纠正标签、操作、说明、时间和规则版本。审核与后续任务标签修正使用该巡检保存的完整规则配置快照，避免服务重启后新配置悄悄改写旧巡检规则。
+Confirmation never changes raw confidence to 1.0; correction never overwrites raw labels. review_history separately stores selection, original/corrected labels, action/note/time/rule version. Reviews/later class corrections use the inspection's complete frozen configuration so restart/new rules cannot silently change historical rules.
 
-## 2. 图片、位置和道路声明
+## 2. Images, location and road declarations
 
-- 上传仅接收能够完整解码的单张 JPEG/PNG：原始文件最多 8 MiB，最多 2,000 万像素；拒绝损坏文件、动画、其他格式和超限文件。HTTP 层在解析 multipart 前限制总请求为 8 MiB + 64 KiB，metadata 最多 16 KiB，不依赖 Content-Length 声明。
-- 图片按 EXIF 方向规范化为无原始 metadata 的 RGB PNG。模拟框按保存图片的尺寸缩放；它们是合成框，不是对所上传照片的识别结果。暂不生成单独标注图，`annotated_image_url=null`；C 可根据返回框在页面绘制。
-- 文件名由服务端生成，不采用用户文件名。通过 `/inspections/{id}/image` 访问，必须有对应数据库记录；不会公开整个上传目录。
-- 经纬度必须是有限 JSON 数字，按 WGS84 范围校验，再按冻结的 JE/JW 多边形并集校验，包含边界。不会用外接矩形代替多边形。NUS-ISS 只作为基地拥有区域外例外，用它提交维修任务仍被拒绝。
-- 必须显式提交 `road_type: "public_motor_road"`。该声明应符合[道路排除规则](JURONG_SCOPE_AND_DEPOT.md)，服务拒绝其他类别，记录 `road_type_source: "user_declared"`。目前没有道路网络/通行权限核验，**声明不是道路资格的自动验证**；调用者须核对位置，正式实验点位仍由 A/B 另行核验。
-- 坐标与照片是分开提交的数据；不据此证明照片拍摄于 Jurong。所有巡检和任务保持 `is_demo=true`，上传必须写明 `mode:"demo"` 和案例 ID，不提供真实模型失败后自动回退的行为。
+- One fully decodable JPEG/PNG, maximum 8 MiB and 20 million pixels; reject corruption/animation/other formats/excess. Before multipart parsing, HTTP caps total at 8 MiB + 64 KiB and metadata at 16 KiB, independent of Content-Length.
+- EXIF-normalize to RGB PNG without original metadata. Demo boxes scale to saved dimensions and are synthetic, not image recognition. No separate annotation currently: annotated_image_url=null; C may draw boxes.
+- Server-generated filenames; access `/inspections/{id}/image` only with a database record, never public directory listing.
+- Coordinates must be finite JSON numbers, within WGS84 and frozen JE/JW polygon union including edges, not merely its bounding rectangle. NUS-ISS's outside-area exception applies only to depot, not repair submissions.
+- Explicit `road_type: "public_motor_road"` is mandatory under [road exclusions](JURONG_SCOPE_AND_DEPOT.md). Other categories rejected; road_type_source is user_declared. No road-network/access verification exists: **declaration is not automatic eligibility validation**. Callers check location; A/B separately verify formal experiment points.
+- Coordinates/photo are separately submitted and do not prove capture in Jurong. Original demo inspections/tasks retain is_demo=true and require mode:"demo"/case ID; no automatic real-failure fallback.
 
-无效上传、范围外位置或未知案例不创建有效巡检或任务；存储失败不能返回成功。业务数据库与图片应一起备份。数据库事务失败会清理该请求新建的图片；进程在写文件与提交数据库之间异常退出可能留下孤立文件，它们不能通过图片 API 访问。当前不自动删除这些文件，也不提供跨文件系统和 SQLite 的原子事务保证。
+Invalid uploads/locations/cases create no valid inspection/task. Storage failures cannot return success. Back up database/images together. Failed transactions clean new request images; a process crash between file write/DB commit may leave inaccessible orphans. No automatic orphan cleanup or cross-filesystem/SQLite atomicity is guaranteed.
 
-## 3. HTTP 接口
+## 3. HTTP
 
-统一前缀 `/api/v1`，交互说明为后端 `/docs`，错误使用公共 `ErrorResponse`。原 `/demo` 预览仍不写数据库。
+Prefix `/api/v1`; backend `/docs`; shared ErrorResponse. `/demo` previews remain read-only.
 
-| 方法与路径 | 输入 | 正常输出 |
+| Method/path | Input | Success |
 | --- | --- | --- |
-| `POST /inspections` | multipart 的 `image` 文件、`metadata` JSON 文本；请求头 `Idempotency-Key` | 新建 201；相同请求重试 200；`InspectionUploadResponse`，仅 inspection_id/status/detection/task_id |
-| `GET /inspections` | 可选 status、limit、offset | `InspectionList` |
-| `GET /inspections/{id}` | 巡检 ID | `InspectionRecord` |
-| `GET /inspections/{id}/image` | 巡检 ID | 规范化后的 image/png |
-| `POST /inspections/{id}/review` | `ReviewRequest` | `InspectionMutationResponse` |
-| `GET /tasks` | status 默认 active，可取 all/completed/cancelled；limit、offset | `TaskList`，含同一读取快照的 input_revision |
-| `GET /tasks/{id}` | 任务 ID | `TaskRecord`，包含历史 |
-| `PATCH /tasks/{id}` | `TaskPatch` | `TaskMutation` |
+| `POST /inspections` | multipart image/metadata JSON, Idempotency-Key header | 201 new/200 retry; InspectionUploadResponse: inspection_id/status/detection/task_id only |
+| `GET /inspections` | Optional status/limit/offset | InspectionList |
+| `GET /inspections/{id}` | ID | InspectionRecord |
+| `GET /inspections/{id}/image` | ID | Normalized image/png |
+| `POST /inspections/{id}/review` | ReviewRequest | InspectionMutationResponse |
+| `GET /tasks` | status active default or all/completed/cancelled; limit/offset | TaskList with same-read input_revision |
+| `GET /tasks/{id}` | ID | TaskRecord/history |
+| `PATCH /tasks/{id}` | TaskPatch | TaskMutation |
 
-列表默认 limit=50、offset=0；limit 为 1～100，offset 非负；支持状态筛选，包含 total。巡检默认所有状态。分页是单次请求的一致快照，多页期间可能有新业务变更；B 不应把不同 input_revision 的任务页混成一轮规划。
+Defaults limit=50, offset=0; limit 1–100, nonnegative offset; status filters/total. Inspections default to all. Each page is consistent, but mutations may occur between pages; B must not mix revisions in one plan.
 
-### 上传
+### Upload
 
-`UploadMetadata` 必须且仅包含：
+UploadMetadata contains exactly:
 
 ```json
 {
@@ -60,19 +60,19 @@
 }
 ```
 
-上述坐标仅说明接口格式，不是已核验道路的实验点。使用自己核对过的范围内公共机动车道路位置。案例从 `GET /api/v1/demo/scenarios` 获取。
+Coordinates demonstrate format, not road-verified experiment points. Use checked eligible public motor roads within the area; obtain cases from GET /api/v1/demo/scenarios.
 
-将 JSON 保存为本地 `upload-metadata.json`，准备一张合法图片，在 PowerShell 执行：
+Save JSON as local upload-metadata.json, prepare a valid image and run PowerShell:
 
 ```powershell
 curl.exe -X POST "http://127.0.0.1:8000/api/v1/inspections" -H "Idempotency-Key: inspection-demo-001" -F "image=@sample.jpg" -F "metadata=<upload-metadata.json"
 ```
 
-同一逻辑提交重试时保留 Idempotency-Key；真正新增巡检使用新 key。key 只接受 1～64 个英文字母、数字、下划线或连字符。相同 key 携带不同原始文件内容或 metadata 返回 409，不会覆盖原记录。不能通过改文件名骗过或改变请求指纹；原始上传字节和规范化后的 metadata 才参与指纹。
+Retries reuse the key; new inspections use new keys. Keys accept 1–64 English letters/digits/underscore/hyphen. Same key with different raw file/metadata yields 409 without overwrite. Renaming cannot bypass/change fingerprints based on raw bytes/normalized metadata.
 
-### 审核
+### Review
 
-从巡检响应取得 `inspection_id`、`record_version` 和 `detection_id`：
+Obtain inspection_id, record_version and detection_id from inspection details:
 
 ```json
 {
@@ -85,46 +85,46 @@ curl.exe -X POST "http://127.0.0.1:8000/api/v1/inspections" -H "Idempotency-Key:
 }
 ```
 
-- `confirm` 必须指定本巡检中的 detection_id，不能传 damage_label。
-- `correct` 必须同时提供 detection_id 和中央标签字典中的 damage_label。
-- `dismiss` 不得提供选择或纠正字段；三种操作均可携带最多 500 字符的 note。
-- 仅 `pending_review` 可以发生新的审核。多框情况下，审核者明确选择代表检测，其他原始框继续保留；这是对整条巡检的明确审核决定。
-- 2026-10-18 接入账号权限，新人工审核/任务修改的 `actor_source` 为 `authenticated_user`，真实账号留在 auth_audit；旧 `user_declared_unverified` 保持不变。账号身份不代表工程资质认证。
+- confirm requires this inspection's detection_id and no damage_label.
+- correct requires detection_id and central-dictionary damage_label.
+- dismiss permits neither selection nor correction; all actions allow note up to 500 characters.
+- Only pending_review accepts new review. For multiple boxes, explicitly select the representative; other raw boxes remain. This is a review decision for the whole inspection.
+- Since 2026-10-18, new review/task changes use actor_source=authenticated_user with account in auth_audit; legacy user_declared_unverified remains. Identity is not engineering qualification certification.
 
-### 修改任务
+### Task changes
 
 ```json
 {"request_id":"complete-demo-001","expected_version":1,"status":"completed"}
 ```
 
-允许字段：status 为 completed/cancelled；damage_label 为中央标签；或 latitude、longitude、road_type 三个字段一起更新。标签修正由服务端重算优先级、严重度、工时和维修建议，并记录前后值。位置修正重新做范围校验，保留巡检的原始提交位置。拒绝空修改、显式 null、不完整位置、任意填写 priority/service_minutes/due_at 和重开任务。
+Allowed: completed/cancelled status, central damage_label, or latitude/longitude/road_type together. Label correction recalculates priority/severity/duration/advice and records before/after. Location correction revalidates scope and retains original inspection location. Reject empty patches, explicit nulls, partial locations, arbitrary priority/service_minutes/due_at and reopening.
 
-任务期限保持 null，不编造延期；未知维修时长仍为 null，不用零替代。终态记录仍可按 ID 或状态筛选查询。
+Deadlines stay null without fabricated lateness; unknown duration stays null, not zero. Terminal records remain queryable by ID/status.
 
-## 4. 版本、幂等与返回值
+## 4. Versions, idempotency and responses
 
-`record_version` 是某条巡检/任务的乐观并发版本，审核/修改必须带 expected_version；过期请求返回 409。`input_revision` 是共同规划输入版本；一次实际任务创建、修正、完成或取消只在同一事务中递增一次。重复请求、未改任何业务值的请求、待审核/无检测保存和驳回不增加规划版本。
+record_version is optimistic concurrency per inspection/task; review/patch supplies expected_version, stale yields 409. input_revision is shared planning input: actual task creation/correction/completion/cancellation increments once in the transaction. Replays, unchanged patches, pending/no-detection persistence and dismissal do not increment.
 
-审核/任务修改用 request_id 防重，范围分别是该巡检的审核和该任务的修改。完全相同的重试优先识别，旧 expected_version 不阻止安全重放；同一 request_id 改动内容返回 409。重放返回**当前**资源和当前输入版本，不返回可能已经过时的历史响应。
+request_id deduplicates within inspection review or task changes. Exact retries are recognized first even with old expected_version; changed content under the same ID yields 409. Replay returns **current** resource/revision, not outdated historical response.
 
-- 上传 `InspectionUploadResponse`：仅 inspection_id、status、可空 detection、可空 task_id；详情通过 GET /inspections/{id} 查询。
-- 审核 `InspectionMutationResponse`：inspection、可空 task、input_revision、planning_input_changed、replayed。
-- `TaskMutation`：task、input_revision、planning_input_changed、replayed。
-- planning_input_changed 仅表示此次请求真正改变规划输入；它不是“路线已计算完成”。第 6 步不调用尚未实现的 B 规划服务，也不返回虚构方案 ID。
-- InspectionRecord/TaskRecord 在基础 DTO 之上新增时间、record_version、来源和历史等字段。原基础 DTO 设置 extra=forbid，不能直接解析包含这些额外字段的新 HTTP 记录；C 应使用新记录契约，B 使用明确的 Task 字段投影或新记录类型。旧 `a-dto-v1` 固定样例保持原义。
+- InspectionUploadResponse: inspection_id/status/nullable detection/nullable task_id only; GET details separately.
+- InspectionMutationResponse: inspection, nullable task, input_revision, planning_input_changed, replayed.
+- TaskMutation: task, input_revision, planning_input_changed, replayed.
+- planning_input_changed means actual input change, not completed route calculation. Step 6 calls no not-yet-implemented planner and invents no plan IDs.
+- InspectionRecord/TaskRecord extend base DTO with timestamps/revision/provenance/history. Base extra=forbid cannot parse those records. C uses new records; B exact Task projection or new type. Original a-dto-v1 fixtures retain meaning.
 
-可执行 schema 位于 [workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py)，公共错误入口见[API 契约](API_CONTRACT.md)。前端根据 code/status 决定行为，不匹配自然语言错误说明。
+Executable [workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py); errors in [API contract](API_CONTRACT.md). Frontend uses code/status, not natural-language matching.
 
-## 5. 数据库与验证
+## 5. Database and verification
 
-启动把已有基础数据库 schema v1 原地迁移为 v2，保留 input_revision；新增 inspections、tasks、operation_keys 和索引。迁移和业务写入都使用共享 SQLite 事务；不删除旧数据、不另建业务数据库。未知或损坏的版本结构拒绝启动。
+Startup migrates schema v1 to v2 in place, retaining input_revision and adding inspections/tasks/operation_keys/indexes. Shared transactions cover migration/writes; do not delete data or create separate business DBs. Unknown/corrupt schemas reject startup.
 
-默认图片目录在数据库旁的 uploads 子目录；`ROADGUARD_UPLOAD_PATH` 可独立覆盖，路径以仓库根目录解析。设置 `ROADGUARD_DB_PATH` 后，默认图片目录随数据库配置位置变化，适合隔离本地测试；配置变更不会自动搬移已有文件。重启复用数据库和图片目录即可读取原记录。
+Default uploads live beside DB. ROADGUARD_UPLOAD_PATH independently overrides relative to root; ROADGUARD_DB_PATH changes default upload location, useful for isolation. Configuration changes do not move files. Reuse DB/uploads on restart.
 
-验证入口仍是 `python -m pytest SystemCode/tests -q`，覆盖七个案例、图片与范围边界、审核原始证据保留、任务状态、幂等与并发、事务回滚、规则快照、迁移和重启。测试图片在临时目录生成，不提交上传图片或真实巡检数据库。
+`python -m pytest SystemCode/tests -q` covers seven cases, images/geography, raw evidence, statuses/idempotency/concurrency/rollback, rule snapshots, migration/restart. Test images are temporary; no uploads/real DB committed.
 
-第 7 步已交付[完整 B/C 对接资料](BC_HANDOFF.md)，包括一致任务快照、固定输入与知识来源；第 8 步准备训练并接真实模型。四队调度、助手、网页与完整系统联调仍按原分工推进。
+[Step 7 handoff](BC_HANDOFF.md) supplies consistent snapshots/fixed inputs/knowledge; Step 8 prepares training/real model. Crews/assistant/web/full integration proceed under original ownership.
 
-## 账号权限增量（2026-10-18）
+## Account-permission increment (2026-10-18)
 
-本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。
+Examples now require login and X-CSRF-Token on writes. Inspectors upload/read own inspections; dispatchers review/manage; crews read/complete own tasks only. Four-field upload, single-box and 0.60 routing remain. See [account roles](ACCOUNT_ROLES.md) for roles/sessions/Swagger.

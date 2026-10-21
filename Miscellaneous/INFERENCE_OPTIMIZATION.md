@@ -1,63 +1,63 @@
-# 推理优化与训练数据诊断
+# Inference optimization and training-data diagnosis
 
-负责人 A；2026-10-13。目标仍是原始八类正确检测在同一个全局置信度下，Precision 和 Recall 都超过 70%。本轮先验证现有权重的推理方法，新增训练 0 次、下载权重 0 次、升级依赖 0 次。业务接口、人工审核策略和运行中的后端不变。
+Owner A; 2026-10-13. Target remains correct detection of the original eight classes with both Precision and Recall above 70% at one global confidence. This round tests existing-weight inference with zero training, zero weight downloads and zero dependency upgrades. Business APIs, manual-review policy and running backend remain unchanged.
 
-## 运行前冻结的比较
+## Preregistered comparisons
 
-[计划](../SystemCode/experiments/vision/inference_followup_plan.json)与[协议补充](../SystemCode/experiments/vision/inference_followup_clarifications.json)在实验前固定了八个候选、预算、输入哈希及选择规则。全部使用已有的 1,921 张验证原图和 2,623 个标注框；这些验证数据已参与开发，不能当成新的独立测试。
+The [plan](../SystemCode/experiments/vision/inference_followup_plan.json) and [clarifications](../SystemCode/experiments/vision/inference_followup_clarifications.json) froze eight candidates, budgets, input hashes and selection before execution. All use existing 1,921 validation originals/2,623 boxes. Previously used development validation is not a new independent test.
 
-| 候选 | 方法 | 要验证的问题 |
+| Candidate | Method | Question |
 | --- | --- | --- |
-| baseline832 | 当前 best，832，全图 | 已有基线：P 50.52%、R 52.00% |
-| renms832 | 对缓存结果再做同类 NMS 0.5 | 减少重复框是否能改善正确比例 |
-| standard640 | 当前 best，全图640 | 更低分辨率是否适合本数据尺度 |
-| standard960 | 当前 best，全图960 | 增大分辨率能否减少漏检 |
-| flip832 | 原图与水平翻转，共2视图 | 不同视角的候选能否互补 |
-| tiles832 | 全图与4个重叠角落切片，共5视图 | 放大小损坏能否改善召回 |
-| ensemble_union | 父模型640与当前模型832候选合并 | 两个检查点的错误能否互补 |
-| ensemble_paired | 两模型同类配对、重新评分 | 一致检测能否改善分数排序 |
+| baseline 832 | Current best, 832, full image | Existing baseline P50.52%, R52.00% |
+| renms832 | Reapply class-aware NMS 0.5 to cached results | Can fewer duplicate boxes improve precision? |
+| standard640 | Current best, full image640 | Does lower resolution fit source scales? |
+| standard960 | Current best, full image960 | Does higher resolution reduce misses? |
+| flip832 | Original plus horizontal flip, two views | Can view candidates complement each other? |
+| tiles832 | Full image plus four overlapping corners, five views | Does enlarged small damage improve recall? |
+| ensemble_union | Merge parent 640/current832 candidates | Do checkpoint errors complement each other? |
+| ensemble_paired | Same-class paired/rescored boxes from two models | Does agreement improve ranking? |
 
-所有新增视图使用 FP32、batch1、GPU0，置信度下限0.001、视图内同类 NMS0.7、每视图最多100框。融合后最多100框；standard候选保留原始视图结果，其余方法使用同类NMS0.5。切片宽高分别为原图的0.625向上取整，坐标恢复到原图；全图仍保留。新增总预算为17,289次图像视图推理。
+All new views use FP 32, batch 1, GPU 0, confidence floor0.001, class-aware within-view NMS 0.7, max100 boxes/view and after fusion. Standard candidates retain original-view outputs; others use class-aware NMS 0.5. Tile dimensions are ceil(original dimension x0.625), restored to original coordinates, retaining full image. Additional budget: 17,289 view inferences.
 
-配对法不是标准 WBF 实现：两模型同类框按固定贪心顺序，以IoU≥0.55一对一配对，坐标按置信度加权。配对分数是两分数平均；单模型框的分数减半。低于0.001的结果丢弃。它是待验证的排序启发式，不能解释为校准后的正确概率。两个权重具有父子微调关系，也不是独立投票。
+Pairing is not standard WBF: fixed greedy same-class one-to-one IoU>=0.55 pairing, confidence-weighted coordinates, mean paired score and half-score single-model boxes. Discard scores below 0.001. This ranking heuristic is unvalidated, not calibrated correctness probability; parent/child fine-tuned checkpoints are not independent voters.
 
-缓存候选已受NMS0.7及top100截断影响，再做NMS0.5不等价于重新运行检测器的NMS0.5。翻转与切片使用本项目明确实现，未安装SAHI，也没有声称复现库内多尺度TTA。
+Cached candidates already passed NMS 0.7/top100, so re-NMS 0.5 differs from rerunning detector NMS 0.5. Flip/tiles are explicitly implemented here; SAHI is not installed and no library multiscale-TTA reproduction is claimed.
 
-## 指标与选择
+## Metrics and selection
 
-主指标保持八类同类一对一IoU≥0.5匹配。IoU≥0.3只诊断框偏移，不用于替换主指标或挑选模型。每种方法使用相同的25个阈值，按 `min(micro P, micro R)` 最大、再按macro F1、再按micro R选择操作点，平局使用较早阈值或候选。
+Primary metrics retain eight-class same-class one-to-one IoU>=0.5. IoU>=0.3 diagnoses localization only, not selection/primary replacement. All methods use the same 25 thresholds, maximizing `min(micro P,micro R)`, then macro F1, then micro R; ties retain earlier threshold/candidate.
 
-同时报告全局最高分候选和可推荐候选。可推荐候选须在自己的选中操作点，相对基线的P与R**都严格提高**；若没有则保留基线。报告每类支持数与退步，不能用总体改善掩盖稀有类别下降。复合推理方法输出实验配方，不能直接伪装成仅支持单权重的`roadguard-model-v1`清单。
+Report both overall winner and recommendable candidate. Recommendations must strictly improve **both P and R** at their selected point versus baseline; otherwise retain baseline. Report per-class support/regressions without hiding rare-class decline. Composite methods output experimental recipes, not disguised single-weight `roadguard-model-v1` manifests.
 
-逐图结果采用原子写入，可通过`--resume`恢复；恢复必须保持权重、数据、源码、运行环境和设置身份一致。所有大体积证据放在忽略上传的`Dataset/inference-followup/`。原训练best/last和完整恢复检查点保留。
+Atomic per-image output supports `--resume` with identical weights/data/source/runtime/settings identities. Bulk evidence remains under ignored `Dataset/inference-followup/`. Original best/last/full recovery checkpoints remain retained.
 
-## 数据与损失诊断
+## Data and loss diagnosis
 
-本轮只定向检查20张训练原图：宽纵裂、宽横裂、下陷龟裂、深坑各4张，加4张空标注图片。局部审查不代表全库标注质量，也没有修改标签。样本ID、原图与标注SHA256、原始框和联系表保存于`Dataset/inference-followup/data-audit/`。
+Targeted review covers20 training originals: four each wide-longitudinal, wide-transverse, sunken-alligator, deep-pothole plus four empty-label images. This is not full-dataset quality assessment; labels are unchanged. IDs, image/label SHA256, boxes/contact sheets: `Dataset/inference-followup/data-audit/`.
 
-- 原始训练图8,958张，空标注2,865张（32.0%）；镜像相同数量。镜像增加训练次数，不增加独立场景。宽横裂、下陷龟裂、深坑原始框只有243、311、193个。
-- 两张空标注训练图可见裂纹样接缝或纹理；是否属于应标损坏，需结合源标注规范人工判断。不能把所有空标注图片直接作为可靠的困难负样本。
-- 训练元数据出现16对同family不同亚类框IoU≥0.9，属于复核候选；重叠本身不足以确认错标。单张RGB照片也不能独立确认工程深度。
-- 已安装Ultralytics8.4.176的类别权重乘在BCE正负项上，不只增加稀有正例权重。实际未安装Albumentations，不声称使用其默认增强。
-- 上轮epoch10至40，训练分类loss由1.661降至0.939，验证分类loss由2.214升至2.481，原生mAP50–95由0.203降至0.182。它与泛化差距一致，但增强也有变化，不是单一参数的因果证明；不支持盲目续加训练轮数。
+- 8,958 original training images, 2,865 empty(32.0%), with equal mirror counts. Mirrors add presentations, not independent scenes. Rare original boxes: wide transverse243, sunken alligator311, deep pothole193.
+- Two empty-label images show crack-like seams/textures; source annotation policy and human review must determine whether they are damage. Empty-label images are not automatically reliable hard negatives.
+- Metadata contains16 same-family/different-subclass box pairs at IoU>=0.9, review candidates only. Overlap does not confirm label errors; single RGB images cannot independently establish engineering depth.
+- Installed Ultralytics 8.4.176 class weights affect positive/negative BCE terms, not only rare positives. Albumentations is absent; its default augmentation was not used.
+- Previous epochs 10->40: train classification loss 1.661->0.939, val 2.214->2.481, native mAP50-95 0.203->0.182. Consistent with a generalization gap, but augmentation changed too; not single-parameter causality or support for blindly adding epochs.
 
-当前best在confidence0.05已有八类Recall72.05%，Precision却只有23.68%（TP1890、FP6090）。在这个固定候选池内达到双70%，至少保留1,837个TP，同时把FP降至787以下：需要保留至少97.2%的现有TP并过滤至少87.1%的FP。该算术说明目标难度，并不预测某种新方法能做到。
+At confidence 0.05 current best reaches eight-class recall 72.05% but precision 23.68%(TP 1890, FP 6090). Within this candidate pool, dual 70 requires at least 1,837 TP and fewer than 787 FP: retain at least 97.2% existing TP while filtering at least 87.1% FP. Arithmetic illustrates difficulty, not a prediction that a new method achieves it.
 
-若本轮推理改善仍有限，下一项值得验证的是“损坏/背景拒绝＋原八类”的候选框二阶段复核模型，使用训练集内的损坏裁剪和人工筛过的困难负样本。普通八分类器会被迫给背景分配损坏类别，无法单独解决误报。新训练应另行冻结小规模预算、保留源图分组与镜像关联，并评估完整两阶段流程；不能把验证误报直接回填训练或未经审查自动重标。
+If inference gains remain limited, investigate a candidate-box second-stage review model with damage/background rejection plus the original eight classes, using training crops and manually screened hard negatives. A plain eight-class classifier must assign background to damage and cannot alone solve false positives. Freeze a separate small training budget, preserve source/mirror groups and evaluate the complete two-stage pipeline. Do not feed validation false positives into training or relabel automatically without review.
 
-## 方法依据
+## References
 
-[Ultralytics切片推理说明](https://docs.ultralytics.com/guides/sahi-tiled-inference/)与[SAHI切片指南](https://obss.github.io/sahi/guides/sliced-inference/)说明通过切片放大小目标并合并结果的思路；本项目采用固定四角切片。
+[Ultralytics tiled inference](https://docs.ultralytics.com/guides/sahi-tiled-inference/) and [SAHI guide](https://obss.github.io/sahi/guides/sliced-inference/) explain enlarging small objects with slices and merging detections; this project uses fixed corner tiles.
 
-[Ultralytics TTA说明](https://docs.ultralytics.com/yolov5/tutorials/test-time-augmentation/)说明测试时多视图预测的思路；这里仅比较明确的原图与水平翻转两视图，不复现该文YOLOv5实现。[Weighted Boxes Fusion论文](https://arxiv.org/abs/1910.13302)提供多模型框融合参考；本轮配对法的规则以冻结协议为准，不复用论文名称作为效果保证。
+[Ultralytics TTA](https://docs.ultralytics.com/yolov5/tutorials/test-time-augmentation/) explains multiview inference. Here only explicit original/flip views are compared, not its YOLOv5 implementation. [Weighted Boxes Fusion](https://arxiv.org/abs/1910.13302) informs multimodel fusion; our frozen pairing protocol defines behavior, without borrowing the paper's name as an effectiveness guarantee.
 
-## 运行结果
+## Results
 
-八候选均已完成全部验证原图与固定25点阈值比较。主指标没有任何候选在网格内达到双70%；八类均未同时达到P/R70%。结果如下（百分比）：
+All eight candidates completed all validation originals/25-threshold comparisons. None reaches primary dual 70% on the grid; no class reaches both P/R70%. Percentages:
 
-| 候选 | confidence | TP / FP / FN | P | R | F1 | macro F1 |
+| Candidate | confidence | TP/FP/FN | P | R | F1 | macro F1 |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
-| baseline832 | 0.25 | 1364 / 1336 / 1259 | 50.52 | 52.00 | 51.25 | 42.62 |
+| baseline 832 | 0.25 | 1364 / 1336 / 1259 | 50.52 | 52.00 | 51.25 | 42.62 |
 | renms832 | 0.25 | 1347 / 1159 / 1276 | 53.75 | 51.35 | 52.52 | 43.30 |
 | standard640 | 0.25 | 1279 / 1273 / 1344 | 50.12 | 48.76 | 49.43 | 39.54 |
 | standard960 | 0.25 | 1331 / 1378 / 1292 | 49.13 | 50.74 | 49.92 | 42.00 |
@@ -66,9 +66,9 @@
 | ensemble_union | 0.3 | 1408 / 1321 / 1215 | 51.59 | 53.68 | 52.62 | 43.70 |
 | ensemble_paired | 0.2 | 1446 / 1362 / 1177 | 51.50 | 55.13 | 53.25 | 44.09 |
 
-全局最高分与严格双指标改善的候选均为 **flip832，confidence0.30**。相对基线P提高2.50个百分点、R提高1.26个百分点，增加33TP、减少98FP与33FN。Macro P/R/F1为43.24%/43.46%/43.08%；macro Recall略低于基线43.52%，仍不能称作各类全面改善。配对融合在选中点召回55.13%更高，但Precision为51.50%，按事先均衡规则没有胜出。
+Overall winner and strict-both-metrics recommendation: **flip832, confidence 0.30**. Versus baseline, P +2.50 percentage points, R +1.26,33 more TP, 98 fewer FP/33 fewer FN. Macro P/R/F1=43.24%/43.46%/43.08%; macro recall is slightly below baseline 43.52%, so not universal class improvement. Paired fusion has higher recall 55.13% but precision 51.50%, losing the frozen balanced ranking.
 
-| ID / 类别 | support | 基线 P / R / F1 | flip832 P / R / F1 |
+| ID/class | support | Baseline P/R/F1 | flip832 P/R/F1 |
 | --- | ---: | --- | --- |
 | 0 longitudinal crack | 941 | 57.66 / 60.79 / 59.18 | 60.51 / 63.02 / 61.74 |
 | 1 longitudinal crack wide | 148 | 38.07 / 45.27 / 41.36 | 38.17 / 47.97 / 42.51 |
@@ -79,33 +79,33 @@
 | 6 pothole | 299 | 36.25 / 38.80 / 37.48 | 36.98 / 41.81 / 39.25 |
 | 7 pothole deep | 45 | 34.69 / 37.78 / 36.17 | 29.63 / 35.56 / 32.32 |
 
-宽横裂、下陷龟裂、深坑的Recall下降；宽横裂和深坑F1也下降。更高的总体分数仍受到大类支持数量影响。IoU0.3只作为辅助诊断保留在JSON，不改变这项结论。
+Wide-transverse, sunken-alligator and deep-pothole recall declines; wide-transverse/deep-pothole F1 declines too. Higher overall scores still reflect common-class support. IoU 0.3 remains supplementary JSON diagnostics, without changing this conclusion.
 
-## CPU与外部图片验收
+## CPU and external-image acceptance
 
-在同样40张按国家平衡的固定验证原图上，各2次预热、3轮共120次测量，4个CPU线程、1个interop线程、FP32：基线中位数 **85.19 ms**、P95 **99.00 ms**；flip832中位数 **142.64 ms**、P95 **160.94 ms**，中位耗时约为基线 **1.67倍**。
+Same40 country-balanced validation originals, two warmups each, three rounds/120 measurements, four CPU threads, one interop, FP 32: baseline median **85.19 ms**, P95 **99.00 ms**; flip832 median **142.64 ms**, P95 **160.94 ms**, median about **1.67x** baseline.
 
-计时包括ImageStore.prepare、归一化PNG解码、完整视图/融合与阈值过滤，排除权重加载、磁盘读取、DTO与HTTP/数据库。它是实验配方的CPU检查，尚未接入真实API。首轮计时与六图CPU推理有重叠，保留但不用于报告；正式耗时来自无其他本次模型推理并行的`acceptance-isolated-v2`。
+Timing includes ImageStore.prepare, normalized PNG decoding, full view/fusion/threshold filtering; excludes weight loading, disk reads, DTO and HTTP/database. This is experimental-recipe CPU verification, not API integration. First timing overlapped six-image CPU inference and is retained but excluded. Formal `acceptance-isolated-v2` had no concurrent inference from this task.
 
-40图归一化前后RGB像素一致。两候选各25图CPU/GPU输出有数值差异、各23图超出严格IoU0.99/分数1e-4容差；按同类IoU0.5匹配，flip输出全部对应，基线少1个GPU候选。CPU重复输出一致性及最大数值差异见摘要。不能把GPU的完整验证指标直接当作已经复测的CPU全量准确率。
+RGB pixels are identical before/after normalization on 40 inputs. Each candidate differs numerically between CPU/GPU on 25 images; each exceeds strict IoU 0.99/score1e-4 tolerance on 23. At same-class IoU 0.5 all flip detections match; baseline lacks one GPU candidate. Summary records CPU repeat consistency/max numerical differences. Full GPU validation metrics are not remeasured full-CPU accuracy.
 
-已有六张真实外部图片在选择完成后复测，无新增挑图或调参。龟裂图片仍能检出；一张路面照片新增右侧裂纹区域，但“下陷”仍未经工程确认；明显坑洞近照仍漏检，减速带边缘误报仍存在。选择点0.30还过滤掉原来低于0.30的真实坑洞候选。该结果不足以支持实际业务自动放行，六图也没有专家GT，不能计算准确率。原结果、来源/许可和新的逐图对照均保留于`Dataset/inference-followup/external-selected/`。
+The existing six real external photos were retested only after selection, with no new selection/tuning. Alligator images remain detected; one road photo gains a right-side crack region, but sunken remains unverified engineering interpretation. An obvious close-up pothole is still missed and speed-bump edge false positives persist. Selected0.30 also filters a previous real-pothole candidate below 0.30. This cannot support operational automatic acceptance. Six photos lack expert GT, so no accuracy calculation. Original outputs, provenance/licenses, new comparisons: `Dataset/inference-followup/external-selected/`.
 
-## 工程验收与交付边界
+## Engineering acceptance and delivery limits
 
-- 新工具与原指标工具相关测试64通过；完整回归790通过、1项Windows符号链接权限测试跳过；CI guard 44通过。首次默认临时目录/沙箱TestClient受限，最终使用工作区临时目录完成完整检查。
-- 独立审阅修正并验证了中断缓存完整性检查和融合最终分数平局的来源顺序；主agent实际检查5张训练审查联系表和6张外部对照图。
-- 推理源码提交`173d0e1`，SHA256 `e6856697cd5a6bfd816a860b85441b5563f23a55887e4142d1454d11fcb3833f`；两种standard分辨率复用未修改的balanced_metrics.py导出器。
-- 所有输入/模型/协议及完整逐图结果身份均经校验；没有打开test图片或标注用于本轮选择，没有改标签、依赖、业务接口、workflow或PyCharm配置。
-- 全部训练检查点继续保留。本轮没有新训练，也没有生成可清理的train.cache/val.cache；预测证据不作为多余缓存删除，Dataset继续整体Git忽略。
+- Relevant new/existing metric tests64 passed; full regression790 passed, one Windows symlink-permission skip; CI guards44 passed. Initial default-temp/sandbox TestClient restrictions were resolved using workspace temporary directories for the complete checks.
+- Independent review fixed/verified interrupted-cache integrity and source ordering for final fusion score ties. Main agent viewed five training-audit contact sheets and six external comparisons.
+- Inference source commit `173d0e1`, SHA256 `e6856697cd5a6bfd816a860b85441b5563f23a55887e4142d1454d11fcb3833f`; both standard resolutions reuse unchanged balanced_metrics.py exporter.
+- All input/model/protocol/per-image identities verified. No test images/labels opened for selection; labels, dependencies, business APIs, workflow and PyCharm unchanged.
+- All training checkpoints retained. No training/new train.cache/val.cache this round. Prediction evidence is not redundant cache; Dataset remains entirely Git-ignored.
 
-该实验配方可用于后续验证；**没有替换运行中的模型**。考虑只有小幅增益、CPU成本增加、稀有类退步及真实坑洞漏检，下一轮优先做标签与困难负样本核验，再设计带背景拒绝的二阶段复核小实验。不能承诺这样就达到双70%，也不继续无边界尝试更多阈值或训练轮次。
+This recipe supports further verification and **does not replace the running model**. Given small gains, CPU costs, rare-class regressions and missed real potholes, prioritize label/hard-negative review, then a budgeted background-rejection second-stage pilot. No dual 70 guarantee or unlimited threshold/epoch experimentation.
 
-可分享证据：[完整摘要](../SystemCode/experiments/vision/inference_followup_summary.json)、[操作点CSV](../SystemCode/experiments/vision/inference_followup_operating_points.csv)、[指标图](../SystemCode/experiments/vision/inference_followup_operating_points.png)、[逐类F1](../SystemCode/experiments/vision/inference_followup_per_class.png)、[数据诊断](../SystemCode/experiments/vision/inference_followup_data_diagnosis.json)。
+Shareable evidence: [summary](../SystemCode/experiments/vision/inference_followup_summary.json), [operating CSV](../SystemCode/experiments/vision/inference_followup_operating_points.csv), [metric chart](../SystemCode/experiments/vision/inference_followup_operating_points.png), [class F1](../SystemCode/experiments/vision/inference_followup_per_class.png), [data diagnosis](../SystemCode/experiments/vision/inference_followup_data_diagnosis.json).
 
-## 复现命令
+## Reproduction commands
 
-从仓库根目录运行；需要本机已有相同权重、数据与冻结计划。standard640/960本轮使用原导出器；下列命令只展示模式，已存在输出应使用恢复参数或新名称，不能覆盖证据。
+Run from repository root with matching existing weights, data, frozen plan. standard640/960 used the original exporter. Commands illustrate patterns only; use resume/new names for existing outputs, never overwrite evidence.
 
 ```powershell
 .venv/Scripts/python.exe SystemCode/model/balanced_metrics.py export --weights Dataset/runs/yolo11s-rdd2022es-balanced40-img832-seed42/weights/best.pt --run-name inference-followup-standard640 --imgsz 640 --device 0
@@ -113,4 +113,4 @@
 .venv/Scripts/python.exe SystemCode/model/inference_experiments.py analyze --export Dataset/inference-followup/flip832/export.json
 ```
 
-切片使用`--method tiles`；缓存融合使用`fuse --exports ... --strategy union_nms|paired_score --run-name ...`。`compare --exports ... --run-name ...`要求冻结的八候选顺序：baseline832、renms832、standard640、standard960、flip832、tiles832、ensemble_union、ensemble_paired。只有新工具支持逐图`--resume`；原导出器拒绝重复输出。CPU与外部图片检查由本机任务脚本完成，报告保留脚本哈希与完整计时边界，不声称这些临时脚本随Git发布。
+Tiles: `--method tiles`; cached fusion: `fuse --exports ... --strategy union_nms|paired_score --run-name ...`. `compare --exports ... --run-name ...` requires frozen order baseline 832, renms832, standard640, standard960, flip832, tiles832, ensemble_union, ensemble_paired. Only the new tool supports per-image `--resume`; original exporter rejects existing output. Local task scripts performed CPU/external checks; reports retain their hashes/full timing boundaries without claiming those temporary scripts ship in Git.

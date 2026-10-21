@@ -26,6 +26,12 @@ def require(condition, reason):
         raise KnowledgeIntegrityError(reason)
 
 
+def has_metadata(text: str, key: str, value: str) -> bool:
+    """Accept the English corpus and the original full-width punctuation."""
+    return re.search(r'\b' + re.escape(key) + r'\s*[:\uff1a]\s*`'
+                     + re.escape(value) + '`', text) is not None
+
+
 def local_file(base: Path, relative: str) -> Path:
     require(isinstance(relative, str) and bool(relative), 'invalid path')
     posix, windows = PurePosixPath(relative), PureWindowsPath(relative)
@@ -109,8 +115,8 @@ def _load(root: Path) -> KnowledgePackage:
     chunks = []
     for doc_id, document in documents.items():
         text = verified(base, document).decode('utf-8')
-        require(f'document_id：`{doc_id}`' in text
-                and f'document_version：`{document["document_version"]}`' in text, 'document metadata')
+        require(has_metadata(text, 'document_id', doc_id)
+                and has_metadata(text, 'document_version', document['document_version']), 'document metadata')
         anchors = list(ANCHOR.finditer(text))
         sections = unique(document['sections'], 'section_id')
         require(len(anchors) == len(sections)
@@ -120,8 +126,8 @@ def _load(root: Path) -> KnowledgePackage:
             block = text[anchor.end():anchors[index + 1].start() if index + 1 < len(anchors) else len(text)].strip()
             citation = f'{doc_id}#{anchor[1]}'
             require(meta['citation_id'] == citation and meta['classification'] in CLASSIFICATIONS
-                    and f'citation_id：`{citation}`' in block
-                    and f'classification：`{meta["classification"]}`' in block, 'section metadata')
+                    and has_metadata(block, 'citation_id', citation)
+                    and has_metadata(block, 'classification', meta['classification']), 'section metadata')
             require(meta['source_ids'] and len(set(meta['source_ids'])) == len(meta['source_ids']), 'invalid sources')
             refs = []
             for key in meta['source_ids']:

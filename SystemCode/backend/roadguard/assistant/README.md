@@ -1,3 +1,11 @@
+# Current merged assistant package (2026-10-21)
+
+The integration now uses a-knowledge-v11: all eleven English knowledge documents from main, 40 sections, 30 synthetic acceptance specifications and the two stable feature citations for routing defaults and account roles. The loader accepts English and original full-width metadata punctuation. Retrieval preserves English terms and a bounded set of Chinese domain aliases; this is not a general translation service. Sources are revalidated on each request.
+
+The records below describe C's earlier six-document/v9 implementation and pre-merge acceptance. They remain historical and do not override the current manifest. GPT remains opt-in and was not called during merge verification. Broad questions may exceed the existing 24,000-character provider context budget and return an explicit size error; no paid budget or silent truncation was added.
+
+## Historical C delivery notes
+
 # C 第 10 步：本地只读知识检索
 
 以下记录第 10 步交付；第 11 步只读问答及配置见本文后半部分。

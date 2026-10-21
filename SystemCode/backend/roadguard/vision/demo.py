@@ -20,31 +20,31 @@ class _Scenario:
 
 _SCENARIO_FIXTURES: Mapping[str, _Scenario] = MappingProxyType({
     "high_confidence": _Scenario(
-        "演示：单个高置信度坑洞；固定合成结果，不读取图片。",
+        "Demo: one high-confidence pothole; fixed synthetic results, without reading the image.",
         ((6, 0.96, (120, 90, 340, 260)),),
     ),
     "low_confidence": _Scenario(
-        "演示：单个低置信度坑洞，供人工复核分流测试。",
+        "Demo: one low-confidence pothole for testing manual-review routing.",
         ((6, 0.42, (120, 90, 340, 260)),),
     ),
     "no_detection": _Scenario(
-        "演示：没有检测结果，不代表实际图片未发现损坏。",
+        "Demo: no detections; this does not establish that the actual image contains no damage.",
         (),
     ),
     "multiple_detections": _Scenario(
-        "演示：纵向裂缝 0.98 与深坑洞 0.90，用于验证业务选取不只看最高置信度。",
+        "Demo: longitudinal crack at 0.98 and deep pothole at 0.90; verifies that business selection considers more than the highest confidence.",
         ((0, 0.98, (60, 60, 180, 300)), (7, 0.90, (320, 200, 540, 400))),
     ),
     "mixed_confidence": _Scenario(
-        "演示：高置信度坑洞与低置信度深坑洞，供整次巡检待复核测试。",
+        "Demo: a high-confidence pothole and a low-confidence deep pothole for testing review of the entire inspection.",
         ((6, 0.96, (60, 60, 250, 220)), (7, 0.42, (320, 200, 540, 400))),
     ),
     "threshold_boundary": _Scenario(
-        "演示：置信度恰好为演示阈值候选 0.60；该值不是正式批准阈值。",
+        "Demo: confidence exactly at the candidate demo threshold of 0.60; this is not a formally approved engineering threshold.",
         ((6, 0.60, (120, 90, 340, 260)),),
     ),
     "below_threshold": _Scenario(
-        "演示：置信度 0.5999，供演示阈值候选 0.60 下方的边界测试。",
+        "Demo: confidence 0.5999 for testing the boundary below the candidate demo threshold of 0.60.",
         ((6, 0.5999, (120, 90, 340, 260)),),
     ),
 })

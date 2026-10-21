@@ -43,6 +43,6 @@ it('keeps zero distinct from null and handles both directions without claiming i
   expect(percentageChange(0, 5)).toBe('-100%')
   expect(percentageChange(15, 10)).toBe('+50%')
   expect(percentageChange(5, 5)).toBe('0%')
-  expect(percentageChange(0, 0)).toContain('基线为 0')
-  expect(percentageChange(null, 5)).toBe('无法计算')
+  expect(percentageChange(0, 0)).toContain('Baseline is 0')
+  expect(percentageChange(null, 5)).toBe('Not calculable')
 })

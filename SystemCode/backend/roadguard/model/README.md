@@ -1,6 +1,6 @@
-# 后端部署模型
+# Backend deployment model
 
-当前部署权重已作为普通 Git 二进制文件纳入私有仓库。组员 clone/pull 后会自动取得下面的 `.pt` 文件，无需 Git LFS 或单独下载：
+The deployment weights are a regular Git binary in this private repository. Clone/pull retrieves the `.pt` file automatically, without Git LFS or a separate download:
 
 ```text
 SystemCode/backend/roadguard/model/
@@ -8,15 +8,15 @@ SystemCode/backend/roadguard/model/
 └── roadguard-yolo11s-single-v1.pt
 ```
 
-后端默认加载这个固定文件，不需要修改代码、设置模型环境变量或运行安装脚本。新环境仍需按[模型接入说明](../../../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md)安装后端与视觉依赖；拉取后启动或重启后端，在巡检上传接口选择 `mode: "real"`。如果 PyCharm 中曾设置 `ROADGUARD_VISION_MANIFEST_PATH`，移除旧覆盖值以使用默认配置。
+The backend loads this fixed file by default; no code changes, model environment variables or installation script are needed. New environments still need backend and vision dependencies from the [model integration guide](../../../../Miscellaneous/MODEL_RELEASE_AND_BACKEND.md). Start or restart the backend after pulling, and select `mode: "real"` on inspection upload. Remove an old `ROADGUARD_VISION_MANIFEST_PATH` override in PyCharm to use the default.
 
-[默认模型清单](../../../model/releases/roadguard-single-v1.json)保存权重路径、SHA-256、八类标签和推理参数。加载器按仓库位置定位文件，与终端或 PyCharm 工作目录无关；首次真实推理校验权重后加载，之后复用内存中的模型。文件缺失或校验失败时返回 `503 detector_unavailable`，修复后重启；不会自动回退到 Dataset 中的旧模型。
+The [default model manifest](../../../model/releases/roadguard-single-v1.json) records the weights path, SHA-256, eight labels and inference parameters. The loader resolves paths from the repository location independently of terminal/PyCharm working directories. It verifies and loads weights on first real inference, then reuses the in-memory model. Missing files or failed verification return `503 detector_unavailable`; restart after repair. It never falls back automatically to older models in Dataset.
 
-- 权重大小：19,218,837 bytes。
-- SHA-256：`464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`。
-- 单框响应、0.20 推理过滤阈值、主框置信度达到 0.60 自动建任务的现有逻辑不变。
-- 此目录只放部署用权重；训练代码仍在 `SystemCode/model/`，原始数据和训练保存点仍在根目录 `Dataset/`。
-- 只有这一份指定权重获准进入 Git；其他 `.pt/.pth/.onnx` 和整个 Dataset 继续排除。CI 校验指定文件的大小、SHA-256 和默认清单，拒绝错误文件或 LFS 指针。
-- [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) 保留为备份下载渠道。可选的 `SystemCode/model/install_released_model.py --file <下载文件路径>` 也会校验并安装到此目录，正常 clone/pull 无需执行。
+- Size: 19,218,837 bytes.
+- SHA-256: `464f5f2af596140f71583e974146f10819765adf851bc8ac73198b7fa7f51488`.
+- Existing single-box responses, 0.20 inference filtering and automatic task creation at primary confidence 0.60 remain unchanged.
+- This directory contains deployment weights only. Training code remains in `SystemCode/model/`; raw data and training checkpoints remain in root `Dataset/`.
+- Only this specified weight file is authorized in Git. Other `.pt/.pth/.onnx` files and all Dataset content remain excluded. CI checks size, SHA-256 and the default manifest, rejecting incorrect files and LFS pointers.
+- The [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) remains a backup download channel. Optional `SystemCode/model/install_released_model.py --file <downloaded-file-path>` also verifies and installs here; normal clone/pull does not require it.
 
-本次改变部署位置和交付方式，模型版本与识别效果不变。
+This changes deployment location and delivery only; model version and detection quality are unchanged.

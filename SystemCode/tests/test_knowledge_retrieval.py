@@ -37,9 +37,9 @@ def mutate_manifest(root, update):
 
 def test_all_sections_have_complete_provenance_and_no_context_is_indexed():
     package = load_package()
-    assert package.package_version == 'a-knowledge-v9'
-    assert len(package.chunks) == 19
-    assert len({c.citation_id for c in package.chunks}) == 19
+    assert package.package_version == 'a-knowledge-v11'
+    assert len(package.chunks) == 40
+    assert len({c.citation_id for c in package.chunks}) == 40
     assert {c.classification for c in package.chunks} == {'confirmed_project_fact', 'demo_assumption', 'pending_decision'}
     assert all(c.document_sha256 and c.document_version and c.sources for c in package.chunks)
     assert all(c.document_path.startswith(PACKAGE_PATH) for c in package.chunks)
@@ -48,6 +48,9 @@ def test_all_sections_have_complete_provenance_and_no_context_is_indexed():
 
 
 @pytest.mark.parametrize('query,citation', [
+    ('deep pothole repair service minutes', 'rg-kb-demo-rules#demo-rule-table'),
+    ('crew account read other crew', 'rg-kb-workflow#workflow-account-roles'),
+    ('GA mutation crossover tournament selection', 'rg-kb-routing#routing-ga'),
     ('NUS-ISS 基地', 'rg-kb-scope#depot-crews'),
     ('深坑洞维修要多久', 'rg-kb-demo-rules#demo-rule-table'),
     ('施工队账号可以查看其他队吗', 'rg-kb-workflow#workflow-account-roles'),

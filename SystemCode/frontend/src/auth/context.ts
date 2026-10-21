@@ -8,7 +8,7 @@ export type AuthState = {
 }
 export const AuthContext = createContext<AuthState | null>(null)
 export const useAuth = () => useContext(AuthContext)
-export const roleNames = { inspector: '巡查员', crew: '施工队', dispatcher: '中央调度员' }
+export const roleNames = { inspector: 'Inspector', crew: 'Crew', dispatcher: 'Central dispatcher' }
 export const homeFor = (role: Model<'Account'>['role']) => role === 'inspector' ? '/inspections/new' : role === 'crew' ? '/crew' : '/tasks'
 export const canOpen = (role: Model<'Account'>['role'], path: string) => role === 'inspector'
   ? path === '/inspections/new'

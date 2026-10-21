@@ -1,36 +1,36 @@
-> 归档说明：下文保留 2026-10-15 规划时的基线与待办，不代表当前全部未实现。第 1–9 步现已实现，实际验证边界见前端 README、VALIDATION.md 和 COMPARISON_GUIDE.md；第 10–14 步尚待实施。
+> Archive: retains the 2026-10-15 planning baseline/open items. Steps 1–9 are now implemented; README, VALIDATION.md and COMPARISON_GUIDE.md define actual validation. Steps 10–14 remain pending.
 
-# RoadGuard · C 第 1 步：待对齐事项
+# RoadGuard · C step 1: Open coordination items
 
-日期：2026-10-15。以下是可交给 A/B 讨论的清单，尚未发送给其他成员，也不代表团队已经确认。基于 main `f8a2cf37de91c09d86ec14e6cbd6045e83e421f8`。
+2026-10-15; main `f8a2cf37de91c09d86ec14e6cbd6045e83e421f8`. This list was prepared for A/B discussion, not sent to other members or confirmed by the team.
 
-| 编号 | 事项与证据 | 负责人 | C 建议/验收依据 | 阻塞范围 |
+| ID | Issue/evidence | Owner | C proposal/acceptance | Blocking scope |
 |---|---|---|---|---|
-| D01 | TEAM_WORK_ALLOCATION 第 7 节仍写 B 未实现、上传返回 InspectionMutation、队伍修改触发重算；当前代码已不同 | A 更新共享说明，B 复核自己的行为 | 文档改为上传四字段→详情、队伍保存→显式重算；示例与当前 schema 一致 | 不阻塞页面骨架；联调前同步文档 |
-| D02 | knowledge/acceptance_cases.json qa-03 仍说所有非空真实检测必审，与当前主检测自动接受逻辑冲突；部分知识仍称 B 待实现 | A 内容，C 索引 | A 修正文案与验收答案，提升知识版本并更新哈希；C 重建索引。旧规则按记录版本解释 | 阻塞知识正式索引与助手事实验收 |
-| D03 | 边界在 Miscellaneous/geography；中央标签在 SystemCode/model/label_schema.json；无现成配置 HTTP 接口 | A 提供资料，C 消费 | 建议构建时从中央文件生成前端静态资产并记录版本/hash，避免手抄另一套规则；若选新增 API 由 A 冻结契约。无方案也能显示边界/基地 | 地图/标签输入实现前确定；不阻塞导航 |
-| D04 | 项目返基地策略仍未正式冻结，B 演示配置 return_to_depot=true、班次 480 分钟 | A 决策，B 配置，C 展示 | 当前明确标演示假设；按 RoutePlan.settings 展示。确认后更新共享配置与知识，不能在前端另定 | 不阻塞演示；阻塞“正式业务规则”表述 |
-| D05 | CrewService.update 仅检查队伍版本；助手先查全局版本再调用 update 会存在并发间隙 | B 服务，A 事务约定，C 编排 | 在同一更新事务内检查预览 input_revision + crew.record_version；并发任务变化时不得写入队伍。C 不直接操作 A/B 表 | 阻塞助手确认写入 |
-| D06 | 重算无 request_id；队伍修改与重算分开，可能已修改但规划失败 | B 重算幂等，C 请求持久化，A 共享 schema/迁移 | 冻结一次执行标识、阶段状态与恢复协议；重复确认不重复修改/生成；部分成功明确可查询；恢复只做缺失步骤 | 阻塞助手确认和故障恢复 |
-| D07 | 四个助手路径未注册；缺独立状态读取/恢复入口，DTO 与错误码未冻结 | C 提案，A 契约，B 确认调用 | 复核接口表第 5 节；确定状态查询、过期、并发确认/取消、结果 ID 和来源字段；增加有效 mock 与契约测试 | 阻塞助手真实接入，不阻塞普通页面 |
-| D08 | 两个 latest 不能证明来自同轮矩阵；RoutePlan 无 batch_id/matrix hash，矩阵时间仅在重算回包 | B 输出，C 比较页 | 首版用同一次重算回包的成对 ID；跨会话可靠公平比较建议增加持久 batch_id/matrix 标识 | 不阻塞当前会话比较；阻塞无证据的跨会话公平结论 |
-| D09 | 当前主应用未配置 CORS | C 开发入口，A 部署入口 | 本机前端配置 /api 代理；部署按同源反向代理或 A 明确允许源。不得把失败伪装成空列表 | 第 2 步落地 |
-| D10 | 部分旧 fixtures 不是当前 HTTP DTO；上传没有 input_revision，真实业务 is_demo 仍 true | A 样例，C 类型/mocks | 第 3 步从当前 schema 建立 mock；按 mode 区分推理来源；上传后读详情与任务版本，避免假字段 | 第 3 步落地 |
+| D01 | Allocation section 7 says B pending, upload returns InspectionMutation and crew save recalculates; code differs | A shared docs, B behaviour | Document four-field upload then details, crew save then explicit recalculation; current schemas/examples | Not skeleton; update before integration |
+| D02 | knowledge qa-03 requires all real nonempty detections reviewed, conflicting with primary auto-acceptance; some knowledge says B pending | A content, C index | Correct content/answers, bump package/hash, rebuild index; explain old records by frozen versions | Formal indexing/assistant factual acceptance |
+| D03 | Boundaries in Miscellaneous/geography; labels in SystemCode/model/label_schema.json; no config HTTP API | A source, C consumer | Generate static frontend assets from central files with version/hash rather than copied rules; A freezes any new API. Show area/depot without plan | Decide before map/label implementation, not navigation |
+| D04 | Return policy unconfirmed; B demo uses return=true/480-minute shift | A decision, B configuration, C display | Explicit demo assumptions from RoutePlan.settings; update shared config/knowledge after confirmation | Not demo; blocks operational-policy claims |
+| D05 | CrewService.update checks crew version only; external global precheck creates race | B service, A transactions, C orchestration | Check preview input_revision and crew record_version within update transaction; reject concurrent task changes; C never writes A/B tables | Assistant confirmation writes |
+| D06 | Recalculation has no request_id; crew save can succeed while planning fails | B idempotency, C persistence, A schema/migration | Freeze execution ID/stages/recovery; duplicate confirm never repeats saves/plans; query partial success and retry missing stages only | Confirmation/recovery |
+| D07 | Four assistant routes unregistered; no independent status/recovery read; DTO/errors unfrozen | C proposal, A contract, B service review | Review API_MAPPING section 5; define querying/expiry/concurrent confirm-cancel/results/provenance; valid mocks/contract tests | Assistant live integration, not ordinary pages |
+| D08 | Two latest plans cannot prove same matrix; RoutePlan lacks batch/hash, matrix time only in recalculation | B output, C comparison | Pair IDs from one response initially; persisted batch/matrix IDs for cross-session comparison | Not current-session comparison; blocks unsupported fairness claims |
+| D09 | Main app has no CORS | C development, A deployment | Local /api proxy; production same-origin proxy or A-approved origins; never disguise failure as empty | Step 2 |
+| D10 | Historical fixtures differ from current HTTP; upload lacks input_revision; real business is_demo remains true | A examples, C types/mocks | Build current-schema mocks in step 3; inference provenance by mode; read detail/task revisions after upload | Step 3 |
 
-## 可以直接继续的范围
+## Work that can proceed
 
-第 2 步可搭建 React 页面骨架、六类导航、全局状态和本机 API 代理；第 3 步可基于已实现的 17 个接口建立客户端与 mock。D03 解决前地理/标签来源可在设计中保留适配入口，不自行编造业务数据。
+Step 2 can build React skeleton, six navigation categories, shared state and API proxy. Step 3 can implement the seventeen existing APIs and mocks. Until D03 is resolved, reserve a static-source adapter without inventing business data.
 
-助手先做界面与只读契约设计。D02、D05、D06、D07 未解决前，不把“可确认修改队伍并可靠恢复”列为已完成能力。
+Assistant UI/read-only design can proceed. Until D02/D05/D06/D07 are resolved, do not claim reliable confirmed crew changes/recovery.
 
-## 第 1 步交付验收
+## Step 1 acceptance
 
-| 检查 | 本次结果 |
+| Check | Result at this stage |
 |---|---|
-| 六类页面、入口与转移 | 已整理 |
-| 字段可追溯到 API 或中央静态资料 | 已整理，静态交付方式明确列为待定 |
-| A/B 已实现与 C 提案分离 | 已分离；17 个现有接口，4 个助手草案 |
-| 正常、空、失败和并发处理 | 已整理并附说明性 JSON 样例 |
-| 新增接口已获团队同意 | 未声称；仍待负责成员确认 |
-| 运行时测试/页面开发 | 本步未执行，不属于本次文档交付 |
-| 仓库改动 | 无；文档保存在 Codex outputs |
+| Six page categories, entries/transitions | Documented |
+| Fields traced to APIs/central assets | Documented; asset delivery explicitly open |
+| A/B implementation separate from C proposal | Seventeen existing endpoints, four assistant drafts |
+| Normal/empty/failure/concurrency | Documented with illustrative JSON |
+| Team approval of new endpoints | Not claimed; awaiting owners |
+| Runtime tests/page implementation | Not performed; outside this documentation delivery |
+| Repository changes | None then; documents in Codex outputs |

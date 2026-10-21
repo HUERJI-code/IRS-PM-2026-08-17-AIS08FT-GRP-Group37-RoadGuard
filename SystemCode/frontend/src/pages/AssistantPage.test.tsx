@@ -76,7 +76,7 @@ it('shows model failure without retrying or reusing an old answer', async () => 
   const transport = vi.fn<Transport>().mockImplementation(async (url) => url.endsWith('/status') ? reply(status)
     : reply({ code: 'assistant_provider_unavailable', message: 'Unavailable', details: null }, 503))
   open(transport); await ask()
-  expect(await screen.findByRole('alert')).toHaveTextContent('模型服务暂不可用')
+  expect(await screen.findByRole('alert')).toHaveTextContent('The model service is unavailable')
   expect(transport.mock.calls.filter(([, init]) => init.method === 'POST')).toHaveLength(1)
   expect(screen.queryByText('已选出引用证据')).not.toBeInTheDocument()
 })

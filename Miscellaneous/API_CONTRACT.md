@@ -1,170 +1,169 @@
-# A 公共数据与演示 API 契约
+# A shared data and demo API contract
 
-版本：`a-dto-v1`；日期：2026-10-12；维护人：A。此文件是已落实的 A 公共 DTO 契约唯一维护位置。分工表第 6、7 节保留成员职责与未来接口设计，涉及已落实的字段定义应链接本文件；B/C 后续对象由对应负责人提出，不从本文件推定其已冻结。可执行来源为 [schemas](../SystemCode/backend/roadguard/schemas/)，固定样例为 [contracts](../SystemCode/contracts/README.md)。变更必须同时更新 DTO、样例、必要测试与调用方影响说明。
+Version: `a-dto-v1`; date: 2026-10-12; maintainer: A. This is the sole maintenance point for implemented A shared DTO contracts. Allocation sections 6/7 retain responsibilities/future designs and link here for implemented fields. B/C owners propose their later objects; this file does not freeze them implicitly. Executable [schemas](../SystemCode/backend/roadguard/schemas/), fixed [contracts](../SystemCode/contracts/README.md). Changes update DTOs, examples, necessary tests and caller-impact notes together.
 
-首批冻结的是数据表示和最低一致性验证，不等于完成 M0。后续已确认单框和 0.60 分流；2026-10-14 已定稿课程模拟规则 `demo-rules-v2`，P3/P2/P1＝60/120/240 分钟，见[业务规则基线](BUSINESS_RULES_BASELINE.md)。任务期限、班次/返基地与优化约束继续待定；规则不代表工程测量标准。历史固定样例保持原版本，不替代当前运行配置。公共导入为 `from roadguard.schemas import Detection, Inspection, Task, ErrorResponse, HealthResponse, PlanningRevision`；另提供结构化 `DecisionTrace`。
+The initial freeze covers representation/minimum consistency, not all M0. Single-box/0.60 routing was confirmed later; on 2026-10-14 course rules `demo-rules-v2` fixed P3/P2/P1=60/120/240 minutes; see [baseline](BUSINESS_RULES_BASELINE.md). Deadlines, shifts/return and optimization constraints remain pending, not engineering standards. Historical fixtures retain original versions and do not replace runtime configuration. Imports: `from roadguard.schemas import Detection, Inspection, Task, ErrorResponse, HealthResponse, PlanningRevision`, plus structured DecisionTrace.
 
-第 5 步增量契约为 `a-demo-v1`，保留上述 DTO 字段兼容性，新增 `RuleCandidate`、`RuleAssessment` 和 `/demo` 演示接口。实际演示策略见[规则说明](DEMO_DETECTION_AND_RULES.md)；已实现演示映射不表示正式阈值、工时和优先级获得批准。
+Step 5 adds `a-demo-v1`, preserving DTO fields and adding RuleCandidate/RuleAssessment and `/demo`. [Demo mappings](DEMO_DETECTION_AND_RULES.md) do not establish approval of formal thresholds/durations/priorities.
 
-第 6 步增量为 `a-workflow-v1`，实现上传、巡检、审核和任务接口，详情见[完整流程与请求样例](INSPECTION_REVIEW_TASK_WORKFLOW.md)。使用新增记录/请求模型，原固定 DTO 样例继续保持兼容。所有在线业务记录仍明确标记演示；道路类型由调用者声明，不代表道路资格核验。
+Step 6 adds `a-workflow-v1` upload/inspection/review/task interfaces and new request/record models; [workflow/examples](INSPECTION_REVIEW_TASK_WORKFLOW.md). Original DTO fixtures remain compatible. Live business records are explicitly demo; caller road declarations are not eligibility verification.
 
-第 7 步增量为 `a-task-query-v1`，提供 B/C 使用的一致活动任务快照；完整使用方式、固定输入、知识包及 HTTP 示例见 [B/C 交接说明](BC_HANDOFF.md)。没有改变原 Task 或 TaskRecord 的字段，也没有冻结 B 的完整 PlanningInput。
+Step 7 adds `a-task-query-v1`, consistent active snapshots for B/C; [handoff](BC_HANDOFF.md) includes inputs/knowledge/HTTP examples. Task/TaskRecord fields unchanged; B's complete PlanningInput is not frozen.
 
-第 8 步扩展巡检记录为 `a-workflow-v2`，支持显式 `mode=real` 的本地模型推理，新增权重哈希与模型清单版本；`demo_scenario_id` 在 real 模式为 null。旧 demo 数据仍能读取，但严格解析旧 InspectionRecord 的客户端须更新 schema。真实 Detection 的 `is_demo=false`；业务规则、Inspection/Task 与任务快照仍为 `is_demo=true`。当前 v5 按用户确认的主框置信度阈值 0.60 自动建一个任务，低于阈值待审核；阈值不代表已校准的模型准确率。请求、配置和错误见[真实视觉接口](REAL_VISION_API.md)。`a-dto-v1` 和 `a-task-query-v1` 字段保持不变。
+Step 8 extends inspections to `a-workflow-v2`: explicit local mode=real, weight hash/manifest version, null demo_scenario_id for real. Old demo data loads, but strict legacy clients update schemas. Real Detection is_demo=false; business rules/Inspection/Task/snapshot remain true. Current v5 auto-creates one task at confirmed raw-primary 0.60, below review; no calibrated-accuracy claim. [Real API](REAL_VISION_API.md) covers requests/config/errors; a-dto-v1/a-task-query-v1 fields unchanged.
 
-## 通用表示
+## General representation
 
-- JSON 字段使用 `snake_case`；ID 与版本用非空字符串，前后空白被去除，纯空白无效。未知字段拒绝，防止调用方静默拼错字段。
-- 数值只接受 JSON 数字，不接受字符串或布尔值；整数（类编号、图像尺寸、输入版本）拒绝小数。浮点数必须有限。`is_demo` 只接受布尔值并且显式提供。
-- 坐标为 WGS84 十进制度：`latitude` [-90,90]，`longitude` [-180,180]。DTO 只做数值校验；第 6 步业务服务另做冻结 JE/JW 多边形 covers 校验及道路类型声明检查，不把多边形内位置自动判为合格道路。
-- 时间戳必须带时区，输入为 ISO 8601 字符串或 Python aware datetime，拒绝无时区时间及 Unix 数字时间戳；归一化 UTC 输出。前端按 `Asia/Singapore` 显示。时长为分钟。
-- 下表标为 nullable 的业务字段仍必须提供，未知时传 `null`；`ErrorResponse.details` 可以省略（默认 null），`HealthResponse.api_version` 可以省略（默认 v1）。空列表、null、零有不同含义。
-- DTO 约束在构造/解析时验证；它们是传输快照，不是管理业务状态的可变实体。直接赋值、修改内嵌列表或未经验证的 `model_copy(update=...)` 不保证约束仍成立；生产者调整快照后应重新执行 `model_validate`（传 dict）或 `model_validate_json`，状态变更仍由业务服务控制。
+- snake_case JSON; nonempty string IDs/versions trimmed; whitespace-only invalid. Reject unknown fields to catch typos.
+- JSON numbers only, never strings/booleans; class IDs/dimensions/revisions reject fractions; finite floats. is_demo requires explicit boolean.
+- WGS84 latitude [-90,90], longitude [-180,180]. DTO validates numbers; Step 6 additionally covers frozen JE/JW polygons and checks declarations, without assuming every interior point is a road.
+- Timestamps require ISO 8601 strings/aware Python datetime; reject naive times/Unix numbers; normalize UTC. Frontend Asia/Singapore; durations minutes.
+- Nullable business fields below remain required, with null unknown. ErrorResponse.details may omit/default null; HealthResponse.api_version defaults v1. [], null and zero differ.
+- Validate on construction/parsing. DTOs are snapshots, not mutable business entities. Direct assignments/list mutations/unvalidated model_copy(update=...) need not preserve invariants; producers revalidate changed dictionaries with model_validate or model_validate_json. Services own state changes.
 
-## 已冻结对象
+## Frozen objects
 
-| 对象 | 字段与约束 |
+| Object | Fields/constraints |
 | --- | --- |
-| Detection | `detection_id`；`class_id` 整数 0～7；`label` 为中央 `label_key`，必须匹配 class_id；`confidence` [0,1]；`bbox_xyxy` 为四个原图像素数值 [left,top,right,bottom]；`image_width/image_height` 为正整数；`model_version`；`is_demo` |
-| Inspection | `inspection_id`；`image_url` 非空资源地址（允许相对路径，不保证资源存在）；`annotated_image_url` nullable；坐标；`detections` Detection 列表；`selected_detection_id` nullable；`status`；`task_id` nullable；`decision_trace` DecisionTrace 列表；`is_demo` |
-| DecisionTrace | `code` 非空稳定机器标识；`message` 非空说明；`rule_version` nullable（尚未调用规则时为 null）；`is_demo`。列表顺序为决策步骤顺序；没有执行步骤可为空。code 尚不限制业务枚举，不能仅凭 message 判断状态 |
-| Task | `task_id`；`inspection_id`；坐标；`damage_label` 中央 label_key；`severity` low/medium/high；`priority` P1/P2/P3；`service_minutes` 正数或 null；`created_at`；`due_at` nullable；`status` active/completed/cancelled；`rule_version`；`is_demo` |
-| PlanningRevision | `input_revision` 非负整数；任务/队伍对共同输入的更新语义由共享数据库/服务维护，本 DTO 本身不更新版本 |
-| HealthResponse | `status: "ok"`；`database: "ok"`；`api_version: "v1"`；`input_revision` 非负整数。仅表示本次应用与数据库检查成功，不表示模型、Google 或 GPT 就绪 |
-| ErrorResponse | `code`、`message` 非空字符串；`details` nullable JSON object/array。嵌套值限有限 JSON 值、对象键限字符串。生产者只放脱敏的错误数量/字段标识等 metadata；不放密码、凭据、原始输入、栈、SQL、内部路径或异常字符串。DTO 不能自动判断文字是否含秘密 |
+| Detection | detection_id; integer class_id 0–7; central label_key matching ID; confidence [0,1]; four original-pixel bbox_xyxy [left,top,right,bottom]; positive integer image_width/image_height; model_version; is_demo |
+| Inspection | inspection_id; nonempty image_url (relative allowed, existence not guaranteed); nullable annotated_image_url; coordinates; Detection list detections; nullable selected_detection_id; status; nullable task_id; DecisionTrace list decision_trace; is_demo |
+| DecisionTrace | Nonempty stable code/message; nullable rule_version before rule execution; is_demo. Ordered decision steps, [] if none. code not yet a business enum; message alone cannot determine status |
+| Task | task_id; inspection_id; coordinates; central damage_label; severity low/medium/high; priority P1/P2/P3; positive service_minutes or null; created_at; nullable due_at; status active/completed/cancelled; rule_version; is_demo |
+| PlanningRevision | Nonnegative integer input_revision; shared DB/services own task/crew change semantics; DTO never increments |
+| HealthResponse | status/database ok; api_version v1; nonnegative input_revision. App/DB check only, not model/Google/GPT readiness |
+| ErrorResponse | Nonempty code/message; nullable JSON object/array details with finite JSON/string keys. Only sanitized counts/field IDs/metadata, no passwords/credentials/raw input/stacks/SQL/internal paths/exception strings. DTO cannot detect secrets in prose |
 
-标签唯一来源为 [label_schema.json](../SystemCode/model/label_schema.json)，Python 通过源码相对路径加载并验证恰好八个不同的 0～7 类。部署必须同时保留此文件，不维护第二套类表。bbox 必须满足 `0 <= left < right <= image_width` 与 `0 <= top < bottom <= image_height`，允许右/下边界等于原图尺寸；框不是归一化 YOLO xywh。
+Sole labels: [label_schema.json](../SystemCode/model/label_schema.json), loaded relative to Python source and validated as exactly eight distinct IDs 0–7. Retain in deployments; no duplicate class table. Boxes require 0≤left<right≤image_width, 0≤top<bottom≤image_height, including right/bottom image edges. Not normalized YOLO xywh.
 
-`severity` 的 low/medium/high 只是这版 DTO 词汇选择，不代表从数据集 wide/sunken/deep 推导工程严重度。Task 不提供自由修改优先级的请求 DTO，也不实现标签到 priority/service_minutes/due_at 的映射；未知时长用 null，不用 0。DTO 不根据状态擅自修改队列或创建任务。
+low/medium/high are DTO vocabulary, not engineering severity derived from wide/sunken/deep. Task has no arbitrary-priority request or label→priority/service_minutes/due_at implementation. Unknown duration null, not zero. DTOs do not alter queues/create tasks from status.
 
-Inspection 内 detection_id 必须唯一；非空 selected_detection_id 必须指向本巡检的检测。`no_detection` 必须没有检测、选中对象和任务；其余状态必须有检测。`pending_review` / `rejected` 无 task_id，选中对象允许为空；`accepted` 必须有选中对象和 task_id。含演示检测或演示 trace 的巡检必须标为 is_demo=true；各步骤保留实际来源。DTO 检查快照内关联；第 6 步服务与数据库约束进一步维护跨对象关联、防重复创建、合法状态转换和事务一致性。
+Inspection IDs unique; selected ID, if present, belongs to its detections. no_detection has no detections/selection/task; all other statuses have detections. pending_review/rejected have no task and may omit selection; accepted requires both. Demo detections/traces require inspection is_demo=true, retaining step provenance. DTO checks within a snapshot; Step 6 services/DB enforce cross-object links, deduplication, transitions and transactions.
 
-## 路由实现状态与错误
+## Route implementation and errors
 
-当前实现 `GET /api/v1/health`、下列 stateless `/demo` 接口，以及 a-workflow-v5 的巡检上传/查询/图片/审核和任务查询/修改。队伍、规划与助手仍待 B/C 实现。OpenAPI 只展示已注册路由，不用固定样例冒充业务成功。
+Current implementation: GET /api/v1/health, stateless demo below, a-workflow-v5 uploads/query/images/review and task queries/patches. Crew/planning/assistant remain for B/C. OpenAPI shows registered routes only, never fixtures as live success.
 
-### a-demo-v1：检测与规则预览
+### a-demo-v1: detection/rule previews
 
-公共类型从 `roadguard.schemas` 导入，定义在 [assessment.py](../SystemCode/backend/roadguard/schemas/assessment.py)；HTTP 包装类型在 [demo.py](../SystemCode/backend/roadguard/api/demo.py)。
+Shared types import from roadguard.schemas, defined in [assessment.py](../SystemCode/backend/roadguard/schemas/assessment.py); HTTP wrappers in [demo.py](../SystemCode/backend/roadguard/api/demo.py).
 
-| 对象 | 字段与约束 |
+| Object | Fields/constraints |
 | --- | --- |
-| RuleCandidate | `detection_id`、中央 `damage_label`、`severity` low/medium/high、`priority` P1/P2/P3、正数或 null 的 `service_minutes`、非空 `repair_recommendation`、`rule_version`、`is_demo: true`。没有 task_id、位置或创建时间，不是 Task |
-| RuleAssessment | `status` no_detection/pending_review/ready_for_task、`detections`、nullable `selected_detection_id`、nullable `candidate`、非空 `decision_trace`、`rule_version`、`is_demo: true` |
-| DemoAssessmentRequest | 仅 `scenario_id` 非空字符串，最多 64 字符；拒绝额外字段；不接受图片、阈值覆盖或修改业务参数的请求字段 |
-| DemoAssessmentResponse | `is_demo: true`、`scenario_id`、`model_version`、`image_width`、`image_height`、实际 `confidence_threshold` 和嵌套 `assessment: RuleAssessment` |
-| DemoScenarioCatalogue | `is_demo: true`、`model_version`、`image_width`、`image_height`、`scenarios` 列表，每项 `scenario_id` 与 `description` |
+| RuleCandidate | detection_id, central damage_label, severity low/medium/high, priority P1/P2/P3, positive/null service_minutes, nonempty repair_recommendation/rule_version, is_demo:true. No task_id/location/time; not Task |
+| RuleAssessment | status no_detection/pending_review/ready_for_task, detections, nullable selected_detection_id/candidate, nonempty decision_trace, rule_version, is_demo:true |
+| DemoAssessmentRequest | Only nonempty scenario_id ≤64 chars; no extra fields/images/threshold overrides/business settings |
+| DemoAssessmentResponse | is_demo:true, scenario_id, model_version, dimensions, actual confidence_threshold, nested assessment |
+| DemoScenarioCatalogue | is_demo:true, model_version, dimensions, scenarios with scenario_id/description |
 
-RuleAssessment 内检测 ID 唯一且原图尺寸一致；no_detection 必须无检测；另外两个状态必须有检测。只有 ready_for_task 可有候选，候选必须关联选中的检测、标签和同一规则版本；其他状态的 candidate/selected_detection_id 均为 null。所有 trace 显式标为演示且匹配 assessment 的规则版本。输入真实检测与演示规则混合时，检测保留真实来源标记，assessment/candidate 仍必须标为演示。
+RuleAssessment IDs unique, image dimensions consistent; no_detection empty, others nonempty. Only ready_for_task has a candidate linked to selected detection/label/rule version; other candidate/selection null. All traces explicitly demo and same version. Real detections evaluated under demo rules retain real source while assessment/candidate remain demo.
 
-`GET /api/v1/demo/scenarios` 返回 DemoScenarioCatalogue；`POST /api/v1/demo/assessments` 接收 DemoAssessmentRequest，200 返回 DemoAssessmentResponse。调用示例 `{"scenario_id":"high_confidence"}`。预览调用只执行服务，不存储巡检/任务、不递增 input_revision，重复请求不会产生队列记录。候选中不含期限，不能计算逾期指标；持久化任务通过第 6 步接口创建，由业务服务执行位置验证、审核分流、存储和幂等性检查。
+GET /api/v1/demo/scenarios returns catalogue; POST /api/v1/demo/assessments takes request, returns 200 response, e.g. {"scenario_id":"high_confidence"}. No persistence/revision increments/queue records, including retries. Candidates have no deadlines/lateness. Step 6 creates tasks with geography/review/storage/idempotency checks.
 
-### a-workflow-v5：持久化业务接口（保留原请求）
+### a-workflow-v5: persisted business interfaces, original requests retained
 
-可执行类型位于 [schemas/workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py)，路由位于 [api/workflow.py](../SystemCode/backend/roadguard/api/workflow.py)。字段和操作说明以[第 6 步指南](INSPECTION_REVIEW_TASK_WORKFLOW.md)及 schema 为准。
+[schemas/workflow.py](../SystemCode/backend/roadguard/schemas/workflow.py), [api/workflow.py](../SystemCode/backend/roadguard/api/workflow.py); [Step 6](INSPECTION_REVIEW_TASK_WORKFLOW.md) and schemas define fields/operations.
 
-| 类型 | 相对基础 DTO 的增量 |
+| Type | Additions over base DTO |
 | --- | --- |
-| UploadMetadata | 必填 mode=real/demo、严格数值坐标、road_type=public_motor_road；demo 必填 scenario_id，real 禁止该字段；multipart metadata 字符串的 JSON 内容 |
-| InspectionResponse（HTTP）/ InspectionRecord（内部） | Inspection 加 created_at、updated_at、record_version、mode、demo_scenario_id、model_version、image_width/height、scope_version、road_type、road_type_source、review_history；强制 is_demo=true |
-| TaskRecord | Task 加 updated_at、record_version、repair_recommendation、history；强制 is_demo=true |
-| ReviewRequest | request_id、expected_version、action；confirm/correct 必须选 detection_id，correct 必须给 damage_label；dismiss 禁止这些字段；可选 note |
-| TaskPatch | request_id、expected_version；至少一个实际修改字段；允许 completed/cancelled、damage_label，或完整 latitude/longitude/road_type；不能直接指定优先级、工时、期限 |
-| InspectionUploadResponse（POST /inspections） | 仅 inspection_id、status、nullable detection、nullable task_id；detection 只含 label、confidence、bbox_xyxy、image_width、image_height |
-| InspectionMutationResponse（审核） | inspection、nullable task、input_revision、planning_input_changed、replayed |
-| TaskMutation | task、input_revision、planning_input_changed、replayed |
-| InspectionListResponse / TaskList | items、total、limit、offset；TaskList 额外返回同一快照的 input_revision |
+| UploadMetadata | Required mode=real/demo, strict coordinates, road_type=public_motor_road; scenario_id required for demo, forbidden for real; JSON inside multipart metadata string |
+| InspectionResponse (HTTP)/InspectionRecord (internal) | Adds created_at/updated_at/record_version/mode/demo_scenario_id/model_version/dimensions/scope_version/road_type/road_type_source/review_history; requires is_demo=true |
+| TaskRecord | Adds updated_at/record_version/repair_recommendation/history; is_demo=true |
+| ReviewRequest | request_id/expected_version/action; confirm/correct select detection_id, correct also damage_label; dismiss forbids both; optional note |
+| TaskPatch | request_id/expected_version and at least one change; completed/cancelled, damage_label, or full location/road; no direct priority/duration/deadline |
+| InspectionUploadResponse | Only inspection_id/status/nullable detection/nullable task_id; detection only label/confidence/bbox_xyxy/dimensions |
+| InspectionMutationResponse | inspection/nullable task/input_revision/planning_input_changed/replayed |
+| TaskMutation | task/input_revision/planning_input_changed/replayed |
+| InspectionListResponse / TaskList | items/total/limit/offset; TaskList adds same-snapshot input_revision |
 
-Inspection/Task 基础 DTO 的 extra=forbid 不接受新增记录字段，HTTP 巡检调用方须采用 InspectionResponse，内部 InspectionRecord 保留所有框；任务调用方使用 TaskRecord。原检测标签/置信度保留；人工纠正由 review_history 和 Task.history 表达。review_history 中操作员身份未经认证，不能被当作身份凭据。候选变成任务时才通过事务更新规划版本，单独 `/demo` 调用仍不写库。
+Base extra=forbid rejects record additions. HTTP clients use InspectionResponse, internal InspectionRecord retains all boxes; task clients use TaskRecord. Raw labels/confidence remain; review_history/Task.history express correction. Original review identities are unverified, not credentials. Only transactional task creation updates planning revision; /demo never writes.
 
-2026-10-13 发布增量 `a-workflow-v3`：InspectionRecord 新增可空 `primary_suggestion`，可执行定义为 [schemas/primary.py](../SystemCode/backend/roadguard/schemas/primary.py)。字段为 policy_version、strategy、threshold、nullable detection_id、nullable ranking_score、ambiguous 和 competing_detection_ids；v3 最初仅供展示/审核；v4 按选定主框的原始置信度分流。数据库保留原始 detections，但 HTTP 最多返回一框。历史记录缺字段时读取为 null，严格 v2 客户端须接受新字段。默认模型配置、安装、完整响应样例与调用方影响见[发布接入指南](MODEL_RELEASE_AND_BACKEND.md)。SQLite v2 和 a-task-query-v1 不变。v4 新增 nullable auto_acceptance（policy_version、confidence_threshold），TaskHistory.actor_source 新增 system_confidence_policy。原记录不会重新分流。v5 进一步将上传响应缩减为四个字段，详细记录通过 GET /inspections/{id} 查询；审核和任务端点的响应保持原格式。上传重放以 HTTP 200 标识，新建为 201。完整字段和实际响应示例见[逐字段说明](INSPECTION_RESPONSE_FIELDS.md)。
+2026-10-13 a-workflow-v3 added nullable primary_suggestion, defined in [primary.py](../SystemCode/backend/roadguard/schemas/primary.py): policy_version/strategy/threshold/nullable detection_id/nullable ranking_score/ambiguous/competing_detection_ids. v3 initially display/review only; v4 routes by raw primary confidence. DB retains raw detections, HTTP at most one box. Missing legacy field loads null; strict v2 clients accept new fields. See [release guide](MODEL_RELEASE_AND_BACKEND.md) for defaults/install/examples/caller impacts. SQLite v2/snapshot unchanged. v4 adds nullable auto_acceptance(policy_version/confidence_threshold) and TaskHistory.actor_source system_confidence_policy; old records not rerouted. v5 reduces uploads to four fields; GET details separately. Review/task responses unchanged; replay 200/new 201. [Field reference](INSPECTION_RESPONSE_FIELDS.md).
 
-### a-task-query-v1：同版本活动任务快照
+### a-task-query-v1: consistent active snapshots
 
-`GET /api/v1/tasks/snapshot` 返回 `TaskSnapshot`；可选查询参数 expected_revision 为非负整数，不匹配返回 409 stale_input_revision。此固定路径先于 `/tasks/{task_id}` 注册，不会被解释为任务 ID。
+GET /api/v1/tasks/snapshot → TaskSnapshot; optional nonnegative expected_revision, mismatch 409 stale_input_revision. Register before /tasks/{task_id}.
 
-可执行定义为 [schemas/task_query.py](../SystemCode/backend/roadguard/schemas/task_query.py)，公共导入为 `from roadguard.schemas import TaskSnapshot`。字段：contract_version 固定 a-task-query-v1；source 为 persisted_workflow 或 synthetic_fixture；input_revision 非负整数；tasks 为原 Task 精确字段列表；total 等于列表长度；is_demo 必须 true。任务均为 active 且 is_demo=true，task_id/inspection_id 不重复。可包含真实检测经自动接受或审核产生的演示业务任务，不暗示生产规则已经确认。
+[task_query.py](../SystemCode/backend/roadguard/schemas/task_query.py), import `from roadguard.schemas import TaskSnapshot`. contract_version a-task-query-v1; source persisted_workflow/synthetic_fixture; nonnegative input_revision; exact original Task fields; total=list length; is_demo=true. All active/demo with unique task_id/inspection_id. Real detection acceptance/review may create demo-business tasks, not production rules.
 
-在线服务使用 persisted_workflow，读取全部任务、校验存储一致性后返回 active 投影；排序为 created_at、task_id，不截断或分页。损坏的持久化任务导致整次查询 503，不静默返回部分数据。空列表仍为有效 200。查询不改变数据库或 input_revision，未知 service_minutes/due_at 保持 null。
+Live persisted_workflow reads all, validates storage then projects active; created_at/task_id order without pagination/truncation. Corrupt tasks fail entire query 503, never partial success. Empty 200 valid. No writes/revision change; unknown duration/deadline null.
 
-内部服务 `from roadguard.tasks import TaskQueryService`，签名 `snapshot(expected_revision=None, *, connection=None)`。默认自行管理只读事务；提供 connection 时要求同一数据库已存在的事务，服务不提交/回滚/关闭它。任务与版本来自同一读取快照。B 将来应在同连接读取队伍，并在保存计算结果的写事务中再次核对版本；HTTP 任务快照不保证其他 HTTP 查询的队伍同版本。
+`from roadguard.tasks import TaskQueryService`, snapshot(expected_revision=None, *, connection=None). Default manages read transaction; caller connection must already transact on same DB, caller owns commit/rollback/close. Same snapshot tasks/revision. B reads crews on same connection and rechecks revision when saving. Separate HTTP crew queries have no matching-revision guarantee.
 
-固定文件的 source=synthetic_fixture、版本号仅为离线样例上下文，不是在线数据库状态。知识包另有自身文档版本；规则说明必须匹配任务保存的 rule_version。
+synthetic_fixture revisions are offline contexts, not current DB. Knowledge has separate versions; explanations match saved rule_version.
 
-### b-crew-v1 / b-recalculation-v1 / b-route-plan-v1-draft：四队与路线方案（B）
+### b-crew-v1 / b-recalculation-v1 / b-route-plan-v1-draft: crews/plans (B)
 
-2026-10-14 由 B 实现，数据结构定义见[路线模块说明](../SystemCode/backend/roadguard/routing/README.md)。行程默认来自标明为模拟的矩阵；2026-10-15 的 B-5 新增可选的 Google Routes 矩阵（配置切换，默认关闭），方案以 `matrix_provider`、`matrix_is_simulated` 区分来源；班次 480 分钟、返基地和目标权重是 B 的演示假设，待 A 确认。
+Implemented by B on 2026-10-14; structures in [routing guide](../SystemCode/backend/roadguard/routing/README.md). Default matrix explicitly simulated; B-5 on 2026-10-15 adds optional Google Routes, configuration-selected/off by default. matrix_provider/matrix_is_simulated distinguish sources. 480-minute shifts, return and weights remain B's demo assumptions pending A confirmation.
 
-| 接口 | 请求 | 正常响应 | 主要错误 |
+| Endpoint | Request | Success | Main errors |
 | --- | --- | --- | --- |
-| `GET /crews` | 无 | CrewList：配置的全部队伍（含停用），`input_revision` | 503 |
-| `PATCH /crews/{crew_id}` | `request_id`、`expected_version`、`available` | CrewMutation：crew、input_revision、planning_input_changed、replayed | 404、409 `stale_record_version` / `idempotency_conflict`、422 |
-| `POST /route-plans/recalculate` | `expected_revision`（必填）、可选 `planning_start_at` | RecalculationResult：同一输入和矩阵下 greedy、ga 两个方案的 ID 与摘要，以及 `matrix_provider`、`matrix_is_simulated`、`matrix_generated_at`（B-5 新增，增量字段） | 409 `stale_input_revision`、422、503 `database_unavailable` / `travel_matrix_unavailable` |
-| `GET /route-plans/latest?algorithm=ga\|greedy` | 算法 | RoutePlan，`is_stale` 在读取时按当前版本计算 | 404 `route_plan_not_found` |
-| `GET /route-plans/{plan_id}` | `plan-` + 32 位十六进制 | 保存的 RoutePlan（含旧方案） | 404 `route_plan_not_found`、422 |
+| GET /crews | None | CrewList with all configured/unavailable crews, input_revision | 503 |
+| PATCH /crews/{crew_id} | request_id/expected_version/available | CrewMutation crew/revision/changed/replayed | 404,409 stale_record_version/idempotency_conflict,422 |
+| POST /route-plans/recalculate | Required expected_revision, optional planning_start_at | Both same-input/matrix plan IDs/summaries, matrix_provider/matrix_is_simulated/matrix_generated_at (B-5 additive fields) | 409 stale_input_revision,422,503 database_unavailable/travel_matrix_unavailable |
+| GET /route-plans/latest?algorithm=ga\|greedy | Algorithm | RoutePlan; is_stale computed at read | 404 route_plan_not_found |
+| GET /route-plans/{plan_id} | plan- plus 32 hex digits | Saved plan, including historical | 404 route_plan_not_found,422 |
 
-- 队伍可用状态属于规划输入：实际改变时与 `input_revision` 在同一事务中递增；重复请求不会重复修改。队伍修改不会自动重算，调用方需要用返回的版本调用 recalculate。
-- 计算期间任务或队伍发生变化时，两个方案都不保存，返回 409。保存方案不递增 `input_revision`。
-- 在线 GA 方案从 Greedy 解出发（配置 `planning_service.seed_with_greedy=true`，记录在方案的 `algorithm_parameters.seed_with_greedy`），按“未分配 P1、P2、P3 数，再比目标值”的顺序不比同一次重算的 Greedy 方案差。字段没有变化。
-- 启用 Google 矩阵时，取不到行程（缺少密钥、HTTP/网络错误、响应不完整或元素错误）返回 503 `travel_matrix_unavailable`，`details` 含 `provider`、`reason`，HTTP 错误另含 `http_status`；两个方案都不保存，**不会**改用模拟矩阵。Google 判定无路线的点对记为不可达（null），不是 0 分钟。
-- 无方案时返回 404，而不是空的有效方案。每支队伍都会输出路线，停用的为 `unavailable`、无任务的为 `idle`；未分配任务都带原因。`geometry=null`，前端只能画标明示意的直线。
+- Actual availability changes increment shared revision in same transaction; replay never repeats. Crew updates do not auto-recalculate: caller invokes recalculate with returned revision.
+- Changes during computation prevent saving either plan, returning 409. Saving does not increment input revision.
+- Online GA starts from Greedy (planning_service.seed_with_greedy=true, recorded in algorithm_parameters.seed_with_greedy) and is no worse under lexicographic unassigned P1/P2/P3 counts then objective. No field changes.
+- Google failures (missing key, HTTP/network, incomplete response/element errors) return 503 travel_matrix_unavailable with provider/reason and optional http_status; neither plan saved, **no simulated fallback**. Google no-route pairs are null/unreachable, never zero.
+- No plan is 404, not valid empty plan. All crews returned, unavailable or idle as appropriate; unassigned reasons retained. geometry=null permits only labeled schematic lines.
 
-### 统一错误
+### Shared errors
 
-统一错误的可执行来源为 [errors.py](../SystemCode/backend/roadguard/errors.py) 及 [health.py](../SystemCode/backend/roadguard/api/health.py)；使用 `code` 判断，不匹配 message 文本。当前错误码如下，变更须与实现同步：
+Executable [errors.py](../SystemCode/backend/roadguard/errors.py)/[health.py](../SystemCode/backend/roadguard/api/health.py); use code, not message matching. Update table with implementation:
 
-| code | HTTP 状态 | 当前含义 |
+| code | HTTP | Meaning |
 | --- | --- | --- |
-| `validation_error` | 422 | FastAPI 请求校验失败，details 仅 error_count，不回显原始输入 |
-| `not_found` | 404 | 路径、巡检或任务不存在 |
-| `method_not_allowed` | 405 | 已有路径不支持该方法，保留 Allow header |
-| `stale_input_revision` | 409 | 共享数据库或任务快照拒绝旧预期版本；details 含 expected_revision/current_revision；规划重算和保存同样使用 |
-| `database_unavailable` | 503 | 数据库不可用、基础状态无效或持久化记录无法解析 |
-| `internal_error` | 500 | 未处理异常的安全公共说明，无原始异常文字 |
-| `http_error` | 对应 HTTP 状态 | 其他 HTTPException 的通用安全说明 |
-| `demo_scenario_not_found` | 404 | 未知的固定演示案例，不回显传入值 |
-| `demo_unavailable` | 503 | 演示服务未就绪，不用成功样例替代错误 |
-| `invalid_detections` | 422 | 规则服务收到非法检测快照；属于内部服务入口校验，HTTP 演示请求不能自行传入检测 |
-| `outside_service_area` | 422 | 任务点在冻结 JE/JW 多边形范围外；NUS-ISS 不获得任务例外 |
-| `unsupported_road_type` | 422 | 地理服务拒绝非公共机动车道路声明；HTTP schema 也可能先返回 validation_error |
-| `service_area_unavailable` | 503 | 冻结地理文件不可读或结构/几何无效；启动失败 |
-| `unsupported_upload_type` | 415 | 未使用要求的 multipart 上传格式 |
-| `unsupported_image_type` | 415 | 可识别图片格式不是 JPEG/PNG |
-| `invalid_image` | 422 | 图片为空、损坏、动画或无法解码 |
-| `image_too_large` | 413 | 上传字节、整个请求或像素数量超过限制 |
-| `image_not_found` | 404 | 巡检图片文件不存在 |
-| `image_storage_unavailable` | 503 | 图片存储读写失败或路径不安全 |
-| `image_already_exists` | 409 | 生成的目标图片已存在，拒绝覆盖 |
-| `idempotency_conflict` | 409 | 相同请求 key 被用于不同内容 |
-| `stale_record_version` | 409 | 巡检或任务记录版本已变化 |
-| `invalid_state` | 409 | 该巡检不能再审核，或该任务已终止 |
-| `invalid_detection_selection` | 422 | 选择的检测不属于此巡检 |
-| `workflow_unavailable` | 503 | 巡检业务服务未就绪 |
-| `task_query_unavailable` | 503 | 任务快照服务未就绪，不能返回空队列冒充成功 |
-| `route_plan_not_found` | 404 | 指定 plan_id 不存在，或该算法尚无保存的方案；不是空的有效方案 |
-| `travel_matrix_unavailable` | 503 | 已配置 Google 行程矩阵但取不到可用结果；details 含 provider、reason（`missing_api_key` / `too_many_nodes` / `http_error` / `timeout` / `network_error` / `invalid_response` / `element_error`），可选 http_status；不保存方案，也不改用模拟行程 |
+| validation_error | 422 | FastAPI validation; details error_count only, no raw input |
+| not_found | 404 | Path/inspection/task absent |
+| method_not_allowed | 405 | Method unsupported; Allow retained |
+| stale_input_revision | 409 | Shared DB/snapshot/planning rejects stale; expected_revision/current_revision details |
+| database_unavailable | 503 | DB unavailable/invalid state/unparseable persisted data |
+| internal_error | 500 | Safe unhandled-error text, no raw exception |
+| http_error | Corresponding status | Safe generic other HTTPException |
+| demo_scenario_not_found | 404 | Unknown case without echo |
+| demo_unavailable | 503 | Service unavailable, no success fixture fallback |
+| invalid_detections | 422 | Internal rule input invalid; demo HTTP cannot submit detections |
+| outside_service_area | 422 | Outside frozen JE/JW; no task exception for NUS-ISS |
+| unsupported_road_type | 422 | Non-public motor declaration; HTTP may first give validation_error |
+| service_area_unavailable | 503 | Frozen geometry unreadable/invalid; startup fails |
+| unsupported_upload_type | 415 | Required multipart not used |
+| unsupported_image_type | 415 | Recognized format not JPEG/PNG |
+| invalid_image | 422 | Empty/corrupt/animated/undecodable |
+| image_too_large | 413 | Bytes/body/pixels exceed limit |
+| image_not_found | 404 | File absent |
+| image_storage_unavailable | 503 | Read/write failure/unsafe path |
+| image_already_exists | 409 | Generated target exists; no overwrite |
+| idempotency_conflict | 409 | Same key/different content |
+| stale_record_version | 409 | Inspection/task revision changed |
+| invalid_state | 409 | Closed inspection/terminal task |
+| invalid_detection_selection | 422 | Detection not in inspection |
+| workflow_unavailable | 503 | Workflow not ready |
+| task_query_unavailable | 503 | Snapshot unavailable, not empty success |
+| route_plan_not_found | 404 | ID absent/no saved algorithm plan, not valid empty |
+| travel_matrix_unavailable | 503 | Configured Google matrix unusable; provider/reason missing_api_key/too_many_nodes/http_error/timeout/network_error/invalid_response/element_error, optional http_status; no save/fallback |
 
-错误样例使用 `validation_error` / 422，details 中的 is_demo 标记属于固定样例附加 metadata，不要求真实响应添加。未来业务错误由对应服务明确抛出并记录，不能从固定样例推定已有业务逻辑。
+Error fixture uses validation_error/422; its details.is_demo is fixture metadata, not required in real errors. Services explicitly raise/document later errors; fixtures do not establish implemented logic.
 
-## 调用方影响与验收
+## Caller effects and acceptance
 
-B 读取 Task 时必须识别 null 时长/null 期限以及 is_demo，不凭 label 猜规则；共同输入版本以 PlanningRevision 表示。C 展示 status、selected_detection_id、decision_trace 和演示来源，不自行推定严重度或分流阈值；前端模拟响应直接使用 contracts/examples 文件并保持标记。后台失败时不能用这些样例冒充真实成功响应。
+B honors null duration/deadline/is_demo rather than guessing from label; PlanningRevision represents shared input. C displays status/selection/trace/provenance without inferring severity/threshold. Use marked contracts/examples directly for frontend mocks, never as real success during failure.
 
-`SystemCode/tests/test_contracts.py` 继续验证固定 DTO。第 6 步的 test_workflow、test_workflow_api、test_geography 和 test_images 覆盖持久化流程、真实 HTTP、地理边界、上传及回归。训练、真实检测、路线和完整项目端到端验证仍未完成。
+SystemCode/tests/test_contracts.py verifies DTO fixtures. Step 6 test_workflow/test_workflow_api/test_geography/test_images cover persistence/HTTP/geography/uploads/regression. Training/real detection/routes/full end-to-end acceptance remain incomplete in this historical baseline.
 
-## 账号权限增量（2026-10-18）
+## Account-permission increment (2026-10-18)
 
-本文中的 HTTP 示例现在需要先登录，并在写请求附带 `X-CSRF-Token`。巡查员上传并读取本人巡检，中央调度员审核/管理，施工队只读取本队任务并标记完成。上传四字段、单框与 0.60 分流规则保持不变。完整角色矩阵、会话接口和 Swagger 操作见[账号角色规范](ACCOUNT_ROLES.md)。
+HTTP examples now require login/X-CSRF-Token on writes. Inspectors upload/read own; dispatchers review/manage; crews read/complete own tasks. Four fields, single box and 0.60 unchanged. [Account roles](ACCOUNT_ROLES.md) covers matrix/sessions/Swagger.
 
-## C 第 10 步知识检索增量（2026-10-19）
+## Assistant retrieval, evidence answers and crew changes (2026-10-21)
 
-新增 `POST /api/v1/assistant/knowledge/search`，仅 dispatcher 使用现有会话和 CSRF 调用。请求 query、limit、可选 rule_version；返回版本化知识片段、稳定引用、来源校验信息和分类，不生成答案，不读写业务方案。知识不可用返回 503 / knowledge_unavailable；规则版本不匹配返回 200 / rule_version_unavailable 和空 hits。完整字段、限制和验证见[知识检索契约](../SystemCode/backend/roadguard/assistant/README.md)。此增量不代表此前助手生成/调整接口已实现。
+The dispatcher-only assistant uses the existing session, role and CSRF checks:
 
-## C 第 11 步只读问答增量（2026-10-20）
+- `POST /api/v1/assistant/knowledge/search` returns versioned static passages, stable citations and source integrity metadata; it does not generate answers or read business plans. Rule-version mismatch returns empty hits; inconsistent knowledge returns `503 knowledge_unavailable`.
+- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v1` returns verified evidence extracts and provenance without business changes. Real GPT connectivity and semantic quality remain unverified.
+- `/api/v1/assistant/change-requests` provides preview/history and per-request confirm/cancel/replan operations under `c-assistant-change-v1`. Preview does not change planning input. Confirmation and recalculation are separate explicit actions; history supports uncertain-outcome recovery. This flow does not call GPT.
 
-新增 dispatcher 专属 `GET /api/v1/assistant/status` 和 `POST /api/v1/assistant/query`。POST 使用 question、scope、可选 plan_id/rule_version；plan 模式强制指定保存方案，由 B 的查询服务取事实。响应 c-assistant-query-v1 返回已核验原文引用、静态/动态来源、版本及只读标记；不执行调整。未配置/上游不可用 503、证据不符 502、预算限制 429、上下文过大 422；详细状态和配置见[助手说明](../SystemCode/backend/roadguard/assistant/README.md)。首版为 GPT 选择原文的抽取式回答，不代表自由生成回答或调整接口已完成。
+Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
 
-
-## C 第 12 步增量：队伍调整
-
-新增 dispatcher 专用 `/api/v1/assistant/change-requests` 预览、查询及 confirm/cancel/replan 操作。预览不修改业务输入，确认与重算需分别明确提交，网络失败通过历史记录恢复。契约为 `c-assistant-change-v1`，数据库为 v5；完整状态、版本、幂等和迁移边界见 `SystemCode/backend/roadguard/assistant/README.md` 的第 12 步说明。前端已接入独立调整区，模拟来源禁止写入。该流程不调用 GPT。
+See [assistant contracts](../SystemCode/backend/roadguard/assistant/README.md).

@@ -74,7 +74,7 @@ export default function AssistantPage() {
   return <>
     <div className="page-heading">
       <p className="eyebrow">证据问答 / 07</p>
-      <h1>路线助手</h1>
+      <h1>Route assistant</h1>
       <p className="description">核对维修规则，或围绕一份已保存方案查看依据。</p>
     </div>
     <details className="change-section"><summary>队伍调整 · 先预览再确认</summary><ChangePanel /></details>

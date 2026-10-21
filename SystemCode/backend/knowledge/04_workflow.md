@@ -1,52 +1,49 @@
-# 巡检、审核与任务记录
+# Inspection, review and task records
 
-document_id：`rg-kb-workflow`；document_version：`6`；owner：`A`。
+document_id: `rg-kb-workflow`; document_version: `8`; owner: `A`.
 
 <a id="workflow-evidence"></a>
-## 记录与人工复核
+## Records and manual review
 
-classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-evidence`。
+classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-evidence`.
 
-当前 HTTP 巡检记录契约是 `a-workflow-v5`。POST /inspections 的成功响应只含 inspection_id、status、detection、task_id；detection 只含 label、confidence、bbox_xyxy、image_width、image_height，无检测为 null。GET /inspections/{id} 返回下面的完整巡检详情，GET /tasks/{id} 返回任务详情；审核前从巡检详情取得 detection_id 和 record_version。上传重放由 HTTP 200 表示，新建为 201；其响应不再带 replayed/input_revision，规划版本通过任务快照取得。上传显式选择 demo 模式/案例，或不含案例的 real 模式；图片统一解码、EXIF 归正并去 metadata 后保存为 RGB PNG。demo 检测是合成数据；real 使用明确配置且经哈希、八类标签核验的本地模型从图片像素推理，Detection.is_demo=false。业务规则仍属演示假设，故 Inspection/Task.is_demo=true。InspectionRecord 保存原始检测、模式、模型版本/权重哈希、位置、规则过程和 review_history；TaskRecord 保存任务与修改历史。严格解析旧记录的客户端须更新 schema；不可直接用 extra=forbid 的旧 a-dto-v1 DTO 接收完整记录。
+Current HTTP inspection-record contract is `a-workflow-v5`. POST /inspections succeeds with only inspection_id, status, detection and task_id. Detection contains only label, confidence, bbox_xyxy, image_width and image_height; it is null for no detections. GET /inspections/{id} returns full inspection details described below; GET /tasks/{id} returns task details. Obtain detection_id and record_version from inspection details before review. Upload replay returns HTTP 200 and creation returns 201; responses no longer contain replayed/input_revision. Obtain planning revisions from task snapshots. Uploads explicitly choose demo mode/scenario or real mode without a scenario. Images are decoded, EXIF-normalized and stripped of metadata before saving as RGB PNG. Demo detections are synthetic; real inference reads image pixels using an explicitly configured local model verified by hash and eight labels, with Detection.is_demo=false. Business rules remain demo assumptions, so Inspection/Task.is_demo=true. InspectionRecord retains raw detections, mode, model version/weights hash, location, decision process and review_history. TaskRecord retains tasks and mutation history. Clients strictly parsing old records must update schemas; old a-dto-v1 DTOs with extra=forbid cannot directly accept full records.
 
-启用主建议策略的 real 记录还保存 primary_suggestion：一个供展示/审核的检测 ID、策略版本、阈值、排名分数和竞争目标提示。数据库保留全部原始 detections；HTTP InspectionResponse 最多返回一个框：优先返回 accepted 的 selected_detection_id，否则返回主建议，旧记录无建议时返回最高置信度框。竞争 ID 可能指向内部保留证据。排名分数不是正确概率，不用于自动接受阈值。旧记录缺少该字段时为 null，不重新推理；重启、重试和审核后仍保留初次上传的建议。
+Real records with primary-suggestion policy also save primary_suggestion: one detection ID for display/review, policy version, threshold, ranking score and competing-object hints. The database retains every raw detection. HTTP InspectionResponse returns at most one box: accepted selected_detection_id first, otherwise the primary suggestion, or the highest-confidence box for older records without a suggestion. Competing IDs may refer to internally retained evidence. Ranking scores are not correctness probabilities and do not control automatic acceptance. Older records have null for this field and are not inferred again; restart, retry and review retain the original upload suggestion.
 
-无检测保存为 no_detection、没有任务；不代表已证明路面安全。demo 模式任一低置信度保存为 pending_review，全部达标才按演示规则选一个候选自动建任务。real 模式采用用户确认的 single-primary-auto-v1：主框原始 confidence ≥ 配置 confidence_threshold（默认 0.60）自动创建一个任务并保存 accepted；低于阈值 pending_review。auto_acceptance 冻结 policy_version 和 confidence_threshold，Task.history.actor_source=system_confidence_policy，review_history 为空表示未进行人工审核。歧义只是提示，不覆盖该分流。阈值尚未校准成正确概率；旧巡检不补任务、不重新推理。仅 pending_review 可发生新的 confirm/correct/dismiss：confirm 选本记录 detection_id，correct 另提供中央 damage_label，dismiss 不选检测。确认不把原置信度改成 1.0，纠正不覆盖原始模型标签，审核决定单独保留。2026-10-18 接入登录权限后，新人工审核与任务修改记录 actor_source=authenticated_user，实际账号、请求、队伍等由 auth_audit 保存。旧 user_declared_unverified 记录保持原义；账号认证不是工程专业资质签名。
+No detections is saved as no_detection without a task; this does not establish road safety. In demo mode, any low-confidence detection saves pending_review; only when all pass does the demo policy select one candidate and automatically create a task. Real mode uses user-confirmed single-primary-auto-v1: primary raw confidence >= configured confidence_threshold (default 0.60) automatically creates one task and saves accepted; lower confidence yields pending_review. auto_acceptance freezes policy_version and confidence_threshold; Task.history.actor_source=system_confidence_policy and empty review_history indicate no manual review. Ambiguity is advisory and does not override routing. The threshold is not a calibrated correctness probability; older inspections get neither retroactive tasks nor inference. Only pending_review supports new confirm/correct/dismiss actions: confirm selects an existing detection_id, correct also supplies a canonical damage_label, and dismiss selects no detection. Confirmation does not change original confidence to 1.0; correction does not overwrite the original model label; review decisions are retained separately. Since login permissions were integrated on 2026-10-18, new manual reviews and task mutations record actor_source=authenticated_user, with actual account/request/crew information in auth_audit. Older user_declared_unverified records retain their meaning. Authentication is not an engineering accreditation signature.
 
-来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[src-images-code](../roadguard/images.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。
+Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-images-code](../roadguard/images.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md).
 
 <a id="workflow-task-state"></a>
-## 任务状态与可修改字段
+## Task states and editable fields
 
-classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-task-state`。
+classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-task-state`.
 
-只有 active 任务参加新的规划读取；completed/cancelled 保留历史，不物理删除、不重新激活。调度员可将活动任务完成/取消、纠正 damage_label，或将 latitude/longitude/road_type 一起修正；施工队仅可完成服务端核验属于本队的任务。标签纠正由服务端按巡检冻结规则重新计算严重度、优先级、分钟数和建议；位置重新校验范围并保留巡检的原始位置。不接受自由填写 priority/service_minutes/due_at、空修改或显式 null。
+Only active tasks participate in new planning reads. completed/cancelled tasks retain history without physical deletion or reactivation. Active tasks may be completed/cancelled, have damage_label corrected, or have latitude/longitude/road_type corrected together. The server recalculates severity, priority, minutes and recommendation from the inspection's frozen rules after label correction. Locations are validated again while preserving original inspection locations. Arbitrary priority/service_minutes/due_at, empty changes and explicit null are rejected.
 
-任务创建或真正修正/完成/取消会改变规划输入；巡检待复核、无检测、驳回不改变活动任务输入。B 应读取同一快照的 active 任务和共同 input_revision；多页有不同版本时不能拼成同一次规划。四队分配和路线结果由已实现的 B 规划服务负责；任务改变后旧方案过期，需要调度员显式重算，不从任务记录推导已生成方案。
+Task creation or actual correction/completion/cancellation changes planning input. Pending review, no detection and dismissal do not change active-task input. B must read active tasks and shared input_revision from one snapshot; pages with different revisions cannot form one planning input. Four-crew allocation, Greedy/GA planning and saved plan queries are implemented in B's PlanningService/RouteQueryService. Recalculation is explicit: task records or a successful task mutation do not establish that a new plan has been generated. Saved plans are marked stale after actual input changes. Crew completion is limited to the account's current latest-GA assignment and checked transactionally.
 
-来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)、[context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md)。
-
-
-补充来源：[src-routing-service](../roadguard/routing/service.py)、[src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md)。
+Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-routing-service](../roadguard/routing/service.py), [src-auth-access](../roadguard/auth/access.py).
 
 <a id="workflow-versions"></a>
-## 版本与安全重试
+## Versions and safe retries
 
-classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-versions`。
+classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-versions`.
 
-record_version 是单条资源的乐观并发版本，审核/修改带 expected_version；input_revision 是共同规划输入版本，实际任务变化在同一数据库事务中递增一次。Idempotency-Key 防上传重复，request_id 防对应资源审核/修改重复：相同请求安全重放，内容改变或过期的新操作返回冲突。重放返回当前资源/当前输入版本，不是缓存的旧状态；重试和无业务值变化不重复递增、不重复建任务。
+record_version is optimistic concurrency for one resource; review/mutation requests include expected_version. input_revision versions shared planning input and increments once in the same database transaction for actual task changes. Idempotency-Key prevents duplicate uploads; request_id prevents duplicate review/mutation on the corresponding resource. Identical requests replay safely; changed content or a stale new operation conflicts. Replay returns current resources/current input revision, not cached old state. Retries and changes without business-value differences neither increment revisions nor duplicate tasks.
 
-planning_input_changed 只表示此次请求实际改变共同输入，replayed 表示安全重放；它们不表示路线计算成功。C 必须按 code/status 处理错误和冲突并重新读取资源，不能把旧方案或演示响应显示为新的真实结果。
+planning_input_changed only indicates that this request actually changed shared input; replayed indicates safe replay. Neither means route calculation succeeded. C must handle errors/conflicts by code/status and reread resources; old plans or demo responses cannot be displayed as new real results.
 
-来源：[src-workflow-service](../roadguard/inspections/service.py)、[src-workflow-schema](../roadguard/schemas/workflow.py)、[context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)。
+Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md).
 
 <a id="workflow-account-roles"></a>
-## 账号角色与多角色流程
+## Account roles and cross-role workflow
 
-classification：`confirmed_project_fact`。citation_id：`rg-kb-workflow#workflow-account-roles`。
+classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-account-roles`.
 
-巡查员 inspector 只上传并查看本人巡检；施工队 crew 固定绑定一队，只看本队最新 GA 安排与相关任务/照片，并确认本队有效任务完成；中央调度员 dispatcher 处理审核、全局任务、队伍、规划和比较。助手静态检索首版仅调度员可用，不能用角色请求头或网址参数扩大权限。
+Inspectors upload and read only their own inspections. Crew accounts are bound to one crew and can read its latest GA assignment and authorized task images, then complete eligible assigned tasks. Dispatchers review inspections and manage tasks, crews, planning, comparisons and the assistant. Headers and URL parameters cannot expand an account's permissions.
 
-流程是巡查员上传 → 调度员复核/规划 → 施工队确认完成 → 调度员显式重算。最新保存的 GA 是施工队工作台依据，当前没有独立发布方案步骤。所有新业务接口默认拒绝，需加入现有角色权限表；会话使用 HttpOnly Cookie，POST/PATCH 等写方法还需 CSRF，即使检索 POST 不修改业务也遵守统一校验。账号属于运行数据库，不随 Git 拉取共享，没有默认密码。
+The workflow is inspector upload, dispatcher review/planning, crew completion and explicit dispatcher replanning. The latest saved GA plan drives the crew workspace; there is no separate publish-plan step. Interfaces deny access by default, use HttpOnly session cookies and require CSRF for POST/PATCH, including read-only retrieval POSTs. Accounts are local database records, not shared through Git, and have no default password.
 
-来源：[src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md)、[src-auth-permissions](../roadguard/auth/dependencies.py)。
+Sources: [src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-auth-permissions](../roadguard/auth/dependencies.py).
