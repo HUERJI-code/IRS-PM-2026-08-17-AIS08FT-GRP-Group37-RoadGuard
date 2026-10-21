@@ -1,6 +1,6 @@
 # Grounded answers and optional sources
 
-Current contract: **c-assistant-query-v3**; knowledge: **a-knowledge-v16**.
+Current contract: **c-assistant-query-v3**; knowledge: **a-knowledge-v17**.
 
 Standalone questions such as "What model are you?" read the configured assistant
 model name from the backend. This is configuration information, not a provider's
@@ -52,7 +52,15 @@ Current intent-routing acceptance is recorded in the
 The earlier [answer-first acceptance record](../../../../Miscellaneous/RAG_ANSWER_FIRST_ACCEPTANCE_20261021.md)
 documents the preceding display and grounding changes.
 The following sections document the prior evidence-only release and original
-integration; the v2 summary contract above supersedes v1 answer rendering.
+integration; the current query-v3 contract above supersedes v1 answer rendering.
+
+## Current task adjustments and persistence
+
+Business schema v6 and `c-assistant-task-change-v1` support dispatcher-only route previews, task reassignment and cancellation. Load an explicit saved plan or latest GA plan, review four-crew travel/service/return totals, preview a move or cancellation, acknowledge and confirm. Preview preserves all other assigned work and rejects unknown travel, overtime, stale input/configuration and expired records. Confirmation atomically persists the crew constraint or workflow cancellation with receipts and history; recalculation is a separate explicit action.
+
+Greedy and GA honor durable constraints after restarts and new tasks. Infeasible or unavailable constrained tasks are explicitly unassigned; stop order may change. Cancelled records remain in history and leave active planning. Discarding a preview does not cancel a task. Recent records and change IDs support idempotent recovery. Reassignment immediately revokes the old crew's task/inspection access; the new crew waits for a saved GA recalculation. Backend checks preserve dispatcher, crew and inspector boundaries.
+
+See the [complete user guide](../../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for setup and operations, and the [task-adjustment acceptance](../../../../Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) for bounded HTTP, browser and provider evidence. Earlier schema-v5 and query-v1/v2 sections below describe historical releases, not the current contract.
 
 ## Previous evidence-only behavior (2026-10-21)
 
@@ -111,7 +119,7 @@ Schema validity alone does not establish semantic relevance.
 
 Current setup and maintenance: [Vector retrieval](VECTOR_RETRIEVAL.md). This historical release used a-knowledge-v12. ChromaDB stores static passages with local E5 embeddings; original role, source-validation and confirmed-change contracts remain. The delivery records below describe earlier lexical versions.
 
-# Current merged assistant package (2026-10-21)
+# Historical merged assistant package (2026-10-21)
 
 The historical v11 integration introduced: all eleven English knowledge documents from main, 40 sections, 30 synthetic acceptance specifications and the two stable feature citations for routing defaults and account roles. The loader accepts English and original full-width metadata punctuation. Retrieval preserves English terms and a bounded set of Chinese domain aliases; this is not a general translation service. Sources are revalidated on each request.
 
@@ -139,7 +147,7 @@ accept no plan ID; plan questions require a saved `plan-` plus 32 hexadecimal
 characters. Evidence comes from authorized saved plans, not browser-supplied
 facts. The historical v1 answer used verified verbatim extracts. Unsupported,
 stale, unavailable-version and refused requests return no partial model answer.
-Source or plan changes during a request discard the output. The current v2
+Source or plan changes during a request discard the output. The current query-v3
 summary behavior described above supersedes that rendering.
 
 The provider is disabled by default. Server configuration uses

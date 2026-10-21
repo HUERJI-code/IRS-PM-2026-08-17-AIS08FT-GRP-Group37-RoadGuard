@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v16`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT connectivity has been exercised, while broad semantic acceptance remains outstanding.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v17`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The assistant implements local ChromaDB/E5 retrieval, opt-in grounded answers and confirmed crew/task changes. Targeted real GPT cases are recorded; broader semantic evaluation and independent clean-machine acceptance remain pending. Historical result files retain their original package versions and are not new v17 test results.
 
 ## Corpus map
 
@@ -18,9 +18,9 @@ Read [manifest.json](manifest.json), then its eleven English documents:
 | [08 Saved plans](08_route_plans_and_comparisons.md) | Provenance, stale plans, unassigned reasons and fair comparisons |
 | [09 Accounts and operations](09_accounts_and_operations.md) | Permissions, workflow, installation and troubleshooting |
 | [10 Evaluation evidence](10_evaluation_evidence.md) | Historical routing/model results and their limits |
-| [11 RAG integration](11_assistant_integration.md) | Ingestion, authorized runtime facts, citations and future confirmation |
+| [11 RAG integration](11_assistant_integration.md) | Ingestion, authorized runtime facts, citations and explicit confirmation |
 
-v10 corrects outdated claims that planning/crew APIs and experiments are still undelivered. The algorithms, saved-plan services and authenticated workspaces exist; GPT/RAG answers and assistant preview/confirm/cancel flows remain pending. It distinguishes the project's undecided operational return policy from the implemented return-to-depot/480-minute routing demo. Labels and demo-rule values are unchanged.
+Historical v10 corrected claims that planning/crew APIs and experiments were undelivered. At that revision, GPT/RAG answers and assistant preview/confirm/cancel flows were still pending; later revisions below implement them. It distinguished the project's undecided operational return policy from the implemented return-to-depot/480-minute routing demo. Labels and demo-rule values are unchanged.
 
 ## Evidence and citation contract
 
@@ -34,11 +34,11 @@ review_basis is `repository_consistency_review`, performed by a coding agent on 
 
 Verify raw-byte SHA-256 digests for documents, pinned sources, this guide and acceptance cases before ingestion. Knowledge files use UTF-8/LF with a final newline. A mismatch stops ingestion until the changed source and affected passages are reviewed and the package version/digests updated. Source `version` identifies the configuration or reviewed repository snapshot; hashes identify exact bytes. Mutable context_sources are explicitly unhashed background and cannot override pinned code/configuration.
 
-Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes proposed chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
+Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes implemented chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
 
 [acceptance_cases.json](acceptance_cases.json) contains 30 synthetic assistant acceptance specifications. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
 
-Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. Implement and test the retrieval/answer/confirmation service separately before reporting RAG as complete.
+Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. The implemented retrieval/answer/confirmation service has separate local tests and targeted live records; broader semantic and clean-machine acceptance remain pending.
 
 ## Earlier revisions
 
@@ -46,11 +46,11 @@ v6 synchronized demo-rules-v2; v7 corrected the real primary-confidence acceptan
 
 v11 reconciles C's feature with the eleven-document English corpus, preserves its two additional citation anchors and refreshes affected source hashes. Its 40 sections include routing, account roles and the current assistant boundaries. No historical experiment record is rewritten.
 
-## Chroma and embeddings
+## Chroma and embeddings introduced in v12
 
 v12 uses persistent ChromaDB and pinned local multilingual E5 embeddings. See the [vector retrieval guide](../roadguard/assistant/VECTOR_RETRIEVAL.md) for setup, reindexing and current contracts. The forty stable parent sections are split into token-bounded passages; live plans and account data remain outside the vector database. Rebuild the index after a reviewed manifest/source change.
 
-## Rule evidence selection
+## Rule evidence selection introduced in v13
 
 v13 retains the same eight labels, rule values, eleven documents and forty parent
 citations. GPT selects server-owned evidence IDs; the backend restores exact
@@ -62,9 +62,9 @@ duplicate, rule-version and saved-plan revision checks remain mandatory.
 See the [assistant guide](../roadguard/assistant/README.md) for limitations and tests.
 Rebuild the local Chroma index after this manifest update; model weights are reused.
 
-## Answer-first summaries (v14)
+## Historical answer-first summaries in v14
 
-The query contract is now c-assistant-query-v2, with answer_mode=grounded_summary.
+Version 14 introduced c-assistant-query-v2 with answer_mode=grounded_summary; v16 subsequently introduced the current query-v3 contract.
 The answer is readable prose; selections and sources retain the exact evidence.
 One GPT request selects evidence IDs and drafts a short answer. Canonical repair
 table answers are rendered from validated rows; other summaries use the draft
@@ -74,7 +74,7 @@ keeps original quotations, provenance and versions in a closed sources disclosur
 Update the frontend OpenAPI snapshot/types with the backend. Rebuild the local
 index with cached embeddings; no business-data migration or model change is needed.
 
-## Persistent task adjustments and English output (v15)
+## Persistent task adjustments and English output introduced in v15
 
 The dispatcher loads a saved plan, reviews all crew routes, and previews an assigned
 active task move or active task cancellation. Server feasibility includes travel,
@@ -92,7 +92,7 @@ documents and forty stable parent citations. Rebuild the local index from cached
 embeddings after this reviewed update.
 
 
-## Assistant intent routing (v16)
+## Assistant intent routing introduced in v16
 
 The query-v3 contract separates configured-model information and friendly scope
 guidance from grounded project answers. Direct responses have no model/retrieval
@@ -100,3 +100,13 @@ call or invented citation. Repair and saved-route questions retain all source,
 label, rule-version and plan-revision checks. English answers support bounded
 multilingual intent matching. Rebuild the local index after this source update;
 the cached embedding model is reused. No business migration or rule change occurs.
+
+## Current consistency review in v17
+
+v17 reconciles current scope, pending-work and evaluation passages with the
+implemented ChromaDB/E5 service and recorded targeted real GPT checks. It updates
+reviewed account, installation and retrieval-setup provenance while retaining
+eleven documents, forty parent citations, eight labels and demo-rules-v2 values.
+Historical results remain unchanged. Rebuild the local versioned index from cached
+embeddings after this update; no new GPT call, embedding download or business-data
+migration is implied by this documentation review.

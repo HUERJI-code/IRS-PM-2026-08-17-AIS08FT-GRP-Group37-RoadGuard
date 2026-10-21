@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v16",
+  "package_version": "a-knowledge-v17",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Repository consistency review for direct configured-model information, friendly scope guidance, and preserved RAG citation/label/rule/plan checks. Bounded intent matching and citation guards are not full semantic verification."
+    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -167,8 +167,8 @@
     {
       "source_id": "src-account-guide",
       "path": "Miscellaneous/ACCOUNT_ROLES.md",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "c9cbe909bac1e2d830acff1622bb9a39647dd00ed3e8d3fd71ba48e0ae5fddee"
+      "version": "documentation-consistency-20261021-v17",
+      "sha256": "a03e7393507aab3822083beff9d7b80ecb9a394391e8f47e7e42cfc996fe592a"
     },
     {
       "source_id": "src-plan-comparison",
@@ -185,8 +185,8 @@
     {
       "source_id": "src-install-guide",
       "path": "ProjectReport/INSTALLATION_AND_USER_GUIDE.md",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "e167b6357e2f21c278336041a7831ab5300e8b516a69d027abe345660c8c9522"
+      "version": "documentation-consistency-20261021-v17",
+      "sha256": "373d56955a294aefd738720202bf053cfd0eccecc754b42e03d72425e83b7cd2"
     },
     {
       "source_id": "src-routing-results",
@@ -233,8 +233,8 @@
     {
       "source_id": "src-account-roles",
       "path": "Miscellaneous/ACCOUNT_ROLES.md",
-      "version": "account-roles-20261018-merge-20261021",
-      "sha256": "c9cbe909bac1e2d830acff1622bb9a39647dd00ed3e8d3fd71ba48e0ae5fddee"
+      "version": "documentation-consistency-20261021-v17",
+      "sha256": "a03e7393507aab3822083beff9d7b80ecb9a394391e8f47e7e42cfc996fe592a"
     },
     {
       "source_id": "src-assistant-api",
@@ -275,8 +275,8 @@
     {
       "source_id": "src-retrieval-setup",
       "path": "SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md",
-      "version": "c-rag-vector-v1",
-      "sha256": "b97ab92a604267b1a85f254aa51c51655178816c5a893ec2a052c4b31ba0cab1"
+      "version": "documentation-consistency-20261021-v17",
+      "sha256": "fdd6f3a49339d706da60bbb2e6d9a078efae6062259838697cc7043b853ce82c"
     },
     {
       "source_id": "src-assistant-evidence",
@@ -325,6 +325,18 @@
       "path": "SystemCode/backend/roadguard/assistant/intents.py",
       "version": "assistant-intent-v3-20261021",
       "sha256": "6be26af52b166fdf4266a4212bbd0fa515c0e22c81344724af19aae66f8a73aa"
+    },
+    {
+      "source_id": "src-rule-citation-acceptance",
+      "path": "Miscellaneous/RAG_RULE_CITATION_ACCEPTANCE_20261021.md",
+      "version": "targeted-rule-citation-20261021-v13",
+      "sha256": "28f2d0692c79e9fbe68b9b0d52b6e902771417be7f237a850d7382abbb1384a0"
+    },
+    {
+      "source_id": "src-intent-live-acceptance",
+      "path": "SystemCode/experiments/assistant/intent-routing-20261021.json",
+      "version": "targeted-intent-20261021-v16",
+      "sha256": "449cd4cccfec3e76cba42e399c59d804f3a577ca6faccbfad885a67d69e4f05a"
     }
   ],
   "context_sources": [
@@ -353,10 +365,10 @@
     {
       "document_id": "rg-kb-scope",
       "path": "01_scope.md",
-      "document_version": "5",
+      "document_version": "6",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "f91265a811c143320e5ca64bc5c0b6f15fd39ac642668cd25edf591fa5e094fa",
+      "sha256": "6eed0c49d0f2400a72ea506fde559fcf2a0ebb2092ad22d65d1c541baaa462c1",
       "sections": [
         {
           "section_id": "scope-baseline",
@@ -381,7 +393,12 @@
             "src-routing-service",
             "src-crew-service",
             "src-assistant-page",
-            "src-assistant-api"
+            "src-assistant-api",
+            "src-rule-citation-acceptance",
+            "src-intent-live-acceptance",
+            "src-vector-store",
+            "src-embedding",
+            "src-semantic-retrieval"
           ]
         },
         {
@@ -598,10 +615,10 @@
     {
       "document_id": "rg-kb-pending",
       "path": "06_pending_decisions.md",
-      "document_version": "7",
+      "document_version": "8",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "017c26eec0f9c301b19c98d5f0fb5110f372fa2215d4ee2b5c9dde454403e61a",
+      "sha256": "82c4b72f4645ad9007a2c1fed0b9d23bff8e32d97fbf6fde1cd19a5fa70bf0b1",
       "sections": [
         {
           "section_id": "pending-business",
@@ -631,7 +648,12 @@
             "src-vision-evaluation",
             "src-integration-record",
             "src-assistant-page",
-            "src-assistant-api"
+            "src-assistant-api",
+            "src-rule-citation-acceptance",
+            "src-intent-live-acceptance",
+            "src-vector-store",
+            "src-embedding",
+            "src-semantic-retrieval"
           ]
         }
       ]
@@ -807,7 +829,7 @@
     {
       "document_id": "rg-kb-evaluation",
       "path": "10_evaluation_evidence.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -839,16 +861,21 @@
             "src-integration-record",
             "src-account-guide",
             "src-assistant-page",
-            "src-assistant-api"
+            "src-assistant-api",
+            "src-rule-citation-acceptance",
+            "src-intent-live-acceptance",
+            "src-vector-store",
+            "src-embedding",
+            "src-semantic-retrieval"
           ]
         }
       ],
-      "sha256": "f265c329511165815fccdc90e46e095eb1fcc5b3638bcb55ef67cf9d582afd27"
+      "sha256": "304000f4568c46704bd2784790b57726df4078bb77b9bd295926bb29e0b62397"
     },
     {
       "document_id": "rg-kb-integration",
       "path": "11_assistant_integration.md",
-      "document_version": "7",
+      "document_version": "8",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -861,7 +888,9 @@
             "context-team",
             "context-agents",
             "src-routing-service",
-            "src-assistant-api"
+            "src-assistant-api",
+            "src-rule-citation-acceptance",
+            "src-intent-live-acceptance"
           ]
         },
         {
@@ -926,16 +955,16 @@
           ]
         }
       ],
-      "sha256": "24236d3de13941fd3b0fcf06e510a000500d3320f549a0fb128528abb34f7366"
+      "sha256": "8aa1cb58ea9d5d0f0ccb620c257f259940f4fc83dcf7323ddb4087bd4159b36b"
     }
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "0d8ee0be0feb9a8f6de8dc0a89c74a24462b3349730f6ee69edf503138825a48",
+    "sha256": "a08b1b5e3547eb8015c71a155a905832583c5956e617058d44747c055b9d7841",
     "case_count": 30
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "98c6770eba56ca900596f679bdfaa52db974e9087f037f1845dd430831c625d0"
+    "sha256": "152e883a61d64764c4212c85f6058ad8bfa0365f3167389122493c3849919f2e"
   }
 }

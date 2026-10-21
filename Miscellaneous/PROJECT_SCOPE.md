@@ -22,7 +22,7 @@ Updated: 2026-10-20. The geographic baseline and user-selected dispatch origin a
 
 One fictional maintenance department coordinates four simulated crews from one shared simulated depot at the real NUS-ISS location. This does not describe an actual NUS-ISS maintenance operation. The system accepts single images, predicts a primary damage label and box, applies demonstration severity/priority rules, maintains accepted tasks and explicitly calculates ordered crew routes. Uncertain detections require review.
 
-The implemented stack uses React, one Python/FastAPI backend, SQLite, YOLO/RDD2022ES, a group-built GA and a Greedy baseline. Travel matrices are simulated by default, with optional Google Routes estimates. GPT/RAG route explanations remain proposed.
+The implemented stack uses React, one Python/FastAPI backend, SQLite, YOLO/RDD2022ES, a group-built GA and a Greedy baseline. Travel matrices are simulated by default, with optional Google Routes estimates. The dispatcher assistant provides local ChromaDB/E5 retrieval, optional evidence-grounded English answers and authorized saved-plan explanations. Crew availability and task reassignment/cancellation require preview and explicit confirmation; recalculation remains separate.
 
 The [dataset and label audit](DATASET_AND_LABEL_AUDIT.md) pins Juuso's RDD2022ES version 1 and verifies its eight source labels. Full content validation and grouped splits are now recorded by the Step 8 pipeline; the original audit remains the source-history record. Dataset severity qualifiers do not define project priorities or repair durations, and the publisher's license statements conflict as documented in the audit.
 

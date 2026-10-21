@@ -1,13 +1,13 @@
 # RAG integration contract and acceptance requirements
 
-document_id: `rg-kb-integration`; document_version: `7`; owner: `A`.
+document_id: `rg-kb-integration`; document_version: `8`; owner: `A`.
 
 <a id="integration-status"></a>
 ## Scope and implementation status
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-status`.
 
-RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 embeddings, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. Static knowledge passages and embeddings are persisted locally; live plans remain authorized service reads. Real GPT connectivity has been exercised locally; broad semantic acceptance remains outstanding. Provider doubles demonstrate only the local control flow.
+RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 embeddings, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. Static knowledge passages and embeddings are persisted locally; live plans remain authorized service reads. Real GPT connectivity, rule citations, answer-first summaries and saved-plan answers have been exercised in recorded targeted local cases. These historical cases retain their original package/contract versions and do not certify this later package. Broad semantic evaluation and independent clean-machine acceptance remain outstanding. Provider doubles demonstrate only the local control flow.
 
 C owns retrieval, indexing, citations and answer/change-request services inside the shared backend; A owns knowledge correctness and B owns planning facts. Keep one authoritative task/crew/plan store and reuse the existing domain services. The model must not invent a second scheduler or write business tables directly.
 
@@ -15,8 +15,10 @@ Sources: [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx), [cont
 
 Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
 
+Evidence records: [src-rule-citation-acceptance](../../../Miscellaneous/RAG_RULE_CITATION_ACCEPTANCE_20261021.md), [src-intent-live-acceptance](../../experiments/assistant/intent-routing-20261021.json).
+
 <a id="integration-ingestion"></a>
-## Suggested ingestion and source lifecycle
+## Implemented ingestion and source lifecycle
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-ingestion`.
 

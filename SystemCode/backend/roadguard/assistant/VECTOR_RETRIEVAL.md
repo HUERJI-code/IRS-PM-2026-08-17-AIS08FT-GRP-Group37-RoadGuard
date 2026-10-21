@@ -2,8 +2,9 @@
 
 The dispatcher assistant uses ChromaDB 1.5.9 with local multilingual E5 embeddings.
 The embedding encoder uses ONNX Runtime on CPU; it does not alter the YOLO/PyTorch
-model, call an embedding API, or train a model. GPT evidence selection remains a
-separate opt-in service. The existing role, CSRF, citation and confirmation checks
+model, call an embedding API, or train a model. GPT evidence selection and English grounded summaries remain a
+separate opt-in service. The current reviewed package is a-knowledge-v17 and the
+query contract is c-assistant-query-v3. The existing role, CSRF, citation and confirmation checks
 remain in place.
 
 ## Setup
@@ -78,8 +79,8 @@ invalid stored provenance. Other backend modules remain available. Check returne
 
 `POST /api/v1/assistant/knowledge/search` now returns `c-knowledge-search-v2` and
 `retrieval_method=chroma-e5-cosine-v1`. Existing result fields and stable parent
-citations remain; `matched_terms` is an empty compatibility field. The answer and
-crew-change contracts are unchanged. Only dispatcher sessions may use these APIs.
+citations remain; `matched_terms` is an empty compatibility field. Search does not change business data. Answering uses query-v3; availability changes
+use change-v1 and task adjustments use task-change-v1. Only dispatcher sessions may use these APIs.
 
 ## Verification boundaries
 
@@ -89,3 +90,5 @@ They cover persistence, duplicate builds, incomplete builds, source/version
 changes, tampering, missing models, permissions and read-only answering.
 Real E5 retrieval must be evaluated separately against saved expected citations;
 do not report the doubles as semantic accuracy or a successful real GPT call.
+
+Targeted real E5 and configured GPT cases are recorded in the [intent-routing acceptance](../../../../Miscellaneous/RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md), whose historical package was v16. They demonstrate bounded source agreement and provider connectivity, not broad semantic accuracy. Refreshing the current v17 package requires the explicit index command above; do not reuse a stale collection as a fallback.

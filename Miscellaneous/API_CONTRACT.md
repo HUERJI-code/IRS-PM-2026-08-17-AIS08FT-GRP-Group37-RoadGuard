@@ -172,9 +172,9 @@ See [assistant contracts](../SystemCode/backend/roadguard/assistant/README.md).
 
 The dispatcher search endpoint now returns `c-knowledge-search-v2` with `retrieval_method=chroma-e5-cosine-v1`. Static sources use local E5 embeddings and a versioned persistent Chroma index. Scores are cosine similarity; `matched_terms` is an empty compatibility field. Model/index failures are explicit 503 responses, and oversized encoder inputs return 422. The answer and crew-change contracts are unchanged. Follow the [setup and maintenance guide](../SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md) before querying; runtime data stays outside Git.
 
-## Rule citation repair (2026-10-21, local)
+## Historical rule citation release (2026-10-21)
 
-The public c-assistant-query-v1 fields remain unchanged. The internal provider
+At the historical evidence-only milestone, public c-assistant-query-v1 fields remained unchanged. The internal provider
 returns at most six server-owned evidence IDs; the backend restores exact quotes
 and required context, producing up to twelve selections. Clients must render the
 selections array rather than assuming one table quote. Header/context and target
@@ -185,9 +185,9 @@ omits a named class returns insufficient_data (200) without a partial answer.
 The [assistant guide](../SystemCode/backend/roadguard/assistant/README.md) describes
 bounded label aliases, knowledge-v13 reindexing and verification.
 
-### Answer-first query v2 (2026-10-21)
+### Historical answer-first query v2 (2026-10-21)
 
-Request fields and routes are unchanged. Response contract_version is now
+At this historical milestone, request fields and routes were unchanged. The response contract_version was
 c-assistant-query-v2 and answer_mode is grounded_summary. answer contains readable
 prose; selections/sources retain exact quotations, hashes, versions and provenance.
 Update strict clients and generated OpenAPI/TypeScript together. Frontend evidence
@@ -198,7 +198,7 @@ not prove full semantic correctness. All prior citation, permission, rule-versio
 and saved-plan freshness checks remain. No business data is changed by a query.
 See [local acceptance](RAG_ANSWER_FIRST_ACCEPTANCE_20261021.md).
 
-## Persistent task adjustment v1 (2026-10-21, local)
+## Persistent task adjustment v1 (2026-10-21)
 
 Dispatcher-only, existing session and CSRF requirements apply. No GPT call occurs.
 The frontend loads an explicit plan or the latest saved GA plan before previewing.
