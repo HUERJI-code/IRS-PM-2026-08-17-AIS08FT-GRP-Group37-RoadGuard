@@ -155,3 +155,15 @@ SystemCode/tests/test_contracts.py verifies DTO fixtures. Step 6 test_workflow/t
 ## Account-permission increment (2026-10-18)
 
 HTTP examples now require login/X-CSRF-Token on writes. Inspectors upload/read own; dispatchers review/manage; crews read/complete own tasks. Four fields, single box and 0.60 unchanged. [Account roles](ACCOUNT_ROLES.md) covers matrix/sessions/Swagger.
+
+## Assistant retrieval, evidence answers and crew changes (2026-10-21)
+
+The dispatcher-only assistant uses the existing session, role and CSRF checks:
+
+- `POST /api/v1/assistant/knowledge/search` returns versioned static passages, stable citations and source integrity metadata; it does not generate answers or read business plans. Rule-version mismatch returns empty hits; inconsistent knowledge returns `503 knowledge_unavailable`.
+- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v1` returns verified evidence extracts and provenance without business changes. Real GPT connectivity and semantic quality remain unverified.
+- `/api/v1/assistant/change-requests` provides preview/history and per-request confirm/cancel/replan operations under `c-assistant-change-v1`. Preview does not change planning input. Confirmation and recalculation are separate explicit actions; history supports uncertain-outcome recovery. This flow does not call GPT.
+
+Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
+
+See [assistant contracts](../SystemCode/backend/roadguard/assistant/README.md).

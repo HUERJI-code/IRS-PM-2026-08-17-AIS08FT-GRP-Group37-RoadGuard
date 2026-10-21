@@ -1,6 +1,6 @@
 # Recorded evaluation evidence and its limits
 
-document_id: `rg-kb-evaluation`; document_version: `1`; owner: `A`.
+document_id: `rg-kb-evaluation`; document_version: `2`; owner: `A`.
 
 <a id="evaluation-routing"></a>
 ## Historical GA evaluation
@@ -37,6 +37,8 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-evaluation#evaluat
 
 The dated integration record documents the implemented local inspection-to-planning workflow. Account/workspace access is described in the account guide. Cite the date and exact tested scenario when using those records; a historical acceptance record does not demonstrate every later environment or feature.
 
-The assistant UI remains a placeholder. Static knowledge hashes and acceptance questions validate a documentation handoff, not retrieval relevance, LLM grounding, citation correctness at runtime, prompt-injection resistance or successful confirmed changes. Those require a future implemented service and recorded end-to-end tests. No retrieved answer scores or executed assistant acceptance results are supplied by this package.
+The assistant UI and local retrieval/change workflows are implemented. Static hashes establish source consistency, not retrieval relevance, sufficient answers or expert approval. Local tests use explicit provider doubles and exercise citation rejection, roles, stale evidence and confirmed-change recovery. Real GPT connectivity and semantic answer quality remain unverified. This package supplies acceptance specifications, not real-model answer scores.
 
-Sources: [src-integration-record](../../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-assistant-page](../../frontend/src/pages/WorkspacePage.tsx).
+Sources: [src-integration-record](../../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
+
+Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).

@@ -1,3 +1,4 @@
+import knowledgeFixture from '../test/knowledge-fixture.json'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   createApiClient,
@@ -330,4 +331,24 @@ describe('endpoint adapters', () => {
       ),
     ).rejects.toMatchObject({ outcomeUnknown: true, kind: 'contract' })
   })
+})
+
+
+it('retrieves static evidence with the existing cookie and CSRF client', async () => {
+  const transport = vi.fn<Transport>().mockResolvedValue(reply(knowledgeFixture))
+  const api = createApiClient(transport, 8000, { csrfToken: () => 'test-csrf', onUnauthorized: vi.fn() })
+  const result = await api.knowledgeSearch({ query: '施工队账号', limit: 2, rule_version: 'demo-rules-v2' })
+  expect(result.answer_generated).toBe(false)
+  expect(result.hits[0].citation_id).toContain('#')
+  const [url, init] = transport.mock.calls[0]
+  expect(url).toBe('/api/v1/assistant/knowledge/search')
+  expect(init.credentials).toBe('same-origin')
+  expect(new Headers(init.headers).get('X-CSRF-Token')).toBe('test-csrf')
+  expect(JSON.parse(init.body as string).rule_version).toBe('demo-rules-v2')
+})
+
+it('does not label a failed read-only search as an uncertain business write', async () => {
+  const transport = vi.fn<Transport>().mockRejectedValue(new TypeError('offline'))
+  await expect(createApiClient(transport).knowledgeSearch({ query: '维修规则', limit: 5 })).rejects.toMatchObject({ outcomeUnknown: false })
+  expect(transport).toHaveBeenCalledTimes(1)
 })

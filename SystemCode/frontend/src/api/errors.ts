@@ -16,6 +16,25 @@ export class ApiError extends Error {
 }
 
 const messages: Record<string, string> = {
+
+  unsupported_change: 'Specify enabling or disabling one crew using the example command.',
+  change_not_pending: 'This change is closed or already confirmed.',
+  change_not_confirmed: 'Review the preview and confirm the crew change first.',
+  change_replan_busy: 'Recalculation is still running. Check the saved result.',
+  change_retry_limit: 'The retry limit was reached. Check the routes workspace.',
+  change_attempt_superseded: 'A recovery attempt replaced this calculation. Check the latest result.',
+  planning_failed: 'Planning did not complete. Check current inputs before trying again.',
+  crew_unavailable: 'This crew is no longer configured. Refresh and check it.',
+  assistant_not_configured: 'The model is not enabled. Ask the maintainer to configure it.',
+  assistant_configuration_error: 'The server model configuration is invalid. Contact the maintainer.',
+  assistant_budget_exceeded: 'The model call limit was reached or the service is busy.',
+  assistant_provider_unavailable: 'The model service is unavailable. No answer or automatic retry was produced.',
+  assistant_invalid_response: 'The model evidence failed validation; no answer is displayed.',
+  assistant_context_too_large: 'The plan or knowledge exceeds the question size limit. Narrow the question.',
+  assistant_evidence_changed: 'The evidence changed while answering. Refresh and check it.',
+  assistant_stale_plan: 'This plan is stale. Check the routes workspace and replan.',
+  knowledge_unavailable: 'Knowledge validation failed. Ask the maintainer to synchronize the package.',
+
   authentication_required: 'Your session has expired. Please sign in again.',
   forbidden: 'Your account cannot perform this action. Contact the dispatcher.',
   csrf_failed: 'Your session has changed. Refresh the page and try again.',

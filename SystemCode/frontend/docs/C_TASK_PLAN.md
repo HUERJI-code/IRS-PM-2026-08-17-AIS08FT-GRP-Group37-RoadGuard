@@ -1,4 +1,4 @@
-> Archive: this retains the 2026-10-15 planning baseline and open work, rather than describing everything as currently unimplemented. Steps 1–9 are now implemented; README, VALIDATION.md and COMPARISON_GUIDE.md define actual validation. Steps 10–14 remain pending.
+> Archive: the steps below retain the 2026-10-15 planning baseline. Steps 1–12 are implemented; [step 13 acceptance](C_STEP13_ACCEPTANCE.md) records local tests with provider doubles. Real GPT/provider acceptance and step 14 remain outstanding.
 
 # RoadGuard: C implementation plan
 

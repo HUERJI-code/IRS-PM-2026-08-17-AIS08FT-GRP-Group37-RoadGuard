@@ -1,4 +1,4 @@
-# RoadGuard frontend · C steps 2–9
+# RoadGuard frontend · C steps 2–13
 
 2026-10-18: The approved review and crew-workspace style now covers sign-in, upload, inspection details, tasks, routes, comparison and the assistant placeholder. White/warm-grey surfaces, dark text and restrained green accents are used throughout. Mobile navigation follows account permissions; task details, map section links and horizontal comparison tables support narrow screens. Existing permissions and business actions are preserved. See [visual preview](DESIGN_PREVIEW.md) for coverage, viewing instructions and the latest 152-test/browser acceptance record. The user approved delivery through PR/CI together with the required authentication backend. Update frontend and backend together. Each member creates accounts in their own database following [account roles](../../Miscellaneous/ACCOUNT_ROLES.md); passwords and runtime data are not synchronised through Git.
 
@@ -68,7 +68,7 @@ Health checks do not require vision dependencies or inference. Prepare real-mode
 | `/routes` | Crew controls, explicit recalculation, Jurong map and route details |
 | `/comparison` | Same-run verification, metrics and unassigned-reason comparison |
 | `/crew?crew=crew-02&algorithm=ga` | Account-bound crew route, current tasks, progress and completion |
-| `/assistant` | Route-assistant placeholder |
+| `/assistant` | Evidence questions, citations and separate crew-change preview/confirmation/recovery |
 | Other paths | 404 and workspace link |
 
 Pages automatically make the read-only `GET /api/v1/health` call with loading, success, failure, eight-second timeout and manual retry states. The source panel explicitly selects live/mock data. Only opening “Check data connection” and clicking its button reads the active snapshot and latest GA plan. App/database success does not establish model, Google or assistant readiness. Failures do not fall back to mock; “not connected” is different from an empty task list.
@@ -96,12 +96,18 @@ Preview uses `http://127.0.0.1:4173`. `npm test` watches in development; CI uses
 
 ## Handoff boundary
 
-Frontend work stays in `SystemCode/frontend/` without changing A/B APIs, database or business configuration. Workspaces do not invent tasks, routes or metrics. Assistant interactions remain future work. Older shared statements that “frontend is not implemented” refer to the incomplete full application; this guide states the implemented foundation.
+Frontend work stays in `SystemCode/frontend/` without changing A/B APIs, database or business configuration. Workspaces do not invent tasks, routes or metrics. Assistant retrieval, evidence questions and confirmed crew changes are implemented; real provider acceptance remains outstanding. Older shared statements that “frontend is not implemented” refer to the incomplete full application; this guide states the implemented foundation.
 
 ## C planning and page design
 
-The [14-step plan](docs/C_TASK_PLAN.md), [page flow](docs/PAGE_FLOW.md), [initial API mapping](docs/API_MAPPING.md) and [open questions](docs/OPEN_QUESTIONS.md) retain their planning baseline. Steps 1–9 are implemented; module guides define validation boundaries.
+The [14-step plan](docs/C_TASK_PLAN.md), [page flow](docs/PAGE_FLOW.md), [initial API mapping](docs/API_MAPPING.md) and [open questions](docs/OPEN_QUESTIONS.md) retain their planning baseline. Steps 1–12 are implemented; step 13 records local acceptance with provider doubles, while real GPT evaluation and step 14 remain outstanding.
 
 ## Account-based access
 
 Sign-in was added on 2026-10-18. Inspectors upload and view their own results; crew accounts bind to one crew; central dispatchers access review/tasks/four-crew routes/comparison/assistant. Update frontend and backend together. Account provisioning, cookies/CSRF and permissions are in [account roles](../../Miscellaneous/ACCOUNT_ROLES.md); operations are in the [crew guide](CREW_GUIDE.md). There is no role selector or self-registration. Expired sessions return to sign-in. Mobile supports account details and sign-out.
+
+## Assistant delivery and recorded acceptance (2026-10-21)
+
+The assistant now provides evidence questions and a separate crew-change panel. See [assistant contracts](../backend/roadguard/assistant/README.md) and [C step 13 acceptance](docs/C_STEP13_ACCEPTANCE.md). The earlier 18 October acceptance above is a historical record and predates this feature.
+
+C's recorded pre-merge run reports 22 focused acceptance tests, 1,100 backend passes with one skip, and 166 frontend passes, plus lint/build. Ten route questions used an explicitly labelled evidence-selection double; eleven adjustment cases exercised local business services. Those historical counts are not a test result for the merged revision. Real GPT, Google, YOLO, production deployment and physical-device acceptance are excluded from that record.

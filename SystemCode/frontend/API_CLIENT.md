@@ -65,3 +65,15 @@ Open “Check data connection” and click “Read current source” to inspect 
 ## Validation boundary
 
 Automated checks cover example schemas, request paths/fields, multipart, request-ID reuse, revision conflict, absence of automatic retry, timeout/cancellation, malformed responses, image URLs, pagination, explicit source switching, blocked mock writes, units and timezones. Step 4 adds real upload/details (UPLOAD_GUIDE.md); step 5 adds review (REVIEW_GUIDE.md); steps 6–7 implement task editing and crew controls, with explicit recalculation and revision checks (TASK_GUIDE.md, PLANNING_GUIDE.md). This does not claim complete dispatch end-to-end acceptance.
+
+## Assistant retrieval, evidence answers and crew changes (2026-10-21)
+
+The dispatcher-only assistant uses the existing session, role and CSRF checks:
+
+- `POST /api/v1/assistant/knowledge/search` returns versioned static passages, stable citations and source integrity metadata; it does not generate answers or read business plans. Rule-version mismatch returns empty hits; inconsistent knowledge returns `503 knowledge_unavailable`.
+- `GET /api/v1/assistant/status` exposes non-secret configuration status. `POST /api/v1/assistant/query` accepts question, scope and optional plan_id/rule_version. Plan questions require an explicit saved plan loaded through B's query service. `c-assistant-query-v1` returns verified evidence extracts and provenance without business changes. Real GPT connectivity and semantic quality remain unverified.
+- `/api/v1/assistant/change-requests` provides preview/history and per-request confirm/cancel/replan operations under `c-assistant-change-v1`. Preview does not change planning input. Confirmation and recalculation are separate explicit actions; history supports uncertain-outcome recovery. This flow does not call GPT.
+
+Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
+
+Client methods knowledgeSearch, assistantStatus and assistantQuery use the shared schema validation. Read-only POST failures do not imply an unknown business mutation; provider usage may still occur after cancellation. Questions wait at most 60 seconds, with no automatic retry. Mock mode blocks provider calls and business changes. Change previews, confirmation, cancellation and explicit replanning use the independent ChangePanel and persisted history.

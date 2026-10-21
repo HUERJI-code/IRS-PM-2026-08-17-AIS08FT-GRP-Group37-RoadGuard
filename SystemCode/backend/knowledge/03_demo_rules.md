@@ -1,6 +1,6 @@
 # Demo rules and confidence routing
 
-document_id: `rg-kb-demo-rules`; document_version: `3`; owner: `A`.
+document_id: `rg-kb-demo-rules`; document_version: `4`; owner: `A`.
 
 <a id="demo-rule-table"></a>
 ## Exact demo mapping
@@ -43,3 +43,16 @@ Unknown service_minutes is null, never zero; all eight current configured durati
 This package's static table explains demo-rules-v2 only; runtime records may use overridden configurations with other versions. Do not use this package or the latest rule table to recalculate or explain older tasks from another version. Use each record's saved rule version, decision_trace and history; acknowledge insufficient_data without matching evidence.
 
 Sources: [src-demo-rules](../../config/demo_rules.example.json), [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py).
+
+<a id="routing-demo-settings"></a>
+## Current routing demonstration settings
+
+classification: `demo_assumption`. citation_id: `rg-kb-demo-rules#routing-demo-settings`.
+
+The b-routing-demo-v1 configuration uses four crews, the shared NUS-ISS depot, return_to_depot=true, a 480-minute shift and a simulated matrix by default. These demonstration assumptions do not resolve the shared operational policy's null values.
+
+b-objective-v1 first compares unassigned P1/P2/P3 counts lexicographically, then weighted cost: 1.0 times makespan, 0.2 times travel minutes, 0.5 times available-crew workload standard deviation and 0.5 times priority-weighted mean completion minutes. P1/P2/P3 weights are 3/2/1. Weighted completion is not lateness; absent deadlines cannot establish delay or monetary savings.
+
+Online planning_service.seed_with_greedy=true differs from experimental ga.seed_with_greedy=false. Google failures do not silently fall back to simulation. A specific plan answer must use its saved settings, algorithm_parameters, matrix source and revision.
+
+Sources: [src-routing-config](../../config/routing.example.json), [src-routing-service](../roadguard/routing/service.py), [src-routing-guide](../roadguard/routing/README.md).

@@ -1,14 +1,14 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v10",
+  "package_version": "a-knowledge-v11",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
   "review": {
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
-    "reviewed_on": "2026-10-20",
-    "note": "Repository consistency review of static knowledge, routing/crew/auth APIs and committed historical evidence; not expert approval, field validation or executed RAG acceptance. Runtime assistant remains unimplemented."
+    "reviewed_on": "2026-10-21",
+    "note": "Merge consistency review: preserve the eleven-document English corpus and C retrieval/change workflow, with current source hashes. Not expert approval or real GPT acceptance."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -119,8 +119,8 @@
     {
       "source_id": "src-routing-service",
       "path": "SystemCode/backend/roadguard/routing/service.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "a46ce507e666454a9b3c485383e4179090faf81ff667c0d24cdbdddf308c2b3e"
+      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021",
+      "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366"
     },
     {
       "source_id": "src-routing-api",
@@ -143,8 +143,8 @@
     {
       "source_id": "src-crew-service",
       "path": "SystemCode/backend/roadguard/crews/service.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "1488d77b7b17751d564c69bfaa24a73b3c3ce3feaf9a0b13351acb4a63a79e0a"
+      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021",
+      "sha256": "80b06e27c2faa76d103d9eccce1d1566905980938d805ea7cc9709472f4f689e"
     },
     {
       "source_id": "src-crew-schema",
@@ -155,8 +155,8 @@
     {
       "source_id": "src-auth-permissions",
       "path": "SystemCode/backend/roadguard/auth/dependencies.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "e732bf4aac8a995cf0b1ff1028ee32d57ec168625497f862a68db8fd84c760e7"
+      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021",
+      "sha256": "e2a62cacb0ab414d966b2aae994398aeaf740d6a1d53282605664063fc221820"
     },
     {
       "source_id": "src-auth-access",
@@ -178,9 +178,9 @@
     },
     {
       "source_id": "src-assistant-page",
-      "path": "SystemCode/frontend/src/pages/WorkspacePage.tsx",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "b3a70ba69e692b03de12c82f299ea45e68c4dbe3a892c078957270883edbc456"
+      "path": "SystemCode/frontend/src/pages/AssistantPage.tsx",
+      "version": "c-assistant-ui-20261021",
+      "sha256": "8af868e491e6b03408f3279106030554b4ec1891c827f9bdebfdcb2b7d708a33"
     },
     {
       "source_id": "src-install-guide",
@@ -223,6 +223,36 @@
       "path": "Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md",
       "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
       "sha256": "a20fd532efc0bbfd5fe904307d355076bf84e8b4f484dc5c29ef1a54ff5ad5f4"
+    },
+    {
+      "source_id": "src-routing-guide",
+      "path": "SystemCode/backend/roadguard/routing/README.md",
+      "version": "routing-guide-20261019-merge-20261021",
+      "sha256": "3b5ae625360adc40190f7a40108148d060f85843d37032f30050795cad36e352"
+    },
+    {
+      "source_id": "src-account-roles",
+      "path": "Miscellaneous/ACCOUNT_ROLES.md",
+      "version": "account-roles-20261018-merge-20261021",
+      "sha256": "c9cbe909bac1e2d830acff1622bb9a39647dd00ed3e8d3fd71ba48e0ae5fddee"
+    },
+    {
+      "source_id": "src-assistant-api",
+      "path": "SystemCode/backend/roadguard/assistant/api.py",
+      "version": "c-assistant-merge-20261021",
+      "sha256": "d322c680a3b68bd69100836e1e13000720cdc250528db927eb31615d6a548b86"
+    },
+    {
+      "source_id": "src-assistant-query",
+      "path": "SystemCode/backend/roadguard/assistant/query_service.py",
+      "version": "c-assistant-merge-20261021",
+      "sha256": "84611baef9f3a4b2b1551659901a611752e0aed4c810b095a34d63d85637d079"
+    },
+    {
+      "source_id": "src-assistant-change",
+      "path": "SystemCode/backend/roadguard/assistant/change_service.py",
+      "version": "c-assistant-merge-20261021",
+      "sha256": "aa1c744788fccb75eb0046f72feecfdf68978830fb18a12268cce83ec075b771"
     }
   ],
   "context_sources": [
@@ -251,10 +281,10 @@
     {
       "document_id": "rg-kb-scope",
       "path": "01_scope.md",
-      "document_version": "3",
+      "document_version": "5",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "d16cdc129de0b4b07ecfe7244b583932a87971f0298f28295bf5c8b1b90f8b03",
+      "sha256": "f91265a811c143320e5ca64bc5c0b6f15fd39ac642668cd25edf591fa5e094fa",
       "sections": [
         {
           "section_id": "scope-baseline",
@@ -278,7 +308,8 @@
             "src-routing-config",
             "src-routing-service",
             "src-crew-service",
-            "src-assistant-page"
+            "src-assistant-page",
+            "src-assistant-api"
           ]
         },
         {
@@ -325,10 +356,10 @@
     {
       "document_id": "rg-kb-demo-rules",
       "path": "03_demo_rules.md",
-      "document_version": "3",
+      "document_version": "4",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "d7a2527672ed00b682ea9e083bb2afabece4c775a5af5073121e9477d1037a64",
+      "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
       "sections": [
         {
           "section_id": "demo-rule-table",
@@ -358,16 +389,26 @@
             "src-workflow-service",
             "src-workflow-schema"
           ]
+        },
+        {
+          "section_id": "routing-demo-settings",
+          "citation_id": "rg-kb-demo-rules#routing-demo-settings",
+          "classification": "demo_assumption",
+          "source_ids": [
+            "src-routing-config",
+            "src-routing-service",
+            "src-routing-guide"
+          ]
         }
       ]
     },
     {
       "document_id": "rg-kb-workflow",
       "path": "04_workflow.md",
-      "document_version": "7",
+      "document_version": "8",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "26b6d2c8571a22536050d86a4b3b763e20dd91f9f700534448070ac556258601",
+      "sha256": "e5a9f4b5a904238937ec305aab07ee47d4f7f5fde09a6c0dd5b21954d474bd10",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -402,16 +443,25 @@
             "src-workflow-schema",
             "context-workflow-guide"
           ]
+        },
+        {
+          "section_id": "workflow-account-roles",
+          "citation_id": "rg-kb-workflow#workflow-account-roles",
+          "classification": "confirmed_project_fact",
+          "source_ids": [
+            "src-account-roles",
+            "src-auth-permissions"
+          ]
         }
       ]
     },
     {
       "document_id": "rg-kb-assistant",
       "path": "05_assistant_boundaries.md",
-      "document_version": "4",
+      "document_version": "6",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "d737433a785f374420054f608dc00781be215e963160c01b8a19f7577fa31297",
+      "sha256": "4ec5eb9e312252672884d2c630cb81b2d9af5a8f639b3f8a89a56e5545919cf9",
       "sections": [
         {
           "section_id": "assistant-plan-facts",
@@ -423,7 +473,8 @@
             "src-project-config",
             "src-routing-service",
             "src-plan-comparison",
-            "src-assistant-page"
+            "src-assistant-page",
+            "src-assistant-query"
           ]
         },
         {
@@ -436,7 +487,8 @@
             "src-workflow-schema",
             "src-crew-schema",
             "src-crew-service",
-            "src-routing-service"
+            "src-routing-service",
+            "src-assistant-change"
           ]
         },
         {
@@ -468,10 +520,10 @@
     {
       "document_id": "rg-kb-pending",
       "path": "06_pending_decisions.md",
-      "document_version": "6",
+      "document_version": "7",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "bbd556104264dc4d7125e70f84f4f3f85e4ba0bb41d6b8c21417f55a2032afd3",
+      "sha256": "017c26eec0f9c301b19c98d5f0fb5110f372fa2215d4ee2b5c9dde454403e61a",
       "sections": [
         {
           "section_id": "pending-business",
@@ -500,7 +552,8 @@
             "src-ga-evaluation",
             "src-vision-evaluation",
             "src-integration-record",
-            "src-assistant-page"
+            "src-assistant-page",
+            "src-assistant-api"
           ]
         }
       ]
@@ -623,7 +676,7 @@
     {
       "document_id": "rg-kb-operations",
       "path": "09_accounts_and_operations.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -635,7 +688,8 @@
             "src-auth-permissions",
             "src-auth-access",
             "src-account-guide",
-            "src-assistant-page"
+            "src-assistant-page",
+            "src-assistant-api"
           ]
         },
         {
@@ -670,12 +724,12 @@
           ]
         }
       ],
-      "sha256": "66f9ed09c83c7d1c13dfdc7313d38b6ff6f8ea02e1c1dae4484690289e31df8d"
+      "sha256": "c78a871d48716eeb69cd8b543e477a6258f524969a93d8c77b0e60aba54609f3"
     },
     {
       "document_id": "rg-kb-evaluation",
       "path": "10_evaluation_evidence.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -706,16 +760,17 @@
           "source_ids": [
             "src-integration-record",
             "src-account-guide",
-            "src-assistant-page"
+            "src-assistant-page",
+            "src-assistant-api"
           ]
         }
       ],
-      "sha256": "d7c20482383c8b5972483d3fb9b11519288f9f0ebdbadb556dfc90febebfe17f"
+      "sha256": "f265c329511165815fccdc90e46e095eb1fcc5b3638bcb55ef67cf9d582afd27"
     },
     {
       "document_id": "rg-kb-integration",
       "path": "11_assistant_integration.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -727,7 +782,8 @@
             "src-assistant-page",
             "context-team",
             "context-agents",
-            "src-routing-service"
+            "src-routing-service",
+            "src-assistant-api"
           ]
         },
         {
@@ -761,7 +817,8 @@
             "context-team",
             "src-routing-models",
             "src-routing-service",
-            "src-auth-permissions"
+            "src-auth-permissions",
+            "src-assistant-query"
           ]
         },
         {
@@ -773,20 +830,21 @@
             "src-crew-service",
             "src-routing-service",
             "src-auth-permissions",
-            "context-team"
+            "context-team",
+            "src-assistant-change"
           ]
         }
       ],
-      "sha256": "1bcc58c2870b7be9101ddda6bddb1f253d2820be0984712891fd91b74a3403e8"
+      "sha256": "4f349f2c1465d4bc7c2b5fd28f0f379ffb3d0d17196a0f5ada4c50f14dc45146"
     }
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "dd2024070d3722e8819c128d4c37ae3babd6129bbacfe1ac946592b4d411df4e",
+    "sha256": "05248094c72af62f743380d3adf0b7064bb08dda6269fb0a7011f9079e481263",
     "case_count": 30
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "01032c739e5d8a03dd96ae1510d0c4da2dfca2da705c4c91156be73e353241d2"
+    "sha256": "0d50f9eb41a21483238ac1b4c5eac769fc8eae5399e216d2fb32d49626ee344a"
   }
 }

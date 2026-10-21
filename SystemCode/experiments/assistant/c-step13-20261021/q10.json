@@ -1,0 +1,59 @@
+{
+  "case_id": "q10",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "没有期限时能否判断延误？",
+    "scope": "plan",
+    "plan_id": "plan-2fecbf089e7a449b9ff063273ddb3a80"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics]\n已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics",
+        "quote": "已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "plan:plan-2fecbf089e7a449b9ff063273ddb3a80#metrics",
+        "kind": "saved_plan",
+        "title": "方案指标",
+        "classification": "saved_demo_plan",
+        "content": "已分配任务数：2\n未分配任务数：0\n总行程分钟：125.2\n总维修分钟：240.0\n最晚收工分钟偏移：182.6\n工作量标准差分钟：91.3\n有期限任务数：0\n总延误分钟：未提供（未知）\n算法耗时毫秒：15.09975001681596\n说明：null 表示未知，不能当作零；无期限不能计算延误；算法耗时不等于行程或维修时长。",
+        "version": "2",
+        "sha256": "51a50aa18ab9073ac37aec53557afcc549a9109020533d24563055cc61acf7dc",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-2fecbf089e7a449b9ff063273ddb3a80",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

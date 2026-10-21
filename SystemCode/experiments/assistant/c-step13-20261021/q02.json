@@ -1,0 +1,59 @@
+{
+  "case_id": "q02",
+  "passed": true,
+  "is_synthetic": true,
+  "real_model_called": false,
+  "real_travel_provider_called": false,
+  "input": {
+    "question": "crew-01 的访问顺序是什么？",
+    "scope": "plan",
+    "plan_id": "plan-e141a2b52f704d09bf876c9c2ee3faea"
+  },
+  "expected_status": "supported",
+  "actual": {
+    "contract_version": "c-assistant-query-v1",
+    "status": "supported",
+    "supported": true,
+    "answer": "[plan:plan-e141a2b52f704d09bf876c9c2ee3faea#crew-crew-01]\n队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：b3fa95216e4546acbdb101935c1a3034\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+    "selections": [
+      {
+        "citation_id": "plan:plan-e141a2b52f704d09bf876c9c2ee3faea#crew-crew-01",
+        "quote": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：b3fa95216e4546acbdb101935c1a3034\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。"
+      }
+    ],
+    "sources": [
+      {
+        "citation_id": "plan:plan-e141a2b52f704d09bf876c9c2ee3faea#crew-crew-01",
+        "kind": "saved_plan",
+        "title": "crew-01 访问顺序",
+        "classification": "saved_demo_plan",
+        "content": "队伍：crew-01\n可用：是\n状态：assigned\n按顺序停靠：\n  顺序：1\n  任务ID：b3fa95216e4546acbdb101935c1a3034\n  优先级：P2\n  上一站行程分钟：31.3\n  到达分钟偏移：31.3\n  维修分钟：120.0\n  完成分钟偏移：151.3\n总行程分钟：62.6\n返程分钟：31.3\n总工作分钟：182.6\n说明：时间相对统一开始时刻；仅为保存的模拟维修安排，没有真实道路几何。",
+        "version": "2",
+        "sha256": "4bc32a32f87afe7bf78247eb040e3d3d7adaaa192ba8aa9d46c91bf5c76d0079",
+        "provenance": []
+      }
+    ],
+    "package_version": "a-knowledge-v9",
+    "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+    "plan": {
+      "plan_id": "plan-e141a2b52f704d09bf876c9c2ee3faea",
+      "input_revision": 2,
+      "algorithm": "ga",
+      "matrix_provider": "simulated_haversine_v1",
+      "matrix_is_simulated": true,
+      "is_demo": true,
+      "is_stale": false
+    },
+    "model": "",
+    "model_called": true,
+    "answer_mode": "verified_extracts",
+    "business_changes_applied": false,
+    "warnings": [
+      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
+      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
+      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    ]
+  },
+  "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",
+  "provider_double_calls": 1
+}

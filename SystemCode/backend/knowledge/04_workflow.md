@@ -1,6 +1,6 @@
 # Inspection, review and task records
 
-document_id: `rg-kb-workflow`; document_version: `7`; owner: `A`.
+document_id: `rg-kb-workflow`; document_version: `8`; owner: `A`.
 
 <a id="workflow-evidence"></a>
 ## Records and manual review
@@ -36,3 +36,14 @@ record_version is optimistic concurrency for one resource; review/mutation reque
 planning_input_changed only indicates that this request actually changed shared input; replayed indicates safe replay. Neither means route calculation succeeded. C must handle errors/conflicts by code/status and reread resources; old plans or demo responses cannot be displayed as new real results.
 
 Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md).
+
+<a id="workflow-account-roles"></a>
+## Account roles and cross-role workflow
+
+classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-account-roles`.
+
+Inspectors upload and read only their own inspections. Crew accounts are bound to one crew and can read its latest GA assignment and authorized task images, then complete eligible assigned tasks. Dispatchers review inspections and manage tasks, crews, planning, comparisons and the assistant. Headers and URL parameters cannot expand an account's permissions.
+
+The workflow is inspector upload, dispatcher review/planning, crew completion and explicit dispatcher replanning. The latest saved GA plan drives the crew workspace; there is no separate publish-plan step. Interfaces deny access by default, use HttpOnly session cookies and require CSRF for POST/PATCH, including read-only retrieval POSTs. Accounts are local database records, not shared through Git, and have no default password.
+
+Sources: [src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-auth-permissions](../roadguard/auth/dependencies.py).

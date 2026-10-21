@@ -92,6 +92,11 @@ def test_health_and_implemented_openapi(settings):
         assert response.json() == {"status": "ok", "database": "ok", "api_version": "v1", "input_revision": 0}
         openapi = client.get("/openapi.json").json()
         assert set(openapi["paths"]) == {
+            "/api/v1/assistant/change-requests", "/api/v1/assistant/change-requests/{change_id}",
+            "/api/v1/assistant/change-requests/{change_id}/confirm",
+            "/api/v1/assistant/change-requests/{change_id}/cancel",
+            "/api/v1/assistant/change-requests/{change_id}/replan",
+            "/api/v1/assistant/knowledge/search", "/api/v1/assistant/query", "/api/v1/assistant/status",
             "/api/v1/auth/login", "/api/v1/auth/session", "/api/v1/auth/logout", "/api/v1/crew/workspace",
             "/api/v1/health", "/api/v1/demo/scenarios", "/api/v1/demo/assessments",
             "/api/v1/inspections", "/api/v1/inspections/{inspection_id}",
@@ -198,6 +203,7 @@ def test_database_initialization_is_idempotent_and_revision_persists(database):
         assert {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")} == {
             "infra_metadata", "inspections", "tasks", "operation_keys", "crews", "route_plans",
             "auth_users", "auth_sessions", "auth_login_limits", "inspection_owners", "auth_audit",
+            "assistant_changes", "assistant_change_events",
         }
         with pytest.raises(sqlite3.OperationalError):
             connection.execute("UPDATE infra_metadata SET input_revision = 2")

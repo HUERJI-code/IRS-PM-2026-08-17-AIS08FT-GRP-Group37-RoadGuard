@@ -1,6 +1,6 @@
 # Accounts, workflow and local operation
 
-document_id: `rg-kb-operations`; document_version: `1`; owner: `A`.
+document_id: `rg-kb-operations`; document_version: `2`; owner: `A`.
 
 <a id="operations-roles"></a>
 ## Role and resource access
@@ -13,11 +13,13 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-operations#operati
 | dispatcher | Review inspections, manage tasks and crew availability, recalculate/query full plans and compare algorithms. No photo uploads or crew workspace. |
 | crew | Read its server-bound crew's latest GA route/tasks/photos and complete its assigned tasks. No crew switching, global plans, cancellation, label/location changes or recalculation. |
 
-The server, not a URL query or model instruction, determines permissions. Inspectors cannot read another uploader's inspections; crews receive only accessible task evidence. Authenticated identity is not engineering accreditation. The dispatcher assistant entry exists as a placeholder; no RAG answering endpoint or assistant change-request service is implemented.
+The server, not a URL query or model instruction, determines permissions. Inspectors cannot read another uploader's inspections; crews receive only accessible task evidence. Authenticated identity is not engineering accreditation. The dispatcher assistant provides local retrieval, opt-in evidence answers and persistent crew-change preview/confirmation/recovery. Inspector and crew accounts cannot access those assistant endpoints.
 
-Any future assistant must preserve these server permissions before reading facts and before passing them to an LLM. Static project documents do not authorize access to another account's images, assignments or records. Do not fetch a global plan under elevated credentials and rely on generated text to hide its restricted parts.
+The assistant must preserve these server permissions before reading facts and before passing them to an LLM. Static project documents do not authorize access to another account's images, assignments or records. Do not fetch a global plan under elevated credentials and rely on generated text to hide its restricted parts.
 
-Sources: [src-auth-permissions](../roadguard/auth/dependencies.py), [src-auth-access](../roadguard/auth/access.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-assistant-page](../../frontend/src/pages/WorkspacePage.tsx).
+Sources: [src-auth-permissions](../roadguard/auth/dependencies.py), [src-auth-access](../roadguard/auth/access.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
+
+Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
 
 <a id="operations-workflow"></a>
 ## Current user workflow

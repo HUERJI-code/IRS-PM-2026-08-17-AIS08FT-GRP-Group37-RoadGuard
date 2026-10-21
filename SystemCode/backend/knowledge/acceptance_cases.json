@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v10",
+  "package_version": "a-knowledge-v11",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -16,6 +16,7 @@
       "source_ids": [
         "context-scope",
         "context-workflow-guide",
+        "src-assistant-api",
         "src-assistant-page",
         "src-boundary",
         "src-crew-service",
@@ -140,6 +141,7 @@
       "source_ids": [
         "context-agents",
         "context-team",
+        "src-assistant-change",
         "src-crew-schema",
         "src-crew-service",
         "src-routing-service",
@@ -206,6 +208,7 @@
         "context-scope",
         "context-team",
         "src-assistant-page",
+        "src-assistant-query",
         "src-demo-rules",
         "src-ga-evaluation",
         "src-label-schema",
@@ -429,6 +432,7 @@
       ],
       "source_ids": [
         "context-scope",
+        "src-assistant-api",
         "src-assistant-page",
         "src-crew-service",
         "src-depot",
@@ -599,6 +603,7 @@
       ],
       "source_ids": [
         "src-account-guide",
+        "src-assistant-api",
         "src-assistant-page",
         "src-auth-access",
         "src-auth-permissions",
@@ -654,6 +659,7 @@
       ],
       "source_ids": [
         "src-account-guide",
+        "src-assistant-api",
         "src-assistant-page",
         "src-install-guide",
         "src-integration-record",
@@ -758,6 +764,7 @@
       "source_ids": [
         "context-team",
         "src-account-guide",
+        "src-assistant-change",
         "src-auth-access",
         "src-auth-permissions",
         "src-crew-schema",
@@ -815,6 +822,8 @@
       "source_ids": [
         "context-agents",
         "context-team",
+        "src-assistant-api",
+        "src-assistant-change",
         "src-assistant-page",
         "src-auth-permissions",
         "src-crew-schema",
@@ -835,7 +844,7 @@
     {
       "case_id": "qa-29",
       "is_synthetic_case": true,
-      "question": "If a future confirmed crew change succeeds but recalculation fails, what should be reported?",
+      "question": "If a confirmed crew change succeeds but recalculation fails, what should be reported?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -843,6 +852,7 @@
       ],
       "source_ids": [
         "context-team",
+        "src-assistant-change",
         "src-auth-permissions",
         "src-crew-schema",
         "src-crew-service",
@@ -850,7 +860,7 @@
       ],
       "expected_grounded_points": [
         "Report the successful crew mutation and failed planning separately; old plans are stale.",
-        "CrewPatch checks expected_version; planning checks expected_revision. Orchestration remains unimplemented."
+        "Confirmation checks input and crew versions transactionally. Replanning is a separate explicit action with persisted failure and retry status."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
@@ -871,6 +881,7 @@
       ],
       "source_ids": [
         "context-team",
+        "src-assistant-query",
         "src-auth-permissions",
         "src-routing-api",
         "src-routing-models",

@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v10`; reviewed: 2026-10-20; content owner: A; retrieval/integration owner: C. This is a static RAG handoff, not an implemented LLM, embedding pipeline, index, retriever or assistant execution service.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v11`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT acceptance remains outstanding.
 
 ## Corpus map
 
@@ -36,10 +36,12 @@ Verify raw-byte SHA-256 digests for documents, pinned sources, this guide and ac
 
 Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes proposed chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
 
-[acceptance_cases.json](acceptance_cases.json) contains 30 synthetic future-assistant cases. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
+[acceptance_cases.json](acceptance_cases.json) contains 30 synthetic assistant acceptance specifications. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
 
 Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. Implement and test the retrieval/answer/confirmation service separately before reporting RAG as complete.
 
 ## Earlier revisions
 
 v6 synchronized demo-rules-v2; v7 corrected the real primary-confidence acceptance case and image-decoding hash; v8 aligned authenticated manual-action provenance; v9 translated the six original documents into English. These historical revisions remain history, not the current ingestion target. v10 extends the corpus to eleven documents and refreshes current B/C status while retaining stable existing citation anchors.
+
+v11 reconciles C's feature with the eleven-document English corpus, preserves its two additional citation anchors and refreshes affected source hashes. Its 40 sections include routing, account roles and the current assistant boundaries. No historical experiment record is rewritten.
