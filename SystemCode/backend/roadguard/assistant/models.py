@@ -41,13 +41,13 @@ class KnowledgeHit(KnowledgeChunk):
 
 
 class KnowledgeSearchResponse(ContractModel):
-    contract_version: Literal['c-knowledge-search-v1'] = 'c-knowledge-search-v1'
+    contract_version: Literal['c-knowledge-search-v2'] = 'c-knowledge-search-v2'
     status: Literal['matches', 'no_matches', 'rule_version_unavailable']
     package_id: str
     package_version: str
     manifest_sha256: str
     versions: dict[str, str]
-    retrieval_method: Literal['lexical-zh-bigram-tfidf-v1'] = 'lexical-zh-bigram-tfidf-v1'
+    retrieval_method: Literal['chroma-e5-cosine-v1'] = 'chroma-e5-cosine-v1'
     evidence_scope: Literal['static_knowledge_only'] = 'static_knowledge_only'
     answer_generated: Literal[False] = False
     limitations: list[str]

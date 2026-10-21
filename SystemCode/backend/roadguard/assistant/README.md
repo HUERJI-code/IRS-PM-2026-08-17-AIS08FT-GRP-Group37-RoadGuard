@@ -1,3 +1,7 @@
+# ChromaDB and local embeddings (2026-10-21)
+
+Current setup and maintenance: [Vector retrieval](VECTOR_RETRIEVAL.md). The current package is a-knowledge-v12. ChromaDB stores static passages with local E5 embeddings; original role, source-validation and confirmed-change contracts remain. The delivery records below describe earlier lexical versions.
+
 # Current merged assistant package (2026-10-21)
 
 The integration now uses a-knowledge-v11: all eleven English knowledge documents from main, 40 sections, 30 synthetic acceptance specifications and the two stable feature citations for routing defaults and account roles. The loader accepts English and original full-width metadata punctuation. Retrieval preserves English terms and a bounded set of Chinese domain aliases; this is not a general translation service. Sources are revalidated on each request.

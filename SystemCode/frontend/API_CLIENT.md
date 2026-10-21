@@ -77,3 +77,7 @@ The dispatcher-only assistant uses the existing session, role and CSRF checks:
 Schema v5 adds persistent assistant change requests and audit records while retaining v4 accounts, sessions, ownership, crews and plans. No new dependency or model weight is required. The assistant guide defines limits, concurrency, idempotency, failure handling and server-only provider configuration.
 
 Client methods knowledgeSearch, assistantStatus and assistantQuery use the shared schema validation. Read-only POST failures do not imply an unknown business mutation; provider usage may still occur after cancellation. Questions wait at most 60 seconds, with no automatic retry. Mock mode blocks provider calls and business changes. Change previews, confirmation, cancellation and explicit replanning use the independent ChangePanel and persisted history.
+
+## Chroma retrieval update (2026-10-21)
+
+The dispatcher search endpoint now returns `c-knowledge-search-v2` with `retrieval_method=chroma-e5-cosine-v1`. Static sources use local E5 embeddings and a versioned persistent Chroma index. Scores are cosine similarity; `matched_terms` is an empty compatibility field. Model/index failures are explicit 503 responses, and oversized encoder inputs return 422. The answer and crew-change contracts are unchanged. Follow the [setup and maintenance guide](../backend/roadguard/assistant/VECTOR_RETRIEVAL.md) before querying; runtime data stays outside Git.

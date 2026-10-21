@@ -1,13 +1,13 @@
 # RAG integration contract and acceptance requirements
 
-document_id: `rg-kb-integration`; document_version: `2`; owner: `A`.
+document_id: `rg-kb-integration`; document_version: `3`; owner: `A`.
 
 <a id="integration-status"></a>
 ## Scope and implementation status
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-status`.
 
-RoadGuard now implements local lexical retrieval, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. No embedding pipeline or vector service is used. Real GPT connectivity and semantic quality remain unverified; provider doubles demonstrate only the local control flow.
+RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 embeddings, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. Static knowledge passages and embeddings are persisted locally; live plans remain authorized service reads. Real GPT connectivity and semantic quality remain unverified; provider doubles demonstrate only the local control flow.
 
 C owns retrieval, indexing, citations and answer/change-request services inside the shared backend; A owns knowledge correctness and B owns planning facts. Keep one authoritative task/crew/plan store and reuse the existing domain services. The model must not invent a second scheduler or write business tables directly.
 
@@ -20,13 +20,15 @@ Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-ingestion`.
 
-The local loader implements the ingestion contract below and rebuilds its small in-memory index for each request. Read manifest.json and verify all pinned document/source/guide/acceptance digests before indexing. Index only manifest-listed knowledge sections, using explicit anchors as passage boundaries. Retain title, document_id, section_id, citation_id, document_version, package_version, classification, source_ids and raw-file hash. If a section must be subdivided, retain its parent citation and mark the child position; do not separate a claim from its demo/status limitations.
+The local loader validates the knowledge package on every request. A separate setup command embeds token-bounded passages and builds a versioned persistent Chroma collection; requests never download weights or rebuild indexes. Read manifest.json and verify all pinned document/source/guide/acceptance digests before indexing. Index only manifest-listed knowledge sections, using explicit anchors as passage boundaries. Retain title, document_id, section_id, citation_id, document_version, package_version, classification, source_ids and raw-file hash. If a section must be subdivided, retain its parent citation and mark the child position; do not separate a claim from its demo/status limitations.
 
 Treat unchanged labels and business rules as versioned evidence. Changed files invalidate prior digests and require a new reviewed package; never relabel old chunks as current. Build a replacement index before switching active versions and retain enough metadata to audit historical answers. Runtime records retain their frozen rule versions; if matching evidence is absent, request it instead of substituting today's table.
 
-Mutable context_sources explain background and responsibility but do not override hashed executable/configuration facts. Do not bulk-index the whole repository, historical reports, secrets, uploaded images, SQLite files or synthetic runtime fixtures as current operational truth. English source IDs and schema terms remain unchanged when an answer is translated into Chinese. The current baseline uses lexical terms with explicit limits; cross-language coverage and answer sufficiency still require evaluation.
+Mutable context_sources explain background and responsibility but do not override hashed executable/configuration facts. Do not bulk-index the whole repository, historical reports, secrets, uploaded images, SQLite files or synthetic runtime fixtures as current operational truth. English source IDs and schema terms remain unchanged when an answer is translated into Chinese. The current baseline uses local multilingual E5 vectors and cosine ranking with explicit limits. Retrieval sends selected passages to the evidence selector; cross-language coverage and answer sufficiency still require evaluation.
 
 Sources: [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../../AGENTS.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-workflow-service](../roadguard/inspections/service.py).
+
+Implementation sources: [src-vector-store](../roadguard/assistant/vector_store.py), [src-embedding](../roadguard/assistant/embedding.py), [src-semantic-retrieval](../roadguard/assistant/retrieval.py), [src-retrieval-setup](../roadguard/assistant/VECTOR_RETRIEVAL.md).
 
 <a id="integration-dynamic-access"></a>
 ## Static questions, live questions and access control

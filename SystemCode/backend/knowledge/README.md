@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v11`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT acceptance remains outstanding.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v12`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT acceptance remains outstanding.
 
 ## Corpus map
 
@@ -45,3 +45,7 @@ Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the re
 v6 synchronized demo-rules-v2; v7 corrected the real primary-confidence acceptance case and image-decoding hash; v8 aligned authenticated manual-action provenance; v9 translated the six original documents into English. These historical revisions remain history, not the current ingestion target. v10 extends the corpus to eleven documents and refreshes current B/C status while retaining stable existing citation anchors.
 
 v11 reconciles C's feature with the eleven-document English corpus, preserves its two additional citation anchors and refreshes affected source hashes. Its 40 sections include routing, account roles and the current assistant boundaries. No historical experiment record is rewritten.
+
+## Chroma and embeddings
+
+v12 uses persistent ChromaDB and pinned local multilingual E5 embeddings. See the [vector retrieval guide](../roadguard/assistant/VECTOR_RETRIEVAL.md) for setup, reindexing and current contracts. The forty stable parent sections are split into token-bounded passages; live plans and account data remain outside the vector database. Rebuild the index after a reviewed manifest/source change.
