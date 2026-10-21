@@ -1,6 +1,6 @@
 # Assistant and task adjustment release
 
-Release date: 21 October 2026. Code [PR 36](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/pull/36) was automatically merged as `b8d0fdea1480e3f5d79706a8e5d443da4ad74f33` after all required checks passed. The subsequent [main CI](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/actions/runs/39569838277) also passed. This record distinguishes publication verification from the earlier, bounded functionality experiments.
+Release date: 21 October 2026. Code [PR 36](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/pull/36) was automatically merged as `b8d0fdea1480e3f5d79706a8e5d443da4ad74f33` after all required checks passed. The subsequent [main CI](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/actions/runs/39569838277) also passed. This record distinguishes publication verification from the earlier, bounded functionality experiments.
 
 ## Delivered behavior
 
@@ -14,7 +14,7 @@ Release date: 21 October 2026. Code [PR 36](https://github.com/HUERJI-code/IRS-P
 | Check | Recorded outcome | Interpretation |
 | --- | --- | --- |
 | Independent functional review | No blocking finding | Reviewed task persistence, feasibility, authorization and answer boundaries |
-| Linux Python 3.11, PR head `155d318345cf48802a1e4a9b3135d60b212bcb91` | 1,255 passed; one optional YOLO test skipped | [GitHub run 39569241424](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/actions/runs/39569241424); base dependencies do not establish full vision-runtime installation |
+| Linux Python 3.11, PR head `155d318345cf48802a1e4a9b3135d60b212bcb91` | 1,255 passed; one optional YOLO test skipped | [GitHub run 39569241424](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/actions/runs/39569241424); base dependencies do not establish full vision-runtime installation |
 | Clean-checkout frontend | 179 passed; lint, TypeScript and production build passed | Existing bundle-size warning remains |
 | Infrastructure guardrails | 49 passed | Repository/PR/automatic-merge policy checks |
 | Exact published paths | 105 verified paths | No extra files in the GitHub PR |

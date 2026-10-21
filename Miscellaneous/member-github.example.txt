@@ -1,9 +1,9 @@
-Group number: 7
-Group name: Group7 (group-number label)
+Group number: 37
+Group name: Group37 (group-number label)
 Project name: RoadGuard
 Course start date: 2026-08-17
 Batch code: AIS08FT
-GitHub repository URL: https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard
+GitHub repository URL: https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard
 
 Official full name | Student ID or permitted masked identifier
 TBD | TBD

@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v17`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The assistant implements local ChromaDB/E5 retrieval, opt-in grounded answers and confirmed crew/task changes. Targeted real GPT cases are recorded; broader semantic evaluation and independent clean-machine acceptance remain pending. Historical result files retain their original package versions and are not new v17 test results.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v18`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The assistant implements local ChromaDB/E5 retrieval, opt-in grounded answers and confirmed crew/task changes. Targeted real GPT cases are recorded; broader semantic evaluation and independent clean-machine acceptance remain pending. Historical result files retain their original package versions and are not new v18 test results.
 
 ## Corpus map
 
@@ -101,7 +101,7 @@ label, rule-version and plan-revision checks. English answers support bounded
 multilingual intent matching. Rebuild the local index after this source update;
 the cached embedding model is reused. No business migration or rule change occurs.
 
-## Current consistency review in v17
+## Earlier consistency review in v17
 
 v17 reconciles current scope, pending-work and evaluation passages with the
 implemented ChromaDB/E5 service and recorded targeted real GPT checks. It updates
@@ -110,3 +110,13 @@ eleven documents, forty parent citations, eight labels and demo-rules-v2 values.
 Historical results remain unchanged. Rebuild the local versioned index from cached
 embeddings after this update; no new GPT call, embedding download or business-data
 migration is implied by this documentation review.
+
+## Administrative Group37 revision in v18
+
+v18 records the owner-confirmed Group37 repository and directory rename on
+2026-10-21 and refreshes the pinned deployment-manifest source hash and current package
+version examples in the installation and retrieval setup guides. Model weights,
+inference settings, experimental results and historical acceptance observations
+are unchanged. Acceptance cases remain specifications, not new test observations.
+Rebuild the local versioned Chroma index after the directory rename using cached
+embeddings; this revision does not execute GPT or download models.

@@ -1,6 +1,6 @@
 # Grounded answers and optional sources
 
-Current contract: **c-assistant-query-v3**; knowledge: **a-knowledge-v17**.
+Current contract: **c-assistant-query-v3**; knowledge: **a-knowledge-v18**.
 
 Standalone questions such as "What model are you?" read the configured assistant
 model name from the backend. This is configuration information, not a provider's

@@ -18,10 +18,10 @@
   "primary_policy": {"policy_version": "single-damage-v1", "strategy": "area_quarter", "threshold": 0.2},
   "evaluation_path": "SystemCode/experiments/vision/single_damage_summary.json",
   "release": {
-    "repository": "HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard",
+    "repository": "HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard",
     "tag": "vision-single-v1",
     "asset": "roadguard-yolo11s-single-v1.pt",
-    "url": "https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1"
+    "url": "https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/releases/tag/vision-single-v1"
   },
   "limitations": [
     "Experimental: requires human review; not both 70 percent typed precision and recall.",

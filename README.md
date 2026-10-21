@@ -17,17 +17,17 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Item | Value |
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
-| Group | Group 7; repository team label: Group7 |
+| Group | Group 37; repository team label: Group37 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
 | Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; broad reliability and videos pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
-Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
+Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`.
 
-Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard).
+Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
 
-`Group7` represents the confirmed group number; no separate formal team name has been supplied.
+`Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label; no separate formal team name has been supplied. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
@@ -73,7 +73,7 @@ Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUI
 Repository layout:
 
 ```text
-IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
+IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/
   README.md
   AGENTS.md
   SystemCode/
@@ -106,7 +106,7 @@ All contributors and coding agents should first read the shared [project and age
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
+The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
 
 Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
 

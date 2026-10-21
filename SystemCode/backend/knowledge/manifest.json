@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v17",
+  "package_version": "a-knowledge-v18",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied."
+    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied. Administrative v18 revision records the owner-confirmed Group37 rename and updated deployment-manifest repository URL; weights, inference settings, results and historical observations are unchanged."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -186,7 +186,7 @@
       "source_id": "src-install-guide",
       "path": "ProjectReport/INSTALLATION_AND_USER_GUIDE.md",
       "version": "documentation-consistency-20261021-v17",
-      "sha256": "373d56955a294aefd738720202bf053cfd0eccecc754b42e03d72425e83b7cd2"
+      "sha256": "1200df48f9c05e5844721cdffcf4073768ec94033c921864a2141fd326e6a85f"
     },
     {
       "source_id": "src-routing-results",
@@ -209,8 +209,8 @@
     {
       "source_id": "src-model-manifest",
       "path": "SystemCode/model/releases/roadguard-single-v1.json",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "d31986e46e6cfcaccfdbbb715b892e2a22708bbb63960f93d06def6afc2900a9"
+      "version": "group37-administrative-rename-20261021",
+      "sha256": "8c133baa41216325123399277b5c35e9bea7f272d4ea507d62e5241a7647478e"
     },
     {
       "source_id": "src-vision-evaluation",
@@ -276,7 +276,7 @@
       "source_id": "src-retrieval-setup",
       "path": "SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md",
       "version": "documentation-consistency-20261021-v17",
-      "sha256": "fdd6f3a49339d706da60bbb2e6d9a078efae6062259838697cc7043b853ce82c"
+      "sha256": "de9de54f8987fcee71dbcf938482f30efb9d4e228a5e7687dc55666a4124a015"
     },
     {
       "source_id": "src-assistant-evidence",
@@ -960,11 +960,11 @@
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "a08b1b5e3547eb8015c71a155a905832583c5956e617058d44747c055b9d7841",
+    "sha256": "ff6a4a0776b5f68a551ec6b36d91b483ba9f08c5103c07f1488e44d7d87128d3",
     "case_count": 30
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "152e883a61d64764c4212c85f6058ad8bfa0365f3167389122493c3849919f2e"
+    "sha256": "21d4da7c665831455f6bbd727c60d2ef378833e7c9f862b30d4fb362d12b0f46"
   }
 }

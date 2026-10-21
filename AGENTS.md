@@ -23,11 +23,13 @@ This is the shared entry point for project development rules. Members should use
 
 Shared business decisions follow the project scope and confirmed changes; module ownership follows the allocation table; this file governs collaboration. The [separate API contract](Miscellaneous/API_CONTRACT.md) and its linked shared schemas are the single maintenance location for the first DTOs, errors and version fields. B/C planning, crew and assistant objects and HTTP requests that are not yet frozen remain drafts in the allocation table. Crew and planning contracts are now implemented under `SystemCode/contracts/planning/` and the routing module; assistant search-v2, query-v3, change-v1 and task-change-v1 contracts are implemented. Freezing the initial set does not mean all of M0 is complete.
 
+On 2026-10-21, the owner confirmed the official group number as Group 37 (repository label `Group37`), replacing Group 7. The repository, local project directory and current submission filenames use `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`. Historical experiment evidence retains its recorded paths and identifiers; this administrative change does not change model weights, results or interfaces.
+
 ## 3. Confirmed project baseline
 
 | Item | Shared requirement |
 | --- | --- |
-| Project | RoadGuard; AIS08FT; Group7; course start date 2026-08-17 |
+| Project | RoadGuard; AIS08FT; Group37; course start date 2026-08-17 |
 | Geography | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundaries, as defined in the [scope and depot document](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) |
 | Dispatch scenario | One simulated maintenance department and four crews by default; shared NUS-ISS simulated origin, explicitly permitted outside the task area; no claim to represent real maintenance operations |
 | Main workflow | Single image and location → detection → confidence routing/human review → business rules → valid task → explicit four-crew planning → schematic map and crew completion; optional evidence-based assistant questions and confirmed crew changes |

@@ -17,6 +17,6 @@ The [default model manifest](../../../model/releases/roadguard-single-v1.json) r
 - Existing single-box responses, 0.20 inference filtering and automatic task creation at primary confidence 0.60 remain unchanged.
 - This directory contains deployment weights only. Training code remains in `SystemCode/model/`; raw data and training checkpoints remain in root `Dataset/`.
 - Only this specified weight file is authorized in Git. Other `.pt/.pth/.onnx` files and all Dataset content remain excluded. CI checks size, SHA-256 and the default manifest, rejecting incorrect files and LFS pointers.
-- The [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) remains a backup download channel. Optional `SystemCode/model/install_released_model.py --file <downloaded-file-path>` also verifies and installs here; normal clone/pull does not require it.
+- The [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/releases/tag/vision-single-v1) remains a backup download channel. Optional `SystemCode/model/install_released_model.py --file <downloaded-file-path>` also verifies and installs here; normal clone/pull does not require it.
 
 This changes deployment location and delivery only; model version and detection quality are unchanged.
