@@ -5,7 +5,7 @@
   "real_model_called": false,
   "real_travel_provider_called": false,
   "input": {
-    "question": "为什么从 NUS-ISS 出发？",
+    "question": "\u4e3a\u4ec0\u4e48\u4ece NUS-ISS \u51fa\u53d1？",
     "scope": "plan",
     "plan_id": "plan-97fc28acc68f4704a99c5cd61f998fd0"
   },
@@ -14,24 +14,24 @@
     "contract_version": "c-assistant-query-v1",
     "status": "supported",
     "supported": true,
-    "answer": "[plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary]\n方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。\n\n[rg-kb-scope#depot-crews]\n## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
+    "answer": "[plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary]\n\u65b9\u6848ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n\u7b97\u6cd5：ga\n\u8f93\u5165\u7248\u672c：2\n\u7edf\u4e00\u5f00\u59cb\u65f6\u95f4UTC：2026-10-20T20:45:54+00:00\n\u6f14\u793a\u65b9\u6848：\u662f\n\u884c\u7a0b\u6765\u6e90：simulated_haversine_v1\n\u6a21\u62df\u884c\u7a0b：\u662f\n\u8bf4\u660e：\u4fdd\u5b58\u65b9\u6848\u4e8b\u5b9e，\u4e0d\u662f\u5b9e\u65f6\u8f66\u8f86\u72b6\u6001；\u4e0d\u5305\u542b\u5355\u6761\u4efb\u52a1\u7684\u51bb\u7ed3\u89c4\u5219\u8bc1\u636e。\n\n[rg-kb-scope#depot-crews]\n## \u6a21\u62df\u90e8\u95e8、\u57fa\u5730\u4e0e\u961f\u4f0d\n\n\n\n\u4e00\u4e2a\u865a\u6784\u7ef4\u4fee\u90e8\u95e8\u4f7f\u7528\u56db\u652f\u6a21\u62df\u5de5\u7a0b\u961f：`crew-01`、`crew-02`、`crew-03`、`crew-04`。\u5171\u4eab\u8d77\u70b9\u662f NUS-ISS，25 Heng Mui Keng Terrace，\u5750\u6807 latitude `1.292149`、longitude `103.776551`，\u57fa\u5730\u7248\u672c `nus-iss-v1`。\u8fd9\u662f\u5728\u771f\u5b9e\u5730\u5740\u4e0a\u7684\u6a21\u62df\u8d77\u70b9，\u4e0d\u662f NUS-ISS \u7684\u771f\u5b9e\u7ef4\u4fee\u8fd0\u8425。\n\n\u8be5\u6307\u5b9a\u57fa\u5730\u5141\u8bb8\u4f4d\u4e8e\u4efb\u52a1\u533a\u57df\u5916，\u57fa\u5730\u5230\u9996\u4e2a\u4efb\u52a1\u7684\u884c\u7a0b\u5fc5\u987b\u8ba1\u5165；\u8def\u7ebf\u53ef\u4ee5\u79bb\u5f00 JE/JW。\u4f8b\u5916\u53ea\u9488\u5bf9\u57fa\u5730，\u4f7f\u7528 NUS-ISS \u5750\u6807\u63d0\u4ea4\u7ef4\u4fee\u4efb\u52a1\u4ecd\u4f1a\u88ab\u62d2\u7edd。\u5efa\u7b51\u53c2\u8003\u70b9\u5c1a\u672a\u6838\u9a8c\u4e3a\u8f66\u8f86\u51fa\u5165\u53e3；\u662f\u5426\u8fd4\u56de\u57fa\u5730\u4ecd\u662f null/\u5f85\u786e\u8ba4，\u4e0d\u80fd\u9ed8\u8ba4\u4e3a\u4e0d\u8fd4\u56de。\u5de5\u7a0b\u961f\u670d\u52a1\u4e0e GA/Greedy \u89c4\u5212\u5df2\u5b9e\u73b0；B \u5f53\u524d\u6f14\u793a\u914d\u7f6e\u4f7f\u7528 480 \u5206\u949f\u73ed\u6b21\u5e76\u8fd4\u57fa\u5730，\u4e0d\u80fd\u628a\u6f14\u793a\u914d\u7f6e\u5f53\u4f5c\u6b63\u5f0f\u8fd0\u8425\u51b3\u5b9a。\u5177\u4f53\u8fd0\u884c\u7b56\u7565\u4ee5\u4fdd\u5b58\u65b9\u6848 settings \u4e3a\u51c6。\n\n\n\n\n\u8865\u5145\u6765\u6e90：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
     "selections": [
       {
         "citation_id": "plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary",
-        "quote": "方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。"
+        "quote": "\u65b9\u6848ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n\u7b97\u6cd5：ga\n\u8f93\u5165\u7248\u672c：2\n\u7edf\u4e00\u5f00\u59cb\u65f6\u95f4UTC：2026-10-20T20:45:54+00:00\n\u6f14\u793a\u65b9\u6848：\u662f\n\u884c\u7a0b\u6765\u6e90：simulated_haversine_v1\n\u6a21\u62df\u884c\u7a0b：\u662f\n\u8bf4\u660e：\u4fdd\u5b58\u65b9\u6848\u4e8b\u5b9e，\u4e0d\u662f\u5b9e\u65f6\u8f66\u8f86\u72b6\u6001；\u4e0d\u5305\u542b\u5355\u6761\u4efb\u52a1\u7684\u51bb\u7ed3\u89c4\u5219\u8bc1\u636e。"
       },
       {
         "citation_id": "rg-kb-scope#depot-crews",
-        "quote": "## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。"
+        "quote": "## \u6a21\u62df\u90e8\u95e8、\u57fa\u5730\u4e0e\u961f\u4f0d\n\n\n\n\u4e00\u4e2a\u865a\u6784\u7ef4\u4fee\u90e8\u95e8\u4f7f\u7528\u56db\u652f\u6a21\u62df\u5de5\u7a0b\u961f：`crew-01`、`crew-02`、`crew-03`、`crew-04`。\u5171\u4eab\u8d77\u70b9\u662f NUS-ISS，25 Heng Mui Keng Terrace，\u5750\u6807 latitude `1.292149`、longitude `103.776551`，\u57fa\u5730\u7248\u672c `nus-iss-v1`。\u8fd9\u662f\u5728\u771f\u5b9e\u5730\u5740\u4e0a\u7684\u6a21\u62df\u8d77\u70b9，\u4e0d\u662f NUS-ISS \u7684\u771f\u5b9e\u7ef4\u4fee\u8fd0\u8425。\n\n\u8be5\u6307\u5b9a\u57fa\u5730\u5141\u8bb8\u4f4d\u4e8e\u4efb\u52a1\u533a\u57df\u5916，\u57fa\u5730\u5230\u9996\u4e2a\u4efb\u52a1\u7684\u884c\u7a0b\u5fc5\u987b\u8ba1\u5165；\u8def\u7ebf\u53ef\u4ee5\u79bb\u5f00 JE/JW。\u4f8b\u5916\u53ea\u9488\u5bf9\u57fa\u5730，\u4f7f\u7528 NUS-ISS \u5750\u6807\u63d0\u4ea4\u7ef4\u4fee\u4efb\u52a1\u4ecd\u4f1a\u88ab\u62d2\u7edd。\u5efa\u7b51\u53c2\u8003\u70b9\u5c1a\u672a\u6838\u9a8c\u4e3a\u8f66\u8f86\u51fa\u5165\u53e3；\u662f\u5426\u8fd4\u56de\u57fa\u5730\u4ecd\u662f null/\u5f85\u786e\u8ba4，\u4e0d\u80fd\u9ed8\u8ba4\u4e3a\u4e0d\u8fd4\u56de。\u5de5\u7a0b\u961f\u670d\u52a1\u4e0e GA/Greedy \u89c4\u5212\u5df2\u5b9e\u73b0；B \u5f53\u524d\u6f14\u793a\u914d\u7f6e\u4f7f\u7528 480 \u5206\u949f\u73ed\u6b21\u5e76\u8fd4\u57fa\u5730，\u4e0d\u80fd\u628a\u6f14\u793a\u914d\u7f6e\u5f53\u4f5c\u6b63\u5f0f\u8fd0\u8425\u51b3\u5b9a。\u5177\u4f53\u8fd0\u884c\u7b56\u7565\u4ee5\u4fdd\u5b58\u65b9\u6848 settings \u4e3a\u51c6。\n\n\n\n\n\u8865\u5145\u6765\u6e90：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。"
       }
     ],
     "sources": [
       {
         "citation_id": "rg-kb-scope#depot-crews",
         "kind": "knowledge",
-        "title": "模拟部门、基地与队伍",
+        "title": "\u6a21\u62df\u90e8\u95e8、\u57fa\u5730\u4e0e\u961f\u4f0d",
         "classification": "confirmed_project_fact",
-        "content": "## 模拟部门、基地与队伍\n\n\n\n一个虚构维修部门使用四支模拟工程队：`crew-01`、`crew-02`、`crew-03`、`crew-04`。共享起点是 NUS-ISS，25 Heng Mui Keng Terrace，坐标 latitude `1.292149`、longitude `103.776551`，基地版本 `nus-iss-v1`。这是在真实地址上的模拟起点，不是 NUS-ISS 的真实维修运营。\n\n该指定基地允许位于任务区域外，基地到首个任务的行程必须计入；路线可以离开 JE/JW。例外只针对基地，使用 NUS-ISS 坐标提交维修任务仍会被拒绝。建筑参考点尚未核验为车辆出入口；是否返回基地仍是 null/待确认，不能默认为不返回。工程队服务与 GA/Greedy 规划已实现；B 当前演示配置使用 480 分钟班次并返基地，不能把演示配置当作正式运营决定。具体运行策略以保存方案 settings 为准。\n\n\n\n\n补充来源：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
+        "content": "## \u6a21\u62df\u90e8\u95e8、\u57fa\u5730\u4e0e\u961f\u4f0d\n\n\n\n\u4e00\u4e2a\u865a\u6784\u7ef4\u4fee\u90e8\u95e8\u4f7f\u7528\u56db\u652f\u6a21\u62df\u5de5\u7a0b\u961f：`crew-01`、`crew-02`、`crew-03`、`crew-04`。\u5171\u4eab\u8d77\u70b9\u662f NUS-ISS，25 Heng Mui Keng Terrace，\u5750\u6807 latitude `1.292149`、longitude `103.776551`，\u57fa\u5730\u7248\u672c `nus-iss-v1`。\u8fd9\u662f\u5728\u771f\u5b9e\u5730\u5740\u4e0a\u7684\u6a21\u62df\u8d77\u70b9，\u4e0d\u662f NUS-ISS \u7684\u771f\u5b9e\u7ef4\u4fee\u8fd0\u8425。\n\n\u8be5\u6307\u5b9a\u57fa\u5730\u5141\u8bb8\u4f4d\u4e8e\u4efb\u52a1\u533a\u57df\u5916，\u57fa\u5730\u5230\u9996\u4e2a\u4efb\u52a1\u7684\u884c\u7a0b\u5fc5\u987b\u8ba1\u5165；\u8def\u7ebf\u53ef\u4ee5\u79bb\u5f00 JE/JW。\u4f8b\u5916\u53ea\u9488\u5bf9\u57fa\u5730，\u4f7f\u7528 NUS-ISS \u5750\u6807\u63d0\u4ea4\u7ef4\u4fee\u4efb\u52a1\u4ecd\u4f1a\u88ab\u62d2\u7edd。\u5efa\u7b51\u53c2\u8003\u70b9\u5c1a\u672a\u6838\u9a8c\u4e3a\u8f66\u8f86\u51fa\u5165\u53e3；\u662f\u5426\u8fd4\u56de\u57fa\u5730\u4ecd\u662f null/\u5f85\u786e\u8ba4，\u4e0d\u80fd\u9ed8\u8ba4\u4e3a\u4e0d\u8fd4\u56de。\u5de5\u7a0b\u961f\u670d\u52a1\u4e0e GA/Greedy \u89c4\u5212\u5df2\u5b9e\u73b0；B \u5f53\u524d\u6f14\u793a\u914d\u7f6e\u4f7f\u7528 480 \u5206\u949f\u73ed\u6b21\u5e76\u8fd4\u57fa\u5730，\u4e0d\u80fd\u628a\u6f14\u793a\u914d\u7f6e\u5f53\u4f5c\u6b63\u5f0f\u8fd0\u8425\u51b3\u5b9a。\u5177\u4f53\u8fd0\u884c\u7b56\u7565\u4ee5\u4fdd\u5b58\u65b9\u6848 settings \u4e3a\u51c6。\n\n\n\n\n\u8865\u5145\u6765\u6e90：[src-routing-config](../../config/routing.example.json)、[src-routing-service](../roadguard/routing/service.py)。",
         "version": "2",
         "sha256": "cd5d22d16938ac83f3ecf739e3f352b1e972a7843f318174ad36f58da931da1f",
         "provenance": [
@@ -75,9 +75,9 @@
       {
         "citation_id": "plan:plan-97fc28acc68f4704a99c5cd61f998fd0#summary",
         "kind": "saved_plan",
-        "title": "方案与来源",
+        "title": "\u65b9\u6848\u4e0e\u6765\u6e90",
         "classification": "saved_demo_plan",
-        "content": "方案ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n算法：ga\n输入版本：2\n统一开始时间UTC：2026-10-20T20:45:54+00:00\n演示方案：是\n行程来源：simulated_haversine_v1\n模拟行程：是\n说明：保存方案事实，不是实时车辆状态；不包含单条任务的冻结规则证据。",
+        "content": "\u65b9\u6848ID：plan-97fc28acc68f4704a99c5cd61f998fd0\n\u7b97\u6cd5：ga\n\u8f93\u5165\u7248\u672c：2\n\u7edf\u4e00\u5f00\u59cb\u65f6\u95f4UTC：2026-10-20T20:45:54+00:00\n\u6f14\u793a\u65b9\u6848：\u662f\n\u884c\u7a0b\u6765\u6e90：simulated_haversine_v1\n\u6a21\u62df\u884c\u7a0b：\u662f\n\u8bf4\u660e：\u4fdd\u5b58\u65b9\u6848\u4e8b\u5b9e，\u4e0d\u662f\u5b9e\u65f6\u8f66\u8f86\u72b6\u6001；\u4e0d\u5305\u542b\u5355\u6761\u4efb\u52a1\u7684\u51bb\u7ed3\u89c4\u5219\u8bc1\u636e。",
         "version": "2",
         "sha256": "18b0e1c90a5ac54283de990666e9457257859e7dd64e667b598cd318c5932116",
         "provenance": []
@@ -99,9 +99,9 @@
     "answer_mode": "verified_extracts",
     "business_changes_applied": false,
     "warnings": [
-      "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
-      "演示规则、模拟行程与待定事项不能视为真实工程结论。",
-      "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+      "\u56de\u7b54\u7531\u6a21\u578b\u9009\u62e9\u7684\u539f\u6587\u8bc1\u636e\u7ec4\u6210；\u5f15\u7528\u6821\u9a8c\u4e0d\u7b49\u4e8e\u8bed\u4e49\u5145\u5206\u6027\u6216\u5de5\u7a0b\u4e13\u5bb6\u5ba1\u6279。",
+      "\u6f14\u793a\u89c4\u5219、\u6a21\u62df\u884c\u7a0b\u4e0e\u5f85\u5b9a\u4e8b\u9879\u4e0d\u80fd\u89c6\u4e3a\u771f\u5b9e\u5de5\u7a0b\u7ed3\u8bba。",
+      "\u672c\u63a5\u53e3\u4e0d\u8c03\u6574\u961f\u4f0d、\u4e0d\u91cd\u7b97、\u4e0d\u5199\u4e1a\u52a1\u8bb0\u5f55；\u672a\u63d0\u4f9b\u6bd4\u8f83\u65b9\u6848，\u4e0d\u80fd\u63a8\u5bfc\u4f18\u5316\u63d0\u5347。"
     ]
   },
   "evaluation": "Contract and supplied-evidence validation only; deterministic provider double. Not GPT semantic accuracy.",

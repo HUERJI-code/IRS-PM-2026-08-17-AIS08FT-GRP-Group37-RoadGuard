@@ -1,9 +1,13 @@
 {
-  "contract_version": "c-assistant-query-v1",
+  "contract_version": "c-assistant-query-v3",
   "status": "supported",
   "supported": true,
-  "answer": "[rg-kb-demo-rules#demo-rule-table]\n| pothole_deep | high | P1 | 240 |",
+  "answer": "Deep pothole: priority P1, expected repair duration 240 minutes, severity high.\n\nThese project demo rules use assumed repair durations.",
   "selections": [
+    {
+      "citation_id": "rg-kb-demo-rules#demo-rule-table",
+      "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |"
+    },
     {
       "citation_id": "rg-kb-demo-rules#demo-rule-table",
       "quote": "| pothole_deep | high | P1 | 240 |"
@@ -13,11 +17,11 @@
     {
       "citation_id": "rg-kb-demo-rules#demo-rule-table",
       "kind": "knowledge",
-      "title": "精确演示映射",
+      "title": "Exact demo mapping",
       "classification": "demo_assumption",
-      "content": "## 精确演示映射\n\n\n\n当前规则版本 `demo-rules-v2`，`is_demo=true`，status 为 `demonstration_assumptions`。2026-10-14 项目发起人将下表工时定稿为 P3/P2/P1＝60/120/240 分钟，类别与严重度/优先级映射保持原值。这是集中配置的课程模拟假设，未经过真实模型校准或工程工时测量，不用于指挥真实维修；维修建议也只是演示评估提示。\n\n| label_key | 演示 severity | 演示 priority | 演示 service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |\n\n中文检索名称（来自中央标签字典）：纵向裂缝（longitudinal_crack）；宽纵向裂缝（longitudinal_crack_wide）；横向裂缝（transverse_crack）；宽横向裂缝（transverse_crack_wide）；龟裂（网状裂缝）（alligator_crack）；下陷龟裂（alligator_crack_sunken）；坑洞（pothole）；深坑洞（pothole_deep）。",
-      "version": "3",
-      "sha256": "ad4affc3341c0ae92a81aa2e27d196f888f2e1f44c299958368a23e3d62afd7b",
+      "content": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |",
+      "version": "4",
+      "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
       "provenance": [
         {
           "source_id": "src-demo-rules",
@@ -30,22 +34,22 @@
           "source_id": "src-label-schema",
           "path": "SystemCode/model/label_schema.json",
           "integrity": "sha256_verified",
-          "sha256": "8b6e9932904e70ebc7e406e93a1c4ac4958f10f91f16a93b309f5a0487af33e7",
+          "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e",
           "version": "rdd2022es-v1-labels-1"
         }
       ]
     }
   ],
-  "package_version": "a-knowledge-v9",
-  "manifest_sha256": "9fccc871d3be8deed4a4e283586403c265f294f2639ea2a2f53859496cc71459",
+  "package_version": "a-knowledge-v14",
+  "manifest_sha256": "30dcfbb325101c18301079ab16b30f8b2ed099be4ace843f653cba101a4f6f95",
   "plan": null,
   "model": "test-double",
   "model_called": true,
-  "answer_mode": "verified_extracts",
+  "answer_mode": "grounded_summary",
   "business_changes_applied": false,
   "warnings": [
-    "回答由模型选择的原文证据组成；引用校验不等于语义充分性或工程专家审批。",
-    "演示规则、模拟行程与待定事项不能视为真实工程结论。",
-    "本接口不调整队伍、不重算、不写业务记录；未提供比较方案，不能推导优化提升。"
+    "English adaptation of a historical Chinese answer fixture; retained source hashes identify original evidence, not this translated answer.",
+    "Demo rules, simulated travel and pending decisions are not real engineering conclusions.",
+    "Read-only answers do not change crews, recalculate plans or write business records. No improvement can be inferred without comparison plans."
   ]
 }

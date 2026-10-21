@@ -111,3 +111,21 @@ Sign-in was added on 2026-10-18. Inspectors upload and view their own results; c
 The assistant now provides evidence questions and a separate crew-change panel. See [assistant contracts](../backend/roadguard/assistant/README.md) and [C step 13 acceptance](docs/C_STEP13_ACCEPTANCE.md). The earlier 18 October acceptance above is a historical record and predates this feature.
 
 C's recorded pre-merge run reports 22 focused acceptance tests, 1,100 backend passes with one skip, and 166 frontend passes, plus lint/build. Ten route questions used an explicitly labelled evidence-selection double; eleven adjustment cases exercised local business services. Those historical counts are not a test result for the merged revision. Real GPT, Google, YOLO, production deployment and physical-device acceptance are excluded from that record.
+
+## Assistant answer display (2026-10-21)
+
+The assistant uses c-assistant-query-v3. Repair and saved-route answers use grounded_summary; standalone model identity uses server_configuration and unrelated questions use scope_guidance. Direct responses do not call GPT or retrieve evidence. They have no citations or knowledge-package hash. Configuration questions remain usable when GPT is disabled or missing its key. Read the answer first;
+open the default-closed “View sources” disclosure to inspect original quotations,
+source metadata, hashes and versions. Changing the question clears the previous
+answer and resets disclosure state. Output is rendered as plain text, never HTML.
+Query failures do not trigger automatic retries. Dispatcher permissions and the
+separate confirmation flow for crew changes remain enforced. The backend and
+frontend OpenAPI snapshot/types must be updated together.
+
+## Task moves and cancellation
+
+Open Crew adjustments in the assistant. Load the latest GA plan or enter a saved plan ID and click Load this plan. All crew cards show saved stop order, labels, task IDs and server-calculated travel, service, total and remaining shift minutes. Stale plans must be recalculated before changes.
+
+Select an assigned task, choose a target crew or Cancel active task, and preview. Review before/after route durations, acknowledge the preview and confirm. Confirmation persists the crew lock or task cancellation; explicit recalculation saves new routes. Crew locks survive new tasks and later calculations. Discard task preview only closes an unconfirmed preview and does not cancel the task. Recent-record and ID recovery are available after interruption. Availability changes remain a separate workflow.
+
+Frontend fixtures with translated evidence are English test adaptations of historical records, as labelled in their limitations/warnings. Historical provenance hashes are not claims that translated text is a new live quotation. Original multilingual assistant source fields retain Unicode escapes where needed for integrity.

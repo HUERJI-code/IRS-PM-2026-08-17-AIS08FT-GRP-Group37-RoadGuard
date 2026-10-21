@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v12",
+  "package_version": "a-knowledge-v16",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Source consistency review for local Chroma/E5 indexing and bounded semantic retrieval. Not engineering approval or real GPT acceptance."
+    "note": "Repository consistency review for direct configured-model information, friendly scope guidance, and preserved RAG citation/label/rule/plan checks. Bounded intent matching and citation guards are not full semantic verification."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -71,8 +71,8 @@
     {
       "source_id": "src-workflow-service",
       "path": "SystemCode/backend/roadguard/inspections/service.py",
-      "version": "a-workflow-v5",
-      "sha256": "54aa78e74b3dca1b73695cf32e002fbc3a237723568ea30569b3c33b9c11f41d"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "9528bb2d20e1f4ce49d514a4004714fe309ea0db4d054feb6bcd1e3bab8946dd"
     },
     {
       "source_id": "src-geography-code",
@@ -101,26 +101,26 @@
     {
       "source_id": "src-routing-greedy",
       "path": "SystemCode/backend/roadguard/routing/greedy.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "1933f79f2bed10148f681b73e743b3bade52f8e82ff931caa13f8fa6b245a83e"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "ebebbfd9b1ad28e1126d91fbc97da5e1b0ff507229255ebc6e22ff6acd06f5d2"
     },
     {
       "source_id": "src-routing-evaluation",
       "path": "SystemCode/backend/roadguard/routing/evaluation.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "ab69c5357ce1899c61ad9e88c58ee59ce78bd1728421d8ec02ac4d71ee2a341f"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "58912bbfb600058daa6d2223cc24fe63931cbc840346b82cbe70cb172e620d96"
     },
     {
       "source_id": "src-routing-models",
       "path": "SystemCode/backend/roadguard/routing/models.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "3fa6d60b44d32010887bca2e8b92998ca7aebf30926496a49265630e3053de2a"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "2c320b9912bced7f870aee8dc240b0cda91c9c6b237671f92e0351458c6a9433"
     },
     {
       "source_id": "src-routing-service",
       "path": "SystemCode/backend/roadguard/routing/service.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021",
-      "sha256": "10cac3ec830fa8faf688dd22db339f423af3fb2c1f9eb6f9a33da8164332a366"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "7ddd4bd8b9a251295c594ef0b29dc2a23e75db2987340130b41e34b4567fa5ac"
     },
     {
       "source_id": "src-routing-api",
@@ -155,14 +155,14 @@
     {
       "source_id": "src-auth-permissions",
       "path": "SystemCode/backend/roadguard/auth/dependencies.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021",
-      "sha256": "e2a62cacb0ab414d966b2aae994398aeaf740d6a1d53282605664063fc221820"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "d09201cdf097b8c56673fed194901a07de0d9c5eaafe39605aae1c286968f123"
     },
     {
       "source_id": "src-auth-access",
       "path": "SystemCode/backend/roadguard/auth/access.py",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "0c07674ca7d512fc8947b63a6f6a5c7976d0b37966562d288631a50bea993d8c"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "db5f3f9fbf79410a59a1c62c23f22b189120e37bbfb2ac3719c01c6ff5205d5e"
     },
     {
       "source_id": "src-account-guide",
@@ -179,8 +179,8 @@
     {
       "source_id": "src-assistant-page",
       "path": "SystemCode/frontend/src/pages/AssistantPage.tsx",
-      "version": "c-assistant-ui-20261021",
-      "sha256": "8af868e491e6b03408f3279106030554b4ec1891c827f9bdebfdcb2b7d708a33"
+      "version": "assistant-intent-v3-20261021",
+      "sha256": "62b31f7dcfff27773eb30a462562f5083bd2c472177a7a5ededb7b2b34ecadb4"
     },
     {
       "source_id": "src-install-guide",
@@ -239,20 +239,20 @@
     {
       "source_id": "src-assistant-api",
       "path": "SystemCode/backend/roadguard/assistant/api.py",
-      "version": "c-assistant-merge-20261021",
-      "sha256": "a12e25286c387680f930dd52fc644c09d11a8ddc12d4d78ec9ada73222326729"
+      "version": "assistant-intent-v3-20261021",
+      "sha256": "174eef92bad2f4e89b2791e50dd0a916ec1eb8b07732c92e8c3ea4fa46b189fd"
     },
     {
       "source_id": "src-assistant-query",
       "path": "SystemCode/backend/roadguard/assistant/query_service.py",
-      "version": "c-assistant-merge-20261021",
-      "sha256": "55ebe35d00a2bc78b10c1720fee289b5c2a1230524f3e9604cee4f54ab503560"
+      "version": "assistant-intent-v3-20261021",
+      "sha256": "d6e3b43ce35b864275f1e04e9be7d51b5f80e2f7734d1c67113280e034699650"
     },
     {
       "source_id": "src-assistant-change",
       "path": "SystemCode/backend/roadguard/assistant/change_service.py",
-      "version": "c-assistant-merge-20261021",
-      "sha256": "aa1c744788fccb75eb0046f72feecfdf68978830fb18a12268cce83ec075b771"
+      "version": "task-adjustment-english-20261021",
+      "sha256": "556b3600ef0e368f795ebb4b36f6909e6a4043d31192732a260ba999a3552374"
     },
     {
       "source_id": "src-vector-store",
@@ -277,6 +277,54 @@
       "path": "SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md",
       "version": "c-rag-vector-v1",
       "sha256": "b97ab92a604267b1a85f254aa51c51655178816c5a893ec2a052c4b31ba0cab1"
+    },
+    {
+      "source_id": "src-assistant-evidence",
+      "path": "SystemCode/backend/roadguard/assistant/evidence.py",
+      "version": "c-rule-evidence-v1",
+      "sha256": "7629e365dd3b89abe5a74e1cfc350616812ff7d3cd1f0396de9683dc35c4a427"
+    },
+    {
+      "source_id": "src-assistant-provider",
+      "path": "SystemCode/backend/roadguard/assistant/provider.py",
+      "version": "task-adjustment-english-20261021",
+      "sha256": "d3b58a10d73252659cb66198c30b4868a29d0131eccd25c4cbca5b408062ff46"
+    },
+    {
+      "source_id": "src-assistant-query-models",
+      "path": "SystemCode/backend/roadguard/assistant/query_models.py",
+      "version": "assistant-intent-v3-20261021",
+      "sha256": "7136021be74a62292a99e0846f34534c4cd7c41e9afe8d339df185eed01cec26"
+    },
+    {
+      "source_id": "src-assistant-answering",
+      "path": "SystemCode/backend/roadguard/assistant/answering.py",
+      "version": "task-adjustment-english-20261021",
+      "sha256": "b250aaa377b042d62f8341913d17f8808981d151549066d42b354dd4c5b7e1d8"
+    },
+    {
+      "source_id": "src-task-change-service",
+      "path": "SystemCode/backend/roadguard/assistant/task_change_service.py",
+      "version": "c-assistant-task-change-v1",
+      "sha256": "2917e0807cd05611d2539ccf6f6697a2b4fc528eadd203cfe50ab2ad6d32eb59"
+    },
+    {
+      "source_id": "src-task-change-models",
+      "path": "SystemCode/backend/roadguard/assistant/task_change_models.py",
+      "version": "c-assistant-task-change-v1",
+      "sha256": "55378f70c75228b0256220014d0bb9cc65ae3fc0df0707a434239693df2fbbf2"
+    },
+    {
+      "source_id": "src-task-change-schema",
+      "path": "SystemCode/backend/roadguard/assistant/task_change_schema.py",
+      "version": "c-assistant-task-change-v1",
+      "sha256": "4a033a4895439aa6b1146f9cb2729473ac2ef4686510a7ea2fab29a9ad3b3089"
+    },
+    {
+      "source_id": "src-assistant-intents",
+      "path": "SystemCode/backend/roadguard/assistant/intents.py",
+      "version": "assistant-intent-v3-20261021",
+      "sha256": "6be26af52b166fdf4266a4212bbd0fa515c0e22c81344724af19aae66f8a73aa"
     }
   ],
   "context_sources": [
@@ -482,10 +530,10 @@
     {
       "document_id": "rg-kb-assistant",
       "path": "05_assistant_boundaries.md",
-      "document_version": "6",
+      "document_version": "9",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "4ec5eb9e312252672884d2c630cb81b2d9af5a8f639b3f8a89a56e5545919cf9",
+      "sha256": "a30634e16b28757746388fb5aa1a8639b36e281746bdd5df5b84174cf79c0ecf",
       "sections": [
         {
           "section_id": "assistant-plan-facts",
@@ -512,7 +560,11 @@
             "src-crew-schema",
             "src-crew-service",
             "src-routing-service",
-            "src-assistant-change"
+            "src-assistant-change",
+            "src-task-change-service",
+            "src-task-change-models",
+            "src-workflow-service",
+            "src-routing-evaluation"
           ]
         },
         {
@@ -536,7 +588,9 @@
             "src-demo-rules",
             "src-vision-evaluation",
             "src-routing-results",
-            "src-ga-evaluation"
+            "src-ga-evaluation",
+            "src-assistant-query",
+            "src-assistant-intents"
           ]
         }
       ]
@@ -585,7 +639,7 @@
     {
       "document_id": "rg-kb-routing",
       "path": "07_routing_algorithms.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -643,12 +697,12 @@
           ]
         }
       ],
-      "sha256": "9cb868dd60a151e0f8b2135eeceee0a9a910f73dd2cb09b08708fb603adb553c"
+      "sha256": "303c0b5da494c661ca16725fd5f75d37dce81f621076363e2dcabba161419033"
     },
     {
       "document_id": "rg-kb-plans",
       "path": "08_route_plans_and_comparisons.md",
-      "document_version": "1",
+      "document_version": "2",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -695,7 +749,7 @@
           ]
         }
       ],
-      "sha256": "34aea65305ef8c24848ca96e11ae1adaef26f487855e147cd5391bf7cc9e8e7d"
+      "sha256": "1a6b0308877233a84c345ce67e6dabe0230e5ff6a2ab9afb6fd0ae445cbdecb6"
     },
     {
       "document_id": "rg-kb-operations",
@@ -794,7 +848,7 @@
     {
       "document_id": "rg-kb-integration",
       "path": "11_assistant_integration.md",
-      "document_version": "3",
+      "document_version": "7",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -846,7 +900,12 @@
             "src-routing-models",
             "src-routing-service",
             "src-auth-permissions",
-            "src-assistant-query"
+            "src-assistant-query",
+            "src-assistant-evidence",
+            "src-assistant-provider",
+            "src-assistant-query-models",
+            "src-assistant-answering",
+            "src-assistant-intents"
           ]
         },
         {
@@ -859,20 +918,24 @@
             "src-routing-service",
             "src-auth-permissions",
             "context-team",
-            "src-assistant-change"
+            "src-assistant-change",
+            "src-task-change-service",
+            "src-task-change-models",
+            "src-task-change-schema",
+            "src-workflow-service"
           ]
         }
       ],
-      "sha256": "9575ee3254a9f36041a8a1036e4accca051069c926357f9e3474a12c5375c20e"
+      "sha256": "24236d3de13941fd3b0fcf06e510a000500d3320f549a0fb128528abb34f7366"
     }
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "1af8fb137f55fb02ce5c43e5c23b3165af57562789f917098f3e50630444edb3",
+    "sha256": "0d8ee0be0feb9a8f6de8dc0a89c74a24462b3349730f6ee69edf503138825a48",
     "case_count": 30
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "38951074f7ccb33968bd34970085e9211b350c45277925984798c1d0ff95c731"
+    "sha256": "98c6770eba56ca900596f679bdfaa52db974e9087f037f1845dd430831c625d0"
   }
 }

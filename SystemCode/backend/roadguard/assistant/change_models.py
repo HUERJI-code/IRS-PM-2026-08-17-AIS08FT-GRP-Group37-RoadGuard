@@ -48,7 +48,7 @@ class ChangeRecord(ContractModel):
     replan_lease_until: UTCTimestamp | None = None
     replan_error_code: str | None = None
     result: RecalculationResult | None = None
-    warning: str = '预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。'
+    warning: str = 'Preview does not change crews. Confirmation saves availability only; recalculate separately. Planning failure does not undo the saved change.'
 
 
 class ChangeList(ContractModel):

@@ -4,7 +4,7 @@
     "change_id": "change-4530c03839964831ba51283747301997",
     "actor_id": "183b35bd9fb64bdb93807bfe9f562889",
     "client_key": "fixture-preview",
-    "instruction": "停用 crew-02",
+    "instruction": "disable crew-02",
     "based_on_plan_id": "plan-316749023217472eb8d14bdece472533",
     "input_revision": 0,
     "crew_id": "crew-02",
@@ -25,14 +25,14 @@
     "replan_lease_until": null,
     "replan_error_code": null,
     "result": null,
-    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+    "warning": "Preview changes nothing. Confirmation saves availability. Recalculate separately; failure does not revert saved availability."
   },
   "confirmed": {
     "contract_version": "c-assistant-change-v1",
     "change_id": "change-4530c03839964831ba51283747301997",
     "actor_id": "183b35bd9fb64bdb93807bfe9f562889",
     "client_key": "fixture-preview",
-    "instruction": "停用 crew-02",
+    "instruction": "disable crew-02",
     "based_on_plan_id": "plan-316749023217472eb8d14bdece472533",
     "input_revision": 0,
     "crew_id": "crew-02",
@@ -53,14 +53,14 @@
     "replan_lease_until": null,
     "replan_error_code": null,
     "result": null,
-    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+    "warning": "Preview changes nothing. Confirmation saves availability. Recalculate separately; failure does not revert saved availability."
   },
   "completed": {
     "contract_version": "c-assistant-change-v1",
     "change_id": "change-4530c03839964831ba51283747301997",
     "actor_id": "183b35bd9fb64bdb93807bfe9f562889",
     "client_key": "fixture-preview",
-    "instruction": "停用 crew-02",
+    "instruction": "disable crew-02",
     "based_on_plan_id": "plan-316749023217472eb8d14bdece472533",
     "input_revision": 0,
     "crew_id": "crew-02",
@@ -108,14 +108,14 @@
         }
       ]
     },
-    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+    "warning": "Preview changes nothing. Confirmation saves availability. Recalculate separately; failure does not revert saved availability."
   },
   "cancelled": {
     "contract_version": "c-assistant-change-v1",
     "change_id": "change-d7d28378e683409e81bbb12526e52897",
     "actor_id": "183b35bd9fb64bdb93807bfe9f562889",
     "client_key": "fixture-cancel",
-    "instruction": "启用 crew-02",
+    "instruction": "enable crew-02",
     "based_on_plan_id": "plan-67ff32e90fac44a083d9043e857277a1",
     "input_revision": 1,
     "crew_id": "crew-02",
@@ -136,7 +136,7 @@
     "replan_lease_until": null,
     "replan_error_code": null,
     "result": null,
-    "warning": "预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。"
+    "warning": "Preview changes nothing. Confirmation saves availability. Recalculate separately; failure does not revert saved availability."
   },
   "is_synthetic_fixture": true
 }

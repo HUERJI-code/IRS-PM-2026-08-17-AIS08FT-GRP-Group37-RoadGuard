@@ -7,12 +7,13 @@ import { ErrorState, LoadingState } from '../components/RequestState'
 import { usePlanningRun } from '../planning/runContext'
 import './AssistantPage.css'
 import ChangePanel from './ChangePanel'
+import TaskAdjustmentPanel from './TaskAdjustmentPanel'
 
 const classifications: Record<string, string> = {
-  confirmed_project_fact: '项目事实',
-  demo_assumption: '演示假设',
-  pending_decision: '待定事项',
-  saved_demo_plan: '保存的演示方案',
+  confirmed_project_fact: 'Project fact',
+  demo_assumption: 'Demo assumption',
+  pending_decision: 'Pending decision',
+  saved_demo_plan: 'Saved demo plan',
 }
 
 export default function AssistantPage() {
@@ -73,75 +74,84 @@ export default function AssistantPage() {
   }
   return <>
     <div className="page-heading">
-      <p className="eyebrow">证据问答 / 07</p>
+      <p className="eyebrow">Evidence questions / 07</p>
       <h1>Route assistant</h1>
-      <p className="description">核对维修规则，或围绕一份已保存方案查看依据。</p>
+      <p className="description">Ask about repair rules, saved routes or the configured assistant model. Read the answer, then inspect sources when needed.</p>
     </div>
-    <details className="change-section"><summary>队伍调整 · 先预览再确认</summary><ChangePanel /></details>
+    <details className="change-section"><summary>Crew adjustments · Preview before confirming</summary><TaskAdjustmentPanel /><details><summary>Crew availability</summary><ChangePanel /></details></details>
     <div className="assistant-layout">
-      <section className="assistant-question" aria-label="提问">
-        <div className="assistant-status"><span className="status-pill">只读问答</span>
-          <span>{mode !== 'live' ? '模拟来源 · 问答未启用' : status?.configured ? '模型已配置' : status ? '模型尚未配置' : '正在检查服务'}</span>
+      <section className="assistant-question" aria-label="Question">
+        <div className="assistant-status"><span className="status-pill">Read-only questions</span>
+          <span>{mode !== 'live' ? 'Mock source · Questions unavailable' : status?.configured ? 'Model configured' : status ? 'Model not configured' : 'Checking service'}</span>
         </div>
-        <p className="muted">GPT 选择原文证据，回答不修改队伍或任务。模型选择仍可能不完整，请核对引用。</p>
-        {mode !== 'live' && <p className="notice">请切换到实时后端后提问；当前模拟样例不会调用模型。</p>}
-        {mode === 'live' && status && !status.configured && <p className="notice">服务端尚未启用问答。请由项目维护者配置模型和密钥后重新检查；不要在这里填写密钥。</p>}
-        <button className="text-button" disabled={busy || mode !== 'live'} onClick={() => { clearAnswer(); setStatus(null); setRefresh((n) => n + 1) }}>重新检查服务</button>
+        <p className="muted">Answers use project evidence. Select the relevant plan for route questions. Questions do not change crews or tasks.</p>
+        {mode !== 'live' && <p className="notice">Switch to the live backend to ask questions. Mock examples do not call the model.</p>}
+        {mode === 'live' && status && !status.configured && <p className="notice">Evidence-based answers need an enabled model and server-side key. You can still ask which model is configured or view the assistant's scope. Never enter keys here.</p>}
+        <button className="text-button" disabled={busy || mode !== 'live'} onClick={() => { clearAnswer(); setStatus(null); setRefresh((n) => n + 1) }}>Check service again</button>
         <form onSubmit={(event) => void ask(event)}>
-          <label htmlFor="assistant-scope">回答依据</label>
+          <label htmlFor="assistant-scope">Answer scope</label>
           <select id="assistant-scope" value={scope} disabled={busy} onChange={(event) => { setScope(event.target.value as 'knowledge' | 'plan'); clearAnswer() }}>
-            <option value="knowledge">项目知识与规则</option><option value="plan">指定路线方案</option>
+            <option value="knowledge">Project knowledge and rules</option><option value="plan">Saved route plan</option>
           </select>
           {scope === 'plan' && <div className="assistant-plan-input">
-            <label htmlFor="assistant-plan">方案 ID</label>
+            <label htmlFor="assistant-plan">Plan ID</label>
             <input id="assistant-plan" value={planId} required pattern="plan-[0-9a-f]{32}" disabled={busy}
-              onChange={(event) => { setPlanId(event.target.value); clearAnswer() }} placeholder="从四队路线取得已保存方案" />
-            <button type="button" className="text-button" disabled={busy || mode !== 'live'} onClick={() => void latest()}>读取最新 GA 方案 ID</button>
-            <small>只读取，不重算。过期方案需要先回路线页核对。</small>
+              onChange={(event) => { setPlanId(event.target.value); clearAnswer() }} placeholder="Saved plan from the routes workspace" />
+            <button type="button" className="text-button" disabled={busy || mode !== 'live'} onClick={() => void latest()}>Read latest GA plan ID</button>
+            <small>Read only. Check stale plans in the routes workspace before recalculating.</small>
           </div>}
-          <label htmlFor="assistant-question">你的问题</label>
+          <label htmlFor="assistant-question">Your question</label>
           <textarea id="assistant-question" required minLength={2} maxLength={500} rows={5} value={question} disabled={busy}
-            onChange={(event) => { setQuestion(event.target.value); clearAnswer() }} placeholder={scope === 'plan' ? '例如：这份方案的总行程是多少？' : '例如：深坑洞的演示维修工时是多少？'} />
-          <details><summary>指定规则版本（可选）</summary>
-            <label htmlFor="assistant-version">规则版本</label>
-            <input id="assistant-version" value={version} maxLength={100} disabled={busy} onChange={(event) => { setVersion(event.target.value); clearAnswer() }} placeholder="例如 demo-rules-v2" />
-            <small>旧规则不会被当前规则替代。方案本身未提供每条任务的规则快照。</small>
+            onChange={(event) => { setQuestion(event.target.value); clearAnswer() }} placeholder={scope === 'plan' ? 'For example: What is the total travel time in this plan?' : 'For example: What is the demo repair duration for a deep pothole?'} />
+          <details><summary>Rule version (optional)</summary>
+            <label htmlFor="assistant-version">Rule version</label>
+            <input id="assistant-version" value={version} maxLength={100} disabled={busy} onChange={(event) => { setVersion(event.target.value); clearAnswer() }} placeholder="For example demo-rules-v2" />
+            <small>Historical rules are preserved. The plan does not include each task rule snapshot.</small>
           </details>
           <div className="assistant-actions">
-            <button className="button" disabled={busy || mode !== 'live' || !status?.configured || question.trim().length < 2}>查找依据并回答</button>
-            {busy && <button className="button secondary" type="button" onClick={cancel}>停止等待</button>}
+            <button className="button" disabled={busy || mode !== 'live' || question.trim().length < 2}>Ask assistant</button>
+            {busy && <button className="button secondary" type="button" onClick={cancel}>Stop waiting</button>}
           </div>
         </form>
-        {status?.configured && <small>每次提交可能产生模型用量。当前进程已尝试 {status.calls_used}/{status.max_calls_per_process} 次（以检查时为准）；失败不自动重试。</small>}
-        <Link to="/routes">前往四队路线 →</Link>
+        {status?.configured && <small>Evidence questions may use model quota. Model information and scope guidance do not. This process has attempted {status.calls_used}/{status.max_calls_per_process} calls as of the last check. Failures are not retried automatically.</small>}
+        <Link to="/routes">Open four-crew routes →</Link>
       </section>
-      <section className="assistant-answer" aria-label="问答结果" aria-busy={busy}>
+      <section className="assistant-answer" aria-label="Answer result" aria-busy={busy}>
         {busy && <LoadingState />}
-        {cancelled && <p role="status">已停止等待。已发送的模型请求可能仍会完成并产生用量；不会修改业务数据。</p>}
+        {cancelled && <p role="status">Stopped waiting. The model request may still complete and use quota. Business data is unchanged.</p>}
         {error !== null && <ErrorState error={error} />}
-        {!busy && !result && !cancelled && error === null && <div className="assistant-empty"><span aria-hidden="true">“</span><h2>让每个回答都有出处</h2><p>提交问题后，查看所选原文、版本和来源。涉及路线数字时，请选择具体方案。</p></div>}
+        {!busy && !result && !cancelled && error === null && <div className="assistant-empty"><span aria-hidden="true">“</span><h2>Ask a specific question</h2><p>A concise answer will appear here. Open View sources for quotations, versions and citations.</p></div>}
         {result && <>
-          <p className="eyebrow">{result.supported ? '已选出引用证据' : '证据不足或暂不可回答'}</p>
-          <h2>{result.supported ? '原文依据' : '本次结果'}</h2>
-          {result.plan && <p className="notice">方案 {result.plan.plan_id} · 输入版本 {result.plan.input_revision} · {result.plan.algorithm.toUpperCase()} · {result.plan.matrix_is_simulated ? '模拟行程' : '外部行程数据'} · {result.plan.is_stale ? '已过期' : '状态以回答前核对为准'}。维修安排仍为课程演示。</p>}
-          {!result.supported && <p role="status">{result.answer}</p>}
-          {result.selections.map((item, index) => <article className="assistant-quote" key={`${item.citation_id}-${index}`}>
-            <p className="assistant-quote-label">{result.sources.find((source) => source.citation_id === item.citation_id)?.title}</p>
-            <pre>{item.quote}</pre>
-            <a href={`#assistant-source-${result.sources.findIndex((s) => s.citation_id === item.citation_id)}`}>查看来源 {item.citation_id}</a>
-          </article>)}
-          {result.sources.length > 0 && <div className="assistant-sources"><h3>引用与版本</h3>
-            {result.sources.map((source, index) => <details id={`assistant-source-${index}`} key={source.citation_id}>
-              <summary>{source.title} · {classifications[source.classification] ?? source.classification}</summary>
-              <p>{source.kind === 'saved_plan' ? '动态方案事实' : '静态知识'} · 版本 {source.version}</p>
-              <code>{source.citation_id}</code><pre>{source.content}</pre>
-              <small>SHA-256：{source.sha256}</small>
-              {source.provenance.map((p) => <p key={p.source_id}><code>{p.path}</code><small>{p.integrity === 'sha256_verified' ? '固定来源摘要已核对' : '可变上下文，未校验摘要'}</small></p>)}
-            </details>)}
-          </div>}
-          <div className="assistant-limits">{result.warnings.map((warning) => <p key={warning}>{warning}</p>)}
-            <small>知识包 {result.package_version} · {result.model_called ? `模型 ${result.model} 已调用` : '未调用模型'} · 未修改业务数据</small>
+          <p className="eyebrow">{result.answer_mode === 'server_configuration' ? 'Server configuration'
+            : result.answer_mode === 'scope_guidance' ? 'Assistant scope'
+            : result.supported ? 'Based on selected evidence' : 'Insufficient evidence or unavailable'}</p>
+          <h2>{result.answer_mode === 'scope_guidance' ? 'How I can help' : result.supported ? 'Answer' : 'Result'}</h2>
+          <div className="assistant-response" role="status">
+            {result.answer.split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
           </div>
+          {result.answer_mode !== 'grounded_summary' && <p className="muted">Server response · No model call or retrieval</p>}
+          {result.sources.length > 0 && <details className="assistant-source-disclosure">
+            <summary>View sources <span>{result.sources.length}  sources</span></summary>
+            {result.plan && <p className="notice">Plan {result.plan.plan_id} · Input revision {result.plan.input_revision} · {result.plan.algorithm.toUpperCase()} · {result.plan.matrix_is_simulated ? 'Simulated travel' : 'External travel data'} · {result.plan.is_stale ? 'Stale' : 'Status checked before answering'}. </p>}
+            <h3>Source quotations</h3>
+            {result.selections.map((item, index) => <article className="assistant-quote" key={`${item.citation_id}-${index}`}>
+              <p className="assistant-quote-label">{result.sources.find((source) => source.citation_id === item.citation_id)?.title}</p>
+              <pre>{item.quote}</pre>
+            </article>)}
+            <div className="assistant-sources"><h3>Citations and versions</h3>
+              {result.sources.map((source, index) => <details id={`assistant-source-${index}`} key={source.citation_id}>
+                <summary>{source.title} · {classifications[source.classification] ?? source.classification}</summary>
+                <p>{source.kind === 'saved_plan' ? 'Saved plan facts' : 'Static knowledge'} · Version {source.version}</p>
+                <code>{source.citation_id}</code><pre>{source.content}</pre>
+                <small>SHA-256: {source.sha256}</small>
+                {source.provenance.map((p) => <p key={p.source_id}><code>{p.path}</code><small>{p.integrity === 'sha256_verified' ? 'Pinned source hash verified' : 'Mutable context; hash not verified'}</small></p>)}
+              </details>)}
+            </div>
+            <div className="assistant-limits">{result.warnings.map((warning) => <p key={warning}>{warning}</p>)}
+              <small>Knowledge package {result.package_version} · {result.model_called ? `Model ${result.model} called` : 'Model not called'}</small>
+            </div>
+          </details>}
+          <p className="assistant-readonly">Read-only answer · Business data unchanged</p>
         </>}
       </section>
     </div>

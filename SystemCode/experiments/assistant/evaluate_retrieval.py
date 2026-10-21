@@ -29,14 +29,14 @@ extra=[
     ('How long should a severe road cavity take to repair?', 'rg-kb-demo-rules#demo-rule-table'),
     ('Can a worker inspect assignments belonging to another team?', 'rg-kb-workflow#workflow-account-roles'),
     ('How does the genetic optimizer create and improve its population?', 'rg-kb-routing#routing-ga'),
-    ('施工队每天从什么地方出发？', 'rg-kb-scope#depot-crews'),
-    ('深坑洞需要安排多少维修时间？', 'rg-kb-demo-rules#demo-rule-table'),
-    ('我能用二队账号查看一队的任务吗？', 'rg-kb-workflow#workflow-account-roles'),
-    ('遗传算法怎样选择和繁殖下一代？', 'rg-kb-routing#routing-ga'),
+    ('\u65bd\u5de5\u961f\u6bcf\u5929\u4ece\u4ec0\u4e48\u5730\u65b9\u51fa\u53d1？', 'rg-kb-scope#depot-crews'),
+    ('\u6df1\u5751\u6d1e\u9700\u8981\u5b89\u6392\u591a\u5c11\u7ef4\u4fee\u65f6\u95f4？', 'rg-kb-demo-rules#demo-rule-table'),
+    ('\u6211\u80fd\u7528\u4e8c\u961f\u8d26\u53f7\u67e5\u770b\u4e00\u961f\u7684\u4efb\u52a1\u5417？', 'rg-kb-workflow#workflow-account-roles'),
+    ('\u9057\u4f20\u7b97\u6cd5\u600e\u6837\u9009\u62e9\u548c\u7e41\u6b96\u4e0b\u4e00\u4ee3？', 'rg-kb-routing#routing-ga'),
 ]
 cases += [{'id':f'paraphrase-{i+1}','question':q,'expected':[citation],'kind':'paraphrase'} for i,(q,citation) in enumerate(extra)]
 cases += [{'id':f'negative-{i+1}','question':q,'expected':[],'kind':'out_of_scope'} for i,q in enumerate([
-    'What is the best recipe for chocolate cake?', '帮我推荐明天的股票买入价格', 'xyzzyq987 qqqzz'])]
+    'What is the best recipe for chocolate cake?', '\u5e2e\u6211\u63a8\u8350\u660e\u5929\u7684\u80a1\u7968\u4e70\u5165\u4ef7\u683c', 'xyzzyq987 qqqzz'])]
 rows=[]
 for case in cases:
     row=dict(case)

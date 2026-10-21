@@ -4,7 +4,7 @@
   "is_synthetic": true,
   "real_model_called": false,
   "real_travel_provider_called": false,
-  "input": "停用第二队",
+  "input": "\u505c\u7528\u7b2c\u4e8c\u961f",
   "plan_id": "plan-5e8b3e7bc68849129734ee67e1fcf2f2",
   "expected": "422; no crew mutation",
   "actual": {

@@ -1,0 +1,582 @@
+{
+  "date": "2026-10-21",
+  "environment": "Isolated real-auth HTTP on fresh SQLite, demo inspections, simulated matrix; no live business mutations. Two read-only real GPT calls used the configured backend.",
+  "http": {
+    "synthetic_data": true,
+    "real_auth": true,
+    "model_calls": 0,
+    "google_calls": 0,
+    "events": [
+      {
+        "case": "servers_and_proxy",
+        "backend_port": 8001,
+        "frontend_port": 5174,
+        "status": "passed"
+      },
+      {
+        "case": "feasible_preview_no_business_mutation",
+        "status": "passed",
+        "task_id": "1932994eb1034804aa9da437164025c9",
+        "source": "crew-03",
+        "target": "crew-01",
+        "change_id": "task-change-52ee28aca33947358122ce6756499100"
+      },
+      {
+        "case": "inspector_task_change_endpoints_denied",
+        "status": "passed"
+      },
+      {
+        "case": "crew_task_change_endpoints_denied",
+        "status": "passed"
+      },
+      {
+        "case": "confirm_and_idempotent_replay",
+        "status": "passed",
+        "applied_revision": 6
+      },
+      {
+        "case": "new_task_and_both_algorithms_retain_affinity",
+        "status": "passed",
+        "algorithms": [
+          "greedy",
+          "ga"
+        ]
+      },
+      {
+        "case": "overtime_rejected_without_business_mutation",
+        "status": "passed",
+        "task_id": "e58cbbf7154e48a6815192bb8747736a",
+        "source": "crew-01",
+        "target": "crew-02",
+        "response": {
+          "code": "task_change_infeasible",
+          "message": "The changed routes cannot retain all assigned tasks within the configured travel, service and depot-return limits.",
+          "details": {
+            "shift_limit_minutes": 480.0,
+            "return_to_depot": true
+          }
+        }
+      },
+      {
+        "case": "task_cancellation_history_and_both_plans_exclude",
+        "status": "passed",
+        "task_id": "8576ca72addc470aac94463335de6a41",
+        "history_delta": 1
+      },
+      {
+        "case": "browser_actionable_plan_ready",
+        "status": "passed",
+        "plan_id": "plan-4d09becf8e264c068a948b6a44d7bd40",
+        "task_id": "d97114bbde8e46b7baa73332a05102e1",
+        "source": "crew-01",
+        "target": "crew-02",
+        "input_revision": 14
+      },
+      {
+        "case": "old_crew_authorization_immediate_after_confirm",
+        "status": "passed",
+        "responses": {
+          "old_task_read": 404,
+          "old_inspection_read": 404,
+          "old_task_complete": 404,
+          "target_before_replan_complete": 404
+        },
+        "old_workspace_tasks": 0,
+        "old_workspace_routes": 0,
+        "business_task_unchanged": true
+      },
+      {
+        "case": "inspector_remaining_task_change_endpoints_denied",
+        "status": "passed"
+      },
+      {
+        "case": "crew_remaining_task_change_endpoints_denied",
+        "status": "passed"
+      },
+      {
+        "case": "explicit_task_change_replan_receipt_after_fix",
+        "status": "passed",
+        "algorithms": [
+          "greedy",
+          "ga"
+        ],
+        "affinity_retained": true
+      },
+      {
+        "case": "target_task_access_after_explicit_replan",
+        "status": "passed"
+      },
+      {
+        "case": "browser_actionable_plan_ready_after_auth_fix",
+        "status": "passed",
+        "plan_id": "plan-3c62d5d83ff44ce29e52cd965487135e",
+        "task_id": "4237ebf4afb84207b32814e39a359909",
+        "source": "crew-01",
+        "target": "crew-02",
+        "input_revision": 15
+      }
+    ]
+  },
+  "rag": {
+    "model": "gpt-4.1-mini",
+    "results": [
+      {
+        "case": "deep_pothole_english_output",
+        "http": 200,
+        "seconds": 5.75,
+        "request": {
+          "question": "\u6df1\u5751\u6d1e\u7684\u7ef4\u4fee\u65f6\u95f4\u548c\u4f18\u5148\u7ea7\u662f\u4ec0\u4e48\uff1f",
+          "scope": "knowledge"
+        },
+        "response": {
+          "contract_version": "c-assistant-query-v2",
+          "status": "supported",
+          "supported": true,
+          "answer": "Deep pothole has priority P1, an estimated repair time of 240 minutes and high severity.\n\nThese estimates follow the current project rules and are project assumptions.",
+          "selections": [
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "quote": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |"
+            },
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "quote": "| pothole_deep | high | P1 | 240 |"
+            },
+            {
+              "citation_id": "rg-kb-pending#pending-business",
+              "quote": "On 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic."
+            },
+            {
+              "citation_id": "rg-kb-demo-rules#demo-null-provenance",
+              "quote": "Unknown service_minutes is null, never zero; all eight current configured durations are demo minutes. Task due_at remains null, so no deadlines or lateness metrics are generated. Inspections freeze the complete rule snapshot; reviews and task-label corrections use it rather than new configuration after restart. Preserve Detection model_version/is_demo when citing detections, read Inspection decision_trace for decisions and retain Task rule_version/is_demo when citing tasks. Do not assume Task itself contains a model version or full decision process. Explicit demo uploads use named synthetic scenarios; only real uploads invoke the actual detector. Service minutes are neither a deadline nor travel time and are not divided by four because there are four crews."
+            },
+            {
+              "citation_id": "rg-kb-demo-rules#demo-null-provenance",
+              "quote": "This package's static table explains demo-rules-v2 only; runtime records may use overridden configurations with other versions. Do not use this package or the latest rule table to recalculate or explain older tasks from another version. Use each record's saved rule version, decision_trace and history; acknowledge insufficient_data without matching evidence."
+            }
+          ],
+          "sources": [
+            {
+              "citation_id": "rg-kb-demo-rules#demo-rule-table",
+              "kind": "knowledge",
+              "title": "Exact demo mapping",
+              "classification": "demo_assumption",
+              "content": "## Exact demo mapping\n\n\n\nCurrent rule version is `demo-rules-v2`, with `is_demo=true` and status `demonstration_assumptions`. On 2026-10-14 the project owner finalized durations as P3/P2/P1 = 60/120/240 minutes, retaining class-to-severity/priority mappings. These centrally configured course-simulation assumptions have no real-model calibration or measured engineering service-time basis and must not direct real repairs. Repair recommendations are also demonstration assessment prompts.\n\n| label_key | Demo severity | Demo priority | Demo service_minutes |\n| --- | --- | --- | --- |\n| longitudinal_crack | low | P3 | 60 |\n| longitudinal_crack_wide | medium | P2 | 120 |\n| transverse_crack | low | P3 | 60 |\n| transverse_crack_wide | medium | P2 | 120 |\n| alligator_crack | medium | P2 | 120 |\n| alligator_crack_sunken | high | P1 | 240 |\n| pothole | medium | P2 | 120 |\n| pothole_deep | high | P1 | 240 |",
+              "version": "4",
+              "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+              "provenance": [
+                {
+                  "source_id": "src-demo-rules",
+                  "path": "SystemCode/config/demo_rules.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                  "version": "demo-rules-v2"
+                },
+                {
+                  "source_id": "src-label-schema",
+                  "path": "SystemCode/model/label_schema.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "f27164c9dc79f7045f245482a61fca13092b4b75077bed490e7c9c195ed30e3e",
+                  "version": "rdd2022es-v1-labels-1"
+                }
+              ]
+            },
+            {
+              "citation_id": "rg-kb-pending#pending-business",
+              "kind": "knowledge",
+              "title": "Business and scenario decisions pending",
+              "classification": "pending_decision",
+              "content": "## Business and scenario decisions pending\n\n\n\nOn 2026-10-14, course-simulation demo-rules-v2 durations were finalized: eight severity/priority mappings remain unchanged, with P3/P2/P1 expected service times 60/120/240 minutes. One primary box >= 0.60 automatically creates one task; lower confidence requires review. These durations are neither deadlines nor measured values. Formal engineering rules and real-scenario calibration still lack evidence. The executable routing demo already specifies a 480-minute shift, return to depot and b-objective-v1 weights. Formal operational approval/calibration of these values, crew capability assumptions and task deadlines remain pending. Vehicle access at the NUS-ISS reference point and task-road eligibility remain unverified. Optional Google matrices and saved Google experiments exist; they do not establish road-work permission or current traffic.\n\ndue_at=null means no defined task deadline; the shared project return_to_depot=null means no defined operational return policy, while the routing demo explicitly selects true. Unknown duration is not zero, no available plan is not a valid empty plan, and unreachable travel is not zero minutes.",
+              "version": "7",
+              "sha256": "017c26eec0f9c301b19c98d5f0fb5110f372fa2215d4ee2b5c9dde454403e61a",
+              "provenance": [
+                {
+                  "source_id": "src-project-config",
+                  "path": "SystemCode/config/project.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "2ac0783ba51e34435f3d3adc394d527cc9455745d6c08200e133945c6264f87e",
+                  "version": "jurong-je-jw-mp2025-v1"
+                },
+                {
+                  "source_id": "src-demo-rules",
+                  "path": "SystemCode/config/demo_rules.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                  "version": "demo-rules-v2"
+                },
+                {
+                  "source_id": "context-agents",
+                  "path": "AGENTS.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "context-scope",
+                  "path": "Miscellaneous/PROJECT_SCOPE.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "src-routing-config",
+                  "path": "SystemCode/config/routing.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "a31541251cd712706e8353e89318d4ad89b4fdc2c1205e5b7bddd22dc22e6354",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-google-matrix",
+                  "path": "SystemCode/backend/roadguard/routing/google_matrix.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "926b498a17be641fb7f9a4f4e147931313a0bb39eaa6e52b403c361a903a7751",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-routing-results",
+                  "path": "SystemCode/experiments/routing/results/README.md",
+                  "integrity": "sha256_verified",
+                  "sha256": "5bd665d421204195fc4a3001bcdcd94ed783fb3963993060ab5318f21e54736e",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                }
+              ]
+            },
+            {
+              "citation_id": "rg-kb-demo-rules#demo-null-provenance",
+              "kind": "knowledge",
+              "title": "Unknown values and provenance",
+              "classification": "demo_assumption",
+              "content": "## Unknown values and provenance\n\n\n\nUnknown service_minutes is null, never zero; all eight current configured durations are demo minutes. Task due_at remains null, so no deadlines or lateness metrics are generated. Inspections freeze the complete rule snapshot; reviews and task-label corrections use it rather than new configuration after restart. Preserve Detection model_version/is_demo when citing detections, read Inspection decision_trace for decisions and retain Task rule_version/is_demo when citing tasks. Do not assume Task itself contains a model version or full decision process. Explicit demo uploads use named synthetic scenarios; only real uploads invoke the actual detector. Service minutes are neither a deadline nor travel time and are not divided by four because there are four crews.\n\nThis package's static table explains demo-rules-v2 only; runtime records may use overridden configurations with other versions. Do not use this package or the latest rule table to recalculate or explain older tasks from another version. Use each record's saved rule version, decision_trace and history; acknowledge insufficient_data without matching evidence.",
+              "version": "4",
+              "sha256": "bc7e9ffb5dd995621a4ce085856426cb1e36d1ffdb5f9698a6e36c3c9489d122",
+              "provenance": [
+                {
+                  "source_id": "src-demo-rules",
+                  "path": "SystemCode/config/demo_rules.example.json",
+                  "integrity": "sha256_verified",
+                  "sha256": "fbadda00955cd4b9695c3e063984f5194af2c9561366c7027a598cda9afbe30a",
+                  "version": "demo-rules-v2"
+                },
+                {
+                  "source_id": "src-workflow-service",
+                  "path": "SystemCode/backend/roadguard/inspections/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "d91df3df6d2526fbacb76ecf37862c8e6233af79f2c2a43a19343ed300bf27ed",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-workflow-schema",
+                  "path": "SystemCode/backend/roadguard/schemas/workflow.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "fa0a27c874b408406fa13c884b82b71882a36febf0655b976b01d72b7c93041f",
+                  "version": "a-workflow-v5"
+                }
+              ]
+            }
+          ],
+          "package_version": "a-knowledge-v15",
+          "manifest_sha256": "d7554aec4e3b97ad1e3925908939ccfa456f00d4b42b8be0e63850488892f1a0",
+          "plan": null,
+          "model": "gpt-4.1-mini",
+          "model_called": true,
+          "answer_mode": "grounded_summary",
+          "business_changes_applied": false,
+          "warnings": [
+            "Answers use verified sources; rule values come from original evidence. Source validation does not guarantee every semantic judgment.",
+            "Demo rules, simulated travel and pending decisions are not real engineering conclusions.",
+            "This endpoint does not change crews, replan or write business records. Without a comparison plan, improvement cannot be inferred."
+          ]
+        },
+        "exact_sources": true,
+        "exact_quotes": true,
+        "english_answer": true,
+        "passed": true
+      },
+      {
+        "case": "persistent_assignment",
+        "http": 200,
+        "seconds": 2.98,
+        "request": {
+          "question": "After a confirmed task reassignment, will later recalculation keep the task in that crew? What if the crew becomes unavailable?",
+          "scope": "knowledge"
+        },
+        "response": {
+          "contract_version": "c-assistant-query-v2",
+          "status": "supported",
+          "supported": true,
+          "answer": "After confirming a task reassignment to a specific crew, that assignment becomes a persistent constraint respected by both Greedy and GA algorithms during all later recalculations, including when new tasks arrive. The confirmed move stores a durable task-to-crew constraint that prevents silent reassignment elsewhere. However, if the assigned crew becomes unavailable or the route cannot fit the task under the current input, the task is not forced to remain with that crew; instead, it is explicitly marked as unassigned. Thus, the system avoids silently moving a task to a different crew if the originally assigned crew is unavailable, opting to unassign it instead. Recalculation itself is an explicit separate action and does not undo confirmed changes. Changes to crew availability or tasks increment the shared input revision and mark plans as stale but do not automatically trigger recalculation.",
+          "selections": [
+            {
+              "citation_id": "rg-kb-assistant#assistant-confirmation",
+              "quote": "The implemented dispatcher changes are crew availability, moving an assigned active task to another available crew, and cancelling an active assigned or unassigned task. Each uses a structured preview tied to a saved plan and input revision, then explicit confirmation. Discarding a preview makes no business change; confirming a cancel_task action instead cancels the task and retains its history. Task movement checks travel plus service plus required depot-return time against the configured shift, retaining every other assigned task. Infeasible changes are rejected."
+            },
+            {
+              "citation_id": "rg-kb-assistant#assistant-confirmation",
+              "quote": "Confirmed movement stores a persistent task-to-crew constraint. Greedy and GA respect it on later recalculation, including after new tasks arrive. If that crew is unavailable or the route cannot fit, the task is explicitly unassigned instead of silently moved elsewhere. Confirmation validates current input, task and configuration versions in one transaction. Cancellation reuses A's task service; availability reuses B's crew service. Recalculation is a separate explicit action and can fail without undoing a confirmed change. New tasks still use inspection/review; arbitrary priority, duration, deadline and account edits are outside this interface. Static answers never execute changes or establish that a particular receipt succeeded."
+            },
+            {
+              "citation_id": "rg-kb-integration#integration-change-confirmation",
+              "quote": "Task confirmation rechecks input/task versions and a fingerprint of routing configuration and depot. A move stores a durable crew constraint; cancellation calls the authoritative workflow service and preserves history. Greedy and GA honor these constraints after new tasks arrive. Unavailable or infeasible locked assignments stay explicitly unassigned. Availability and task changes increment input revision but do not recalculate. Explicitly replan and report the actual saved plan IDs. If planning fails, retain the confirmed change, stale-plan status and a controlled retry receipt. Duplicate confirmation cannot repeat business effects. Schema v6 adds task-change receipts, audit events and persistent crew constraints, preserving existing business records and revision during migration."
+            },
+            {
+              "citation_id": "rg-kb-routing#routing-input",
+              "quote": "Both Greedy and the custom genetic algorithm (GA) are implemented. PlanningService reads all active tasks and all four configured crews in one database snapshot. Saved task priority and service_minutes are inputs; the planner does not infer them again from photos or substitute today's rule table. Only available crews receive tasks. Both algorithms use the same travel matrix, depot, settings and RoutingProblem evaluator."
+            },
+            {
+              "citation_id": "rg-kb-routing#routing-input",
+              "quote": "The same snapshot includes confirmed task-to-crew constraints. Both algorithms must retain the selected crew on later recalculation. The evaluator normalizes candidate ownership before evaluating routes; it never treats a lock as a soft optimization preference. An unavailable locked crew or infeasible locked assignment produces an explicit unassigned reason. New tasks may change stop order and total work, but cannot silently change a locked task's crew."
+            }
+          ],
+          "sources": [
+            {
+              "citation_id": "rg-kb-assistant#assistant-confirmation",
+              "kind": "knowledge",
+              "title": "Crew adjustments require confirmation",
+              "classification": "confirmed_project_fact",
+              "content": "## Crew adjustments require confirmation\n\n\n\nThe implemented dispatcher changes are crew availability, moving an assigned active task to another available crew, and cancelling an active assigned or unassigned task. Each uses a structured preview tied to a saved plan and input revision, then explicit confirmation. Discarding a preview makes no business change; confirming a cancel_task action instead cancels the task and retains its history. Task movement checks travel plus service plus required depot-return time against the configured shift, retaining every other assigned task. Infeasible changes are rejected.\n\nConfirmed movement stores a persistent task-to-crew constraint. Greedy and GA respect it on later recalculation, including after new tasks arrive. If that crew is unavailable or the route cannot fit, the task is explicitly unassigned instead of silently moved elsewhere. Confirmation validates current input, task and configuration versions in one transaction. Cancellation reuses A's task service; availability reuses B's crew service. Recalculation is a separate explicit action and can fail without undoing a confirmed change. New tasks still use inspection/review; arbitrary priority, duration, deadline and account edits are outside this interface. Static answers never execute changes or establish that a particular receipt succeeded.\n\n\n\n\n\nTask sources: [src-task-change-service](../roadguard/assistant/task_change_service.py), [src-task-change-models](../roadguard/assistant/task_change_models.py), [src-workflow-service](../roadguard/inspections/service.py), [src-routing-evaluation](../roadguard/routing/evaluation.py).",
+              "version": "8",
+              "sha256": "8b3909f8c308d18380e5464b5e2a862a9ecb5e29aa3594beba798ef4172b1c94",
+              "provenance": [
+                {
+                  "source_id": "context-agents",
+                  "path": "AGENTS.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "context-team",
+                  "path": "Miscellaneous/TEAM_WORK_ALLOCATION.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "src-workflow-schema",
+                  "path": "SystemCode/backend/roadguard/schemas/workflow.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "fa0a27c874b408406fa13c884b82b71882a36febf0655b976b01d72b7c93041f",
+                  "version": "a-workflow-v5"
+                },
+                {
+                  "source_id": "src-crew-schema",
+                  "path": "SystemCode/backend/roadguard/crews/schemas.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "a8fef8ab8de1858535ee7a8dd5d511c05f06cc67c5f9e76f55f7f4997364bd4f",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-crew-service",
+                  "path": "SystemCode/backend/roadguard/crews/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "80b06e27c2faa76d103d9eccce1d1566905980938d805ea7cc9709472f4f689e",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+                },
+                {
+                  "source_id": "src-routing-service",
+                  "path": "SystemCode/backend/roadguard/routing/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "2398a385d646496c833ed68d4894aa58018d9edf621446f1422720eef690a8b2",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-assistant-change",
+                  "path": "SystemCode/backend/roadguard/assistant/change_service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "70ee0587c0e6fd7001a9bd61c5294faee31f578b704b3b35d2d29bc44808a89c",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-task-change-service",
+                  "path": "SystemCode/backend/roadguard/assistant/task_change_service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "936cd7a4e5945de29cc9254bb4c35fb554b36e4a38defddd17fc620cc9000199",
+                  "version": "c-assistant-task-change-v1"
+                },
+                {
+                  "source_id": "src-task-change-models",
+                  "path": "SystemCode/backend/roadguard/assistant/task_change_models.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "364823083506cfcf92c2efd1333922f309e4ccd3dc2fe8ddce2b1822a89a5975",
+                  "version": "c-assistant-task-change-v1"
+                },
+                {
+                  "source_id": "src-workflow-service",
+                  "path": "SystemCode/backend/roadguard/inspections/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "d91df3df6d2526fbacb76ecf37862c8e6233af79f2c2a43a19343ed300bf27ed",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-routing-evaluation",
+                  "path": "SystemCode/backend/roadguard/routing/evaluation.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "ed166c1c8258abadb9b33a6ff1d4dfdd7fbbb1d5d8900c55ee2e1c7b1ff5df59",
+                  "version": "task-adjustment-english-20261021"
+                }
+              ]
+            },
+            {
+              "citation_id": "rg-kb-integration#integration-change-confirmation",
+              "kind": "knowledge",
+              "title": "Crew-change preview and confirmation",
+              "classification": "confirmed_project_fact",
+              "content": "## Crew-change preview and confirmation\n\n\n\nSupported changes are crew availability, task reassignment and task cancellation; they use deterministic domain services without GPT. A task preview identifies action, task_id, target_crew_id when moving, based_on_plan_id and input_revision. It returns before/after route totals and checks travel, service and configured depot-return time against the shift. No other assigned task may be evicted to make a move fit. Infeasible previews are rejected without business changes. Discarding a preview differs from confirming cancellation of a task. Natural language alone, quoted text or retrieved instructions cannot confirm changes. Priority, duration, deadline and account edits remain outside this scope.\n\nThe existing CrewPatch accepts request_id, expected_version and available; it does not accept expected_revision. The assistant validates the preview's input revision and crew version inside one write transaction, then calls CrewService.update_in_transaction and stores the receipt atomically. Do not claim the present PATCH already implements the entire assistant preview protocol.\n\nTask confirmation rechecks input/task versions and a fingerprint of routing configuration and depot. A move stores a durable crew constraint; cancellation calls the authoritative workflow service and preserves history. Greedy and GA honor these constraints after new tasks arrive. Unavailable or infeasible locked assignments stay explicitly unassigned. Availability and task changes increment input revision but do not recalculate. Explicitly replan and report the actual saved plan IDs. If planning fails, retain the confirmed change, stale-plan status and a controlled retry receipt. Duplicate confirmation cannot repeat business effects. Schema v6 adds task-change receipts, audit events and persistent crew constraints, preserving existing business records and revision during migration.\n\n\n\n\n\nTask sources: [src-task-change-service](../roadguard/assistant/task_change_service.py), [src-task-change-models](../roadguard/assistant/task_change_models.py), [src-task-change-schema](../roadguard/assistant/task_change_schema.py), [src-workflow-service](../roadguard/inspections/service.py).",
+              "version": "6",
+              "sha256": "9827696d6b833ee1b8116a66be1630be5aa7d14d4cbdc98efcb5a3c7d826abd9",
+              "provenance": [
+                {
+                  "source_id": "src-crew-schema",
+                  "path": "SystemCode/backend/roadguard/crews/schemas.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "a8fef8ab8de1858535ee7a8dd5d511c05f06cc67c5f9e76f55f7f4997364bd4f",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c"
+                },
+                {
+                  "source_id": "src-crew-service",
+                  "path": "SystemCode/backend/roadguard/crews/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "80b06e27c2faa76d103d9eccce1d1566905980938d805ea7cc9709472f4f689e",
+                  "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c-merge-20261021"
+                },
+                {
+                  "source_id": "src-routing-service",
+                  "path": "SystemCode/backend/roadguard/routing/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "2398a385d646496c833ed68d4894aa58018d9edf621446f1422720eef690a8b2",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-auth-permissions",
+                  "path": "SystemCode/backend/roadguard/auth/dependencies.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "6db58a08ae1929cff70a6635f5c88ea89051a510a69d45925fee30258746ba32",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "context-team",
+                  "path": "Miscellaneous/TEAM_WORK_ALLOCATION.md",
+                  "integrity": "unhashed_mutable_context",
+                  "sha256": null,
+                  "version": null
+                },
+                {
+                  "source_id": "src-assistant-change",
+                  "path": "SystemCode/backend/roadguard/assistant/change_service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "70ee0587c0e6fd7001a9bd61c5294faee31f578b704b3b35d2d29bc44808a89c",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-task-change-service",
+                  "path": "SystemCode/backend/roadguard/assistant/task_change_service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "936cd7a4e5945de29cc9254bb4c35fb554b36e4a38defddd17fc620cc9000199",
+                  "version": "c-assistant-task-change-v1"
+                },
+                {
+                  "source_id": "src-task-change-models",
+                  "path": "SystemCode/backend/roadguard/assistant/task_change_models.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "364823083506cfcf92c2efd1333922f309e4ccd3dc2fe8ddce2b1822a89a5975",
+                  "version": "c-assistant-task-change-v1"
+                },
+                {
+                  "source_id": "src-task-change-schema",
+                  "path": "SystemCode/backend/roadguard/assistant/task_change_schema.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "b058462bb12293dd747dc25ae448825d1fb444ca3e37577020a165233302937a",
+                  "version": "c-assistant-task-change-v1"
+                },
+                {
+                  "source_id": "src-workflow-service",
+                  "path": "SystemCode/backend/roadguard/inspections/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "d91df3df6d2526fbacb76ecf37862c8e6233af79f2c2a43a19343ed300bf27ed",
+                  "version": "task-adjustment-english-20261021"
+                }
+              ]
+            },
+            {
+              "citation_id": "rg-kb-routing#routing-input",
+              "kind": "knowledge",
+              "title": "Implemented planning and shared constraints",
+              "classification": "confirmed_project_fact",
+              "content": "## Implemented planning and shared constraints\n\n\n\nBoth Greedy and the custom genetic algorithm (GA) are implemented. PlanningService reads all active tasks and all four configured crews in one database snapshot. Saved task priority and service_minutes are inputs; the planner does not infer them again from photos or substitute today's rule table. Only available crews receive tasks. Both algorithms use the same travel matrix, depot, settings and RoutingProblem evaluator.\n\nThe same snapshot includes confirmed task-to-crew constraints. Both algorithms must retain the selected crew on later recalculation. The evaluator normalizes candidate ownership before evaluating routes; it never treats a lock as a soft optimization preference. An unavailable locked crew or infeasible locked assignment produces an explicit unassigned reason. New tasks may change stop order and total work, but cannot silently change a locked task's crew.\n\nEach input task must appear exactly once, either in a crew's ordered stops or in unassigned_tasks. Unknown service duration, inaccessible travel and shift limits are constraints, not permission to drop tasks silently. All available crews begin at the same depot at planning_start_at. This is static replanning from a common start; there is no live vehicle tracking, in-transit dispatch or task time-window model.",
+              "version": "2",
+              "sha256": "303c0b5da494c661ca16725fd5f75d37dce81f621076363e2dcabba161419033",
+              "provenance": [
+                {
+                  "source_id": "src-routing-service",
+                  "path": "SystemCode/backend/roadguard/routing/service.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "2398a385d646496c833ed68d4894aa58018d9edf621446f1422720eef690a8b2",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-routing-models",
+                  "path": "SystemCode/backend/roadguard/routing/models.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "b17a0443bf7c6d4e6341171fe46bdd846398181562cfea8a624a8449186a2467",
+                  "version": "task-adjustment-english-20261021"
+                },
+                {
+                  "source_id": "src-routing-evaluation",
+                  "path": "SystemCode/backend/roadguard/routing/evaluation.py",
+                  "integrity": "sha256_verified",
+                  "sha256": "ed166c1c8258abadb9b33a6ff1d4dfdd7fbbb1d5d8900c55ee2e1c7b1ff5df59",
+                  "version": "task-adjustment-english-20261021"
+                }
+              ]
+            }
+          ],
+          "package_version": "a-knowledge-v15",
+          "manifest_sha256": "d7554aec4e3b97ad1e3925908939ccfa456f00d4b42b8be0e63850488892f1a0",
+          "plan": null,
+          "model": "gpt-4.1-mini",
+          "model_called": true,
+          "answer_mode": "grounded_summary",
+          "business_changes_applied": false,
+          "warnings": [
+            "Answers use verified sources; rule values come from original evidence. Source validation does not guarantee every semantic judgment.",
+            "Demo rules, simulated travel and pending decisions are not real engineering conclusions.",
+            "This endpoint does not change crews, replan or write business records. Without a comparison plan, improvement cannot be inferred."
+          ]
+        },
+        "exact_sources": true,
+        "exact_quotes": true,
+        "english_answer": true,
+        "passed": true
+      }
+    ]
+  },
+  "browser": {
+    "move_confirm_replan": "passed",
+    "locked_task_in_refreshed_route": "passed",
+    "overtime_rejected_without_confirm": "passed",
+    "cancel_confirm_replan_excludes_task": "passed",
+    "mobile_viewport": [
+      390,
+      844
+    ],
+    "horizontal_overflow": false,
+    "original_dispatcher_session_restored": true
+  },
+  "preservation": {
+    "training_files_unchanged": 14,
+    "business_tables_unchanged": [
+      "inspections",
+      "tasks",
+      "operation_keys",
+      "crews",
+      "route_plans",
+      "inspection_owners",
+      "assistant_changes",
+      "assistant_change_events"
+    ],
+    "schema_version": 6,
+    "input_revision": 7,
+    "new_task_change_tables_empty": true
+  },
+  "delivery": "Local only; no commit, push or PR."
+}

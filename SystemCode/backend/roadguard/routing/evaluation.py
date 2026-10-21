@@ -64,12 +64,17 @@ class RoutingProblem:
         self.prefiltered: dict[int, UnassignedReason] = {}
         for index, task in enumerate(self.tasks):
             reason = self._prefilter_reason(index)
+            if reason and reason != "assigned_crew_unavailable" and task.task_id in planning_input.task_crew_constraints:
+                reason = "assigned_crew_infeasible"
             if reason is not None:
                 self.prefiltered[index] = reason
         self.schedulable = [i for i in range(len(self.tasks)) if i not in self.prefiltered]
 
     def _prefilter_reason(self, index: int) -> UnassignedReason | None:
         """Tasks that no crew could ever serve, identical for every algorithm."""
+        locked = self.input.task_crew_constraints.get(self.tasks[index].task_id)
+        if locked and locked not in self.available_crews:
+            return "assigned_crew_unavailable"
         node = index + 1
         if self.service[index] is None:
             return "unknown_service_minutes"
@@ -105,6 +110,13 @@ class RoutingProblem:
         """Decode crew orders; infeasible stops are skipped and reported, never hidden."""
         if len(routes) != len(self.available_crews):
             raise ValueError("one route per available crew is required")
+        # Normalize every candidate ownership before evaluation, including GA mutations.
+        normalized = [[] for _ in self.available_crews]
+        for slot, route in enumerate(routes):
+            for task in route:
+                locked = self.input.task_crew_constraints.get(self.tasks[task].task_id)
+                normalized[self.available_crews.index(locked) if locked else slot].append(task)
+        routes = normalized
         kept_routes, skipped = [], []
         travel_totals, return_legs, service_totals, arrival, completion = [], [], [], {}, {}
         for route in routes:
@@ -112,7 +124,7 @@ class RoutingProblem:
             for task in route:
                 ok, reason = self.fits(elapsed, previous, task)
                 if not ok:
-                    skipped.append((task, reason))
+                    skipped.append((task, "assigned_crew_infeasible" if self.tasks[task].task_id in self.input.task_crew_constraints else reason))
                     continue
                 travel = self.leg(previous, task)
                 arrival[task] = elapsed + travel
@@ -169,7 +181,8 @@ class RoutingProblem:
                 task = self.tasks[task_index]
                 completed = evaluation.completion[task_index]
                 stops.append(Stop(
-                    sequence=sequence, task_id=task.task_id, latitude=task.latitude,
+                    sequence=sequence, task_id=task.task_id, damage_label=task.damage_label,
+                    locked_crew_id=self.input.task_crew_constraints.get(task.task_id), latitude=task.latitude,
                     longitude=task.longitude, priority=task.priority,
                     travel_minutes_from_previous=self.leg(previous, task_index),
                     arrival_minute=evaluation.arrival[task_index],
@@ -177,6 +190,7 @@ class RoutingProblem:
                 previous = task_index
             total = evaluation.crew_travel[slot] + evaluation.crew_service[slot]
             crew_routes.append(CrewRoute(
+                shift_remaining_minutes=max(0.0, self.limit-total) if self.limit is not None else None,
                 crew_id=crew.crew_id, available=True, status="assigned" if stops else "idle",
                 stops=stops, travel_minutes=evaluation.crew_travel[slot],
                 return_travel_minutes=evaluation.crew_return[slot],

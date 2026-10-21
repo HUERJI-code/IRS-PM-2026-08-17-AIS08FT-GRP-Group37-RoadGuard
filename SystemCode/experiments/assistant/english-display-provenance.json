@@ -1,0 +1,149 @@
+{
+  "description": "Serialization-only archival conversion. Original execution hashes remain historical; no translated execution is claimed.",
+  "records": [
+    {
+      "path": "answer-first-live-20261021.json",
+      "original_sha256": "29d10ad71e778f9a1b9379ff12c7f8993dbe7bb5a009c68d96b67388480db1fd",
+      "escaped_sha256": "5b155e8c4578bc0d882c47f998739415ba821a746121c03b0905bca8fc64fce0",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a01.json",
+      "original_sha256": "c84012aaeabbd55eca165df8eb17001be549011a5cc77e0f5ddcaa2139b37407",
+      "escaped_sha256": "ba1843fdc8d77be63af474235529a708302b046f5c727c8924e58b3c6e5e7548",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a02.json",
+      "original_sha256": "cb4595c2e5c958791031e32a9dfb98ce084ca00ef0f5a793dac224b3ad0e66db",
+      "escaped_sha256": "c36993737b7e17d7a76946f751238113e9e62d82b07832ef9be40f64e9e739b3",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a03.json",
+      "original_sha256": "d38f9f120c99cc60611b3f877273bf170775a6e998b210e7d879ab8ecc48e2f1",
+      "escaped_sha256": "6f33cc79d82ed516838377920ff21a05b754388de006cfbcfc76880f5521ec9a",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a04.json",
+      "original_sha256": "65931da719f2159292df1bf13d7f61886ba50b00ab99c9f79610039d5f8e8fdd",
+      "escaped_sha256": "0eba0a28f6abc4d56820f2ebb4a2f64901568b71fecddb3fb050ff076abbca58",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a05.json",
+      "original_sha256": "789f2516aa142fa7cf438b1a3fd28e97dafb54fd70ce94aa7104675b423d9e9f",
+      "escaped_sha256": "01621cd577a754836a37078eb24317baece097a449e1fe8a1ed6925642a12e25",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a06.json",
+      "original_sha256": "195e90761c08ad0f3e28537c0731a61e7a4c37361feb2ab61655af8390571080",
+      "escaped_sha256": "07bb5a540bea2a4e1f947b05589383ec368fbc30583e37132a4e88015723da91",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a07.json",
+      "original_sha256": "43bb893a3f18bbce904285b33bb9374e02f5d7299fac92135150994d1093b249",
+      "escaped_sha256": "53445428601bc56140a47bc88a4ebc2f7dc677cd1e907337b441517f434b88e5",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a08.json",
+      "original_sha256": "0ff120ee909cff31d5060aa5f5dce0951c232dc17ada45b5bfc20a72f332f8a7",
+      "escaped_sha256": "00910f8b172928e7030496c38701d27c9b6760b246ad818874125b89b3936b73",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a09.json",
+      "original_sha256": "448333a935c692edccb0084fc583c2a71cef43bbf6703546fce15840501677c6",
+      "escaped_sha256": "792b9e9a18f15dda25d67a6d239b9e16282e1ee080a8e166d3b767a2f2d1121c",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a10.json",
+      "original_sha256": "99c307498fda3a98e9e2359048e7775059c6a95ad00b2a156edfe7b7ec4ffe4f",
+      "escaped_sha256": "c7d07e618d554f4e04dab621c8ffe7da065f4d94218ab073f22717a1811251c7",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/a11.json",
+      "original_sha256": "0f6a984c0464e49f4dbb704fe5b4a5c8946d8f8f3d78fe08a4709f1b88c2aaca",
+      "escaped_sha256": "efe81109d2c79111fc115d33d210e7821d7627e883af656b6d972944355c4c19",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q01.json",
+      "original_sha256": "7d866f96c62e95e9145341de89596b69c49bac23e0d050c2fa678402108c1548",
+      "escaped_sha256": "011dfa000c6b7ba0037f6defce4a76a2c971fb0aaa6c9b0d2c89b14b8f68ac0a",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q02.json",
+      "original_sha256": "171b88cda9964402d92ac25388414aa8acacd15ae5c91acde326b401c680b430",
+      "escaped_sha256": "4f57e83ba6a74a5bed7158870453af2ae7b6f926cc1f80367965c3ebba084d41",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q03.json",
+      "original_sha256": "2fbef950bfdb92e5c7ad098f9020fe34f78f149a5b28fcd219eb477a18fbaa63",
+      "escaped_sha256": "4f95f59348f3c90226436e18bf007e26f378853a31edf05690bac3c5a171fa15",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q04.json",
+      "original_sha256": "579075fc64e3508e6b04616dd48fb0b0ab76224eb885596b6377e04243a24b89",
+      "escaped_sha256": "a4fc32223044c4e8af79e38d2c7164cf80f036cb2780656400da10b1c384737d",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q05.json",
+      "original_sha256": "4c0b762193ac7d1723ef5525657a1bef1be182da71f311b6c7edaf986bd6eb78",
+      "escaped_sha256": "40fbf0a06f8905cb61f4b4b49ff7cb535f4d54e1464750c8b344e039ca5f3492",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q06.json",
+      "original_sha256": "8c29337f078d34f527acf6b4acbfbb54bbf50729f8254ea2caea54f25dff4b99",
+      "escaped_sha256": "3ac6c044059a90c04532e2f64281234cc30d6a803fe67df45e052a5f4aaf08f0",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q07.json",
+      "original_sha256": "3a18770e536df5dfdff6d4e9439f48955ea1ab446f0ad0c4560af038b0b08cb8",
+      "escaped_sha256": "a406af4147a028c97ea9363a5e2360163c791ddd73982bfd623ed6f05a26d3ed",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q08.json",
+      "original_sha256": "d8d7aacc0b244714efc8f30cd5fcd1c3b48ef27a8f84861fd4b92b13a57f3dcf",
+      "escaped_sha256": "5a0fb74f2d5a75d2f042ed3565239f59ae547918e59d7c9e3a14220c962dfc1b",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q09.json",
+      "original_sha256": "12edf939927f7e4e21f28484aafcd9056fa3e6ae1b413915b9b43d099014aab7",
+      "escaped_sha256": "0a17376e91f0a0cd9fbb7984362dfdf4a6af3532f93a66a3e048918106465a07",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "c-step13-20261021/q10.json",
+      "original_sha256": "77013b9ad8a6139a2e40b1a4d1f84ef4bbdb7ae0306baa1c2d22b37e0e7dd0d4",
+      "escaped_sha256": "cc0963fc425520fd9d1fdf6721f285f148f3c44136a0256feae681ae74f298a7",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "chroma-20261021/http-smoke.json",
+      "original_sha256": "edc0f79296a213b05e2b0c1a9cd3fa44ed56dd121b1b064028fe888b6b89c7a8",
+      "escaped_sha256": "66d609bb18b8ea154630c894cfdda5918ffabf9d5078689d6a12106f27e90944",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    },
+    {
+      "path": "chroma-20261021/retrieval.json",
+      "original_sha256": "d59eede0e6c86b8e3538ab5409b0950720e20c26306400afc27dba35ecd5373d",
+      "escaped_sha256": "b17aa80d70bad476afa0fecea53e915df8247ad0104154bd8feaf695d991842e",
+      "change": "Lossless JSON Unicode escaping only; captured strings and values unchanged."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # RoadGuard three-person work allocation and interface handoff
 
-Prepared: 2026-10-11; status updated: 2026-10-20. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. GPT/RAG and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
+Prepared: 2026-10-11; status updated: 2026-10-21. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. ChromaDB/E5 retrieval and optional GPT answers are implemented; broad answer-quality evaluation and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
 
 All members and agents follow root [AGENTS.md](../AGENTS.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
 
@@ -78,7 +78,7 @@ Paths follow the current `roadguard` package. A owns shared directories; owners 
 | `SystemCode/backend/roadguard/main.py`, configuration/DB/errors | A | B/C routers centrally registered by A |
 | `SystemCode/backend/roadguard/vision/`, `rules/`, `inspections/` | A | inspections owns inspection/linked-task transactions; outputs reviews/tasks without requiring model internals |
 | `SystemCode/backend/roadguard/crews/`, `routing/` | B | Implemented crew/plan services using A's consistent task snapshots |
-| `SystemCode/backend/roadguard/assistant/` (pending) | C | A/B facts; confirmed domain-service changes, no direct table writes |
+| `SystemCode/backend/roadguard/assistant/` (implemented) | C | A/B facts; confirmed domain-service changes, no direct table writes |
 | `SystemCode/frontend/` | C | API business conclusions |
 | `SystemCode/backend/knowledge/` | A content/C retrieval | A reviews rules; C indexes/retrieves/cites |
 | DB tables/init/migration | A coordinates B/C definitions | One shared-entry maintainer avoids simultaneous initialization edits |
@@ -101,7 +101,7 @@ Shared conventions: string IDs; `latitude`/`longitude`; confidence 0–1; travel
 | **RoutePlan** | B → A/C | `plan_id`, `input_revision`, `algorithm`, `planning_start_at`, `crew_routes`, `unassigned_tasks`, `metrics`, `matrix_provider`, `is_stale` | `ga`/`greedy`; four crews; unassigned IDs/reasons; query saved ID |
 | **CrewRoute / Stop** | B → C | Crew ID, ordered tasks, coordinates, relative arrival/completion minutes, travel/repair/total, optional geometry | Count depot-to-first; return by finalized policy; labeled schematic without geometry |
 | **Explanation** | C → frontend | `plan_id`, `answer`, `sources`, `supported` | Prefer matching plan/A knowledge; state insufficient evidence |
-| **ChangeRequest** | C → frontend/B | `request_id`, `based_on_plan_id`, `input_revision`, `type`, structured parameters, `status`, post-confirmation `result_plan_id` | Initially `crew_availability`; `pending`/`confirmed`/`cancelled`/`failed`; no mutation solely from natural language |
+| **ChangeRequest** | C → frontend/B | `request_id`, `based_on_plan_id`, `input_revision`, `type`, structured parameters, `status`, post-confirmation `result_plan_id` | Implemented crew availability and task reassignment/cancellation via preview/confirm; persistent crew constraints survive recalculation; no mutation solely from natural language |
 
 Schemas validate stable detection IDs, selected objects, demo sources and UTC. Demo samples do not establish formal priorities/durations.
 
@@ -156,7 +156,7 @@ The initial assistant changes only availability to reduce C's workload. Urgent n
 | PlanningService | B | A/C confirmation | Generate/save both algorithms from current tasks/crews |
 | CrewService (implemented) | B | B API; future C confirmation | Validate/update availability with expected_version; return revision for a separate explicit recalculation |
 | RouteQueryService | B | C assistant | ID → saved facts/metrics |
-| KnowledgeRetrievalService (pending C) | C | C assistant | Question/context → versioned passages/sources; [a-knowledge-v10](../SystemCode/backend/knowledge/README.md) has eleven documents and 30 synthetic acceptance specifications, not executed RAG results or engineering approval |
+| KnowledgeRetrievalService (implemented C) | C | C assistant | Question/context → versioned passages/sources; [a-knowledge-v15](../SystemCode/backend/knowledge/README.md) has eleven documents and 30 synthetic acceptance specifications, not executed RAG results or engineering approval |
 
 Owners add function signatures on freeze. A inspections and C assistant call B's service rather than duplicate dispatch algorithms.
 

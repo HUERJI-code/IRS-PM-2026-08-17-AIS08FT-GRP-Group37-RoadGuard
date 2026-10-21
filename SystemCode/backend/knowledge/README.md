@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v12`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT acceptance remains outstanding.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v16`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The separate assistant module now implements local retrieval, opt-in evidence questions and confirmed crew changes; real GPT connectivity has been exercised, while broad semantic acceptance remains outstanding.
 
 ## Corpus map
 
@@ -49,3 +49,54 @@ v11 reconciles C's feature with the eleven-document English corpus, preserves it
 ## Chroma and embeddings
 
 v12 uses persistent ChromaDB and pinned local multilingual E5 embeddings. See the [vector retrieval guide](../roadguard/assistant/VECTOR_RETRIEVAL.md) for setup, reindexing and current contracts. The forty stable parent sections are split into token-bounded passages; live plans and account data remain outside the vector database. Rebuild the index after a reviewed manifest/source change.
+
+## Rule evidence selection
+
+v13 retains the same eight labels, rule values, eleven documents and forty parent
+citations. GPT selects server-owned evidence IDs; the backend restores exact
+source spans. Specific label questions expose only matching rows from the rule
+and label tables, using bounded English/Chinese aliases. Table headings and
+demo/version qualifications accompany each row as separate verbatim selections;
+nonadjacent text is never represented as one quote. Existing source, substring,
+duplicate, rule-version and saved-plan revision checks remain mandatory.
+See the [assistant guide](../roadguard/assistant/README.md) for limitations and tests.
+Rebuild the local Chroma index after this manifest update; model weights are reused.
+
+## Answer-first summaries (v14)
+
+The query contract is now c-assistant-query-v2, with answer_mode=grounded_summary.
+The answer is readable prose; selections and sources retain the exact evidence.
+One GPT request selects evidence IDs and drafts a short answer. Canonical repair
+table answers are rendered from validated rows; other summaries use the draft
+with bounded checks on numbers, priorities and business identifiers. These checks
+do not prove full semantic entailment. The frontend shows the answer first and
+keeps original quotations, provenance and versions in a closed sources disclosure.
+Update the frontend OpenAPI snapshot/types with the backend. Rebuild the local
+index with cached embeddings; no business-data migration or model change is needed.
+
+## Persistent task adjustments and English output (v15)
+
+The dispatcher loads a saved plan, reviews all crew routes, and previews an assigned
+active task move or active task cancellation. Server feasibility includes travel,
+service and configured depot return. Confirmation persists crew affinity or task
+cancellation; subsequent explicit Greedy/GA runs honor the saved affinity even
+when new tasks arrive. Unavailable/infeasible locked assignments remain explicitly
+unassigned. Preview discard makes no business change. Schema v6 preserves existing
+records while adding audited task-change receipts and constraints.
+
+All current UI copy and generated answers use English. Multilingual aliases still
+accept non-English questions. Historical experiment strings remain byte-equivalent
+JSON values through escaped serialization, with display adaptations and hashes
+recorded separately; they are not new test results. This package retains eleven
+documents and forty stable parent citations. Rebuild the local index from cached
+embeddings after this reviewed update.
+
+
+## Assistant intent routing (v16)
+
+The query-v3 contract separates configured-model information and friendly scope
+guidance from grounded project answers. Direct responses have no model/retrieval
+call or invented citation. Repair and saved-route questions retain all source,
+label, rule-version and plan-revision checks. English answers support bounded
+multilingual intent matching. Rebuild the local index after this source update;
+the cached embedding model is reused. No business migration or rule change occurs.

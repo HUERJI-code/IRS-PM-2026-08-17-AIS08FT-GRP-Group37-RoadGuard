@@ -1,13 +1,13 @@
 # RAG integration contract and acceptance requirements
 
-document_id: `rg-kb-integration`; document_version: `3`; owner: `A`.
+document_id: `rg-kb-integration`; document_version: `7`; owner: `A`.
 
 <a id="integration-status"></a>
 ## Scope and implementation status
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-status`.
 
-RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 embeddings, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. Static knowledge passages and embeddings are persisted locally; live plans remain authorized service reads. Real GPT connectivity and semantic quality remain unverified; provider doubles demonstrate only the local control flow.
+RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 embeddings, optional GPT evidence selection, saved-plan question context and persistent preview/confirm/cancel/replan endpoints. The assistant is dispatcher-only. Static knowledge passages and embeddings are persisted locally; live plans remain authorized service reads. Real GPT connectivity has been exercised locally; broad semantic acceptance remains outstanding. Provider doubles demonstrate only the local control flow.
 
 C owns retrieval, indexing, citations and answer/change-request services inside the shared backend; A owns knowledge correctness and B owns planning facts. Keep one authoritative task/crew/plan store and reuse the existing domain services. The model must not invent a second scheduler or write business tables directly.
 
@@ -24,7 +24,7 @@ The local loader validates the knowledge package on every request. A separate se
 
 Treat unchanged labels and business rules as versioned evidence. Changed files invalidate prior digests and require a new reviewed package; never relabel old chunks as current. Build a replacement index before switching active versions and retain enough metadata to audit historical answers. Runtime records retain their frozen rule versions; if matching evidence is absent, request it instead of substituting today's table.
 
-Mutable context_sources explain background and responsibility but do not override hashed executable/configuration facts. Do not bulk-index the whole repository, historical reports, secrets, uploaded images, SQLite files or synthetic runtime fixtures as current operational truth. English source IDs and schema terms remain unchanged when an answer is translated into Chinese. The current baseline uses local multilingual E5 vectors and cosine ranking with explicit limits. Retrieval sends selected passages to the evidence selector; cross-language coverage and answer sufficiency still require evaluation.
+Mutable context_sources explain background and responsibility but do not override hashed executable/configuration facts. Do not bulk-index the whole repository, historical reports, secrets, uploaded images, SQLite files or synthetic runtime fixtures as current operational truth. The interface and generated answers use English; multilingual question matching retains stable source IDs and schema terms. The current baseline uses local multilingual E5 vectors and cosine ranking with explicit limits. Retrieval sends selected passages to the evidence selector; cross-language coverage and answer sufficiency still require evaluation.
 
 Sources: [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../../AGENTS.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-workflow-service](../roadguard/inspections/service.py).
 
@@ -48,7 +48,9 @@ Sources: [src-auth-permissions](../roadguard/auth/dependencies.py), [src-auth-ac
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-answer-contract`.
 
-c-assistant-query-v1 returns status, supported, answer, selections, sources, package/manifest versions, saved-plan evidence and business_changes_applied=false. The provider selects excerpts; the server rejects forged citations and non-verbatim quotes. A configured provider is not evidence of successful real connectivity. Two-plan comparison is not supported by the first query contract.
+c-assistant-query-v3 returns status, supported, answer, selections, sources, package/manifest versions, saved-plan evidence and business_changes_applied=false. For answer_mode=grounded_summary, one provider call selects at most six server-owned evidence IDs and drafts a concise natural-language answer in English; it never authors quote text. The server renders canonical repair-rule answers directly from validated rows. Other answers use the draft after checking numerical literals, priorities and business identifiers against selected evidence. These checks do not establish complete semantic entailment. The frontend displays the answer first and collapses original quotations, versions and provenance by default. The backend restores exact source spans and required context (at most twelve selections), then rejects forged citations, altered or duplicate quotes and incorrect explicitly named damage rows. English/Chinese terminology aliases use longest non-overlapping matches so deep, sunken and wide labels do not collapse into their base classes. Comparisons that omit a named table row return insufficient_data. These bounded guards do not prove general semantic correctness for arbitrary phrasing. A configured provider is not evidence of successful real connectivity. Two-plan comparison is not supported by this query contract.
+
+Standalone assistant identity questions return status=model_info and answer_mode=server_configuration using the backend's configured assistant model name. They do not invoke GPT, retrieval or saved-plan reads, and remain available when generation is disabled or has no key. A missing model name is stated explicitly; configuration is not proof of a completed provider call. Clearly unrelated questions return status=out_of_scope, supported=false and answer_mode=scope_guidance with RoadGuard examples. Both direct paths return model_called=false, empty selections/sources and null package_version, manifest_sha256 and plan. They still require dispatcher authentication, CSRF and valid request fields. Bounded intent matching does not grant action permissions or exempt mixed project questions from RAG validation. Ambiguous questions follow the evidence path; insufficient evidence receives guidance while invalid evidence remains a validation error.
 
 Each factual paragraph must have sufficient evidence. A static citation such as rg-kb-routing#routing-objective supports the formula, not a numeric claim about today's plan. Dynamic statements need the saved plan facts as well. Say insufficient_data when evidence is absent; distinguish that from authorization errors or an explicitly empty saved plan. supported=true describes an evidenced answer, never proof that an action ran.
 
@@ -56,19 +58,21 @@ The acceptance_cases.json file supplies synthetic expected answers and forbidden
 
 Sources: [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-routing-models](../roadguard/routing/models.py), [src-routing-service](../roadguard/routing/service.py), [src-auth-permissions](../roadguard/auth/dependencies.py).
 
-Implementation sources: [src-assistant-query](../roadguard/assistant/query_service.py).
+Implementation sources: [src-assistant-query](../roadguard/assistant/query_service.py), [src-assistant-evidence](../roadguard/assistant/evidence.py), [src-assistant-provider](../roadguard/assistant/provider.py), [src-assistant-query-models](../roadguard/assistant/query_models.py), [src-assistant-answering](../roadguard/assistant/answering.py), [src-assistant-intents](../roadguard/assistant/intents.py).
 
 <a id="integration-change-confirmation"></a>
 ## Crew-change preview and confirmation
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-integration#integration-change-confirmation`.
 
-The first supported change is one crew availability update using strict local command syntax; it does not call GPT. Require a structured preview identifying the crew, intended value, based_on_plan_id and input_revision, followed by explicit user confirmation. Cancellation must make no business change. Natural language alone, quoted text or a retrieved instruction cannot confirm a change. Requests to edit priorities, service durations, deadlines, accounts or arbitrary tables are outside this first assistant scope.
+Supported changes are crew availability, task reassignment and task cancellation; they use deterministic domain services without GPT. A task preview identifies action, task_id, target_crew_id when moving, based_on_plan_id and input_revision. It returns before/after route totals and checks travel, service and configured depot-return time against the shift. No other assigned task may be evicted to make a move fit. Infeasible previews are rejected without business changes. Discarding a preview differs from confirming cancellation of a task. Natural language alone, quoted text or retrieved instructions cannot confirm changes. Priority, duration, deadline and account edits remain outside this scope.
 
 The existing CrewPatch accepts request_id, expected_version and available; it does not accept expected_revision. The assistant validates the preview's input revision and crew version inside one write transaction, then calls CrewService.update_in_transaction and stores the receipt atomically. Do not claim the present PATCH already implements the entire assistant preview protocol.
 
-An availability change returns input_revision/planning_input_changed/replayed and does not recalculate. Explicitly call planning with the returned revision, then report the actual saved plan IDs. If the mutation succeeds but recalculation fails, report both outcomes, retain stale-plan status and offer a controlled retry; never invent atomic rollback or a successful new plan. Duplicate confirmation must not repeat business effects; schema v5 persists requests and audit records, with replay protection, expiry and bounded explicit replanning recovery.
+Task confirmation rechecks input/task versions and a fingerprint of routing configuration and depot. A move stores a durable crew constraint; cancellation calls the authoritative workflow service and preserves history. Greedy and GA honor these constraints after new tasks arrive. Unavailable or infeasible locked assignments stay explicitly unassigned. Availability and task changes increment input revision but do not recalculate. Explicitly replan and report the actual saved plan IDs. If planning fails, retain the confirmed change, stale-plan status and a controlled retry receipt. Duplicate confirmation cannot repeat business effects. Schema v6 adds task-change receipts, audit events and persistent crew constraints, preserving existing business records and revision during migration.
 
 Sources: [src-crew-schema](../roadguard/crews/schemas.py), [src-crew-service](../roadguard/crews/service.py), [src-routing-service](../roadguard/routing/service.py), [src-auth-permissions](../roadguard/auth/dependencies.py), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md).
 
 Implementation sources: [src-assistant-change](../roadguard/assistant/change_service.py).
+
+Task sources: [src-task-change-service](../roadguard/assistant/task_change_service.py), [src-task-change-models](../roadguard/assistant/task_change_models.py), [src-task-change-schema](../roadguard/assistant/task_change_schema.py), [src-workflow-service](../roadguard/inspections/service.py).

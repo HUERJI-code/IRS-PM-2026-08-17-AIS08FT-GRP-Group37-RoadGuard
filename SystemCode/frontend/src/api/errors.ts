@@ -21,6 +21,10 @@ const messages: Record<string, string> = {
   retrieval_configuration_error: 'The retrieval configuration is invalid. Contact the maintainer.',
   retrieval_input_too_long: 'This question exceeds the embedding limit. Please shorten it.',
 
+  task_change_infeasible: 'This change cannot retain all tasks within the shift and travel constraints. Review the details and select another crew.',
+  task_not_assigned: 'This task is not assigned in the selected plan. Load the current plan.',
+  task_change_not_pending: 'This task change is already closed. Refresh its saved record.',
+  task_change_not_confirmed: 'Confirm the task preview before recalculating.',
   unsupported_change: 'Specify enabling or disabling one crew using the example command.',
   change_not_pending: 'This change is closed or already confirmed.',
   change_not_confirmed: 'Review the preview and confirm the crew change first.',

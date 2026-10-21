@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-21",
+  "scope": "targeted_local_defect_acceptance_not_overall_semantic_accuracy",
+  "agent_model_calls": 8,
+  "automatic_retries": 0,
+  "records": [
+    {
+      "case_id": "ordinary",
+      "question_english": "Ordinary pothole repair duration and priority",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 3.59,
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table"
+      ],
+      "verified_source_and_quote_checks": 3,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "sunken",
+      "question_english": "Sunken alligator crack repair duration and priority",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 1.8,
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table",
+        "rg-kb-pending#pending-business",
+        "rg-kb-labels#label-table",
+        "rg-kb-demo-rules#demo-null-provenance"
+      ],
+      "verified_source_and_quote_checks": 10,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "alligator",
+      "question_english": "Ordinary alligator crack repair duration and priority",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 2.53,
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table",
+        "rg-kb-labels#label-table"
+      ],
+      "verified_source_and_quote_checks": 6,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "comparison",
+      "question_english": "Compare ordinary and wide longitudinal crack repair duration and priority",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 3.33,
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table"
+      ],
+      "verified_source_and_quote_checks": 4,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "english",
+      "question_english": "Deep pothole repair duration and priority",
+      "question_language": "en",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 5.67,
+      "citations": [
+        "rg-kb-demo-rules#demo-rule-table"
+      ],
+      "verified_source_and_quote_checks": 3,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "plan",
+      "question_english": "Saved plan total travel minutes and assigned task count",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 1.41,
+      "citations": [
+        "plan:plan-02372313f4f5475187499a8061d20d0a#metrics"
+      ],
+      "verified_source_and_quote_checks": 2,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "unrelated",
+      "question_english": "Unrelated stock purchase recommendation",
+      "question_language": "zh",
+      "surface": "authenticated_http",
+      "http_status": 200,
+      "status": "insufficient_data",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "manifest_sha256": "9833fc038b987e1a19e31e5a8773b94034a31d2620cd88b07cfb7cecb8267c48",
+      "elapsed_seconds": 1.77,
+      "citations": [],
+      "verified_source_and_quote_checks": 0,
+      "all_source_checks_passed": true,
+      "expected_assertions_passed": true,
+      "business_tables_unchanged": true
+    },
+    {
+      "case_id": "deep_original_browser",
+      "question_english": "How much repair time should be assigned to a deep pothole, and what is its priority?",
+      "question_language": "zh",
+      "surface": "browser_ui",
+      "status": "supported",
+      "model": "gpt-4.1-mini",
+      "model_called": true,
+      "package_version": "a-knowledge-v13",
+      "displayed_rule_row": "| pothole_deep | high | P1 | 240 |",
+      "separate_context_and_row": true,
+      "expected_assertions_passed": true,
+      "source_citation": "rg-kb-demo-rules#demo-rule-table",
+      "verification": "Visible UI answer and source text; no second API request was made for this browser case."
+    }
+  ],
+  "final_manifest_sha256": "1cb6baf46ff3553f06aa8ce8e50b54ef4d6dfa96273a0ef0c8b382e8ce19c931",
+  "note": "API cases precede the final line-bounded long-route refinement; the final browser case follows it. Final affected automated tests also passed. No business writes, training or publication."
+}

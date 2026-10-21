@@ -387,7 +387,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Read-only evidence-selected GPT answer; dispatcher session and CSRF required */
+        /**
+         * Read-only assistant answer or server model information (dispatcher only)
+         * @description Model identity and scope guidance use deterministic server responses without GPT or retrieval. Repair and saved-route answers retain evidence validation. Session and CSRF are required.
+         */
         post: operations["query_assistant_api_v1_assistant_query_post"];
         delete?: never;
         options?: never;
@@ -481,6 +484,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assistant/task-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Task Changes */
+        get: operations["list_task_changes_api_v1_assistant_task_changes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/task-changes/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview Task Change */
+        post: operations["preview_task_change_api_v1_assistant_task_changes_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/task-changes/{change_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Task Change */
+        get: operations["get_task_change_api_v1_assistant_task_changes__change_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/task-changes/{change_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Task Change */
+        post: operations["confirm_task_change_api_v1_assistant_task_changes__change_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/task-changes/{change_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Task Change */
+        post: operations["cancel_task_change_api_v1_assistant_task_changes__change_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/task-changes/{change_id}/replan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Replan Task Change */
+        post: operations["replan_task_change_api_v1_assistant_task_changes__change_id__replan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -527,15 +632,15 @@ export interface components {
         AssistantAnswer: {
             /**
              * Contract Version
-             * @default c-assistant-query-v1
+             * @default c-assistant-query-v3
              * @constant
              */
-            contract_version: "c-assistant-query-v1";
+            contract_version: "c-assistant-query-v3";
             /**
              * Status
              * @enum {string}
              */
-            status: "supported" | "insufficient_data" | "rule_version_unavailable" | "stale_plan" | "model_refused";
+            status: "supported" | "insufficient_data" | "rule_version_unavailable" | "stale_plan" | "model_refused" | "model_info" | "out_of_scope";
             /** Supported */
             supported: boolean;
             /** Answer */
@@ -545,9 +650,9 @@ export interface components {
             /** Sources */
             sources: components["schemas"]["AnswerSource"][];
             /** Package Version */
-            package_version: string;
+            package_version: string | null;
             /** Manifest Sha256 */
-            manifest_sha256: string;
+            manifest_sha256: string | null;
             plan: components["schemas"]["PlanEvidenceSummary"] | null;
             /** Model */
             model: string | null;
@@ -555,10 +660,10 @@ export interface components {
             model_called: boolean;
             /**
              * Answer Mode
-             * @default verified_extracts
-             * @constant
+             * @default grounded_summary
+             * @enum {string}
              */
-            answer_mode: "verified_extracts";
+            answer_mode: "grounded_summary" | "server_configuration" | "scope_guidance";
             /**
              * Business Changes Applied
              * @default false
@@ -706,7 +811,7 @@ export interface components {
             result?: components["schemas"]["RecalculationResult"] | null;
             /**
              * Warning
-             * @default 预览不会改变队伍。确认只保存可用状态；重算须另行点击，失败不会自动撤销已保存的状态。
+             * @default Preview does not change crews. Confirmation saves availability only; recalculate separately. Planning failure does not undo the saved change.
              */
             warning: string;
         };
@@ -773,6 +878,8 @@ export interface components {
         };
         /** CrewRoute */
         CrewRoute: {
+            /** Shift Remaining Minutes */
+            shift_remaining_minutes?: number | null;
             /** Crew Id */
             crew_id: string;
             /** Available */
@@ -1561,6 +1668,10 @@ export interface components {
         };
         /** Stop */
         Stop: {
+            /** Damage Label */
+            damage_label?: string | null;
+            /** Locked Crew Id */
+            locked_crew_id?: string | null;
             /** Sequence */
             sequence: number;
             /** Task Id */
@@ -1651,6 +1762,103 @@ export interface components {
             service_minutes: number | null;
             /** Rule Version */
             rule_version: string;
+        };
+        /** TaskChangeList */
+        TaskChangeList: {
+            /** Items */
+            items: components["schemas"]["TaskChangeRecord"][];
+        };
+        /** TaskChangePreview */
+        TaskChangePreview: {
+            /** Request Id */
+            request_id: string;
+            /** Based On Plan Id */
+            based_on_plan_id: string;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reassign" | "cancel_task";
+            /** Task Id */
+            task_id: string;
+            /** Target Crew Id */
+            target_crew_id?: string | null;
+        };
+        /** TaskChangeRecord */
+        TaskChangeRecord: {
+            /**
+             * Contract Version
+             * @default c-assistant-task-change-v1
+             * @constant
+             */
+            contract_version: "c-assistant-task-change-v1";
+            /** Change Id */
+            change_id: string;
+            /** Actor Id */
+            actor_id: string;
+            /** Client Key */
+            client_key: string;
+            /** Based On Plan Id */
+            based_on_plan_id: string;
+            /** Input Revision */
+            input_revision: number;
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "reassign" | "cancel_task";
+            /** Task Id */
+            task_id: string;
+            /** Task Record Version */
+            task_record_version: number;
+            /** Planning Config Fingerprint */
+            planning_config_fingerprint: string;
+            /** Source Crew Id */
+            source_crew_id: string | null;
+            /** Target Crew Id */
+            target_crew_id?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "confirmed" | "cancelled" | "expired";
+            /** Record Version */
+            record_version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Applied Revision */
+            applied_revision?: number | null;
+            /** Before Routes */
+            before_routes: components["schemas"]["CrewRoute"][];
+            /** After Routes */
+            after_routes: components["schemas"]["CrewRoute"][];
+            /** Shift Limit Minutes */
+            shift_limit_minutes: number | null;
+            /** Return To Depot */
+            return_to_depot: boolean;
+            /**
+             * Replan Status
+             * @default not_requested
+             * @enum {string}
+             */
+            replan_status: "not_requested" | "running" | "failed" | "succeeded";
+            /** Replan Attempts */
+            replan_attempts?: string[];
+            /** Replan Attempt Id */
+            replan_attempt_id?: string | null;
+            /** Replan Lease Until */
+            replan_lease_until?: string | null;
+            /** Replan Error Code */
+            replan_error_code?: string | null;
+            result?: components["schemas"]["RecalculationResult"] | null;
         };
         /** TaskHistoryEntry */
         TaskHistoryEntry: {
@@ -1806,7 +2014,7 @@ export interface components {
              * Reason
              * @enum {string}
              */
-            reason: "unknown_service_minutes" | "unreachable_from_depot" | "unreachable_to_depot" | "no_available_crew" | "exceeds_shift_limit" | "no_feasible_route_position";
+            reason: "assigned_crew_unavailable" | "assigned_crew_infeasible" | "unknown_service_minutes" | "unreachable_from_depot" | "unreachable_to_depot" | "no_available_crew" | "exceeds_shift_limit" | "no_feasible_route_position";
         };
         /**
          * UploadDetection
@@ -4005,6 +4213,468 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    list_task_changes_api_v1_assistant_task_changes_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeList"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    preview_task_change_api_v1_assistant_task_changes_preview_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaskChangePreview"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    get_task_change_api_v1_assistant_task_changes__change_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    confirm_task_change_api_v1_assistant_task_changes__change_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeConfirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    cancel_task_change_api_v1_assistant_task_changes__change_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeConfirm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeRecord"];
+                };
+            };
+            /** @description Authentication required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    replan_task_change_api_v1_assistant_task_changes__change_id__replan_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Required for writes; returned by /auth/login or /auth/session. */
+                "X-CSRF-Token"?: string | null;
+            };
+            path: {
+                change_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeReplan"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaskChangeRecord"];
                 };
             };
             /** @description Authentication required */

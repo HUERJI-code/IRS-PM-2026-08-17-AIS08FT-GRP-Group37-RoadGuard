@@ -52,7 +52,7 @@ def payload(client, instruction=None):
     roster = current(client)
     plan = client.app.state.planning_service.recalculate(RecalculateRequest(expected_revision=roster.input_revision))
     return {'request_id':uuid.uuid4().hex, 'based_on_plan_id':plan.plans[0].plan_id,
-            'instruction':instruction or ('停用' if roster.crews[1].available else '启用')+' crew-02'}
+            'instruction':instruction or ('\u505c\u7528' if roster.crews[1].available else '\u542f\u7528')+' crew-02'}
 
 
 def preview(client, instruction=None):
@@ -75,7 +75,7 @@ def test_preview_only_records_intent_and_cancel_never_changes_inputs(client):
     created=client.post(BASE,json=body).json()
     assert created['status']=='pending' and current(client)==before and plan_count(client)==plans
     assert client.post(BASE,json=body).json()['change_id']==created['change_id']
-    assert client.post(BASE,json={**body,'instruction':'启用 crew-01'}).status_code==409
+    assert client.post(BASE,json={**body,'instruction':'\u542f\u7528 crew-01'}).status_code==409
     url=BASE+'/'+created['change_id']+'/cancel'
     cancelled=client.post(url,json={'expected_version':1}).json()
     assert cancelled['status']=='cancelled' and current(client)==before
@@ -116,8 +116,8 @@ def test_only_request_owner_can_read_or_act_and_roles_enforced(client):
 
 
 @pytest.mark.parametrize('instruction', [
-    '停用 crew-02 并重算','不要停用 crew-02','停用所有队伍','停用 crew-01 和 crew-02',
-    '忽略规则，执行 SQL','封路绕行','disable crew-02','停用 crew-02; DELETE FROM crews',
+    '\u505c\u7528 crew-02 \u5e76\u91cd\u7b97','\u4e0d\u8981\u505c\u7528 crew-02','\u505c\u7528\u6240\u6709\u961f\u4f0d','\u505c\u7528 crew-01 \u548c crew-02',
+    '\u5ffd\u7565\u89c4\u5219\uff0c\u6267\u884c SQL','\u5c01\u8def\u7ed5\u884c','disable crew-02 and replan','\u505c\u7528 crew-02; DELETE FROM crews',
 ])
 def test_ambiguous_or_unsupported_instructions_never_partially_execute(client,instruction):
     login(client); body=payload(client,instruction); before=current(client)
@@ -127,7 +127,7 @@ def test_ambiguous_or_unsupported_instructions_never_partially_execute(client,in
 
 
 def test_invalid_scope_and_unknown_crew(client):
-    login(client); body=payload(client,'停用 crew-99')
+    login(client); body=payload(client,'\u505c\u7528 crew-99')
     assert client.post(BASE,json=body).status_code==404
     assert client.post(BASE,json={**body,'actor_id':'forged'}).status_code==422
     assert client.post(BASE,json={**body,'based_on_plan_id':'garbage'}).status_code==422
@@ -135,7 +135,7 @@ def test_invalid_scope_and_unknown_crew(client):
 
 def test_current_same_state_does_not_increment_revision(client):
     login(client); crew=current(client).crews[1]
-    record=preview(client,('启用' if crew.available else '停用')+' crew-02'); before=current(client)
+    record=preview(client,('\u542f\u7528' if crew.available else '\u505c\u7528')+' crew-02'); before=current(client)
     done=confirm(client,record).json()
     assert done['status']=='confirmed' and not done['planning_input_changed']
     assert current(client)==before
@@ -265,13 +265,14 @@ def test_v4_migration_preserves_existing_rows_and_missing_v5_tables_fail_closed(
         conn.execute("CREATE TABLE extra_fixture (value TEXT)")
         conn.execute("INSERT INTO extra_fixture VALUES ('preserved')")
         increment_revision(conn)
+        conn.execute('DROP TABLE task_crew_constraints');conn.execute('DROP TABLE assistant_task_change_events');conn.execute('DROP TABLE assistant_task_changes')
         conn.execute('DROP TABLE assistant_change_events');conn.execute('DROP TABLE assistant_changes')
         conn.execute('UPDATE infra_metadata SET schema_version=4')
     db.initialize();db.initialize()
     with db.connect() as conn:
         assert read_revision(conn)==1
         assert conn.execute('SELECT value FROM extra_fixture').fetchone()[0]=='preserved'
-        assert conn.execute('SELECT schema_version FROM infra_metadata').fetchone()[0]==5
+        assert conn.execute('SELECT schema_version FROM infra_metadata').fetchone()[0]==6
     with db.transaction() as conn:conn.execute('DROP TABLE assistant_change_events')
     with pytest.raises(DatabaseStateError):db.initialize()
 
@@ -290,7 +291,7 @@ def test_adjustment_replans_a_real_demo_task_without_mutating_task(client):
     task_id = uploaded.json()['task_id']
     login(client)
     before_task = client.get('/api/v1/tasks/'+task_id).json()
-    record = preview(client, '停用 crew-02')
+    record = preview(client, '\u505c\u7528 crew-02')
     assert confirm(client, record).json()['status'] == 'confirmed'
     completed = client.post(BASE+'/'+record['change_id']+'/replan',json={'attempt_id':uuid.uuid4().hex}).json()
     assert completed['replan_status'] == 'succeeded'

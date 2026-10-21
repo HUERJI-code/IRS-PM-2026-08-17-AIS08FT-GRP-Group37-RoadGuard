@@ -32,12 +32,18 @@ def safe_db(method):
 def parse_instruction(text: str):
     """A small exact grammar, not a permissive substring or a model execution tool."""
     text = text.strip()
-    match = re.fullmatch(r'(?:请)?(启用|停用)\s+(crew-[0-9]{2})[。！!]?', text)
+    match = re.fullmatch(r'(enable|disable)\s+(crew-[0-9]{2})[.!]?', text, re.IGNORECASE)
     if match:
-        return match[2], match[1] == '启用'
-    match = re.fullmatch(r'(?:请)?(?:将|把)\s*(crew-[0-9]{2})\s*设为(可用|不可用)[。！!]?', text)
+        return match[2], match[1].lower() == 'enable'
+    match = re.fullmatch(r'set\s+(crew-[0-9]{2})\s+(available|unavailable)[.!]?', text, re.IGNORECASE)
     if match:
-        return match[1], match[2] == '可用'
+        return match[1], match[2].lower() == 'available'
+    match = re.fullmatch(r'(?:\u8bf7)?(\u542f\u7528|\u505c\u7528)\s+(crew-[0-9]{2})[\u3002\uff01!]?', text)
+    if match:
+        return match[2], match[1] == '\u542f\u7528'
+    match = re.fullmatch(r'(?:\u8bf7)?(?:\u5c06|\u628a)\s*(crew-[0-9]{2})\s*\u8bbe\u4e3a(\u53ef\u7528|\u4e0d\u53ef\u7528)[\u3002\uff01!]?', text)
+    if match:
+        return match[1], match[2] == '\u53ef\u7528'
     raise AppError('unsupported_change', 'Only an explicit single-crew availability change is supported.', 422)
 
 
@@ -170,7 +176,7 @@ class ChangeService:
         with self.database.transaction() as connection:
             record = self._read(connection, change_id, actor_id)
             if record.status != 'confirmed':
-                raise AppError('change_not_confirmed', 'Confirm the availability change before replanning.', 409)
+                raise AppError('change_not_confirmed', 'Confirm the change before replanning.', 409)
             if record.replan_status == 'succeeded' or attempt_id in record.replan_attempts:
                 return record  # A retry of the same attempt only reads its outcome.
             if record.replan_status == 'running' and record.replan_lease_until > now():

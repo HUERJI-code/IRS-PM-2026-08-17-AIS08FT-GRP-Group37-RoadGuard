@@ -181,6 +181,12 @@ export function createApiClient(
     confirmChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/confirm`, 'ChangeRecord', json('POST', payload), o),
     cancelChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/cancel`, 'ChangeRecord', json('POST', payload), o),
     replanChange: (value: string, payload: Model<'ChangeReplan'>, o?: RequestOptions) => request(`/assistant/change-requests/${id(value)}/replan`, 'ChangeRecord', json('POST', payload), o),
+    taskChanges: (o?: RequestOptions) => request('/assistant/task-changes', 'TaskChangeList', {}, o),
+    taskChange: (value: string, o?: RequestOptions) => request(`/assistant/task-changes/${id(value)}`, 'TaskChangeRecord', {}, o),
+    previewTaskChange: (payload: Model<'TaskChangePreview'>, o?: RequestOptions) => request('/assistant/task-changes/preview', 'TaskChangeRecord', json('POST', payload), o),
+    confirmTaskChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/task-changes/${id(value)}/confirm`, 'TaskChangeRecord', json('POST', payload), o),
+    cancelTaskChange: (value: string, payload: Model<'ChangeConfirm'>, o?: RequestOptions) => request(`/assistant/task-changes/${id(value)}/cancel`, 'TaskChangeRecord', json('POST', payload), o),
+    replanTaskChange: (value: string, payload: Model<'ChangeReplan'>, o?: RequestOptions) => request(`/assistant/task-changes/${id(value)}/replan`, 'TaskChangeRecord', json('POST', payload), o),
     assistantStatus: (o?: RequestOptions) => request('/assistant/status', 'AssistantStatus', {}, o),
     assistantQuery: (payload: Model<'AssistantQuery'>, o?: RequestOptions) => request('/assistant/query', 'AssistantAnswer', json('POST', payload), o),
     knowledgeSearch: (payload: Model<'KnowledgeSearchRequest'>, o?: RequestOptions) =>

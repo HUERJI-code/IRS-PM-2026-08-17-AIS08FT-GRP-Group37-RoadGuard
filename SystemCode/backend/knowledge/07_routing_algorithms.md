@@ -1,6 +1,6 @@
 # Greedy and genetic-algorithm routing
 
-document_id: `rg-kb-routing`; document_version: `1`; owner: `A`.
+document_id: `rg-kb-routing`; document_version: `2`; owner: `A`.
 
 <a id="routing-input"></a>
 ## Implemented planning and shared constraints
@@ -8,6 +8,8 @@ document_id: `rg-kb-routing`; document_version: `1`; owner: `A`.
 classification: `confirmed_project_fact`. citation_id: `rg-kb-routing#routing-input`.
 
 Both Greedy and the custom genetic algorithm (GA) are implemented. PlanningService reads all active tasks and all four configured crews in one database snapshot. Saved task priority and service_minutes are inputs; the planner does not infer them again from photos or substitute today's rule table. Only available crews receive tasks. Both algorithms use the same travel matrix, depot, settings and RoutingProblem evaluator.
+
+The same snapshot includes confirmed task-to-crew constraints. Both algorithms must retain the selected crew on later recalculation. The evaluator normalizes candidate ownership before evaluating routes; it never treats a lock as a soft optimization preference. An unavailable locked crew or infeasible locked assignment produces an explicit unassigned reason. New tasks may change stop order and total work, but cannot silently change a locked task's crew.
 
 Each input task must appear exactly once, either in a crew's ordered stops or in unassigned_tasks. Unknown service duration, inaccessible travel and shift limits are constraints, not permission to drop tasks silently. All available crews begin at the same depot at planning_start_at. This is static replanning from a common start; there is no live vehicle tracking, in-transit dispatch or task time-window model.
 

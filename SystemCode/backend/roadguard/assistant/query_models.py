@@ -1,4 +1,4 @@
-"""Read-only, evidence-selected answers; no model-authored business facts."""
+"""Read-only grounded summaries with separately validated source selections."""
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, StringConstraints, model_validator
@@ -39,7 +39,15 @@ class EvidenceSelection(ContractModel):
 
 class ModelSelection(ContractModel):
     supported: bool
-    selections: Annotated[list[EvidenceSelection], Field(max_length=6)]
+    # Six model-selected units may each carry one mandatory verbatim context.
+    selections: Annotated[list[EvidenceSelection], Field(max_length=12)]
+    answer: Annotated[str, Field(max_length=1800)] = ''
+
+
+class ModelEvidenceIDs(ContractModel):
+    supported: bool
+    evidence_ids: Annotated[list[Annotated[str, Field(min_length=1, max_length=20)]], Field(max_length=6)]
+    answer: Annotated[str, Field(max_length=1800)]
 
 
 class PlanEvidenceSummary(ContractModel):
@@ -53,18 +61,18 @@ class PlanEvidenceSummary(ContractModel):
 
 
 class AssistantAnswer(ContractModel):
-    contract_version: Literal['c-assistant-query-v1'] = 'c-assistant-query-v1'
-    status: Literal['supported', 'insufficient_data', 'rule_version_unavailable', 'stale_plan', 'model_refused']
+    contract_version: Literal['c-assistant-query-v3'] = 'c-assistant-query-v3'
+    status: Literal['supported', 'insufficient_data', 'rule_version_unavailable', 'stale_plan', 'model_refused', 'model_info', 'out_of_scope']
     supported: bool
     answer: str
     selections: list[EvidenceSelection]
     sources: list[AnswerSource]
-    package_version: str
-    manifest_sha256: str
+    package_version: str | None
+    manifest_sha256: str | None
     plan: PlanEvidenceSummary | None
     model: str | None
     model_called: bool
-    answer_mode: Literal['verified_extracts'] = 'verified_extracts'
+    answer_mode: Literal['grounded_summary', 'server_configuration', 'scope_guidance'] = 'grounded_summary'
     business_changes_applied: Literal[False] = False
     warnings: list[str]
 

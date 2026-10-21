@@ -13,7 +13,8 @@ def greedy_routes(problem: RoutingProblem) -> list[list[int]]:
     while remaining and open_crews:
         # Earliest-free crew; crew order breaks ties deterministically.
         crew = min(open_crews, key=lambda c: (elapsed[c], c))
-        candidates = [task for task in remaining if problem.fits(elapsed[crew], position[crew], task)[0]]
+        candidates = [task for task in remaining if (problem.input.task_crew_constraints.get(problem.tasks[task].task_id, problem.available_crews[crew]) == problem.available_crews[crew])
+                      and problem.fits(elapsed[crew], position[crew], task)[0]]
         if not candidates:
             open_crews.discard(crew)
             continue
