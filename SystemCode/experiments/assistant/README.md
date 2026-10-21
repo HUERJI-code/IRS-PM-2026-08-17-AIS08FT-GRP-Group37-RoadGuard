@@ -11,3 +11,7 @@ The archival serialization conversion itself made no model calls. Retrieval eval
 retains escaped multilingual query fixtures so Chinese matching remains tested.
 
 Current task-adjustment and English-answer acceptance is recorded separately in [the 2026-10-21 run](task-adjustments-20261021/acceptance.json), including two real GPT calls and isolated real-auth HTTP/browser checks. The route screenshots in that directory use synthetic acceptance tasks.
+
+## Publication and documentation synchronization
+
+The [21 October release record](../../../Miscellaneous/RAG_TASK_RELEASE_20261021.md) identifies the merged code, complete CI outcome and subsequent knowledge/report synchronization. The records above retain their original execution versions; a documentation or manifest refresh is not a new experiment.

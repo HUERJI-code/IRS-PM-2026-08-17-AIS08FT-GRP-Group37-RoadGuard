@@ -1,6 +1,6 @@
 # Recorded evaluation evidence and its limits
 
-document_id: `rg-kb-evaluation`; document_version: `2`; owner: `A`.
+document_id: `rg-kb-evaluation`; document_version: `3`; owner: `A`.
 
 <a id="evaluation-routing"></a>
 ## Historical GA evaluation
@@ -37,8 +37,12 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-evaluation#evaluat
 
 The dated integration record documents the implemented local inspection-to-planning workflow. Account/workspace access is described in the account guide. Cite the date and exact tested scenario when using those records; a historical acceptance record does not demonstrate every later environment or feature.
 
-The assistant UI and local retrieval/change workflows are implemented. Static hashes establish source consistency, not retrieval relevance, sufficient answers or expert approval. Local tests use explicit provider doubles and exercise citation rejection, roles, stale evidence and confirmed-change recovery. Real GPT connectivity and semantic answer quality remain unverified. This package supplies acceptance specifications, not real-model answer scores.
+The assistant UI and local retrieval/change workflows are implemented. Static hashes establish source consistency, not retrieval relevance, sufficient answers or expert approval. Local tests use explicit provider doubles and exercise citation rejection, roles, stale evidence and confirmed-change recovery. Targeted local real GPT checks on 2026-10-21 exercised rule citations, answer-first summaries, saved-plan facts and intent routing; direct model/scope responses made no provider call. Their records retain the package and contract tested at the time. They do not certify this later package or establish broad semantic answer quality. Local ChromaDB/E5 retrieval is implemented; broader multilingual relevance and sufficiency evaluation and independent clean-machine acceptance remain pending. This package supplies synthetic acceptance specifications, not general real-model answer scores.
 
 Sources: [src-integration-record](../../../Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
 
 Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
+
+Evidence records: [src-rule-citation-acceptance](../../../Miscellaneous/RAG_RULE_CITATION_ACCEPTANCE_20261021.md), [src-intent-live-acceptance](../../experiments/assistant/intent-routing-20261021.json).
+
+Retrieval sources: [src-vector-store](../roadguard/assistant/vector_store.py), [src-embedding](../roadguard/assistant/embedding.py), [src-semantic-retrieval](../roadguard/assistant/retrieval.py).

@@ -1,6 +1,6 @@
 # RoadGuard
 
-**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; real GPT answer-quality acceptance and the presentation videos remain pending.**
+**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; broad semantic reliability, presentation videos and clean-machine installation remain outstanding.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
@@ -20,7 +20,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; assistant implemented; real GPT acceptance and videos pending |
+| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; broad reliability and videos pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -41,6 +41,8 @@ A group-built genetic algorithm (GA) assigns accepted tasks to four crews and de
 
 Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The dispatcher assistant uses reviewed project knowledge and authorized saved-route facts, with local vector retrieval and optional GPT evidence selection.
 
+The assistant returns English answers first, with sources closed until requested. Query-v3 distinguishes grounded summaries from direct model-configuration information and scope guidance; direct responses do not call GPT. Dispatcher task moves and cancellation require preview and explicit confirmation, with travel/service/return feasibility checks and durable crew constraints. Recalculation remains explicit. See the [task-adjustment acceptance](Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) and [intent-routing acceptance](Miscellaneous/RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md); targeted cases do not establish broad answer accuracy.
+
 Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
 
 ## SECTION 3 : CREDITS / PROJECT CONTRIBUTION
@@ -51,7 +53,7 @@ Measured vision results must be read with the corresponding experimental run and
 | Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
 | Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant | |
 
-These contributions extend Table 5 of the final report with the later assistant delivery. The submitted report remains a historical snapshot. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
+The contribution table and final report include the later assistant delivery. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 

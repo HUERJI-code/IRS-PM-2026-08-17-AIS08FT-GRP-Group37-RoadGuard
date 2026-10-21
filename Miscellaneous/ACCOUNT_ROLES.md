@@ -10,7 +10,7 @@
 | `crew` | `/crew` | Own fixed crew's latest GA route/tasks/photos; complete own tasks | Switch crews, global lists, label/location changes, cancellation, recalculation |
 | `dispatcher` | `/tasks` | Review, tasks, four-crew management/planning, comparison, assistant entry | Photo uploads, crew workspace |
 
-Inspection details belong to their parent workflow: inspectors read only their own; crews read inspections for accessible assigned tasks; dispatchers read all. The route assistant retains its existing in-development state; GPT/RAG is not implemented here.
+Inspection details belong to their parent workflow: inspectors read only their own; crews read inspections for accessible assigned tasks; dispatchers read all. The route assistant is dispatcher-only. Knowledge queries, saved-plan explanations, crew availability changes and task reassignment/cancellation enforce the same session, role and CSRF checks as other protected operations.
 
 Frontend navigation/page guards follow the server account. Backend authorization is independent; URL, headers or frontend state cannot bypass it. `/crew?crew=crew-01` does not change account binding. Workspace APIs accept no client-selected crew or algorithm.
 
@@ -50,7 +50,7 @@ Script clients retain login Cookies and send `X-CSRF-Token` for writes. Business
 - SQLite migrates incrementally from v3 to v4, adding `auth_users`, `auth_sessions`, `auth_login_limits`, `inspection_owners`, `auth_audit`; inspections/tasks/images/plans/request keys/input_revision remain, without database recreation. Initial migration needs a write lock; close uncommitted viewer transactions before startup.
 - New uploads record inspector ownership in the same transaction. Upload/review/completion idempotency keys are account-scoped. Legacy inspections have no verified uploader and are not assigned to the first login; dispatchers retain access and crews access through task assignment.
 - Assignment uses the latest saved GA plan. No separate publication step exists: saving GA changes the workspace source. An input_revision change alone flags an old snapshot but does not block completion of valid tasks still assigned to the crew.
-- Completion checks account validity, latest-GA assignment, crew availability, task revision/status in the same write transaction, preventing stale-page actions after reassignment. An original committed completion can be retried after recalculation using its crew completion receipt; no repeated mutation or automatic recalculation.
+- Completion checks account validity, latest-GA assignment, the current durable task-to-crew constraint, crew availability and task revision/status in the same write transaction, preventing stale-page actions after reassignment. An original committed completion can be retried after recalculation using its crew completion receipt; no repeated mutation or automatic recalculation.
 - Completion writes `auth_audit` account/task/request/crew/plan/time and task history `actor_source=authenticated_user`. Legacy `user_declared_unverified` retains its meaning; authenticated identity is not engineering qualification certification.
 
 ## Sessions and configuration
@@ -68,3 +68,7 @@ Real-auth tests: `python -m pytest SystemCode/tests/test_auth.py -q`, covering a
 Frontend: `npm run lint`, `npm run test:ci`, `npm run build`, covering login/retry, role navigation/direct URL protection, clearing old account pages, cross-tab session changes, fixed crew workspace and mobile task selection.
 
 Historical business tests/synthetic exports explicitly use isolated test identities from `SystemCode/tests/auth_test_support.py`; production never loads that override. Account-security tests use real login/Cookies without overriding authorization dependencies. Update frontend/backend together and adapt old anonymous scripts to login.
+
+## Confirmed task adjustment access
+
+A confirmed reassignment immediately removes the previous crew's task/inspection read and completion access. The target crew obtains access only after an explicit saved GA recalculation assigns the task to it. The affected old route is omitted with a stale/recalculation explanation. Inspectors and crew accounts cannot preview, confirm, discard or recalculate dispatcher changes. Cancellation retains task history and excludes terminal work from active planning; it does not reopen completed or cancelled tasks.

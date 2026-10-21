@@ -45,3 +45,7 @@ Prepare the actual `member-github.txt` outside version control using the example
 - [ ] Each member submits confidentially through the separate individual Canvas assignment.
 
 The current briefing states a final deadline of **2026-10-25 at 23:59**. Check Canvas for any later course announcement. Presentation speech must not be AI-generated, per the current briefing.
+
+## Current assistant release evidence
+
+The current source includes local ChromaDB/E5 retrieval, query-v3 English grounded answers, default-closed sources and confirmed persistent task adjustments. Targeted real GPT, isolated HTTP and browser acceptance is recorded in the [assistant intent](RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md) and [task-adjustment](TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) records. These records are not a broad accuracy benchmark. Keep the final report, full Appendix A guide and course mapping synchronized with knowledge-v17; verify final report pagination after rendering. Clean-machine installation and video/package checks above remain outstanding.

@@ -1,6 +1,6 @@
 # Scope, depot and four-crew scenario
 
-document_id: `rg-kb-scope`; document_version: `5`; owner: `A`.
+document_id: `rg-kb-scope`; document_version: `6`; owner: `A`.
 
 <a id="scope-baseline"></a>
 ## Project task scope
@@ -18,11 +18,15 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-scope#depot-crews`
 
 One fictional repair department uses four simulated crews: `crew-01`, `crew-02`, `crew-03`, `crew-04`. Their shared origin is NUS-ISS, 25 Heng Mui Keng Terrace, latitude `1.292149`, longitude `103.776551`, depot version `nus-iss-v1`. This is a simulated origin at a real address, not actual NUS-ISS repair operations.
 
-This specified depot may lie outside the task area. Travel from depot to first task must be counted, and routes may leave JE/JW. The exception applies only to the depot; a repair task submitted at NUS-ISS coordinates is still rejected. The building reference point has not been verified as a vehicle entrance. The shared project return-to-depot policy remains null/pending confirmation and must not default to no return. The implemented routing demo independently selects return_to_depot=true and a 480-minute shift in b-routing-demo-v1; these are demo assumptions pending operational confirmation. Crew availability, Greedy/GA planning and plan persistence are implemented. Local knowledge retrieval, opt-in evidence answers and confirmed crew changes are implemented; real GPT acceptance remains pending.
+This specified depot may lie outside the task area. Travel from depot to first task must be counted, and routes may leave JE/JW. The exception applies only to the depot; a repair task submitted at NUS-ISS coordinates is still rejected. The building reference point has not been verified as a vehicle entrance. The shared project return-to-depot policy remains null/pending confirmation and must not default to no return. The implemented routing demo independently selects return_to_depot=true and a 480-minute shift in b-routing-demo-v1; these are demo assumptions pending operational confirmation. Crew availability, Greedy/GA planning and plan persistence are implemented. Local ChromaDB retrieval with multilingual E5 embeddings, opt-in evidence answers and confirmed crew/task changes are implemented. Recorded targeted real GPT checks exercised rule citations and saved-plan answers; broader semantic reliability and independent clean-machine acceptance remain pending.
 
 Sources: [src-project-config](../../config/project.example.json), [src-depot](../../../Miscellaneous/geography/nus-iss-depot.geojson), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-routing-config](../../config/routing.example.json), [src-routing-service](../roadguard/routing/service.py), [src-crew-service](../roadguard/crews/service.py), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
 
 Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
+
+Evidence records: [src-rule-citation-acceptance](../../../Miscellaneous/RAG_RULE_CITATION_ACCEPTANCE_20261021.md), [src-intent-live-acceptance](../../experiments/assistant/intent-routing-20261021.json).
+
+Retrieval sources: [src-vector-store](../roadguard/assistant/vector_store.py), [src-embedding](../roadguard/assistant/embedding.py), [src-semantic-retrieval](../roadguard/assistant/retrieval.py).
 
 <a id="road-evidence"></a>
 ## Evidence limits of road declarations

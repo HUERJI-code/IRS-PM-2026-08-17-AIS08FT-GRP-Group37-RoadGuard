@@ -1,0 +1,33 @@
+{
+  "package_version": "a-knowledge-v17",
+  "verification": "Local authenticated read-only search and direct answers; no GPT calls",
+  "retrieval": {
+    "package_version": "a-knowledge-v17",
+    "manifest_sha256": "a206e21da8d77aba938b8ed1a51ab0325132d5c6590dcd037eaf3358f00cfaf6",
+    "retrieval_method": "chroma-e5-cosine-v1",
+    "status": "matches",
+    "citations": [
+      "rg-kb-demo-rules#demo-rule-table",
+      "rg-kb-demo-rules#demo-gate-selection",
+      "rg-kb-pending#pending-business",
+      "rg-kb-demo-rules#routing-demo-settings",
+      "rg-kb-routing#routing-demo-settings"
+    ]
+  },
+  "direct_answers": [
+    {
+      "question": "What model are you?",
+      "status": "model_info",
+      "answer_mode": "server_configuration",
+      "model_called": false
+    },
+    {
+      "question": "What is the weather in London?",
+      "status": "out_of_scope",
+      "answer_mode": "scope_guidance",
+      "model_called": false
+    }
+  ],
+  "provider_calls_delta": 0,
+  "business_revision_unchanged": true
+}

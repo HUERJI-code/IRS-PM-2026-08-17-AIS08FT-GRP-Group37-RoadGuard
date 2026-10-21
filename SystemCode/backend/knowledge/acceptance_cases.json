@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v16",
+  "package_version": "a-knowledge-v17",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -21,10 +21,15 @@
         "src-boundary",
         "src-crew-service",
         "src-depot",
+        "src-embedding",
         "src-geography-code",
+        "src-intent-live-acceptance",
         "src-project-config",
         "src-routing-config",
-        "src-routing-service"
+        "src-routing-service",
+        "src-rule-citation-acceptance",
+        "src-semantic-retrieval",
+        "src-vector-store"
       ],
       "expected_grounded_points": [
         "The fictional repair department has four crew IDs, crew-01 through crew-04.",
@@ -441,12 +446,17 @@
         "src-assistant-page",
         "src-crew-service",
         "src-depot",
+        "src-embedding",
         "src-google-matrix",
+        "src-intent-live-acceptance",
         "src-project-config",
         "src-routing-config",
         "src-routing-matrix",
         "src-routing-models",
-        "src-routing-service"
+        "src-routing-service",
+        "src-rule-citation-acceptance",
+        "src-semantic-retrieval",
+        "src-vector-store"
       ],
       "expected_grounded_points": [
         "Shared policy remains undecided; routing demo independently sets return true and shift 480.",
@@ -616,7 +626,7 @@
         "src-routing-service"
       ],
       "expected_grounded_points": [
-        "Crew access is server-bound to its own workspace; future assistant must preserve this.",
+        "Crew accounts have server-bound access to their own workspace; the current route assistant is dispatcher-only.",
         "Authorize evidence before retrieving or sending it to a model."
       ],
       "required_runtime_evidence": [],
@@ -666,13 +676,18 @@
         "src-account-guide",
         "src-assistant-api",
         "src-assistant-page",
+        "src-embedding",
         "src-install-guide",
         "src-integration-record",
-        "src-model-manifest"
+        "src-intent-live-acceptance",
+        "src-model-manifest",
+        "src-rule-citation-acceptance",
+        "src-semantic-retrieval",
+        "src-vector-store"
       ],
       "expected_grounded_points": [
         "Health checks app/database; inference loads lazily.",
-        "No assistant service exists, and document integrity is not end-to-end RAG evidence."
+        "The assistant service exists with local ChromaDB/E5 retrieval and targeted real GPT checks; health and document integrity alone do not establish current provider/index readiness, broad semantic reliability or clean-machine acceptance."
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
@@ -795,7 +810,7 @@
     {
       "case_id": "qa-27",
       "is_synthetic_case": true,
-      "question": "What metadata and content should the future index contain?",
+      "question": "What metadata and content should the local ChromaDB index contain?",
       "expected_status": "supported",
       "expected_supported": true,
       "expected_citations": [
@@ -817,7 +832,7 @@
       ],
       "required_runtime_evidence": [],
       "forbidden_claims": [
-        "An existing vector database already contains the corpus.",
+        "Assume this machine has a ready current index merely because vector retrieval is implemented.",
         "Unhashed context overrides pinned configuration."
       ],
       "provided_context": {}
@@ -841,7 +856,9 @@
         "src-auth-permissions",
         "src-crew-schema",
         "src-crew-service",
+        "src-intent-live-acceptance",
         "src-routing-service",
+        "src-rule-citation-acceptance",
         "src-task-change-models",
         "src-task-change-schema",
         "src-task-change-service",

@@ -42,20 +42,18 @@ Explain tradeoffs, errors, deviations from the proposal and limits of generaliza
 
 Relate measured outcomes to the stated objectives and identify remaining work.
 
-## Appendix A. Project proposal and scope addendum
+## Appendix A Installation and User Guide
 
-Include the original proposal and the dated four-crew/Jurong scope update.
+Reproduce [INSTALLATION_AND_USER_GUIDE.md](INSTALLATION_AND_USER_GUIDE.md) unabridged, including retrieval/model setup, all role workflows, assistant sources, confirmed task adjustments and troubleshooting. Distinguish recorded local acceptance from outstanding clean-machine validation.
 
-## Appendix B. Functionality and course technique mapping
+## Appendix B Submitted Project Proposal
 
-Use [COURSE_MAPPING.md](COURSE_MAPPING.md), backed by actual implementation and evaluation evidence.
+Include the complete final submitted proposal unchanged. Explain later four-crew/Jurong and implementation changes in the main report rather than rewriting the proposal.
 
-## Appendix C. Installation and user guide
+## Appendix C Course Functionality Mapping
 
-Use [INSTALLATION_AND_USER_GUIDE.md](INSTALLATION_AND_USER_GUIDE.md) after validating every command.
+Use [COURSE_MAPPING.md](COURSE_MAPPING.md), with MR, RS and CGS implementation and verification evidence. Include the delivered assistant's bounded evidence without claiming broad semantic accuracy or a fourth technique group.
 
-## Appendix D. References, abbreviations and use of AI
-
-Provide references, acknowledgements and a factual note on AI-assisted work as appropriate to the presentation guidelines.
+Retain references and the existing results, limitations and improvement discussion. Keep the report in formal English with all-black text; omit YOLO metric numbers from the abstract. Do not add an AI-use declaration. Update contents and page references after final rendering.
 
 Individual reflections and peer evaluations are submitted confidentially through the separate Canvas assignment specified in the current briefing.
