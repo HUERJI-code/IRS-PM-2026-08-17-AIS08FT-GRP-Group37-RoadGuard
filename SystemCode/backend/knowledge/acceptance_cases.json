@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v11",
+  "package_version": "a-knowledge-v12",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -795,6 +795,10 @@
       "source_ids": [
         "context-agents",
         "context-team",
+        "src-embedding",
+        "src-retrieval-setup",
+        "src-semantic-retrieval",
+        "src-vector-store",
         "src-workflow-schema",
         "src-workflow-service"
       ],

@@ -16,6 +16,10 @@ export class ApiError extends Error {
 }
 
 const messages: Record<string, string> = {
+  knowledge_index_unavailable: 'The knowledge vector index is missing or outdated. Ask the maintainer to rebuild it.',
+  embedding_model_unavailable: 'The local embedding model is unavailable. Ask the maintainer to run knowledge setup.',
+  retrieval_configuration_error: 'The retrieval configuration is invalid. Contact the maintainer.',
+  retrieval_input_too_long: 'This question exceeds the embedding limit. Please shorten it.',
 
   unsupported_change: 'Specify enabling or disabling one crew using the example command.',
   change_not_pending: 'This change is closed or already confirmed.',

@@ -1,6 +1,6 @@
 # RoadGuard
 
-**Status (2026-10-20): the authenticated inspection-to-completion prototype, four-crew planning and final group report are delivered. GPT/RAG and the two presentation videos remain pending.**
+**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; real GPT answer-quality acceptance and the presentation videos remain pending.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
@@ -20,7 +20,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 7; repository team label: Group7 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; assistant and videos pending |
+| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; assistant implemented; real GPT acceptance and videos pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
@@ -39,7 +39,7 @@ The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VIS
 
 A group-built genetic algorithm (GA) assigns accepted tasks to four crews and determines visit order. Greedy uses the same task snapshot, travel matrix and evaluator. Changes mark saved plans stale; dispatchers explicitly recalculate. Evaluation compares priority-first coverage, a weighted scheduling objective, travel, workload and runtime. No task deadlines are supplied, so priority-weighted completion is not lateness. See the [routing experiments](SystemCode/experiments/routing/README.md).
 
-Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The proposal's GPT/RAG route explanation component remains planned and will use calculated route facts and reviewed project knowledge.
+Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The dispatcher assistant uses reviewed project knowledge and authorized saved-route facts, with local vector retrieval and optional GPT evidence selection.
 
 Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
 
@@ -49,9 +49,9 @@ Measured vision results must be read with the corresponding experimental run and
 | --- | --- | --- | --- |
 | Hu Erji | A0305480L | Vision/data experiments, business rules, shared backend, integration, authentication and later interface refinement | |
 | Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
-| Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and assistant placeholder | |
+| Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant | |
 
-These contributions follow Table 5 of the final report; the assistant backend remains unimplemented. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
+These contributions extend Table 5 of the final report with the later assistant delivery. The submitted report remains a historical snapshot. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
@@ -66,7 +66,7 @@ See [Video/README.md](Video/README.md) for naming and recording requirements.
 
 ## SECTION 5 : USER GUIDE
 
-Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. The assistant page is a placeholder. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
+Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. Before using the assistant, follow the [ChromaDB and embedding setup](SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md); real GPT questions also require the existing server-side provider configuration. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
 
 Repository layout:
 

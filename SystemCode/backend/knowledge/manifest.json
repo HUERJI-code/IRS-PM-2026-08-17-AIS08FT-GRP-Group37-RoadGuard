@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v11",
+  "package_version": "a-knowledge-v12",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Merge consistency review: preserve the eleven-document English corpus and C retrieval/change workflow, with current source hashes. Not expert approval or real GPT acceptance."
+    "note": "Source consistency review for local Chroma/E5 indexing and bounded semantic retrieval. Not engineering approval or real GPT acceptance."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -240,19 +240,43 @@
       "source_id": "src-assistant-api",
       "path": "SystemCode/backend/roadguard/assistant/api.py",
       "version": "c-assistant-merge-20261021",
-      "sha256": "d322c680a3b68bd69100836e1e13000720cdc250528db927eb31615d6a548b86"
+      "sha256": "a12e25286c387680f930dd52fc644c09d11a8ddc12d4d78ec9ada73222326729"
     },
     {
       "source_id": "src-assistant-query",
       "path": "SystemCode/backend/roadguard/assistant/query_service.py",
       "version": "c-assistant-merge-20261021",
-      "sha256": "84611baef9f3a4b2b1551659901a611752e0aed4c810b095a34d63d85637d079"
+      "sha256": "55ebe35d00a2bc78b10c1720fee289b5c2a1230524f3e9604cee4f54ab503560"
     },
     {
       "source_id": "src-assistant-change",
       "path": "SystemCode/backend/roadguard/assistant/change_service.py",
       "version": "c-assistant-merge-20261021",
       "sha256": "aa1c744788fccb75eb0046f72feecfdf68978830fb18a12268cce83ec075b771"
+    },
+    {
+      "source_id": "src-vector-store",
+      "path": "SystemCode/backend/roadguard/assistant/vector_store.py",
+      "version": "c-rag-vector-v1",
+      "sha256": "1627cb31063e86e4c1bdd40b17927107203e46a6fe98f0ba4cbeb642f35db185"
+    },
+    {
+      "source_id": "src-embedding",
+      "path": "SystemCode/backend/roadguard/assistant/embedding.py",
+      "version": "c-rag-vector-v1",
+      "sha256": "76e8cf8735bad1f843ef8bd2e4c6e7941e7056cd1adbe38e00eab399c8295fe6"
+    },
+    {
+      "source_id": "src-semantic-retrieval",
+      "path": "SystemCode/backend/roadguard/assistant/retrieval.py",
+      "version": "c-rag-vector-v1",
+      "sha256": "89816500e84e5e73f050a7754ffb269f2f0715d3c07338037ed3a5c6d27a8b1d"
+    },
+    {
+      "source_id": "src-retrieval-setup",
+      "path": "SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md",
+      "version": "c-rag-vector-v1",
+      "sha256": "b97ab92a604267b1a85f254aa51c51655178816c5a893ec2a052c4b31ba0cab1"
     }
   ],
   "context_sources": [
@@ -770,7 +794,7 @@
     {
       "document_id": "rg-kb-integration",
       "path": "11_assistant_integration.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -794,7 +818,11 @@
             "context-team",
             "context-agents",
             "src-workflow-schema",
-            "src-workflow-service"
+            "src-workflow-service",
+            "src-vector-store",
+            "src-embedding",
+            "src-semantic-retrieval",
+            "src-retrieval-setup"
           ]
         },
         {
@@ -835,16 +863,16 @@
           ]
         }
       ],
-      "sha256": "4f349f2c1465d4bc7c2b5fd28f0f379ffb3d0d17196a0f5ada4c50f14dc45146"
+      "sha256": "9575ee3254a9f36041a8a1036e4accca051069c926357f9e3474a12c5375c20e"
     }
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "05248094c72af62f743380d3adf0b7064bb08dda6269fb0a7011f9079e481263",
+    "sha256": "1af8fb137f55fb02ce5c43e5c23b3165af57562789f917098f3e50630444edb3",
     "case_count": 30
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "0d50f9eb41a21483238ac1b4c5eac769fc8eae5399e216d2fb32d49626ee344a"
+    "sha256": "38951074f7ccb33968bd34970085e9211b350c45277925984798c1d0ff95c731"
   }
 }

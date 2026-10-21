@@ -20,7 +20,7 @@ router = APIRouter(tags=['Knowledge retrieval'])
 @router.post('/assistant/knowledge/search', response_model=KnowledgeSearchResponse,
              responses={code: {'model': ErrorResponse} for code in (401, 403, 422, 503)},
              summary='Retrieve verified static knowledge sections (dispatcher only)',
-             description='Read-only lexical retrieval, not generated answers or business commands. '
+             description='Read-only local E5 embeddings and Chroma cosine retrieval. '
                          'Requires session cookie and CSRF token. Incompatible rule versions return no hits.')
 def search_knowledge(payload: KnowledgeSearchRequest) -> KnowledgeSearchResponse:
     try:

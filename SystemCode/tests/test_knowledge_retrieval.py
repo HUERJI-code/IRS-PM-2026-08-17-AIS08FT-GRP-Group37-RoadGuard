@@ -1,4 +1,4 @@
-"""Real package integrity, lexical retrieval, and authenticated read-only HTTP."""
+"""Real package integrity and authenticated Chroma HTTP control flow with embedding doubles."""
 import hashlib
 import json
 from pathlib import Path
@@ -37,7 +37,7 @@ def mutate_manifest(root, update):
 
 def test_all_sections_have_complete_provenance_and_no_context_is_indexed():
     package = load_package()
-    assert package.package_version == 'a-knowledge-v11'
+    assert package.package_version == 'a-knowledge-v12'
     assert len(package.chunks) == 40
     assert len({c.citation_id for c in package.chunks}) == 40
     assert {c.classification for c in package.chunks} == {'confirmed_project_fact', 'demo_assumption', 'pending_decision'}
@@ -57,7 +57,7 @@ def test_all_sections_have_complete_provenance_and_no_context_is_indexed():
     ('GA 使用 Greedy 初始解吗', 'rg-kb-demo-rules#routing-demo-settings'),
     ('没有期限能计算延误吗', 'rg-kb-demo-rules#demo-null-provenance'),
 ])
-def test_chinese_and_english_terms_retrieve_expected_evidence(query, citation):
+def test_chroma_preserves_expected_citations_with_controlled_embeddings(query, citation):
     result = search(load_package(), KnowledgeSearchRequest(query=query))
     assert citation in {hit.citation_id for hit in result.hits}
     assert not result.answer_generated
