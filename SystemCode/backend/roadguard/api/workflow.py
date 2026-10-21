@@ -31,6 +31,11 @@ TaskStatus = Literal["active", "completed", "cancelled", "all"]
 ERRORS = {code: {"model": ErrorResponse} for code in (404, 409, 422, 503)}
 MAX_BODY_BYTES = MAX_UPLOAD_BYTES + 64 * 1024
 MAX_METADATA_BYTES = 16 * 1024
+REPLANNING_HEADER = {"X-RoadGuard-Replanning": {
+    "description": "Best-effort planning after committed task acceptance. Failure retains the task; retry via explicit recalculation or an idempotent acceptance replay.",
+    "schema": {"type": "string", "enum": ["completed", "failed", "not_needed"]},
+}}
+
 
 
 def _service(request: Request) -> WorkflowService:
@@ -94,10 +99,10 @@ async def _upload(request: Request) -> tuple[UploadMetadata, bytes]:
 
 @router.post(
     "/inspections", response_model=InspectionUploadResponse, status_code=201, tags=["Inspections"],
-    responses={**ERRORS, 200: {"model": InspectionUploadResponse}, 413: {"model": ErrorResponse},
+    responses={**ERRORS, 200: {"model": InspectionUploadResponse, "headers": REPLANNING_HEADER}, 201: {"headers": REPLANNING_HEADER}, 413: {"model": ErrorResponse},
                415: {"model": ErrorResponse}, 502: {"model": ErrorResponse}},
     summary="Upload an image, return one primary box and automatically create an eligible task",
-    description="Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200.",
+    description="Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200. Accepted active tasks attempt automatic GA/Greedy planning after commit; the response header reports its outcome.",
     openapi_extra={"requestBody": {"required": True, "content": {"multipart/form-data": {
         "schema": {"type": "object", "required": ["image", "metadata"], "properties": {
             "image": {"type": "string", "format": "binary", "description": "One JPEG or PNG, at most 8 MiB and 20 megapixels."},
@@ -115,6 +120,8 @@ async def create_inspection(
     image = await run_in_threadpool(service.images.prepare, data)
     result = await run_in_threadpool(service.create, metadata, image, idempotency_key, actor=request.state.account)
     response.status_code = 200 if result.replayed else 201
+    response.headers["X-RoadGuard-Replanning"] = await run_in_threadpool(
+        request.app.state.automatic_planning.after_acceptance, result.inspection.task_id)
     return InspectionUploadResponse.from_record(result.inspection)
 
 
@@ -141,9 +148,12 @@ def get_inspection_image(request: Request, inspection_id: ResourceID) -> FileRes
 
 
 @router.post("/inspections/{inspection_id}/review", response_model=InspectionMutationResponse,
-             responses=ERRORS, tags=["Inspections"])
-def review_inspection(request: Request, inspection_id: ResourceID, payload: ReviewRequest) -> InspectionMutationResponse:
-    return InspectionMutationResponse.from_result(_service(request).review(inspection_id, payload, actor=request.state.account))
+             responses={**ERRORS, 200: {"headers": REPLANNING_HEADER}}, tags=["Inspections"],
+             description="Confirm/correct acceptance attempts automatic GA/Greedy planning after commit. Dismissal creates no plan; failure retains the task and is reported in the response header.")
+def review_inspection(request: Request, response: Response, inspection_id: ResourceID, payload: ReviewRequest) -> InspectionMutationResponse:
+    result = _service(request).review(inspection_id, payload, actor=request.state.account)
+    response.headers["X-RoadGuard-Replanning"] = request.app.state.automatic_planning.after_acceptance(result.inspection.task_id)
+    return InspectionMutationResponse.from_result(result)
 
 
 @router.get("/tasks", response_model=TaskList, responses=ERRORS, tags=["Tasks"])

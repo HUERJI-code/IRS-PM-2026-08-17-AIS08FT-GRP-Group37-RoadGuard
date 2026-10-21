@@ -17,17 +17,17 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Item | Value |
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
-| Group | Group 7; repository team label: Group7 |
+| Group | Group 37; repository team label: Group37 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
 | Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; broad reliability and videos pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
-Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard`.
+Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`.
 
-Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard).
+Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
 
-`Group7` represents the confirmed group number; no separate formal team name has been supplied.
+`Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label; no separate formal team name has been supplied. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
@@ -37,11 +37,11 @@ The completed [30-epoch YOLO11n/YOLO11s comparison](Miscellaneous/VISION_30_EPOC
 
 The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md) completed another 40 fine-tuning epochs and compared four validation candidates. The selected checkpoint reaches 50.5% Precision and 52.0% Recall at confidence 0.25 with correct eight-class, IoU 0.5 matching, versus 48.6% / 51.2% for the parent. The requested simultaneous 70% target remains unmet, and some damage types regressed. The deployed single-v1 model uses those balanced weights, original-only 832-pixel inference and area-quarter primary selection at inference confidence 0.20. Eight-class primary image-type Precision/Recall are 61.63%/61.99% on reused validation confirmation data, not an independent local test. See the [model release](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) and [single-damage evaluation](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md).
 
-A group-built genetic algorithm (GA) assigns accepted tasks to four crews and determines visit order. Greedy uses the same task snapshot, travel matrix and evaluator. Changes mark saved plans stale; dispatchers explicitly recalculate. Evaluation compares priority-first coverage, a weighted scheduling objective, travel, workload and runtime. No task deadlines are supplied, so priority-weighted completion is not lateness. See the [routing experiments](SystemCode/experiments/routing/README.md).
+A group-built genetic algorithm (GA) assigns accepted tasks to four crews and determines visit order. Greedy uses the same task snapshot, travel matrix and evaluator. Accepted uploads and review confirmation/correction automatically attempt paired planning after task commit. Other changes mark plans stale and require dispatcher recalculation. Evaluation compares priority-first coverage, a weighted scheduling objective, travel, workload and runtime. No task deadlines are supplied, so priority-weighted completion is not lateness. See the [routing experiments](SystemCode/experiments/routing/README.md).
 
 Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The dispatcher assistant uses reviewed project knowledge and authorized saved-route facts, with local vector retrieval and optional GPT evidence selection.
 
-The assistant returns English answers first, with sources closed until requested. Query-v3 distinguishes grounded summaries from direct model-configuration information and scope guidance; direct responses do not call GPT. Dispatcher task moves and cancellation require preview and explicit confirmation, with travel/service/return feasibility checks and durable crew constraints. Recalculation remains explicit. See the [task-adjustment acceptance](Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) and [intent-routing acceptance](Miscellaneous/RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md); targeted cases do not establish broad answer accuracy.
+The assistant returns English answers first, with sources closed until requested. Query-v3 distinguishes grounded summaries from direct model-configuration information and scope guidance; direct responses do not call GPT. Dispatcher task moves and cancellation require preview and explicit confirmation, with travel/service/return feasibility checks and durable crew constraints. Assistant adjustments still require explicit recalculation. See the [task-adjustment acceptance](Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) and [intent-routing acceptance](Miscellaneous/RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md); targeted cases do not establish broad answer accuracy.
 
 Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
 
@@ -73,7 +73,7 @@ Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUI
 Repository layout:
 
 ```text
-IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/
+IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/
   README.md
   AGENTS.md
   SystemCode/
@@ -106,7 +106,7 @@ All contributors and coding agents should first read the shared [project and age
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
+The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
 
 Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
 
@@ -131,3 +131,12 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)
 
 Development started from this course scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.
+
+
+## Automatic planning update 2026-10-21
+
+Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
+
+The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
+
+See [automatic planning acceptance](Miscellaneous/AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.

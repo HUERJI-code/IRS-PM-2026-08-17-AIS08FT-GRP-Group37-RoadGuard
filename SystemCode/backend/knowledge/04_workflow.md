@@ -1,6 +1,6 @@
 # Inspection, review and task records
 
-document_id: `rg-kb-workflow`; document_version: `8`; owner: `A`.
+document_id: `rg-kb-workflow`; document_version: `9`; owner: `A`.
 
 <a id="workflow-evidence"></a>
 ## Records and manual review
@@ -22,9 +22,11 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-
 
 Only active tasks participate in new planning reads. completed/cancelled tasks retain history without physical deletion or reactivation. Active tasks may be completed/cancelled, have damage_label corrected, or have latitude/longitude/road_type corrected together. The server recalculates severity, priority, minutes and recommendation from the inspection's frozen rules after label correction. Locations are validated again while preserving original inspection locations. Arbitrary priority/service_minutes/due_at, empty changes and explicit null are rejected.
 
-Task creation or actual correction/completion/cancellation changes planning input. Pending review, no detection and dismissal do not change active-task input. B must read active tasks and shared input_revision from one snapshot; pages with different revisions cannot form one planning input. Four-crew allocation, Greedy/GA planning and saved plan queries are implemented in B's PlanningService/RouteQueryService. Recalculation is explicit: task records or a successful task mutation do not establish that a new plan has been generated. Saved plans are marked stale after actual input changes. Crew completion is limited to the account's current latest-GA assignment and checked transactionally.
+Task creation or actual correction/completion/cancellation changes planning input. Pending review, no detection and dismissal do not change active-task input. B must read active tasks and shared input_revision from one snapshot; pages with different revisions cannot form one planning input. Four-crew allocation, Greedy/GA planning and saved plan queries are implemented in B's PlanningService/RouteQueryService. After an HTTP upload automatically creates a task, or an HTTP confirm/correct review creates one, the backend attempts GA and Greedy recalculation after committing the task. It uses the latest consistent task/crew snapshot and the existing shared matrix/evaluator, retaining confirmed crew constraints. The HTTP response waits for this attempt. The compact upload JSON remains unchanged; X-RoadGuard-Replanning reports completed, failed or not_needed. Completion means both plans were saved, not that every task is assignable. Failure preserves the accepted task and old plans; dispatchers can retry from Four-crew routes. Corrections to existing tasks, completion, cancellation, crew availability and assistant task adjustments still require explicit recalculation. A task record or planning_input_changed alone is not proof of a successful new plan. Saved plans are marked stale after actual input changes. Crew completion is limited to the account's current latest-GA assignment and checked transactionally.
 
 Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-routing-service](../roadguard/routing/service.py), [src-auth-access](../roadguard/auth/access.py).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).
 
 <a id="workflow-versions"></a>
 ## Versions and safe retries
@@ -33,9 +35,11 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-
 
 record_version is optimistic concurrency for one resource; review/mutation requests include expected_version. input_revision versions shared planning input and increments once in the same database transaction for actual task changes. Idempotency-Key prevents duplicate uploads; request_id prevents duplicate review/mutation on the corresponding resource. Identical requests replay safely; changed content or a stale new operation conflicts. Replay returns current resources/current input revision, not cached old state. Retries and changes without business-value differences neither increment revisions nor duplicate tasks.
 
-planning_input_changed only indicates that this request actually changed shared input; replayed indicates safe replay. Neither means route calculation succeeded. C must handle errors/conflicts by code/status and reread resources; old plans or demo responses cannot be displayed as new real results.
+planning_input_changed only indicates that this request actually changed shared input; replayed indicates safe replay. Neither means route calculation succeeded. An accepted active-task replay can recover missing/stale plans; both latest plans already at the current revision skip a redundant run. Automatic calls are serialized within one app process and retry revision conflicts at most three attempts with fresh input. There is no durable background queue or startup retry: interruption after task commit can require a safe accepted-request replay or manual recalculation. Pending review, no detection and dismissal trigger no planning. C must handle errors/conflicts by code/status and reread resources; old plans or demo responses cannot be displayed as new real results.
 
 Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-workflow-schema](../roadguard/schemas/workflow.py), [context-workflow-guide](../../../Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).
 
 <a id="workflow-account-roles"></a>
 ## Account roles and cross-role workflow
@@ -44,6 +48,8 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-workflow#workflow-
 
 Inspectors upload and read only their own inspections. Crew accounts are bound to one crew and can read its latest GA assignment and authorized task images, then complete eligible assigned tasks. Dispatchers review inspections and manage tasks, crews, planning, comparisons and the assistant. Headers and URL parameters cannot expand an account's permissions.
 
-The workflow is inspector upload, dispatcher review/planning, crew completion and explicit dispatcher replanning. The latest saved GA plan drives the crew workspace; there is no separate publish-plan step. Interfaces deny access by default, use HttpOnly session cookies and require CSRF for POST/PATCH, including read-only retrieval POSTs. Accounts are local database records, not shared through Git, and have no default password.
+The workflow is inspector upload, automatic or dispatcher acceptance, automatic planning after task creation, crew completion and explicit dispatcher replanning after other input changes or a failed automatic attempt. The latest saved GA plan drives the crew workspace; there is no separate publish-plan step. Interfaces deny access by default, use HttpOnly session cookies and require CSRF for POST/PATCH, including read-only retrieval POSTs. Accounts are local database records, not shared through Git, and have no default password.
 
 Sources: [src-account-roles](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-auth-permissions](../roadguard/auth/dependencies.py).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).

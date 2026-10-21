@@ -7,7 +7,8 @@ import {
 import { ApiError } from './errors'
 
 export type Transport = (url: string, init: RequestInit) => Promise<Response>
-export type RequestOptions = { signal?: AbortSignal; timeoutMs?: number }
+export type ReplanningStatus = 'completed' | 'failed' | 'not_needed'
+export type RequestOptions = { signal?: AbortSignal; timeoutMs?: number; onReplanning?: (status: ReplanningStatus | undefined) => void }
 export type PageQuery = { limit?: number; offset?: number }
 export type InspectionQuery = PageQuery & {
   status?: Model<'InspectionResponse'>['status'] | 'all'
@@ -110,7 +111,10 @@ export function createApiClient(
         )
       }
       try {
-        return parseModel(schema, data)
+        const parsed = parseModel(schema, data)
+        const status = response.headers.get('X-RoadGuard-Replanning')
+        options.onReplanning?.(status === 'completed' || status === 'failed' || status === 'not_needed' ? status : undefined)
+        return parsed
       } catch (error) {
         if (error instanceof ApiError && write)
           throw new ApiError(

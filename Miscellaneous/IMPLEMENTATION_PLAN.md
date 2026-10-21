@@ -43,7 +43,7 @@ See [the three-person work allocation and interface draft](TEAM_WORK_ALLOCATION.
 | 2 | Backend/frontend startup, database schema and four-crew configuration | Implemented: shared backend/database, authenticated frontend and crew records |
 | 3 | Image upload, labelled demo detector, confidence gate and rules | Implemented: one displayed box, compact upload, real primary confidence >=0.60 creates one task; lower confidence requires review; simulation rules v2 finalized |
 | 4 | Task queue, travel-time provider and greedy planner | Valid routes and explicit handling of unassigned tasks |
-| 5 | Group-built GA and explicit replanning | Implemented four-crew routes and seeded checks; queue/crew changes mark plans stale and dispatchers explicitly recalculate |
+| 5 | Group-built GA and replanning | Implemented four-crew routes and seeded checks; accepted uploads/reviews automatically attempt paired planning after commit; other changes mark plans stale for explicit recalculation |
 | 6 | RDD2022ES training/evaluation and real detector integration | Held-out metrics and documented dataset splits |
 | 7 | Implemented dispatcher assistant | Query-v3 grounded answers and saved-plan context; preview/confirm for crew availability, persistent reassignment and cancellation; separate explicit recalculation |
 | 8 | Comparative experiments and end-to-end validation | Reproducible results and documented limitations |

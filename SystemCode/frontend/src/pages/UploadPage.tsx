@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApi } from '../api/context'
+import type { ReplanningStatus } from '../api/client'
 import type { Model, UploadMetadata } from '../api/contracts'
 import { ApiError, errorMessage } from '../api/errors'
 import { validateImage, uploadMetadata } from './uploadValidation'
@@ -87,15 +88,17 @@ export default function UploadPage() {
       }
       const op = operation.current
       controller.current = new AbortController()
+      let replanning: ReplanningStatus | undefined
       const result = await api.upload(op.file, op.metadata, op.key, {
         signal: controller.current.signal,
         timeoutMs: 120_000,
+        onReplanning: (status) => { replanning = status },
       })
       if (!mounted.current) return
       setUncertain(false)
       // A successful upload is never repeated when the subsequent detail read fails.
       navigate(`/inspections/${result.inspection_id}`, {
-        state: { upload: result },
+        state: { upload: result, replanning },
       })
     } catch (err) {
       if (!mounted.current) return

@@ -37,7 +37,7 @@ def mutate_manifest(root, update):
 
 def test_all_sections_have_complete_provenance_and_no_context_is_indexed():
     package = load_package()
-    assert package.package_version == 'a-knowledge-v17'
+    assert package.package_version == 'a-knowledge-v19'
     assert len(package.chunks) == 40
     assert len({c.citation_id for c in package.chunks}) == 40
     assert {c.classification for c in package.chunks} == {'confirmed_project_fact', 'demo_assumption', 'pending_decision'}

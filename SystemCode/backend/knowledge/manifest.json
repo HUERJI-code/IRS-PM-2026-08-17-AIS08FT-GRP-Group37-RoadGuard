@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v17",
+  "package_version": "a-knowledge-v19",
   "language": "en",
   "owner": "A",
   "review_basis": "repository_consistency_review",
@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied."
+    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied. Administrative v18 revision records the owner-confirmed Group37 rename and updated deployment-manifest repository URL; weights, inference settings, results and historical observations are unchanged. v19 documents post-commit automatic GA/Greedy attempts after accepted task creation, preserved-task failure handling and unchanged manual replanning for other mutations."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -71,8 +71,8 @@
     {
       "source_id": "src-workflow-service",
       "path": "SystemCode/backend/roadguard/inspections/service.py",
-      "version": "task-adjustment-english-20261021",
-      "sha256": "9528bb2d20e1f4ce49d514a4004714fe309ea0db4d054feb6bcd1e3bab8946dd"
+      "version": "automatic-task-planning-v1",
+      "sha256": "f73780738974bdacc0de758db733b6f8981f305f835eaa197924a067357277bb"
     },
     {
       "source_id": "src-geography-code",
@@ -185,8 +185,8 @@
     {
       "source_id": "src-install-guide",
       "path": "ProjectReport/INSTALLATION_AND_USER_GUIDE.md",
-      "version": "documentation-consistency-20261021-v17",
-      "sha256": "373d56955a294aefd738720202bf053cfd0eccecc754b42e03d72425e83b7cd2"
+      "version": "automatic-task-planning-v1",
+      "sha256": "5b74789e1c009ded23ad43e6763c16212bba3a5482d9bfcc80f2048420ae7387"
     },
     {
       "source_id": "src-routing-results",
@@ -209,8 +209,8 @@
     {
       "source_id": "src-model-manifest",
       "path": "SystemCode/model/releases/roadguard-single-v1.json",
-      "version": "repository-snapshot-e13895dd3f7216c6392fa9d05afa2a147cfc785c",
-      "sha256": "d31986e46e6cfcaccfdbbb715b892e2a22708bbb63960f93d06def6afc2900a9"
+      "version": "group37-administrative-rename-20261021",
+      "sha256": "8c133baa41216325123399277b5c35e9bea7f272d4ea507d62e5241a7647478e"
     },
     {
       "source_id": "src-vision-evaluation",
@@ -227,8 +227,8 @@
     {
       "source_id": "src-routing-guide",
       "path": "SystemCode/backend/roadguard/routing/README.md",
-      "version": "routing-guide-20261019-merge-20261021",
-      "sha256": "3b5ae625360adc40190f7a40108148d060f85843d37032f30050795cad36e352"
+      "version": "automatic-task-planning-v1",
+      "sha256": "ad55c2199e83a5eaa3a04176c67d9d34448f2839fca6d7873a2f01408959ed71"
     },
     {
       "source_id": "src-account-roles",
@@ -275,8 +275,8 @@
     {
       "source_id": "src-retrieval-setup",
       "path": "SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md",
-      "version": "documentation-consistency-20261021-v17",
-      "sha256": "fdd6f3a49339d706da60bbb2e6d9a078efae6062259838697cc7043b853ce82c"
+      "version": "automatic-task-planning-v1",
+      "sha256": "74bc1dcbf3d26da33b185f2bee97dc03d9ba2547c58019c42c4cad3f34323db4"
     },
     {
       "source_id": "src-assistant-evidence",
@@ -337,6 +337,18 @@
       "path": "SystemCode/experiments/assistant/intent-routing-20261021.json",
       "version": "targeted-intent-20261021-v16",
       "sha256": "449cd4cccfec3e76cba42e399c59d804f3a577ca6faccbfad885a67d69e4f05a"
+    },
+    {
+      "source_id": "src-automatic-planning",
+      "path": "SystemCode/backend/roadguard/routing/automatic.py",
+      "version": "automatic-task-planning-v1",
+      "sha256": "9d749b275e2ce19d72c81306c833cab20c6b83b6a0d5ac6a0935c613957d53dc"
+    },
+    {
+      "source_id": "src-workflow-api",
+      "path": "SystemCode/backend/roadguard/api/workflow.py",
+      "version": "automatic-task-planning-v1",
+      "sha256": "6a7872cca8489cd438fcde2226b0ce6f4d374d8f36e513a73a7bacd765943ad4"
     }
   ],
   "context_sources": [
@@ -494,10 +506,10 @@
     {
       "document_id": "rg-kb-workflow",
       "path": "04_workflow.md",
-      "document_version": "8",
+      "document_version": "9",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "e5a9f4b5a904238937ec305aab07ee47d4f7f5fde09a6c0dd5b21954d474bd10",
+      "sha256": "203ab7596295f4e38863107e01e3eaaa7342232bac3492e0e20cf36bdb755502",
       "sections": [
         {
           "section_id": "workflow-evidence",
@@ -520,7 +532,9 @@
             "context-workflow-guide",
             "context-team",
             "src-routing-service",
-            "src-auth-access"
+            "src-auth-access",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         },
         {
@@ -530,7 +544,9 @@
           "source_ids": [
             "src-workflow-service",
             "src-workflow-schema",
-            "context-workflow-guide"
+            "context-workflow-guide",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         },
         {
@@ -539,7 +555,9 @@
           "classification": "confirmed_project_fact",
           "source_ids": [
             "src-account-roles",
-            "src-auth-permissions"
+            "src-auth-permissions",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         }
       ]
@@ -724,7 +742,7 @@
     {
       "document_id": "rg-kb-plans",
       "path": "08_route_plans_and_comparisons.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -747,7 +765,9 @@
             "src-routing-service",
             "src-crew-service",
             "src-auth-access",
-            "src-account-guide"
+            "src-account-guide",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         },
         {
@@ -767,16 +787,18 @@
             "src-plan-comparison",
             "src-routing-models",
             "src-routing-service",
-            "src-routing-evaluation"
+            "src-routing-evaluation",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         }
       ],
-      "sha256": "1a6b0308877233a84c345ce67e6dabe0230e5ff6a2ab9afb6fd0ae445cbdecb6"
+      "sha256": "853c11b9fbd06c84ece33c7816f055582d9bab867650c3bc6d0ef9a40e294140"
     },
     {
       "document_id": "rg-kb-operations",
       "path": "09_accounts_and_operations.md",
-      "document_version": "2",
+      "document_version": "3",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -800,7 +822,9 @@
             "src-workflow-service",
             "src-routing-service",
             "src-account-guide",
-            "src-install-guide"
+            "src-install-guide",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         },
         {
@@ -820,11 +844,13 @@
           "source_ids": [
             "src-install-guide",
             "src-account-guide",
-            "src-routing-service"
+            "src-routing-service",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         }
       ],
-      "sha256": "c78a871d48716eeb69cd8b543e477a6258f524969a93d8c77b0e60aba54609f3"
+      "sha256": "b43026359823a6556ab6ab2e90638a2eb559bf0fe39ee79b8399fc09c676d104"
     },
     {
       "document_id": "rg-kb-evaluation",
@@ -875,7 +901,7 @@
     {
       "document_id": "rg-kb-integration",
       "path": "11_assistant_integration.md",
-      "document_version": "8",
+      "document_version": "9",
       "owner": "A",
       "review_basis": "repository_consistency_review",
       "sections": [
@@ -951,20 +977,22 @@
             "src-task-change-service",
             "src-task-change-models",
             "src-task-change-schema",
-            "src-workflow-service"
+            "src-workflow-service",
+            "src-automatic-planning",
+            "src-workflow-api"
           ]
         }
       ],
-      "sha256": "8aa1cb58ea9d5d0f0ccb620c257f259940f4fc83dcf7323ddb4087bd4159b36b"
+      "sha256": "1de1b97bae816294d00aa5af9e70116b39ce3527974239876c16774c99800a25"
     }
   ],
   "acceptance_cases": {
     "path": "acceptance_cases.json",
-    "sha256": "a08b1b5e3547eb8015c71a155a905832583c5956e617058d44747c055b9d7841",
-    "case_count": 30
+    "sha256": "a8a4cd706be63ffd157b478032ec1a46fc77d4a9cb0ff92836a2118efee406d9",
+    "case_count": 31
   },
   "ingestion_guide": {
     "path": "README.md",
-    "sha256": "152e883a61d64764c4212c85f6058ad8bfa0365f3167389122493c3849919f2e"
+    "sha256": "ab894abc607a7bc1d5b242e9c2804220caf6680ec33718c23d8c3a7da4e4c505"
   }
 }

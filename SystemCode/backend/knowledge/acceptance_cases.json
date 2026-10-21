@@ -1,6 +1,6 @@
 {
   "package_id": "roadguard-a-knowledge",
-  "package_version": "a-knowledge-v17",
+  "package_version": "a-knowledge-v19",
   "purpose": "synthetic_acceptance_specs_not_executed_assistant_results",
   "cases": [
     {
@@ -118,7 +118,9 @@
         "context-team",
         "context-workflow-guide",
         "src-auth-access",
+        "src-automatic-planning",
         "src-routing-service",
+        "src-workflow-api",
         "src-workflow-schema",
         "src-workflow-service"
       ],
@@ -258,6 +260,7 @@
         "rg-kb-routing#routing-ga"
       ],
       "source_ids": [
+        "src-automatic-planning",
         "src-ga-evaluation",
         "src-ga-run-metadata",
         "src-plan-comparison",
@@ -266,7 +269,8 @@
         "src-routing-ga",
         "src-routing-models",
         "src-routing-results",
-        "src-routing-service"
+        "src-routing-service",
+        "src-workflow-api"
       ],
       "expected_grounded_points": [
         "Current-plan improvement requires saved plans, same-recalculation evidence and comparability checks.",
@@ -509,8 +513,10 @@
       "source_ids": [
         "src-account-guide",
         "src-auth-access",
+        "src-automatic-planning",
         "src-crew-service",
-        "src-routing-service"
+        "src-routing-service",
+        "src-workflow-api"
       ],
       "expected_grounded_points": [
         "A real availability change updates input revision and makes previous plans stale.",
@@ -564,10 +570,12 @@
         "rg-kb-plans#plans-comparison"
       ],
       "source_ids": [
+        "src-automatic-planning",
         "src-plan-comparison",
         "src-routing-evaluation",
         "src-routing-models",
-        "src-routing-service"
+        "src-routing-service",
+        "src-workflow-api"
       ],
       "expected_grounded_points": [
         "Need same recalculation evidence, matching revision, tasks, settings and other provenance.",
@@ -590,10 +598,12 @@
         "rg-kb-plans#plans-comparison"
       ],
       "source_ids": [
+        "src-automatic-planning",
         "src-plan-comparison",
         "src-routing-evaluation",
         "src-routing-models",
-        "src-routing-service"
+        "src-routing-service",
+        "src-workflow-api"
       ],
       "expected_grounded_points": [
         "Displayed signed change is (GA-Greedy)/Greedy*100; a negative value indicates reduction.",
@@ -648,8 +658,10 @@
       "source_ids": [
         "src-account-guide",
         "src-auth-access",
+        "src-automatic-planning",
         "src-crew-service",
-        "src-routing-service"
+        "src-routing-service",
+        "src-workflow-api"
       ],
       "expected_grounded_points": [
         "Stale flag alone is not a blanket block; server checks latest-GA assignment, durable crew constraint, account, crew availability and task revision/status.",
@@ -787,6 +799,7 @@
         "src-assistant-change",
         "src-auth-access",
         "src-auth-permissions",
+        "src-automatic-planning",
         "src-crew-schema",
         "src-crew-service",
         "src-plan-comparison",
@@ -794,6 +807,7 @@
         "src-task-change-models",
         "src-task-change-schema",
         "src-task-change-service",
+        "src-workflow-api",
         "src-workflow-service"
       ],
       "expected_grounded_points": [
@@ -854,6 +868,7 @@
         "src-assistant-change",
         "src-assistant-page",
         "src-auth-permissions",
+        "src-automatic-planning",
         "src-crew-schema",
         "src-crew-service",
         "src-intent-live-acceptance",
@@ -862,6 +877,7 @@
         "src-task-change-models",
         "src-task-change-schema",
         "src-task-change-service",
+        "src-workflow-api",
         "src-workflow-service"
       ],
       "expected_grounded_points": [
@@ -888,12 +904,14 @@
         "context-team",
         "src-assistant-change",
         "src-auth-permissions",
+        "src-automatic-planning",
         "src-crew-schema",
         "src-crew-service",
         "src-routing-service",
         "src-task-change-models",
         "src-task-change-schema",
         "src-task-change-service",
+        "src-workflow-api",
         "src-workflow-service"
       ],
       "expected_grounded_points": [
@@ -942,6 +960,44 @@
       "forbidden_claims": [
         "Generate a plausible total from the formula.",
         "Use synthetic fixtures as current production facts."
+      ],
+      "provided_context": {}
+    },
+    {
+      "case_id": "qa-31",
+      "is_synthetic_case": true,
+      "question": "Does accepting an inspection create a route automatically, and what happens if planning fails?",
+      "expected_status": "supported",
+      "expected_supported": true,
+      "expected_citations": [
+        "rg-kb-workflow#workflow-task-state",
+        "rg-kb-workflow#workflow-versions",
+        "rg-kb-plans#plans-stale"
+      ],
+      "source_ids": [
+        "context-team",
+        "context-workflow-guide",
+        "src-account-guide",
+        "src-auth-access",
+        "src-automatic-planning",
+        "src-crew-service",
+        "src-routing-service",
+        "src-workflow-api",
+        "src-workflow-schema",
+        "src-workflow-service"
+      ],
+      "expected_grounded_points": [
+        "Accepted task creation through upload or confirm/correct review automatically attempts GA and Greedy after task commit.",
+        "Failure retains the task and old plans; a dispatcher can retry manually. Pending review, no detection and dismissal trigger no planning.",
+        "Completed planning may leave infeasible tasks unassigned; durable crew constraints still apply.",
+        "There is no durable background queue or startup retry; interruption can require an accepted-request replay or manual recalculation."
+      ],
+      "required_runtime_evidence": [],
+      "forbidden_claims": [
+        "Every accepted task is guaranteed assignment.",
+        "All task and crew mutations automatically replan.",
+        "A chat answer itself creates a plan.",
+        "Planning failure rolls back task approval."
       ],
       "provided_context": {}
     }

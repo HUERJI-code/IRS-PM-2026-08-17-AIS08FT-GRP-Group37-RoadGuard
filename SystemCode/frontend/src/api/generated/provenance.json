@@ -1,7 +1,7 @@
 {
   "kind": "synthetic_backend_generated",
   "business_data": false,
-  "openapi_sha256": "74e53d273f2ad37c53ee4d0a958559d07855f0af7d87efd5e0ed5ef6b62ba98d",
+  "openapi_sha256": "38f453c6a63ee0f6c107748d145b2a2e83e012f2aaf77bed970fdcb0a6a7c1f6",
   "source": "roadguard.main.create_app; isolated temporary SQLite; demo detector; simulated matrix",
   "notes": "Read-only snapshots. Random IDs, timestamps and algorithm runtime change on regeneration. Blank image is synthetic, not road evidence."
 }

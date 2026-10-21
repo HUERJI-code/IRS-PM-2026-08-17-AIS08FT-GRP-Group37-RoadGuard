@@ -8,7 +8,7 @@ Owner C; 2026-10-16. The review workspace connects the existing backend. Changes
 2. The pending list shows 20 records per page with refresh/pagination. Selecting a record reloads full details and current record_version.
 3. Check the single box on the server image, model label/confidence, rule source and history. Confirm, correct the label and accept, or reject. Correction options read the shared eight-class dictionary without copying business mappings.
 4. Add an optional note up to 500 characters. Success refreshes the queue and shows the returned inspection, linked task, planning-input revision and review history.
-5. Confirmation/correction shows backend priority and repair minutes; rejection creates no task. Input changes prompt replanning without automatically triggering it.
+5. Confirmation/correction shows backend priority and repair minutes; rejection creates no task. Confirmation/correction automatically attempts paired GA/Greedy planning after the task commits; dismissal triggers none. A planning failure retains the task and old stale plans and shows a manual-retry warning.
 
 Original model labels/confidence remain evidence; corrections appear in linked tasks and review history. Processed records are read-only and cannot be reviewed again. Loading, an actual empty queue, failures and potentially stale retained lists are distinct. Top-level mock sources are read-only and cannot save.
 

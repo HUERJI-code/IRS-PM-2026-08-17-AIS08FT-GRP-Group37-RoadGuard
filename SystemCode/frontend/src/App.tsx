@@ -156,7 +156,7 @@ function Workspace() {
         </nav>
         <div className="sidebar-footer">
           <span className="scope-dot" />
-          Jurong East & West<p>4 crews · Departing NUS-ISS</p><p>Group 7</p>
+          Jurong East & West<p>4 crews · Departing NUS-ISS</p><p>Group 37</p>
         </div>
       </aside>
       <div className="main-shell">

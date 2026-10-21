@@ -20,7 +20,7 @@ YOLO11s balanced40/img832 best checkpoint (epoch 10), byte-identical to the prev
 
 Source, manifest, evaluation summary, tests, docs and the 19,218,837-byte deployment weight enter main through PR. This ordinary Git binary uses no LFS; authorized members receive it through clone/pull. CI checks exact path/size/hash/manifest consistency. Other weights/all Dataset content remain prohibited.
 
-The [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group7-RoadGuard/releases/tag/vision-single-v1) remains a backup download.
+The [vision-single-v1 Release](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/releases/tag/vision-single-v1) remains a backup download.
 
 Authorization covers only this weight. Dataset images/raw labels/full predictions/uploads/databases/recovery checkpoints stay ignored. Existing best/last/resume-latest/resume-previous are not moved/deleted. Repository remains private.
 

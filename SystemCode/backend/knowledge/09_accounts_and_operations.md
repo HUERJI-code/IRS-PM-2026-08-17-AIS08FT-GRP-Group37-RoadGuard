@@ -1,6 +1,6 @@
 # Accounts, workflow and local operation
 
-document_id: `rg-kb-operations`; document_version: `2`; owner: `A`.
+document_id: `rg-kb-operations`; document_version: `3`; owner: `A`.
 
 <a id="operations-roles"></a>
 ## Role and resource access
@@ -28,9 +28,11 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-operations#operati
 
 An inspector uploads a photo with separately supplied in-scope coordinates and a public-road declaration. No detection creates no task. A selected real primary box at raw confidence >=0.60 automatically creates one task; a lower-confidence result awaits dispatcher review. Review is available only while pending_review. Demo-mode selection has its own all-detections gate; do not apply that gate to real primary selection.
 
-The dispatcher checks active tasks, crew availability and input revision, then explicitly recalculates GA and Greedy. Crew members see their fixed crew's latest GA route and can complete assigned active tasks. Corrections, cancellation, completion and availability changes can make saved plans stale; another explicit recalculation updates planning. The interface's schematic map is not turn-by-turn navigation.
+Accepted task creation automatically attempts GA and Greedy after the task commits, including confirm/correct approval of a pending inspection. The dispatcher checks the latest saved routes, current input revision and unassigned reasons. If automatic planning fails, the task remains saved and the interface warns that the dispatcher can retry in Four-crew routes. A completed calculation may still contain unassigned tasks due to constraints. Crew members see their fixed crew's latest GA route and can complete assigned active tasks. Corrections, cancellation, completion and availability changes can make saved plans stale; another explicit recalculation updates planning. The interface's schematic map is not turn-by-turn navigation.
 
 Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-routing-service](../roadguard/routing/service.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-install-guide](../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).
 
 <a id="operations-install"></a>
 ## Installation and local readiness
@@ -58,8 +60,11 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-operations#operati
 | 404 | The record may be absent or inaccessible; do not infer another user's data exists. A missing route plan may require first recalculation. |
 | 409 stale version/revision | Reread the authorized resource/input, review the change and submit a new current request; do not blindly replay changed parameters. |
 | Real inference unavailable | Check optional vision installation and bundled weight/manifest; restart after correcting a failed lazy load. |
-| 503 travel_matrix_unavailable | Google matrix acquisition failed; no new plan was saved. Do not present an older or simulated plan as this successful run. |
+| 503 travel_matrix_unavailable on manual recalculation | Google matrix acquisition failed; no new plan was saved. Do not present an older or simulated plan as this successful run. |
+| X-RoadGuard-Replanning: failed on a successful upload/review | The task was saved, but automatic planning failed. Check saved plans and retry from Four-crew routes; a safe accepted-request replay can also recover missing/stale plans. No simulated fallback is used. |
 
 Browser and script clients retain session cookies; writes require X-CSRF-Token. Use one hostname consistently, since localhost and 127.0.0.1 do not share cookies. Read-only GET calls do not require CSRF. Never use a real password/token as a retrieval example or copy it into an error explanation.
 
 Sources: [src-install-guide](../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-routing-service](../roadguard/routing/service.py).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).

@@ -6,6 +6,7 @@ import { formatMinutes, formatSingaporeTime } from '../api/format'
 import InspectionImage from '../components/InspectionImage'
 import { ErrorState, LoadingState } from '../components/RequestState'
 import { homeFor, useAuth } from '../auth/context'
+import { replanningMessage } from '../api/replanning'
 import labels from '../../../model/label_schema.json'
 
 const statusNames = {
@@ -87,6 +88,7 @@ export default function InspectionPage() {
           . Subsequent read failures will not upload the photo again.
         </p>
       )}
+      {compact && replanningMessage(location.state?.replanning) && <p role="status" className="notice">{replanningMessage(location.state?.replanning)}</p>}
       {loading && <LoadingState />}
       {failure !== null && <ErrorState error={failure} />}
       {!loading && (failure !== null || taskFailure !== null) && (
@@ -115,7 +117,7 @@ export default function InspectionPage() {
             )}
             {detail.status === 'accepted' && (
               <><p>
-                A task is linked. Task or crew changes may require route replanning; this page does not recalculate automatically.
+                A task is linked. Accepted new tasks trigger automatic GA and Greedy route recalculation. Check the latest saved routes for current assignments; later task or crew changes may require replanning.
               </p>{role === 'dispatcher' && detail.task_id && <Link className="button" to={`/tasks?task=${detail.task_id}`}>View repair task →</Link>}</>
             )}
             {detail.status === 'rejected' && (

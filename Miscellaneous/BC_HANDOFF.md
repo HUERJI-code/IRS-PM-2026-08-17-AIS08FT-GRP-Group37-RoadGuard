@@ -1,10 +1,10 @@
 # Step 7: A's handoff to B/C
 
-Date: 2026-10-12; current-status update: 2026-10-20; owner: A. The original handoff delivered consistent active-task queries, fixed inputs, citable project knowledge and actual HTTP examples. Planning, crew APIs and authenticated pages have since been integrated; retrieval/generated answers and assistant confirmation remain unimplemented. Inspections support explicit demo or real models; task parameters remain course-simulation rules. Historical acceptance numbers below describe their dated runs.
+Date: 2026-10-12; current-status update: 2026-10-21; owner: A. The original handoff delivered consistent active-task queries, fixed inputs, citable project knowledge and actual HTTP examples. Planning, crew APIs and authenticated pages have since been integrated; retrieval/generated answers and assistant confirmation are now implemented. Inspections support explicit demo or real models; task parameters remain course-simulation rules. Historical acceptance numbers below describe their dated runs.
 
 a-workflow-v5 caller changes: uploads return only inspection_id, status, detection, task_id. C displays detection, then GET /inspections/{id} before review for detection ID/record version. Query automatic tasks with GET /tasks/{task_id}, and planning revision through /tasks/snapshot. The integration script uses this sequence.
 
-Current `demo-rules-v2` sets P3/P2/P1=60/120/240 minutes; fixtures were regenerated as `planning-synthetic-v2`. B reads saved durations rather than recalculating v1 as v2. That round supplied knowledge v6; the current ingestion target is [a-knowledge-v10](../SystemCode/backend/knowledge/README.md), with eleven documents and 30 synthetic acceptance specifications. See [baseline](BUSINESS_RULES_BASELINE.md)/[checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md). B/C integration was outside the original round and is documented separately in the later acceptance record.
+Current `demo-rules-v2` sets P3/P2/P1=60/120/240 minutes; fixtures were regenerated as `planning-synthetic-v2`. B reads saved durations rather than recalculating v1 as v2. That round supplied knowledge v6; the current ingestion target is [a-knowledge-v19](../SystemCode/backend/knowledge/README.md), with versioned reviewed documents and synthetic acceptance specifications. See [baseline](BUSINESS_RULES_BASELINE.md)/[checklist](INTEGRATION_ACCEPTANCE_CHECKLIST.md). B/C integration was outside the original round and is documented separately in the later acceptance record.
 
 ## 1. Deliverables and boundaries
 
@@ -81,7 +81,7 @@ The snippet illustrates the transaction boundary; the executable integration is 
 
 Snapshots are consistent at read time, not locks on future state. Tasks/crews can change during computation. Recheck input_revision in the saving write transaction, discarding/recalculating stale results under B's policy rather than overwriting current plans. A pre-computation check alone is insufficient.
 
-HTTP snapshots include only tasks and do not guarantee that crews read through another request share their revision. B combines inputs internally with the shared connection above. Saved plans are marked stale on read when input_revision differs. Task/crew changes do not automatically recalculate: planning_input_changed signals input changes, and explicit recalculation saves both plans only after a second revision check.
+HTTP snapshots include only tasks and do not guarantee that crews read through another request share their revision. B combines inputs internally with the shared connection above. Saved plans are marked stale on read when input_revision differs. Accepted uploads and review confirmation/correction attempt automatic planning after commit; other task/crew changes require explicit recalculation. Both paths save paired plans only after a second revision check.
 
 ## 3. B: fixed inputs
 
@@ -139,4 +139,13 @@ python -m pytest SystemCode/tests -q
 
 Tests cover complete queries above 100 tasks, original-field projection, unknowns, terminal filtering, conflicts/concurrency, caller connection lifecycle, corrupt data, reproducible fixtures, knowledge-source consistency and HTTP example. No real training, Google travel, planning, GPT or frontend demo was executed.
 
-See [Step 8](STEP8_VISION_ACCEPTANCE.md) for its dated data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and the current [a-knowledge-v10](../SystemCode/backend/knowledge/README.md); installation is in the [current guide](../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). The v10 corpus now covers implemented GA/Greedy, saved plans, accounts and historical evaluations. Verify manifest digests before ingestion; the assistant remains unimplemented.
+See [Step 8](STEP8_VISION_ACCEPTANCE.md) for its dated data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and the current [a-knowledge-v19](../SystemCode/backend/knowledge/README.md); installation is in the [current guide](../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). The v10 corpus now covers implemented GA/Greedy, saved plans, accounts and historical evaluations. Verify manifest digests before ingestion; the assistant remains unimplemented.
+
+
+## Automatic planning update 2026-10-21
+
+Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
+
+The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
+
+See [automatic planning acceptance](AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.

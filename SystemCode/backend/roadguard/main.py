@@ -19,6 +19,7 @@ from roadguard.inspections import WorkflowService
 from roadguard.tasks import TaskQueryService
 from roadguard.crews import CrewService
 from roadguard.routing.service import PlanningService, RouteQueryService
+from roadguard.routing.automatic import AutomaticPlanningCoordinator
 from roadguard.routing.settings import depot_from_project, load_routing_config
 from roadguard.auth.service import AuthService
 
@@ -60,6 +61,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         application.state.planning_service = PlanningService(
             database, routing_config, depot, application.state.crew_service)
         application.state.route_query_service = RouteQueryService(database)
+        application.state.automatic_planning = AutomaticPlanningCoordinator(application.state.planning_service)
         try:
             yield
         finally:
@@ -74,6 +76,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             application.state.crew_service = None
             application.state.planning_service = None
             application.state.route_query_service = None
+            application.state.automatic_planning = None
 
     application = FastAPI(
         title="RoadGuard API",
@@ -86,7 +89,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "Lower-confidence detections require review; business rules and tasks remain demo assumptions. "
             "Road type is user-declared. Four-crew Greedy/GA route plans use the configured travel matrix "
             "(labelled simulated by default, or Google Routes when enabled) and demo shift/objective "
-            "assumptions; recalculation is explicit and never automatic. "
+            "assumptions. Accepted active tasks trigger best-effort automatic recalculation; other input changes require explicit recalculation. "
             "The separate /demo endpoints remain stateless previews."
         ),
         lifespan=lifespan,

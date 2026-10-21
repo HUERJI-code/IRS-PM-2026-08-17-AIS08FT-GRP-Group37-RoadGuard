@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import labels from '../../../model/label_schema.json'
 import { useApi } from '../api/context'
-import { createOperation, type Operation } from '../api/client'
+import { createOperation, type Operation, type ReplanningStatus } from '../api/client'
 import type { Model } from '../api/contracts'
 import { ApiError } from '../api/errors'
 import { formatMinutes, formatSingaporeTime } from '../api/format'
@@ -11,6 +11,7 @@ import {
   ErrorState,
   LoadingState,
 } from '../components/RequestState'
+import { replanningMessage } from '../api/replanning'
 import InspectionImage from '../components/InspectionImage'
 
 type ReviewPayload = Omit<Model<'ReviewRequest'>, 'request_id'>
@@ -41,6 +42,7 @@ function ReviewRecord({
   const [busy, setBusy] = useState(false)
   const [uncertain, setUncertain] = useState(false)
   const [conflict, setConflict] = useState(false)
+  const [replanning, setReplanning] = useState<ReplanningStatus | undefined>()
   const [result, setResult] =
     useState<Model<'InspectionMutationResponse'> | null>(null)
   const operation = useRef<Operation<ReviewPayload> | null>(null)
@@ -92,6 +94,7 @@ function ReviewRecord({
     operation.current = null
     setInspection(null)
     setResult(null)
+    setReplanning(undefined)
     setReadError(null)
     setError(null)
     setAction('confirm')
@@ -148,6 +151,8 @@ function ReviewRecord({
       submission.current = new AbortController()
       const value = await api.review(id, operation.current, {
         signal: submission.current.signal,
+        timeoutMs: 120_000,
+        onReplanning: setReplanning,
       })
       if (!active.current) return
       setInspection(value.inspection)
@@ -231,7 +236,7 @@ function ReviewRecord({
                 Estimated repair {formatMinutes(result.task.service_minutes)}
               </p>
               <p>Rule version:{result.task.rule_version}</p>
-              <Link to="/routes">Check crews and recalculate routes</Link>
+              <Link to="/routes">Check latest saved routes</Link>
               <Link to={`/tasks?task=${result.task.task_id}`}>
                 View task workspace
               </Link>
@@ -239,10 +244,8 @@ function ReviewRecord({
           ) : (
             <p>No task is linked to this result.</p>
           )}
-          {result.planning_input_changed ? (
-            <p>Planning inputs have changed. Existing routes require replanning; this page has not recalculated them automatically.</p>
-          ) : (
-            <p>This response does not flag a planning-input change. The backend plan remains authoritative for route status.</p>
+          {replanningMessage(replanning) ? <p role="status">{replanningMessage(replanning)}</p> : (
+            <p>Route recalculation status was not provided. Check the latest saved routes for current assignments.</p>
           )}
         </section>
       )}
