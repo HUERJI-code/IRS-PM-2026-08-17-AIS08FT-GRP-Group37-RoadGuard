@@ -96,6 +96,11 @@ def test_health_and_implemented_openapi(settings):
             "/api/v1/assistant/change-requests/{change_id}/confirm",
             "/api/v1/assistant/change-requests/{change_id}/cancel",
             "/api/v1/assistant/change-requests/{change_id}/replan",
+            "/api/v1/assistant/task-changes", "/api/v1/assistant/task-changes/preview",
+            "/api/v1/assistant/task-changes/{change_id}",
+            "/api/v1/assistant/task-changes/{change_id}/confirm",
+            "/api/v1/assistant/task-changes/{change_id}/cancel",
+            "/api/v1/assistant/task-changes/{change_id}/replan",
             "/api/v1/assistant/knowledge/search", "/api/v1/assistant/query", "/api/v1/assistant/status",
             "/api/v1/auth/login", "/api/v1/auth/session", "/api/v1/auth/logout", "/api/v1/crew/workspace",
             "/api/v1/health", "/api/v1/demo/scenarios", "/api/v1/demo/assessments",
@@ -204,6 +209,7 @@ def test_database_initialization_is_idempotent_and_revision_persists(database):
             "infra_metadata", "inspections", "tasks", "operation_keys", "crews", "route_plans",
             "auth_users", "auth_sessions", "auth_login_limits", "inspection_owners", "auth_audit",
             "assistant_changes", "assistant_change_events",
+            "assistant_task_changes", "assistant_task_change_events", "task_crew_constraints",
         }
         with pytest.raises(sqlite3.OperationalError):
             connection.execute("UPDATE infra_metadata SET input_revision = 2")
