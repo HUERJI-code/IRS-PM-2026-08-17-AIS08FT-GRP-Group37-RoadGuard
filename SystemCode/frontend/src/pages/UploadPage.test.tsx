@@ -300,3 +300,18 @@ it('allows correction after a definite input rejection and creates a new request
   )
   expect(uploads[0][1].headers).not.toEqual(uploads[1][1].headers)
 })
+
+it.each(['completed', 'failed', 'not_needed'] as const)('keeps upload successful with %s recalculation feedback without another write', async (status) => {
+  const original = transport.getMockImplementation()!
+  transport.mockImplementation(async (url, init) => {
+    const response = await original(url, init)
+    if (init.method === 'POST') response.headers.set('X-RoadGuard-Replanning', status)
+    return response
+  })
+  mount()
+  const user = await fill()
+  await user.click(screen.getByRole('button', { name: 'Upload and detect' }))
+  expect(await screen.findByRole('heading', { name: 'Linked task' })).toBeVisible()
+  expect(screen.getByText(status === 'failed' ? /Task saved; automatic route recalculation failed/ : status === 'completed' ? /Automatic GA and Greedy route recalculation completed/ : /No additional route recalculation was needed/)).toBeVisible()
+  expect(transport.mock.calls.filter(([, init]) => init.method === 'POST')).toHaveLength(1)
+})

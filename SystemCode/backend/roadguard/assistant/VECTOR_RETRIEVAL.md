@@ -3,7 +3,7 @@
 The dispatcher assistant uses ChromaDB 1.5.9 with local multilingual E5 embeddings.
 The embedding encoder uses ONNX Runtime on CPU; it does not alter the YOLO/PyTorch
 model, call an embedding API, or train a model. GPT evidence selection and English grounded summaries remain a
-separate opt-in service. The current reviewed package is a-knowledge-v18 and the
+separate opt-in service. The current reviewed package is a-knowledge-v19 and the
 query contract is c-assistant-query-v3. The existing role, CSRF, citation and confirmation checks
 remain in place.
 

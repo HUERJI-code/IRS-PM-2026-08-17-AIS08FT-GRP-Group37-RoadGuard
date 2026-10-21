@@ -274,7 +274,7 @@ export default function RoutesPage() {
         <p className="eyebrow">DISPATCH / 04</p>
         <h1>Four-crew routes</h1>
         <p className="description">
-          Manage all configured crews, check active tasks and explicitly recalculate, then view the saved route order.
+          Accepted new tasks trigger automatic GA and Greedy route recalculation. View the latest saved routes here. Use manual recalculation to retry a failure or after crew, completion or cancellation changes.
         </p>
       </div>
       <nav className="section-links" aria-label="Dispatch page sections"><a href="#dispatch-map">View route map ↓</a><a href="#dispatch-controls">Crews and recalculation ↓</a></nav>
@@ -355,7 +355,7 @@ export default function RoutesPage() {
             <p className="field-note">
               The backend sets the start time when calculation begins. GA and Greedy
               use the same inputs and matrix. The matrix source follows backend configuration. Google
-              service failures never switch to a simulated matrix.
+              service failures never switch to a simulated matrix. Automatic runs update saved routes; use this manual button to retain the same-run response evidence required by algorithm comparison.
             </p>
             <button
               className="button"

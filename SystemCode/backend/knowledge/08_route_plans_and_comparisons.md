@@ -1,6 +1,6 @@
 # Saved plans, route explanations and comparisons
 
-document_id: `rg-kb-plans`; document_version: `2`; owner: `A`.
+document_id: `rg-kb-plans`; document_version: `3`; owner: `A`.
 
 <a id="plans-provenance"></a>
 ## Where dynamic answers obtain evidence
@@ -22,11 +22,13 @@ Sources: [src-routing-api](../roadguard/routing/api.py), [src-routing-service](.
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-plans#plans-stale`.
 
-Actual task or crew-availability changes increment the shared input_revision. On read, a saved plan with another revision is marked is_stale=true. Such changes do not automatically recalculate. A new plan is available only after explicit successful recalculation; a mutation response's planning_input_changed is not a planning-success receipt. Saved historical plans remain accessible by ID.
+Actual task or crew-availability changes increment the shared input_revision. On read, a saved plan with another revision is marked is_stale=true. Task creation through automatic inspection acceptance or an approved confirm/correct review triggers a post-commit automatic attempt for both GA and Greedy. Other changes still require explicit recalculation. The X-RoadGuard-Replanning response header reports completed, failed or not_needed without exposing global plan details to inspectors. A failed attempt preserves the task and leaves old plans stale; the manual recalculation action remains available. Repeated accepted requests skip calculation if both latest plans already match current input, and can recover missing/stale plans otherwise. A mutation response's planning_input_changed is not a planning-success receipt. Saved historical plans remain accessible by ID.
 
 The crew workspace uses the latest saved GA plan, without a separate publication step. It exposes only the signed-in crew's route. Completion checks current account, latest-GA assignment, crew availability and task revision/status in the write transaction. A stale plan flag alone does not prohibit completion of a still-valid assigned task. Reassignment can invalidate actions from an old page; refresh after conflicts. A committed completion may safely replay through its completion receipt after recalculation.
 
 Sources: [src-routing-service](../roadguard/routing/service.py), [src-crew-service](../roadguard/crews/service.py), [src-auth-access](../roadguard/auth/access.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).
 
 <a id="plans-unassigned"></a>
 ## Explain recorded unassigned reasons
@@ -55,10 +57,12 @@ Sources: [src-routing-evaluation](../roadguard/routing/evaluation.py), [src-rout
 
 classification: `confirmed_project_fact`. citation_id: `rg-kb-plans#plans-comparison`.
 
-The frontend requires both complete plans and evidence from the same recalculation response. Matching algorithm labels or two latest-plan responses alone does not establish that the matrix was shared. Check plan IDs, input revision, start time, settings, depot, crews/availability, task set, task source, matrix provider/simulation flag and counts against that response. Duplicate tasks or inconsistent totals invalidate comparison.
+The frontend requires both complete plans and evidence from the same recalculation response. Matching algorithm labels or two latest-plan responses alone does not establish that the matrix was shared. Automatic acceptance does not return the full recalculation receipt; use the dispatcher recalculation action to obtain same-round comparison evidence when the browser has no matching receipt. Check plan IDs, input revision, start time, settings, depot, crews/availability, task set, task source, matrix provider/simulation flag and counts against that response. Duplicate tasks or inconsistent totals invalidate comparison.
 
 Check the assigned task IDs as well as assigned counts. Comparisons of time metrics for equivalent work require the same assigned set. If coverage differs, report unassigned P1/P2/P3 and explain the difference before interpreting the objective; do not advertise a time saving caused by omitting work. Historical before/after plans with changed inputs can describe an operational change but cannot isolate the algorithm's effect.
 
 For a comparable nonzero Greedy baseline, the frontend displays signed change `(GA - Greedy) / Greedy * 100`; negative means a reduction. If phrased as improvement, explicitly use `(Greedy - GA) / Greedy * 100` for a lower-is-better metric. Null values or a zero baseline have no percentage. Label the metric and units: durations/objective in minutes, algorithm_runtime_ms in milliseconds. Algorithm runtime is not travel time or end-to-end API latency.
 
 Sources: [src-plan-comparison](../../frontend/src/planning/comparison.ts), [src-routing-models](../roadguard/routing/models.py), [src-routing-service](../roadguard/routing/service.py), [src-routing-evaluation](../roadguard/routing/evaluation.py).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).

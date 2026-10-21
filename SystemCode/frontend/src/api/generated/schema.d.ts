@@ -135,7 +135,7 @@ export interface paths {
         put?: never;
         /**
          * Upload an image, return one primary box and automatically create an eligible task
-         * @description Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200.
+         * @description Returns inspection_id, status, detection and task_id only. Read the inspection detail endpoint for provenance and review fields. New uploads return 201; idempotent replays return 200. Accepted active tasks attempt automatic GA/Greedy planning after commit; the response header reports its outcome.
          */
         post: operations["create_inspection_api_v1_inspections_post"];
         delete?: never;
@@ -187,7 +187,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Review Inspection */
+        /**
+         * Review Inspection
+         * @description Confirm/correct acceptance attempts automatic GA/Greedy planning after commit. Dismissal creates no plan; failure retains the task and is reported in the response header.
+         */
         post: operations["review_inspection_api_v1_inspections__inspection_id__review_post"];
         delete?: never;
         options?: never;
@@ -2580,6 +2583,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description Best-effort planning after committed task acceptance. Failure retains the task; retry via explicit recalculation or an idempotent acceptance replay. */
+                    "X-RoadGuard-Replanning"?: "completed" | "failed" | "not_needed";
                     [name: string]: unknown;
                 };
                 content: {
@@ -2589,6 +2594,8 @@ export interface operations {
             /** @description Successful Response */
             201: {
                 headers: {
+                    /** @description Best-effort planning after committed task acceptance. Failure retains the task; retry via explicit recalculation or an idempotent acceptance replay. */
+                    "X-RoadGuard-Replanning"?: "completed" | "failed" | "not_needed";
                     [name: string]: unknown;
                 };
                 content: {
@@ -2845,6 +2852,8 @@ export interface operations {
             /** @description Successful Response */
             200: {
                 headers: {
+                    /** @description Best-effort planning after committed task acceptance. Failure retains the task; retry via explicit recalculation or an idempotent acceptance replay. */
+                    "X-RoadGuard-Replanning"?: "completed" | "failed" | "not_needed";
                     [name: string]: unknown;
                 };
                 content: {

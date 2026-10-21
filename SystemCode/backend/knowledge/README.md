@@ -1,6 +1,6 @@
 # A -> C knowledge package
 
-Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v18`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The assistant implements local ChromaDB/E5 retrieval, opt-in grounded answers and confirmed crew/task changes. Targeted real GPT cases are recorded; broader semantic evaluation and independent clean-machine acceptance remain pending. Historical result files retain their original package versions and are not new v18 test results.
+Package ID: `roadguard-a-knowledge`; version: `a-knowledge-v19`; reviewed: 2026-10-21; content owner: A; retrieval/integration owner: C. This directory contains static evidence. The assistant implements local ChromaDB/E5 retrieval, opt-in grounded answers and confirmed crew/task changes. Targeted real GPT cases are recorded; broader semantic evaluation and independent clean-machine acceptance remain pending. Historical result files retain their original package versions and are not new v18 test results.
 
 ## Corpus map
 
@@ -36,7 +36,7 @@ Verify raw-byte SHA-256 digests for documents, pinned sources, this guide and ac
 
 Index only manifest-listed sections and retain their claim/status/limitation context. Do not indiscriminately index repository history, credentials, databases, uploads or synthetic task fixtures. Do not embed live operational records into this shared static corpus. The [integration contract](11_assistant_integration.md) describes implemented chunk metadata, lifecycle, access controls and answer/action boundaries. The backend APIs remain the source of authorized live facts.
 
-[acceptance_cases.json](acceptance_cases.json) contains 30 synthetic assistant acceptance specifications. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
+[acceptance_cases.json](acceptance_cases.json) contains 31 synthetic assistant acceptance specifications. `supported` means available evidence supports the explanation, not that an action ran. `insufficient_data` identifies missing live/version/permission evidence. Expected answers and forbidden claims are specifications, not recorded RAG outcomes.
 
 Run `python -m pytest SystemCode/tests/test_knowledge_handoff.py -q` from the repository root to check hashes, sources, anchors, label/rule mappings and acceptance specifications. These checks do not run GPT or demonstrate retrieval quality. The implemented retrieval/answer/confirmation service has separate local tests and targeted live records; broader semantic and clean-machine acceptance remain pending.
 
@@ -120,3 +120,7 @@ inference settings, experimental results and historical acceptance observations
 are unchanged. Acceptance cases remain specifications, not new test observations.
 Rebuild the local versioned Chroma index after the directory rename using cached
 embeddings; this revision does not execute GPT or download models.
+
+## Automatic planning after task acceptance in v19
+
+v19 covers automatic GA/Greedy attempts after accepted task creation through upload or confirm/correct review. Tasks commit before planning, failure preserves business data, and accepted active-task replays can recover missing or stale plans. Other mutations retain explicit replanning. Rebuild the local index from cached embeddings; do not upload vector storage or model caches. Historical acceptance observations are unchanged.

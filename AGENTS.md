@@ -1,12 +1,12 @@
 # RoadGuard project and agent collaboration rules
 
-Version: 1.23 · Updated: 2026-10-21 · Applies to every directory in this repository, all three team members and their coding agents.
+Version: 1.24 · Updated: 2026-10-21 · Applies to every directory in this repository, all three team members and their coding agents.
 
 This is the shared entry point for project development rules. Members should use the same repository version and have their agents read this file before starting a task. Detailed responsibilities and draft interfaces are in [TEAM_WORK_ALLOCATION.md](Miscellaneous/TEAM_WORK_ALLOCATION.md); they must not depend on one member's chat history.
 
 ## 1. Current stage and authorization
 
-- A's Steps 3–7 are complete. Step 8 implements full-data preparation, resumable training/evaluation and real detection integration; actual execution acceptance is recorded in the [Step 8 record](Miscellaneous/STEP8_VISION_ACCEPTANCE.md). The real model remains experimental. A real primary box meeting the configured confidence threshold (default 0.60) automatically creates one task; lower confidence requires review. Business rules remain demonstrative. Four-crew Greedy/GA dispatch, the React frontend, account permissions and crew completion are implemented; see the [integration record](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) and [current frontend guide](SystemCode/frontend/README.md). Replanning is explicit and maps are schematic. Dispatcher retrieval, optional GPT evidence selection and confirmed crew changes are implemented. The current retrieval uses local ChromaDB/E5 embeddings; targeted real GPT cases have been exercised; broad semantic reliability remains unverified.
+- A's Steps 3–7 are complete. Step 8 implements full-data preparation, resumable training/evaluation and real detection integration; actual execution acceptance is recorded in the [Step 8 record](Miscellaneous/STEP8_VISION_ACCEPTANCE.md). The real model remains experimental. A real primary box meeting the configured confidence threshold (default 0.60) automatically creates one task; lower confidence requires review. Business rules remain demonstrative. Four-crew Greedy/GA dispatch, the React frontend, account permissions and crew completion are implemented; see the [integration record](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) and [current frontend guide](SystemCode/frontend/README.md). Accepted uploads and review confirmation/correction automatically attempt planning after task commit; other changes retain explicit replanning. Maps are schematic. Dispatcher retrieval, optional GPT evidence selection and confirmed crew changes are implemented. The current retrieval uses local ChromaDB/E5 embeddings; targeted real GPT cases have been exercised; broad semantic reliability remains unverified.
 - Implement only the task explicitly assigned by the human. Authorization to build the foundation does not authorize implementing the entire project at once.
 - When the user requests explanation, review, planning or documentation, deliver that result without also creating business code, installing runtime dependencies, starting training or calling paid services.
 - Complete routine implementation, local fixes and necessary verification within the authorized scope independently. Ask a specific question only when a critical business decision is missing, the scope must expand or an action has destructive effects; continue work that can be completed independently.
@@ -32,7 +32,7 @@ On 2026-10-21, the owner confirmed the official group number as Group 37 (reposi
 | Project | RoadGuard; AIS08FT; Group37; course start date 2026-08-17 |
 | Geography | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundaries, as defined in the [scope and depot document](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md) |
 | Dispatch scenario | One simulated maintenance department and four crews by default; shared NUS-ISS simulated origin, explicitly permitted outside the task area; no claim to represent real maintenance operations |
-| Main workflow | Single image and location → detection → confidence routing/human review → business rules → valid task → explicit four-crew planning → schematic map and crew completion; optional evidence-based assistant questions and confirmed crew changes |
+| Main workflow | Single image and location → detection → confidence routing/human review → business rules → valid task → automatic four-crew planning attempt → schematic map and crew completion; optional evidence-based assistant questions and confirmed crew changes |
 | Technical direction | Implemented: React, Python/FastAPI, SQLite, YOLO/RDD2022ES, simulated or optional Google travel-time data, group-built GA and Greedy baseline, local ChromaDB/E5 retrieval and opt-in GPT evidence selection |
 | Dataset labels | `juusos/rdd2022es` version 1; all eight class IDs 0–7 verified against the [shared label dictionary](SystemCode/model/label_schema.json); full preparation and grouped splitting implemented, as recorded in Step 8 acceptance |
 | Main evaluation | Four crews and 10/15/20 tasks; GA and Greedy use identical inputs, travel matrices and constraints |
@@ -206,3 +206,12 @@ assistant model questions read backend configuration, unrelated questions receiv
 scope guidance, and project repair/route answers retain evidence validation. Direct
 responses use no model quota or fabricated citations; configuration is not a model
 execution claim. Permissions and business-action confirmation remain unchanged.
+
+
+## Automatic planning update 2026-10-21
+
+Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
+
+The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
+
+See [automatic planning acceptance](Miscellaneous/AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.

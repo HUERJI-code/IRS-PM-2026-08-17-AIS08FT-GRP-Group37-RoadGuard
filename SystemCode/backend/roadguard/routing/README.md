@@ -99,7 +99,7 @@ See B's section in the [API contract](../../../../Miscellaneous/API_CONTRACT.md)
 
 **Staleness**: compare saved `input_revision` with current on read; mismatch sets `is_stale=true`. Older plans remain queryable by ID for comparisons.
 
-**Design choice**: neither crew changes nor A's task changes automatically recalculate. `planning_input_changed` and stale plans signal the need, avoiding new plans without user knowledge and mixing recalculation failures with business mutations. C confirms via `PATCH /crews/{id}`, then calls recalculate with returned `input_revision`.
+**Current orchestration (2026-10-21)**: accepted uploads and review confirmation/correction call the shared PlanningService after task commit. The paired GA/Greedy attempt uses the same snapshot and matrix and honors persistent crew constraints. Completion, cancellation, crew changes and assistant confirmations retain explicit recalculation. A planning failure does not roll back a saved task.
 
 Tests: `SystemCode/tests/test_routing_api.py`: default crews without writes, changes/idempotency, conflicts, no-plan 404, empty queue, full create-task -> recalculate -> deactivate-crew -> stale -> complete-task -> recalculate flow, input changes during calculation preventing save, restart persistence, v2->v3 migration and malformed-database startup rejection.
 

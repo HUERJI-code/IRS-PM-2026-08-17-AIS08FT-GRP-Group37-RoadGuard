@@ -12,7 +12,7 @@ Owner C; 2026-10-16. This step connects existing A endpoints without changing mo
 
 ## Routing and display
 
-- accepted: show backend task, priority, repair duration, rule version and recommendation; no replanning here.
+- accepted: show backend task, priority, repair duration, rule version and recommendation and automatic planning outcome. A failed planning attempt preserves the task and warns the user to retry through manual recalculation.
 - pending_review: show pending status and review-workspace link. Review is implemented in step 5 ([guide](REVIEW_GUIDE.md)); no task is created before confirmation.
 - no_detection: show no task and explain that no detection does not establish road safety.
 - rejected: show the retained inspection read-only.
@@ -23,7 +23,7 @@ Only the single returned detection box is drawn. The server-normalised PNG is ov
 
 One upload retains File, metadata and Idempotency-Key. Processing disables the form and duplicate submission. An uncertain network outcome retains and locks the original inputs, allowing only the original request to be retried. Explicit input rejection allows correction and a new action/key. Upload waits up to 120 seconds without automatic retry; health/general reads retain the eight-second default.
 
-After upload success, subsequent operations read the inspection ID. Detail/task failures retry GET only, never POST again. A failed task read retains inspection results. Results link to the review workspace and do not directly edit tasks or recalculate.
+After upload success, subsequent operations read the inspection ID. Detail/task failures retry GET only, never POST again. A failed task read retains inspection results. Results link to the review workspace. The backend automatically attempts paired planning for accepted uploads after task commit; the page displays its outcome.
 
 Stay on the page while the outcome is uncertain; closing/refreshing triggers a browser leave warning. File and retry ID exist only in page memory and cannot survive refresh. Do not change source or navigate away and resubmit an unknown-outcome upload. Durable recovery would require an explicit persistence protocol rather than silently creating a new request.
 

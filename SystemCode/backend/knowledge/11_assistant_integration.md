@@ -1,6 +1,6 @@
 # RAG integration contract and acceptance requirements
 
-document_id: `rg-kb-integration`; document_version: `8`; owner: `A`.
+document_id: `rg-kb-integration`; document_version: `9`; owner: `A`.
 
 <a id="integration-status"></a>
 ## Scope and implementation status
@@ -71,10 +71,12 @@ Supported changes are crew availability, task reassignment and task cancellation
 
 The existing CrewPatch accepts request_id, expected_version and available; it does not accept expected_revision. The assistant validates the preview's input revision and crew version inside one write transaction, then calls CrewService.update_in_transaction and stores the receipt atomically. Do not claim the present PATCH already implements the entire assistant preview protocol.
 
-Task confirmation rechecks input/task versions and a fingerprint of routing configuration and depot. A move stores a durable crew constraint; cancellation calls the authoritative workflow service and preserves history. Greedy and GA honor these constraints after new tasks arrive. Unavailable or infeasible locked assignments stay explicitly unassigned. Availability and task changes increment input revision but do not recalculate. Explicitly replan and report the actual saved plan IDs. If planning fails, retain the confirmed change, stale-plan status and a controlled retry receipt. Duplicate confirmation cannot repeat business effects. Schema v6 adds task-change receipts, audit events and persistent crew constraints, preserving existing business records and revision during migration.
+Task confirmation rechecks input/task versions and a fingerprint of routing configuration and depot. A move stores a durable crew constraint; cancellation calls the authoritative workflow service and preserves history. Greedy and GA honor these constraints after new tasks arrive. Unavailable or infeasible locked assignments stay explicitly unassigned. These confirmed availability, reassignment and cancellation changes increment input revision but do not themselves recalculate. Separately, creation of accepted tasks through inspection upload or review automatically attempts planning after commit. Explicitly replan and report the actual saved plan IDs. If planning fails, retain the confirmed change, stale-plan status and a controlled retry receipt. Duplicate confirmation cannot repeat business effects. Schema v6 adds task-change receipts, audit events and persistent crew constraints, preserving existing business records and revision during migration.
 
 Sources: [src-crew-schema](../roadguard/crews/schemas.py), [src-crew-service](../roadguard/crews/service.py), [src-routing-service](../roadguard/routing/service.py), [src-auth-permissions](../roadguard/auth/dependencies.py), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md).
 
 Implementation sources: [src-assistant-change](../roadguard/assistant/change_service.py).
 
 Task sources: [src-task-change-service](../roadguard/assistant/task_change_service.py), [src-task-change-models](../roadguard/assistant/task_change_models.py), [src-task-change-schema](../roadguard/assistant/task_change_schema.py), [src-workflow-service](../roadguard/inspections/service.py).
+
+Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).

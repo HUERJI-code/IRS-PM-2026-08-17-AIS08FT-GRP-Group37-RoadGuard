@@ -146,6 +146,7 @@ def test_full_flow_tasks_crew_change_staleness_and_history(client):
 
 def test_inputs_changed_during_calculation_saves_nothing(client, monkeypatch):
     create_task(client, 0)
+    previous = client.get("/api/v1/route-plans/latest?algorithm=ga").json()
     original = routing_service.simulated_travel_matrix
 
     def matrix_while_crew_changes(*args, **kwargs):
@@ -156,7 +157,10 @@ def test_inputs_changed_during_calculation_saves_nothing(client, monkeypatch):
     monkeypatch.setattr(routing_service, "simulated_travel_matrix", matrix_while_crew_changes)
     response = recalculate(client, 1)
     assert response.status_code == 409 and response.json()["code"] == "stale_input_revision"
-    assert client.get("/api/v1/route-plans/latest?algorithm=ga").status_code == 404
+    retained = client.get("/api/v1/route-plans/latest?algorithm=ga").json()
+    assert retained["plan_id"] == previous["plan_id"] and retained["is_stale"] is True
+    with client.app.state.database.connect() as connection:
+        assert connection.execute("SELECT COUNT(*) FROM route_plans").fetchone()[0] == 2
 
 
 def test_plans_and_crew_state_survive_restart(settings):

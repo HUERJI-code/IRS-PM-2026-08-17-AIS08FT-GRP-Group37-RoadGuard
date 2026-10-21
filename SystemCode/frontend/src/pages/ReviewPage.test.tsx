@@ -101,7 +101,7 @@ it('loads the queue and fresh detail before confirmation, then refreshes the que
     await screen.findByRole('heading', { name: 'Review saved' }),
   ).toBeVisible()
   expect(await screen.findByText('No inspections are awaiting review.')).toBeVisible()
-  expect(screen.getByText(/Existing routes require replanning/)).toBeVisible()
+  expect(screen.getByText(/Route recalculation status was not provided/)).toBeVisible()
   expect(screen.getByText(/Read-only/)).toBeVisible()
   const request = transport.mock.calls.find(
     ([, init]) => init.method === 'POST',
@@ -325,4 +325,19 @@ it('preserves a successful review when queue refresh fails', async () => {
   expect(
     screen.queryByRole('button', { name: 'Save review decision' }),
   ).not.toBeInTheDocument()
+})
+
+it.each(['completed', 'failed', 'not_needed'] as const)('shows %s route feedback and retains the saved task without another write', async (status) => {
+  const original = transport.getMockImplementation()!
+  transport.mockImplementation(async (url, init) => {
+    const response = await original(url, init)
+    if (init.method === 'POST') response.headers.set('X-RoadGuard-Replanning', status)
+    return response
+  })
+  mount()
+  await userEvent.click(await screen.findByRole('button', { name: 'Save review decision' }))
+  const result = await screen.findByRole('region', { name: 'Review result' })
+  expect(within(result).getByText(/Linked task:/)).toBeVisible()
+  expect(within(result).getByText(status === 'failed' ? /Task saved; automatic route recalculation failed/ : status === 'completed' ? /Automatic GA and Greedy route recalculation completed/ : /No additional route recalculation was needed/)).toBeVisible()
+  expect(transport.mock.calls.filter(([, init]) => init.method === 'POST')).toHaveLength(1)
 })

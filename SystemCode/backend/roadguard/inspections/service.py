@@ -276,7 +276,7 @@ class WorkflowService:
                     inspection.decision_trace.append(DecisionTrace(
                         code="real_primary_task_created" if metadata.mode == "real" else "demo_task_created",
                         message="The eligible candidate was accepted and a single demo business task "
-                        "was created after declared-road and Jurong boundary validation. No route plan was calculated.",
+                        "was created after declared-road and Jurong boundary validation. The HTTP workflow requests best-effort planning after commit.",
                         rule_version=candidate.rule_version, is_demo=True,
                     ))
                 self.images.save(inspection_id, image)

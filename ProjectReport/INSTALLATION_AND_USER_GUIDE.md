@@ -26,7 +26,7 @@ $env:PYTHONPATH = 'SystemCode/backend'
 .\.venv\Scripts\python.exe -m roadguard.assistant.index_knowledge --download-model
 ```
 
-First setup downloads approximately 487 MB of pinned multilingual-e5-small model/tokenizer files and verifies their hashes. The encoder uses ONNX Runtime on CPU; it does not call an embedding API or change the YOLO model. Subsequent setup reuses verified files. After pulling a reviewed knowledge update, rebuild the current index with `.\.venv\Scripts\python.exe -m roadguard.assistant.index_knowledge` and restart the backend. HTTP requests never download models or rebuild indexes. The current package is `a-knowledge-v18`; Chroma collections are versioned against the manifest, encoder and chunking policy.
+First setup downloads approximately 487 MB of pinned multilingual-e5-small model/tokenizer files and verifies their hashes. The encoder uses ONNX Runtime on CPU; it does not call an embedding API or change the YOLO model. Subsequent setup reuses verified files. After pulling a reviewed knowledge update, rebuild the current index with `.\.venv\Scripts\python.exe -m roadguard.assistant.index_knowledge` and restart the backend. HTTP requests never download models or rebuild indexes. The current package is `a-knowledge-v19`; Chroma collections are versioned against the manifest, encoder and chunking policy.
 
 The default Chroma path is `SystemCode/backend/data/rag/chroma/`; embedding files are under `SystemCode/backend/data/rag/models/multilingual-e5-small/`. Both are ignored local runtime storage. Server-side overrides are `ROADGUARD_CHROMA_PATH` and `ROADGUARD_EMBEDDING_PATH`. Dataset, uploads, account records and business databases are not indexed. Retrieval uses cosine similarity, whose score is not answer correctness. See the [vector retrieval guide](../SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md).
 
@@ -80,7 +80,7 @@ Open `http://127.0.0.1:5173` and sign in. API documentation is at `http://127.0.
 1. Sign in as an inspector. Upload a JPEG or PNG within 8 MiB and 20 megapixels, choose real inference or an explicit synthetic scenario, enter Jurong coordinates and declare road type. Coordinates such as 1.3405, 103.706 are synthetic unless verified as the photo's location.
 2. Inspect the result. Upload returns `inspection_id`, `status`, one `detection` or null, and `task_id`. Real primary raw confidence >=0.60 creates one task; lower confidence requires review, and no detection creates no task. Raw evidence and frozen rules remain available in inspection details.
 3. Sign in as the dispatcher. Confirm, correct or reject pending inspections; corrections use stored rules. Accepted tasks contain the demonstration priority and service duration. Completed/cancelled records retain history and leave the active planning snapshot.
-4. Check crew availability and explicitly recalculate. Both planners use the same snapshot and matrix. Inspect unassigned reasons and the same-round comparison. Changes make existing plans stale; they do not trigger automatic recalculation.
+4. Accepted uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after saving the task. Both planners use the same snapshot and matrix. Inspect unassigned reasons and the same-round comparison. Use the manual recalculation button to obtain same-round comparison evidence when no matching response is retained in the browser. Check crew availability and use manual recalculation after completion, cancellation, crew changes or assistant adjustments, or to retry a failed automatic attempt.
 5. Sign in as the crew assigned by the latest saved GA plan. View and complete that crew's tasks; the server checks current assignment and task version. Completion changes planning inputs, and dispatch must explicitly replan.
 
 The frontend map shows schematic stop order, not turn-by-turn navigation. See the [frontend guide](../SystemCode/frontend/README.md).
@@ -140,3 +140,12 @@ $env:ROADGUARD_GOOGLE_MAPS_API_KEY = '<your private key>'
 ```
 
 Usage may incur charges. Keep the key private and out of frontend source. The current provider uses traffic-unaware estimates; the map remains schematic. Old plans retain their original source. Recorded browser acceptance used simulation, not a new real-Google call. See the [routing guide](../SystemCode/backend/roadguard/routing/README.md).
+
+
+## Automatic planning update 2026-10-21
+
+Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
+
+The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
+
+See [automatic planning acceptance](../Miscellaneous/AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.

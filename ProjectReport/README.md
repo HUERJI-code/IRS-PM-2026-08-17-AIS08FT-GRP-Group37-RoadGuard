@@ -19,4 +19,13 @@ The report includes all three appendix categories explicitly requested by the pr
 
 Do not edit the historical submitted proposal to imply that the four-crew scope was part of its original submission. Document the presentation feedback and resulting scope change separately.
 
-The architecture, implementation, bounded assistant evaluation and future-work sections now describe ChromaDB/E5, query-v3 response modes, source validation, confirmed task reassignment/cancellation, persistent crew constraints and explicit replanning. Historical vision/routing numbers remain unchanged. PR 36 CI and targeted real-provider results are recorded separately from earlier checks; overlapping test counts are not added. See the [release record](../Miscellaneous/RAG_TASK_RELEASE_20261021.md).
+The architecture, implementation, bounded assistant evaluation and future-work sections now describe ChromaDB/E5, query-v3 response modes, source validation, confirmed task reassignment/cancellation, persistent crew constraints and explicit replanning for assistant adjustments. Historical vision/routing numbers remain unchanged. PR 36 CI and targeted real-provider results are recorded separately from earlier checks; overlapping test counts are not added. See the [release record](../Miscellaneous/RAG_TASK_RELEASE_20261021.md).
+
+
+## Automatic planning update 2026-10-21
+
+Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
+
+The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
+
+See [automatic planning acceptance](../Miscellaneous/AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.
