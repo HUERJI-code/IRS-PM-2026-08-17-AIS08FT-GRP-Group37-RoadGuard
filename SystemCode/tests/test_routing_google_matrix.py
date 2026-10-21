@@ -261,13 +261,17 @@ def use_fake(client, fake, environ=None):
 def test_recalculate_uses_google_matrix_for_both_algorithms(google_client):
     fake = FakeGoogle()
     use_fake(google_client, fake)
-    tasks = [create_task(google_client, i) for i in range(3)]
+    tasks = []
+    for i in range(3):
+        tasks.append(create_task(google_client, i))
+        # Each accepted task triggers a new snapshot; GA and Greedy share its matrix.
+        assert len(fake.calls) == i + 1
     response = recalculate(google_client, 3)
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["matrix_is_simulated"] is False and body["matrix_provider"] == "google_routes_compute_route_matrix_v2"
     assert body["matrix_generated_at"].endswith("Z") or body["matrix_generated_at"].endswith("+00:00")
-    assert len(fake.calls) == 1  # Greedy and GA share one matrix
+    assert len(fake.calls) == 3  # Manual recalculation reuses the latest cached matrix.
     for summary in body["plans"]:
         plan = google_client.get(f"/api/v1/route-plans/{summary['plan_id']}").json()
         assert plan["matrix_is_simulated"] is False and sorted(stops(plan)) == sorted(tasks)

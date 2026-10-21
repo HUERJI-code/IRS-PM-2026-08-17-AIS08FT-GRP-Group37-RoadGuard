@@ -23,6 +23,7 @@ Local verification:
 
 - `test_automatic_planning.py`: 15 passed, including actual shared planning, concurrency, recovery and persistent crew constraints.
 - Existing workflow/routing/single-box suites: 54 passed. Authentication and assistant task-change suites: 27 passed. These counts describe separate focused runs, not an added overall coverage score.
+- Google matrix suite: 22 passed with fake transport. Each accepted task's paired run shares one matrix acquisition; an immediate manual run reuses the latest traffic-unaware cache. No real Google call was made.
 - Complete frontend suite: 185 passed; ESLint, TypeScript and production build passed. The existing bundle-size warning remains.
 - Knowledge integrity: 74 passed against an isolated staged tree; OpenAPI snapshot consistency passed. Repository structure/link checks passed for 484 files; 49 CI guardrail tests passed.
 - Cached E5/Chroma index rebuilt for `a-knowledge-v19` with 71 passages. Three local retrieval questions returned the updated acceptance, failure and completion-policy sources. This is retrieval evidence, not a new GPT answer-quality evaluation.
