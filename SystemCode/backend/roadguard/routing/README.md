@@ -236,3 +236,18 @@ Since Greedy-initialized online GA cannot be worse, merely beating Greedy is ins
 | Speed | Defaults 0.1-0.4 seconds; about 10x budget (0.7-5.4 seconds) averages within +/-0.8% of online GA |
 
 Limitations: BKS is not guaranteed optimal and gaps are lower-bound estimates; one synthetic task set and B6's two matrices; ten seeds without significance testing.
+
+## 15. B9/B10: frontend support outside routing
+
+B also supported C's frontend after integration testing. These changes live in `SystemCode/frontend/`, which C continues to own; they do not change routing, planning, crews, the backend or the API contract. See B9/B10 in [team allocation](../../../../Miscellaneous/TEAM_WORK_ALLOCATION.md).
+
+| Package | Change | Files |
+| --- | --- | --- |
+| B9 | Visual consistency across pages: colors, typography, spacing, layout and components | Frontend styles and page markup |
+| B10 | Upload page shows English "Choose file"/"No file chosen" text instead of the browser-locale native file-input text, and previews the selected photo | `src/pages/UploadPage.tsx`, `src/workspace.css`, `src/refined-workspace.css` |
+| B10 | Inspection result page's return button ("Upload another photo") is readable again; a workflow-note link colour rule no longer overrides `.button` text | `src/refined-workspace.css` |
+| B10 | Dispatcher task details include a collapsible "View road photo" section showing the source inspection photo and its original detection box | `src/pages/TaskPage.tsx` |
+
+The task photo is read through the existing `GET /api/v1/inspections/{inspection_id}` only when the section is opened, so browsing the task list does not fetch every image. It shows the original detection; later task label corrections are not drawn on the photo.
+
+Verification: `npx vitest run` in `SystemCode/frontend/` passes 187 tests, including new tests for the upload preview and on-demand task photo loading; ESLint and `tsc -b` are clean. The button colour fix is CSS-only and was not covered by an automated test.

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApi } from '../api/context'
 import type { ReplanningStatus } from '../api/client'
@@ -13,6 +13,10 @@ export default function UploadPage() {
   const navigate = useNavigate()
   const [mode, setMode] = useState<'real' | 'demo'>('real')
   const [file, setFile] = useState<File | null>(null)
+  const previewUrl = useMemo(
+    () => (file ? URL.createObjectURL(file) : null),
+    [file],
+  )
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
   const [declared, setDeclared] = useState(false)
@@ -29,6 +33,11 @@ export default function UploadPage() {
   const controller = useRef<AbortController | null>(null)
   const mounted = useRef(true)
   const locked = busy || uncertain
+
+  useEffect(() => {
+    if (!previewUrl) return
+    return () => URL.revokeObjectURL(previewUrl)
+  }, [previewUrl])
 
   useEffect(() => {
     mounted.current = true
@@ -185,14 +194,24 @@ export default function UploadPage() {
             </div>
           )}
           <div className="photo-picker">
-          <span className="photo-symbol" aria-hidden="true">＋</span>
+          {previewUrl ? (
+            <img className="photo-preview" src={previewUrl} alt="Selected road photo preview" />
+          ) : (
+            <span className="photo-symbol" aria-hidden="true">＋</span>
+          )}
           <label htmlFor="photo">Road photo</label>
           <input
             id="photo"
             type="file"
+            className="file-input-native"
             accept="image/jpeg,image/png"
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
+          {/* The native control's button text follows the browser locale, so render English text instead. */}
+          <div className="file-input-row">
+            <label htmlFor="photo" className="file-choose-button">Choose file</label>
+            <span className="file-choose-status">{file ? file.name : 'No file chosen'}</span>
+          </div>
           <p className="field-note">
             One JPEG/PNG, up to 8 MiB and 20 MP. The server-corrected image orientation is displayed after upload.
           </p>

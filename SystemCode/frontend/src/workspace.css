@@ -137,6 +137,12 @@ button.button { color: white; background: var(--teal); border: 1px solid var(--t
 .photo-symbol { color: #22838b; font-size: 26px; border: 1px solid #c4e2e4; border-radius: 11px; width: 44px; height: 44px; display: inline-grid; place-items: center; }
 .photo-picker input[type='file'] { font-size: 12.5px; border: 0; background: transparent; }
 input[type='file']::file-selector-button { border: 1px solid #bcd9de; border-radius: 6px; background: #fff; color: #27727e; padding: 7px 12px; margin-right: 12px; cursor: pointer; }
+.photo-picker .file-input-native { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; padding: 0 !important; margin: -1px !important; border: 0 !important; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.file-input-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.photo-picker .file-choose-button { display: inline-flex; align-items: center; border: 1px solid #bcd9de; border-radius: 6px; background: #fff; color: #27727e; padding: 7px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.photo-picker .file-input-native:focus-visible + .file-input-row .file-choose-button { outline: 2px solid #27727e; outline-offset: 2px; }
+.photo-preview { display: block; max-width: 100%; max-height: 320px; margin: 0 auto 12px; border-radius: 8px; object-fit: contain; }
+.file-choose-status { font-size: 12.5px; color: #596356; overflow-wrap: anywhere; }
 .upload-help { background: #eaf1f6; border: 1px solid #dfe8ee; border-radius: 13px; padding: 28px 25px; }
 .upload-help h2 { font-size: 18px; }.upload-help p { font-size: 13.5px; color: #6c8293; }
 .help-checklist { counter-reset: help; list-style: none; margin: 25px 0; padding: 0; }
