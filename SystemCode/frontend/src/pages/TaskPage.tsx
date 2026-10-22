@@ -11,6 +11,7 @@ import {
   ErrorState,
   LoadingState,
 } from '../components/RequestState'
+import InspectionImage from '../components/InspectionImage'
 
 const statuses = {
   active: 'Active',
@@ -21,6 +22,67 @@ type Payload = Omit<Model<'TaskPatch'>, 'request_id'>
 type Action = 'completed' | 'cancelled' | 'label' | 'location'
 const labelName = (key: string) =>
   labels.classes.find((item) => item.label_key === key)?.display_name_zh ?? key
+
+// Loads the source inspection only when opened, so browsing tasks does not fetch every photo.
+function TaskPhoto({ inspectionId }: { inspectionId: string }) {
+  const { api } = useApi()
+  const [open, setOpen] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  const [inspection, setInspection] =
+    useState<Model<'InspectionResponse'> | null>(null)
+  const [error, setError] = useState<unknown>(null)
+  useEffect(() => {
+    if (!open || inspection) return
+    const controller = new AbortController()
+    let current = true
+    api
+      .inspection(inspectionId, { signal: controller.signal })
+      .then((value) => {
+        if (current) setInspection(value)
+      })
+      .catch((err) => {
+        if (current) setError(err)
+      })
+    return () => {
+      current = false
+      controller.abort()
+    }
+  }, [api, inspectionId, open, inspection, attempt])
+  return (
+    <details
+      className="record-history task-photo"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary>
+        <h3>View road photo</h3>
+      </summary>
+      {open &&
+        (inspection ? (
+          <>
+            <InspectionImage inspection={inspection} />
+            <p className="field-note">
+              The box and label show the original detection; later task label corrections are not drawn on the photo.
+            </p>
+          </>
+        ) : error !== null ? (
+          <>
+            <ErrorState error={error} />
+            <button
+              className="text-button"
+              onClick={() => {
+                setError(null)
+                setAttempt((value) => value + 1)
+              }}
+            >
+              Retry loading photo
+            </button>
+          </>
+        ) : (
+          <LoadingState />
+        ))}
+    </details>
+  )
+}
 
 function TaskRecord({
   id,
@@ -265,6 +327,7 @@ function TaskRecord({
       <Link to={`/inspections/${task.inspection_id}`}>
         View original inspection and rule evidence
       </Link>
+      <TaskPhoto inspectionId={task.inspection_id} />
       <p className="field-note">
         Location is user-declared; correcting it does not rewrite the original inspection. Priority, severity and repair duration follow the frozen inspection rules.
       </p>

@@ -6,6 +6,7 @@ import fixtures from '../test/task-fixtures.json'
 import { ApiContext, type ApiContextValue } from '../api/context'
 import { createApiClient, type Transport } from '../api/client'
 import { parseModel } from '../api/contracts'
+import { mockFixtures } from '../api/mock/transport'
 import TaskPage from './TaskPage'
 const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status })
@@ -305,4 +306,32 @@ it('shows no input change for an acknowledged no-op', async () => {
   )
   await user.click(screen.getByRole('button', { name: 'Save task changes' }))
   expect(await screen.findByText(/Planning inputs are unchanged/)).toBeVisible()
+})
+
+it('loads the source inspection photo only when the photo section is opened', async () => {
+  const inspection = {
+    ...mockFixtures.normal['/inspections'].items[0],
+    inspection_id: fixture.before.inspection_id,
+  }
+  transport.mockImplementation(async (url, init) =>
+    reply(
+      url.includes('/inspections/')
+        ? inspection
+        : init.method === 'PATCH'
+          ? fixture.response
+          : url.includes('?')
+            ? list
+            : fixture.before,
+    ),
+  )
+  mount()
+  const summary = await screen.findByText('View road photo')
+  const inspectionReads = () =>
+    transport.mock.calls.filter(([url]) => url.includes('/inspections/'))
+  expect(inspectionReads()).toHaveLength(0)
+  await userEvent.setup().click(summary)
+  expect(
+    await screen.findByAltText('Server-normalised inspection photo'),
+  ).toHaveAttribute('src', inspection.image_url)
+  expect(inspectionReads()[0][0]).toContain(fixture.before.inspection_id)
 })

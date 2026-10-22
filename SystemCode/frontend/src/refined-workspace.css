@@ -41,7 +41,7 @@
 .refined-shell .button:hover:not(:disabled) { background: #244a39; border-color: #244a39; }
 .refined-shell .button.secondary { color: #354439; background: white; border-color: #cbd1c6; }
 .refined-shell .button.secondary:hover:not(:disabled) { background: #f0f2ec; border-color: #a8b6a3; }
-.refined-shell .text-button, .refined-shell .workflow-note a { color: #315c49; font-size: 13.5px; }
+.refined-shell .text-button, .refined-shell .workflow-note a:not(.button) { color: #315c49; font-size: 13.5px; }
 .refined-shell .notice { border-radius: 4px; font-size: 13.5px; line-height: 1.8; }
 .refined-shell .page-footer { border-color: var(--border); color: #767d73; }
 .mobile-workspace-menu { display: none; }
@@ -96,6 +96,10 @@
 .refined-shell .photo-picker input[type='file'] { cursor: pointer; color: #596356; }
 .refined-shell .photo-picker input[type='file']::file-selector-button { margin-right: 12px; padding: 0 16px; background: #fff; font: inherit; font-weight: 600; cursor: pointer; transition: background-color .16s ease, border-color .16s ease; }
 .refined-shell .photo-picker input[type='file']::file-selector-button:hover { background: #edf2e7; border-color: #8fa486; }
+.refined-shell .photo-picker .file-choose-button { color: #315c49; border-color: #bcc8b5; border-radius: 4px; min-height: 44px; padding: 0 16px; font-size: 13.5px; transition: background-color .16s ease, border-color .16s ease; }
+.refined-shell .photo-picker .file-choose-button:hover { background: #edf2e7; border-color: #8fa486; }
+.refined-shell .photo-picker .file-input-native:focus-visible + .file-input-row .file-choose-button { outline-color: #315c49; }
+.refined-shell .file-choose-status { font-size: 13.5px; }
 .refined-shell .upload-form > .button { min-height: 46px; padding: 10px 22px; font-size: 15px; box-shadow: 0 1px 2px rgba(37, 43, 40, .12); transition: background-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .refined-shell .upload-form > .button:hover:not(:disabled) { box-shadow: 0 6px 16px -6px rgba(49, 92, 73, .55); transform: translateY(-1px); }
 .refined-shell .upload-form > .button:active:not(:disabled) { transform: none; box-shadow: 0 1px 2px rgba(37, 43, 40, .12); }

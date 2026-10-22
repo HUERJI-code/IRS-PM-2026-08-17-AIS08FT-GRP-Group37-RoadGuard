@@ -315,3 +315,18 @@ it.each(['completed', 'failed', 'not_needed'] as const)('keeps upload successful
   expect(screen.getByText(status === 'failed' ? /Task saved; automatic route recalculation failed/ : status === 'completed' ? /Automatic GA and Greedy route recalculation completed/ : /No additional route recalculation was needed/)).toBeVisible()
   expect(transport.mock.calls.filter(([, init]) => init.method === 'POST')).toHaveLength(1)
 })
+
+it('previews the selected photo in place of the picker icon', async () => {
+  mount()
+  expect(screen.getByText('No file chosen')).toBeVisible()
+  expect(screen.queryByAltText('Selected road photo preview')).toBeNull()
+  await userEvent
+    .setup()
+    .upload(
+      screen.getByLabelText('Road photo'),
+      new File(['image'], 'road.png', { type: 'image/png' }),
+    )
+  const preview = await screen.findByAltText('Selected road photo preview')
+  expect(preview.getAttribute('src')).toMatch(/^blob:/)
+  expect(screen.queryByText('No file chosen')).toBeNull()
+})
