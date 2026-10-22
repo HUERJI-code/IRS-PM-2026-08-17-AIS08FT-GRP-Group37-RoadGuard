@@ -195,7 +195,7 @@ nav {
   border: 0;
   background: none;
   color: #315f4c;
-  font-size: 12px;
+  font-size: 13.5px;
   text-decoration: underline;
   text-underline-offset: 4px;
   padding: 4px;
@@ -208,7 +208,7 @@ main {
   flex: 1;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #697a6a;
@@ -223,7 +223,7 @@ h1 {
 }
 .description {
   color: #69766c;
-  font-size: 14px;
+  font-size: 15px;
   margin: 0 0 32px;
 }
 .workspace-panel {
@@ -239,7 +239,7 @@ h1 {
   justify-content: space-between;
   gap: 12px;
   border-bottom: 1px solid #edf0e9;
-  font-size: 11px;
+  font-size: 12.5px;
   color: #758071;
 }
 .badge {
@@ -273,7 +273,7 @@ h2 {
 }
 .empty-state p,
 .workflow-note p {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #6c786e;
   margin: 0;
 }
@@ -290,11 +290,11 @@ h2 {
   background: #fafbf8;
 }
 .planned-areas span {
-  font-size: 11px;
+  font-size: 12.5px;
   color: #85937c;
 }
 .planned-areas p {
-  font-size: 12px;
+  font-size: 13.5px;
   margin: 9px 0 0;
 }
 .workflow-note {
@@ -306,7 +306,7 @@ h2 {
 }
 .workflow-note .eyebrow {
   margin-bottom: 8px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .workflow-note h2 {
   font-size: 16px;
@@ -321,7 +321,7 @@ h2 {
   background: #244e3c;
   color: #fff;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13.5px;
   white-space: nowrap;
 }
 .button:hover {
@@ -335,7 +335,7 @@ h2 {
   justify-content: space-between;
   gap: 14px;
   color: #788371;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.7px;
 }
 .skip-link {
@@ -522,7 +522,7 @@ h2 {
 }
 .field-note {
   color: #61726a;
-  font-size: 12px;
+  font-size: 13.5px;
 }
 .coordinate-fields {
   display: grid;
@@ -533,7 +533,7 @@ h2 {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 400;
 }
 .checkbox-label input {
@@ -560,7 +560,7 @@ button.button {
   overflow-wrap: anywhere;
 }
 .record-id {
-  font-size: 12px;
+  font-size: 13.5px;
   color: #61726a;
 }
 .detection-image {
@@ -613,7 +613,7 @@ button.button {
   align-items: flex-start;
 }
 .review-list span {
-  font-size: 12px;
+  font-size: 13.5px;
   color: #61726a;
 }
 .review-list button {
