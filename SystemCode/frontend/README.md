@@ -131,3 +131,16 @@ Open Crew adjustments in the assistant. Load the latest GA plan or enter a saved
 Select an assigned task, choose a target crew or Cancel active task, and preview. Review before/after route durations, acknowledge the preview and confirm. Confirmation persists the crew lock or task cancellation; explicit recalculation saves new routes. Crew locks survive new tasks and later calculations. Discard task preview only closes an unconfirmed preview and does not cancel the task. Recent-record and ID recovery are available after interruption. Availability changes remain a separate workflow.
 
 Frontend fixtures with translated evidence are English test adaptations of historical records, as labelled in their limitations/warnings. Historical provenance hashes are not claims that translated text is a new live quotation. Original multilingual assistant source fields retain Unicode escapes where needed for integrity.
+
+## B9/B10 frontend support
+
+B supported C's frontend after integration testing; C keeps ownership of `SystemCode/frontend/`. These changes do not alter the backend, routing, planning or the API contract. See B9/B10 in [team allocation](../../Miscellaneous/TEAM_WORK_ALLOCATION.md).
+
+| Package | Change | Files |
+| --- | --- | --- |
+| B9 | Visual consistency across pages: colors, typography, spacing, layout and components | Frontend styles and page markup |
+| B10 | Upload page shows English "Choose file"/"No file chosen" text instead of the browser-locale native file-input text, and previews the selected photo | `src/pages/UploadPage.tsx`, `src/workspace.css`, `src/refined-workspace.css` |
+| B10 | Inspection result page's return button ("Upload another photo") is readable again; a workflow-note link colour rule no longer overrides `.button` text | `src/refined-workspace.css` |
+| B10 | Dispatcher task details include a collapsible "View road photo" section showing the source inspection photo and its original detection box | `src/pages/TaskPage.tsx` |
+
+The task photo is read through the existing `GET /api/v1/inspections/{inspection_id}` only when the section is opened, so browsing the task list does not fetch every image. It shows the original detection; later task label corrections are not drawn on the photo. The button colour fix is CSS-only and has no automated test.
