@@ -1,5 +1,5 @@
 Group number: 37
-Group name: Group37 (group-number label)
+Group name: RoadGuard
 Project name: RoadGuard
 Course start date: 2026-08-17
 Batch code: AIS08FT

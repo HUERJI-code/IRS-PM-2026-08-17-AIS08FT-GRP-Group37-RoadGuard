@@ -15,6 +15,7 @@
 - [Three-person responsibilities and interface contracts](TEAM_WORK_ALLOCATION.md)
 - [Submission checklist](SUBMISSION_CHECKLIST.md)
 - [Template and requirements source](TEMPLATE_SOURCE.md)
+- [Approved member / repository submission file](member-github.txt)
 - [Member / repository details template](member-github.example.txt)
 
 Use this directory for relevant supporting evidence and references. Keep measured results with their experiment definitions and confidential individual submissions outside the shared repository.
