@@ -23,7 +23,7 @@ Source of current requirements: practice module briefing v2.17, pages 6, 9, 10, 
 - [x] Report appendix: functionality-to-MR/RS/CGS mapping in Appendix C, linked to implementation and recorded verification evidence.
 - [x] Report appendix: installation and user guide; full-vision environment corrected to Python 3.12.
 - [ ] Independently validate installation on a clean machine; current evidence covers the recorded local environment and base CI.
-- [ ] `member-github.txt`: group name, official member names, student IDs or permitted masked identifiers, GitHub URL.
+- [x] [member-github.txt](member-github.txt): approved group name (RoadGuard), group number (37), official member names, student IDs and GitHub URL.
 - [ ] Downloaded repository ZIP.
 - [ ] Final ZIP containing the roster file, both videos, repository ZIP and group report.
 
@@ -37,7 +37,7 @@ Use `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard` as the common prefix.
 - Group report: `<prefix>-Group-Report.pdf` (or DOCX)
 - Final submission archive: `<prefix>.zip`, saved separately from the repository archive.
 
-Prepare the actual `member-github.txt` outside version control using the example file. It belongs in the final group submission package.
+The owner-approved roster is tracked as `Miscellaneous/member-github.txt`. Include an identical copy named `member-github.txt` at the top level of the final group submission package. Individual reflections and peer evaluations remain outside the shared repository.
 
 ## Individual submission
 

@@ -53,7 +53,7 @@ Measured vision results must be read with the corresponding experimental run and
 | Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
 | Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant | |
 
-The contribution table and final report include the later assistant delivery. Prepare the submission roster using [member-github.example.txt](Miscellaneous/member-github.example.txt).
+The contribution table and final report include the later assistant delivery. The approved submission roster is [member-github.txt](Miscellaneous/member-github.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
@@ -128,7 +128,7 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
 - [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
 - [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
-- [Member / GitHub submission file template](Miscellaneous/member-github.example.txt)
+- [Member / GitHub submission file](Miscellaneous/member-github.txt)
 
 Development started from this course scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.
 
