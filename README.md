@@ -1,14 +1,8 @@
 # RoadGuard
 
-**Status (2026-10-24): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; the supplied presentation videos are included; broad semantic reliability and clean-machine installation remain outstanding.**
+Road damage assessment and maintenance planning for **Jurong, Singapore**, connecting image inspections, repair decisions and route planning for **four repair crews**.
 
-Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
-
-This repository follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template). The shared FastAPI backend now persists image inspections, reviews and tasks using explicitly selected synthetic detections and versioned demo rules. It validates the frozen Jurong polygons; road eligibility remains user-declared. Step 8 adds opt-in local real inference with primary-confidence-based automatic tasks and review below the threshold; [actual training and acceptance evidence](Miscellaneous/STEP8_VISION_ACCEPTANCE.md) is recorded separately. Four-crew Greedy/GA planning and the React frontend are implemented, including inspector, dispatcher and fixed-crew access. See the [integration record](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) and [frontend guide](SystemCode/frontend/README.md).
-
-> Current geographic baseline: repair tasks are restricted to Jurong East and Jurong West, with four crews departing from the NUS-ISS simulated origin by default. A's Steps 3–7 delivered shared foundations, simulated workflows, consistent task snapshots and B/C handoff materials. Step 8 supports real detection: a primary box ≥0.60 automatically creates a task; lower confidence requires review. Business rules remain course simulations; road declarations and synthetic task points do not replace road verification.
-
-2026-10-14: The [finalized business rules](Miscellaneous/BUSINESS_RULES_BASELINE.md) use `demo-rules-v2`, with P3/P2/P1=60/120/240 minutes. The [integration acceptance checklist](Miscellaneous/INTEGRATION_ACCEPTANCE_CHECKLIST.md) covers A's current checks and scenarios after B/C are ready. The later [18 October acceptance](Miscellaneous/INTEGRATION_ACCEPTANCE_20261018.md) verifies integration with planning and the frontend; existing records retain their frozen rules.
+This public repository contains the application, project report, demonstration videos and supporting documentation. It follows the [IRS-PM project submission template](https://github.com/IRS-PM/Workshop-Project-Submission-Template).
 
 ## SECTION 1 : PROJECT TITLE
 
@@ -17,99 +11,74 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Item | Value |
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
-| Group | RoadGuard; Group 37; repository label: Group37 |
-| Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
-| Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; videos included; broad reliability pending |
+| Group | RoadGuard · Group 37 |
+| Project area | Jurong East and Jurong West, Singapore |
+| Repair crews | Four crews, with NUS-ISS as the simulated dispatch origin |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
-Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`.
-
-Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
-
-RoadGuard is the group name. `Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
+Repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
-RoadGuard is a working local web prototype that connects road damage observations to maintenance decisions. An inspector submits a road image and its location. A YOLO detector supplies a damage label, box and confidence; versioned demonstration rules map the label to severity, priority and repair duration. A confidence gate sends uncertain results for human review, while accepted results pass through explicit priority rules and enter the maintenance queue.
+Reporting a damaged road is only the first step in arranging a repair. The evidence must be assessed, repair work prioritised and tasks assigned to crews. RoadGuard brings these steps into a shared workflow so that inspectors, dispatchers and field crews can follow each task from submission to completion.
 
-The completed [30-epoch YOLO11n/YOLO11s comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md) selects YOLO11s by validation mAP50-95. It improves recall at the fixed confidence threshold while increasing false positives and CPU latency; the current user-selected workflow accepts the primary detection at confidence >= 0.60; lower confidence requires review. This setting does not improve model accuracy. See [one-box responses and fields](Miscellaneous/INSPECTION_RESPONSE_FIELDS.md).
+- **Inspect and review:** An inspector uploads a road image and location. A trained YOLO model returns one primary damage detection. Confidence of at least 60% automatically creates a repair task; lower-confidence detections require dispatcher review. Images with no detection create no task. Project rules assign severity, priority and estimated repair time.
+- **Plan and adjust:** A genetic algorithm assigns tasks and visit order across four crews, with a Greedy planner for comparison. Accepted uploads and approved reviews automatically trigger a planning attempt. Dispatchers can review routes, move or cancel tasks, and update crew availability. These later changes require recalculation; confirmed crew assignments are retained. If automatic planning fails, the task remains saved and planning can be retried manually.
+- **Carry out repairs:** Each crew has a mobile-friendly workspace showing its own route and assigned tasks, which it can mark as complete. Account permissions separate inspector, dispatcher and crew responsibilities.
+- **Ask about the project:** The route assistant uses ChromaDB and E5 embeddings to retrieve project knowledge, alongside facts from saved plans. Optional GPT integration provides answers with checked citations and expandable sources.
 
-The subsequent [balanced Precision/Recall experiment](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md) completed another 40 fine-tuning epochs and compared four validation candidates. The selected checkpoint reaches 50.5% Precision and 52.0% Recall at confidence 0.25 with correct eight-class, IoU 0.5 matching, versus 48.6% / 51.2% for the parent. The requested simultaneous 70% target remains unmet, and some damage types regressed. The deployed single-v1 model uses those balanced weights, original-only 832-pixel inference and area-quarter primary selection at inference confidence 0.20. Eight-class primary image-type Precision/Recall are 61.63%/61.99% on reused validation confirmation data, not an independent local test. See the [model release](Miscellaneous/MODEL_RELEASE_AND_BACKEND.md) and [single-damage evaluation](Miscellaneous/SINGLE_DAMAGE_OPTIMIZATION.md).
+The application uses a React frontend, a FastAPI backend and SQLite storage. Travel estimates can come from geographic-distance simulation or an optional Google road-network provider.
 
-A group-built genetic algorithm (GA) assigns accepted tasks to four crews and determines visit order. Greedy uses the same task snapshot, travel matrix and evaluator. Accepted uploads and review confirmation/correction automatically attempt paired planning after task commit. Other changes mark plans stale and require dispatcher recalculation. Evaluation compares priority-first coverage, a weighted scheduling objective, travel, workload and runtime. No task deadlines are supplied, so priority-weighted completion is not lateness. See the [routing experiments](SystemCode/experiments/routing/README.md).
-
-Repair tasks are limited to Jurong East and Jurong West. The maintenance department and tasks are simulated, with the real NUS-ISS location used as a shared simulated dispatch origin outside the task area; these are not official maintenance records or an actual NUS-ISS maintenance operation. Origin-to-task travel must be counted. RDD2022ES version 1 is the implemented eight-class image dataset. The dispatcher assistant uses reviewed project knowledge and authorized saved-route facts, with local vector retrieval and optional GPT evidence selection.
-
-The assistant returns English answers first, with sources closed until requested. Query-v3 distinguishes grounded summaries from direct model-configuration information and scope guidance; direct responses do not call GPT. Dispatcher task moves and cancellation require preview and explicit confirmation, with travel/service/return feasibility checks and durable crew constraints. Assistant adjustments still require explicit recalculation. See the [task-adjustment acceptance](Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) and [intent-routing acceptance](Miscellaneous/RAG_INTENT_ROUTING_ACCEPTANCE_20261021.md); targeted cases do not establish broad answer accuracy.
-
-Measured vision results must be read with the corresponding experimental run and limitations. The project does not claim measured cost savings or operational readiness.
+RoadGuard is a student project prototype. Repair durations and crew operations are simulated, model recognition still requires improvement, and some assistant questions may be declined by evidence or context checks. The project does not claim measured time or cost savings. The [final report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf) presents the evaluation results and limitations.
 
 ## SECTION 3 : CREDITS / PROJECT CONTRIBUTION
 
-| Official full name | Student ID | Work items / contribution | Email (optional) |
-| --- | --- | --- | --- |
-| Hu Erji | A0305480L | Vision/data experiments, business rules, shared backend, integration, authentication and later interface refinement | |
-| Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
-| Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant | |
+| Official full name | Student ID | Work items / contribution |
+| --- | --- | --- |
+| Hu Erji | A0305480L | Dataset and label verification; YOLO model training, optimisation, evaluation and backend integration; business rules; shared backend; authentication; system integration and later interface refinement |
+| Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments |
+| Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant |
 
-The contribution table and final report include the later assistant delivery. The approved submission roster is [member-github.txt](ProjectReport/member-github.txt).
+The submission roster and GitHub information are in [member-github.txt](ProjectReport/member-github.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
-Two separate videos are required by the current course briefing:
+| Video | Content | Duration |
+| --- | --- | --- |
+| [Project introduction and use-case demonstration](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-promotion.mp4) | Background, business value and application walkthrough | 8m32s |
+| [System design and technical explanation](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-system.mp4) | Architecture, reasoning methods and implementation | 4m55s |
 
-| Video | Target duration | Content | Status |
-| --- | --- | --- | --- |
-| Promotion / use-case demonstration | 5 minutes | Business pain, value and working use cases | [Included: 8m32s](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-promotion.mp4); exceeds target |
-| System design / technical explanation | 5 minutes | Architecture, reasoning methods and technical walkthrough | [Included: 4m55s](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-system.mp4) |
-
-Both supplied videos are included as provided. The promotion recording exceeds the five-minute target.
+The course target is five minutes per video; the promotion recording exceeds this target.
 
 ## SECTION 5 : USER GUIDE
 
-Follow the [installation and user guide](SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. Before using the assistant, follow the [ChromaDB and embedding setup](SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md); real GPT questions also require the existing server-side provider configuration. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
+Start with the [installation and user guide](SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md). It covers dependencies, local account creation, startup commands and the main workflows.
 
-Repository layout:
+- Frontend: `http://127.0.0.1:5173`
+- Interactive API documentation: `http://127.0.0.1:8000/docs`
+- Assistant setup: [ChromaDB and embeddings](SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md). GPT answers also require server-side API configuration.
+
+Accounts are created locally; the repository does not supply shared login credentials or a populated application database. Datasets, vector databases and model caches are excluded from Git.
 
 ```text
 SystemCode/       Application, configuration, tests, experiments and user documentation
 ProjectReport/    Final report PDF, original proposal PDF and member-github.txt
 Video/            System and promotion recordings
-Miscellaneous/    Runtime geography, contracts and reproducibility evidence
+Miscellaneous/    Runtime geography, contracts and supporting evidence
 ```
-
-Start with the [installation and user guide](SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md), [project baseline](SystemCode/docs/PROJECT_BASELINE.md) and [configuration](SystemCode/config/project.example.json).
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [course functionality mapping](SystemCode/docs/COURSE_MAPPING.md) for supporting evidence and evaluation limitations.
-
-Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
+- [Final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf): project design, implementation, evaluation and conclusions, with the user guide, proposal and course mapping in the appendices.
+- [Submitted project proposal](ProjectReport/RoadGuard_ProjectProposal.pdf).
 
 ## SECTION 7 : MISCELLANEOUS
 
-- [Project baseline and operational limitations](SystemCode/docs/PROJECT_BASELINE.md)
-- [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
-- [Jurong boundary and NUS-ISS simulated dispatch origin](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
-- [RDD2022ES version and eight-class label audit](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
-- [Validation error analysis and 30-epoch model comparison](Miscellaneous/VISION_30_EPOCH_COMPARISON.md)
-- [Balanced Precision/Recall optimization and unmet 70% target](Miscellaneous/BALANCED_VISION_OPTIMIZATION.md)
-- [Frozen initial API contracts and demo examples](Miscellaneous/API_CONTRACT.md)
-- [Run demo detection and business rules](Miscellaneous/DEMO_DETECTION_AND_RULES.md)
-- [Upload, review and manage persisted tasks](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
-- [B/C task snapshots, fixed inputs and knowledge handoff](Miscellaneous/BC_HANDOFF.md)
-- [RAG knowledge corpus: GA, plans, operations, evidence and integration requirements](SystemCode/backend/knowledge/README.md)
-- [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
-- [Member / GitHub submission file](ProjectReport/member-github.txt)
-
-Development started from this course scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.
-
-
-## Automatic planning update 2026-10-21
-
-Accepted inspection uploads and review confirmation/correction automatically attempt paired GA/Greedy planning after the task transaction commits. Both algorithms share one task/crew snapshot and travel matrix and retain durable crew constraints. Pending review, no detection and dismissal trigger no planning. Completion, cancellation, crew changes and assistant confirmations still require explicit replanning.
-
-The synchronous HTTP response waits for the attempt. The upload JSON retains exactly inspection_id, status, detection and task_id; X-RoadGuard-Replanning reports completed, failed or not_needed. An accepted idempotent replay repairs missing or stale plans and skips calculation when both latest plans are current. One process serializes automatic attempts and permits at most three total attempts (two retries), retrying stale-input conflicts only. A failure preserves the committed task and previous plans, which remain stale; the interface warns and retains manual recalculation. There is no durable worker or automatic restart recovery: a crash after task commit requires accepted replay or manual retry.
-
-See [automatic planning acceptance](Miscellaneous/AUTOMATIC_PLANNING_ACCEPTANCE_20261021.md) for the focused verification record.
+- [Project scope and dispatch location](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
+- [Backend guide](SystemCode/backend/README.md) and [frontend guide](SystemCode/frontend/README.md)
+- [API contract](Miscellaneous/API_CONTRACT.md) and [account permissions](Miscellaneous/ACCOUNT_ROLES.md)
+- [Vision model and training documentation](SystemCode/model/README.md)
+- [Routing evaluation](SystemCode/experiments/routing/README.md)
+- [Assistant knowledge documentation](SystemCode/backend/knowledge/README.md)
+- [Course functionality mapping](SystemCode/docs/COURSE_MAPPING.md)
+- [Additional technical records](Miscellaneous/README.md)
