@@ -16,7 +16,7 @@ Describe the problem, the resulting behavior, and the related task.
 
 ## Readiness
 
-- [ ] Followed AGENTS.md and updated the relevant contracts, examples, and documentation.
+- [ ] Checked the project baseline and updated the relevant contracts, examples, and documentation.
 - [ ] Completed self-review and the applicable local checks.
 - [ ] Clearly identified demo data, unfinished features, and known limitations.
 - [ ] Included the current main branch and resolved conflicts.

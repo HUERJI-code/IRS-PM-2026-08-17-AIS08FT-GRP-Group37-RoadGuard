@@ -1,7 +1,6 @@
 # Supporting materials
 
-- [Shared project and agent collaboration rules](../AGENTS.md)
-- [Feature branches, pull requests and CI](GITHUB_WORKFLOW.md)
+- [Project baseline and operational limitations](../SystemCode/docs/PROJECT_BASELINE.md)
 - [Project scope / presentation feedback](PROJECT_SCOPE.md)
 - [Jurong boundary and NUS-ISS simulated dispatch origin](JURONG_SCOPE_AND_DEPOT.md)
 - [Dataset source and eight-class label audit](DATASET_AND_LABEL_AUDIT.md)
@@ -11,11 +10,7 @@
 - [B/C task snapshot, fixtures and knowledge handoff](BC_HANDOFF.md)
 - [Optional real vision API and detector provenance](REAL_VISION_API.md)
 - [Step 8 training, checkpoints, metrics and acceptance](STEP8_VISION_ACCEPTANCE.md)
-- [Implementation plan](IMPLEMENTATION_PLAN.md)
 - [Three-person responsibilities and interface contracts](TEAM_WORK_ALLOCATION.md)
-- [Submission checklist](SUBMISSION_CHECKLIST.md)
-- [Template and requirements source](TEMPLATE_SOURCE.md)
-- [Approved member / repository submission file](member-github.txt)
-- [Member / repository details template](member-github.example.txt)
+- [Approved member / repository submission file](../ProjectReport/member-github.txt)
 
 Use this directory for relevant supporting evidence and references. Keep measured results with their experiment definitions and confidential individual submissions outside the shared repository.

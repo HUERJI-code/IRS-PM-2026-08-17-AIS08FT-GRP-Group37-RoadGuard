@@ -8,7 +8,7 @@
     "performed_by": "coding_agent_on_behalf_of_A",
     "human_or_expert_approval": false,
     "reviewed_on": "2026-10-21",
-    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied. Administrative v18 revision records the owner-confirmed Group37 rename and updated deployment-manifest repository URL; weights, inference settings, results and historical observations are unchanged. v19 documents post-commit automatic GA/Greedy attempts after accepted task creation, preserved-task failure handling and unchanged manual replanning for other mutations."
+    "note": "Repository consistency review of implemented ChromaDB/E5 retrieval, dated targeted real GPT evidence, explicit crew/task changes and current setup/account guidance. Historical results remain unchanged; broader semantic and independent clean-machine acceptance remain pending. No human or expert approval is implied. Administrative v18 revision records the owner-confirmed Group37 rename and updated deployment-manifest repository URL; weights, inference settings, results and historical observations are unchanged. v19 documents post-commit automatic GA/Greedy attempts after accepted task creation, preserved-task failure handling and unchanged manual replanning for other mutations. Submission cleanup relocates the user guide and retains substantive project baseline context; the former agent-instruction context is replaced by a concise substantive project baseline, while source IDs and citation anchors are retained. The changed manifest digest requires rebuilding the local vector index."
   },
   "hash_algorithm": "sha256_raw_file_bytes",
   "versions": {
@@ -184,9 +184,9 @@
     },
     {
       "source_id": "src-install-guide",
-      "path": "ProjectReport/INSTALLATION_AND_USER_GUIDE.md",
+      "path": "SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md",
       "version": "automatic-task-planning-v1",
-      "sha256": "5b74789e1c009ded23ad43e6763c16212bba3a5482d9bfcc80f2048420ae7387"
+      "sha256": "53b12976e0209e4a6ef62cb5fedb92fbd34615edaeb423e6bb7e9497b6471447"
     },
     {
       "source_id": "src-routing-results",
@@ -354,7 +354,7 @@
   "context_sources": [
     {
       "source_id": "context-agents",
-      "path": "AGENTS.md",
+      "path": "SystemCode/docs/PROJECT_BASELINE.md",
       "integrity": "unhashed_mutable_context"
     },
     {
@@ -568,7 +568,7 @@
       "document_version": "9",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "a30634e16b28757746388fb5aa1a8639b36e281746bdd5df5b84174cf79c0ecf",
+      "sha256": "6831bb106fb9b7e2eb750199ed3a4a5fde037c7ac5c71fa6bf200f922b1e081b",
       "sections": [
         {
           "section_id": "assistant-plan-facts",
@@ -636,7 +636,7 @@
       "document_version": "8",
       "owner": "A",
       "review_basis": "repository_consistency_review",
-      "sha256": "82c4b72f4645ad9007a2c1fed0b9d23bff8e32d97fbf6fde1cd19a5fa70bf0b1",
+      "sha256": "0f30162ffd4d50f71b9acf1bb8371214b722decdb2e1db4cf4de3d7c90b1f1a0",
       "sections": [
         {
           "section_id": "pending-business",
@@ -850,7 +850,7 @@
           ]
         }
       ],
-      "sha256": "b43026359823a6556ab6ab2e90638a2eb559bf0fe39ee79b8399fc09c676d104"
+      "sha256": "172d617a1e13c31638001decb33b2ca133f130fa0db96b8d2faec94727c2e3da"
     },
     {
       "document_id": "rg-kb-evaluation",
@@ -983,7 +983,7 @@
           ]
         }
       ],
-      "sha256": "1de1b97bae816294d00aa5af9e70116b39ce3527974239876c16774c99800a25"
+      "sha256": "4c17aa9b68ff8c7e9138ebf67c758914b59e7d4756850f9b0365450619487e8c"
     }
   ],
   "acceptance_cases": {

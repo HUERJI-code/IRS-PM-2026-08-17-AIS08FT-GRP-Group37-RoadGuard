@@ -60,7 +60,7 @@ Business schema v6 and `c-assistant-task-change-v1` support dispatcher-only rout
 
 Greedy and GA honor durable constraints after restarts and new tasks. Infeasible or unavailable constrained tasks are explicitly unassigned; stop order may change. Cancelled records remain in history and leave active planning. Discarding a preview does not cancel a task. Recent records and change IDs support idempotent recovery. Reassignment immediately revokes the old crew's task/inspection access; the new crew waits for a saved GA recalculation. Backend checks preserve dispatcher, crew and inspector boundaries.
 
-See the [complete user guide](../../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for setup and operations, and the [task-adjustment acceptance](../../../../Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) for bounded HTTP, browser and provider evidence. Earlier schema-v5 and query-v1/v2 sections below describe historical releases, not the current contract.
+See the [complete user guide](../../../docs/INSTALLATION_AND_USER_GUIDE.md) for setup and operations, and the [task-adjustment acceptance](../../../../Miscellaneous/TASK_ADJUSTMENT_ACCEPTANCE_20261021.md) for bounded HTTP, browser and provider evidence. Earlier schema-v5 and query-v1/v2 sections below describe historical releases, not the current contract.
 
 ## Previous evidence-only behavior (2026-10-21)
 

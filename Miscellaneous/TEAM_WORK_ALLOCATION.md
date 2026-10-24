@@ -2,7 +2,7 @@
 
 Prepared: 2026-10-11; status updated: 2026-10-22. Vision, rules, persisted workflows, four-crew planning and the authenticated frontend are implemented; see the [integration record](INTEGRATION_ACCEPTANCE_20261018.md), [frontend guide](../SystemCode/frontend/README.md) and final report contribution table. ChromaDB/E5 retrieval, optional query-v3 English grounded answers and persistent confirmed task adjustments are implemented. Targeted real GPT cases passed; broad answer-quality evaluation and presentation videos remain pending. The work packages below retain the original allocation and acceptance targets; they are not a claim that every planned deliverable is complete.
 
-All members and agents follow root [AGENTS.md](../AGENTS.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
+Project facts and operational boundaries are retained in the [project baseline](../SystemCode/docs/PROJECT_BASELINE.md). This table maintains detailed responsibilities and draft interfaces; the shared rules maintain collaboration and verification requirements.
 
 Project scope: Jurong East and Jurong West, Singapore; one simulated maintenance department; four crews; shared NUS-ISS simulated origin outside the task area; single-photo input; RDD2022ES/YOLO; rules and human review; GA and Greedy; React website; GPT + RAG route assistant. Assistant implementation and targeted acceptance are delivered; broader evaluation remains outstanding. Geographic evidence and integration requirements are in the [scope/depot document](JURONG_SCOPE_AND_DEPOT.md).
 
@@ -222,9 +222,9 @@ Freeze unresolved options before corresponding implementation. Authorized shared
 - [Current scope](PROJECT_SCOPE.md)
 - [Jurong/NUS-ISS](JURONG_SCOPE_AND_DEPOT.md)
 - [Dataset/eight labels](DATASET_AND_LABEL_AUDIT.md)
-- [Implementation plan](IMPLEMENTATION_PLAN.md)
-- [Submission checklist](SUBMISSION_CHECKLIST.md)
-- [Course mapping](../ProjectReport/COURSE_MAPPING.md)
+- [Implementation plan](../SystemCode/docs/PROJECT_BASELINE.md)
+- [Submission checklist](../SystemCode/docs/PROJECT_BASELINE.md)
+- [Course mapping](../SystemCode/docs/COURSE_MAPPING.md)
 
 Rules/workflow, evolutionary optimization, vision and natural-language cognition each need functionality/evidence. Contracts/backend foundations do not mean those capabilities/evaluations are complete.
 

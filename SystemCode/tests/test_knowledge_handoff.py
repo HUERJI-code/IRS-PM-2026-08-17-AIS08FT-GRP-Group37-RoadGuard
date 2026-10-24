@@ -70,8 +70,8 @@ def test_pinned_source_hashes_match_canonical_repository_files(source):
 
 def test_mutable_background_documents_are_explicitly_unhashed():
     mutable = {
-        "AGENTS.md", "Miscellaneous/PROJECT_SCOPE.md", "Miscellaneous/TEAM_WORK_ALLOCATION.md",
-        "Miscellaneous/API_CONTRACT.md", "README.md", "Miscellaneous/IMPLEMENTATION_PLAN.md",
+        "SystemCode/docs/PROJECT_BASELINE.md", "Miscellaneous/PROJECT_SCOPE.md", "Miscellaneous/TEAM_WORK_ALLOCATION.md",
+        "Miscellaneous/API_CONTRACT.md", "README.md",
         "Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md",
     }
     assert not mutable.intersection(source["path"] for source in MANIFEST["sources"])

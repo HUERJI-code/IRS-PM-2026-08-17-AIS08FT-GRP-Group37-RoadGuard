@@ -11,7 +11,7 @@ B's planning persistence and query services are implemented. C implements Chroma
 
 Without a persisted plan or relevant facts, return insufficient_data and identify missing plans/fields. Do not invent routes from images, task ordering, model answers or fixtures. Illustrative straight lines are not road geometry; simulated matrices are not Google measurements. Display stale plans and failures explicitly without replacing them with fictional new results.
 
-Sources: [context-agents](../../../AGENTS.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-project-config](../../config/project.example.json), [src-routing-service](../roadguard/routing/service.py), [src-plan-comparison](../../frontend/src/planning/comparison.ts), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
+Sources: [context-agents](../../docs/PROJECT_BASELINE.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-project-config](../../config/project.example.json), [src-routing-service](../roadguard/routing/service.py), [src-plan-comparison](../../frontend/src/planning/comparison.ts), [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx).
 
 Implementation sources: [src-assistant-query](../roadguard/assistant/query_service.py).
 
@@ -24,7 +24,7 @@ The implemented dispatcher changes are crew availability, moving an assigned act
 
 Confirmed movement stores a persistent task-to-crew constraint. Greedy and GA respect it on later recalculation, including after new tasks arrive. If that crew is unavailable or the route cannot fit, the task is explicitly unassigned instead of silently moved elsewhere. Confirmation validates current input, task and configuration versions in one transaction. Cancellation reuses A's task service; availability reuses B's crew service. Recalculation is a separate explicit action and can fail without undoing a confirmed change. New tasks still use inspection/review; arbitrary priority, duration, deadline and account edits are outside this interface. Static answers never execute changes or establish that a particular receipt succeeded.
 
-Sources: [context-agents](../../../AGENTS.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-crew-schema](../roadguard/crews/schemas.py), [src-crew-service](../roadguard/crews/service.py), [src-routing-service](../roadguard/routing/service.py).
+Sources: [context-agents](../../docs/PROJECT_BASELINE.md), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-crew-schema](../roadguard/crews/schemas.py), [src-crew-service](../roadguard/crews/service.py), [src-routing-service](../roadguard/routing/service.py).
 
 Implementation sources: [src-assistant-change](../roadguard/assistant/change_service.py).
 
@@ -50,6 +50,6 @@ Answers must preserve both support and limitations: static project explanations 
 
 Standalone questions identifying the assistant model read the server's configured model name directly, without retrieval or a provider call. This identifies configuration, not a verified provider execution or the YOLO detector. Clearly unrelated questions receive friendly scope guidance with examples. These server responses have no fabricated citations or knowledge-package hash. Mixed or ambiguous project questions continue through the evidence path; malformed provider evidence is still rejected. Routing uses bounded English and Chinese phrase matching, not unrestricted intent understanding.
 
-Sources: [context-agents](../../../AGENTS.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-label-schema](../../model/label_schema.json), [src-demo-rules](../../config/demo_rules.example.json), [src-vision-evaluation](../../experiments/vision/single_damage_summary.json), [src-routing-results](../../experiments/routing/results/README.md), [src-ga-evaluation](../../experiments/routing/results/ga-evaluation-v1/summary.json).
+Sources: [context-agents](../../docs/PROJECT_BASELINE.md), [context-scope](../../../Miscellaneous/PROJECT_SCOPE.md), [src-label-schema](../../model/label_schema.json), [src-demo-rules](../../config/demo_rules.example.json), [src-vision-evaluation](../../experiments/vision/single_damage_summary.json), [src-routing-results](../../experiments/routing/results/README.md), [src-ga-evaluation](../../experiments/routing/results/ga-evaluation-v1/summary.json).
 
 Implementation sources: [src-assistant-query](../roadguard/assistant/query_service.py), [src-assistant-intents](../roadguard/assistant/intents.py).

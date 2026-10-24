@@ -11,7 +11,7 @@ RoadGuard now implements local ChromaDB semantic retrieval with multilingual E5 
 
 C owns retrieval, indexing, citations and answer/change-request services inside the shared backend; A owns knowledge correctness and B owns planning facts. Keep one authoritative task/crew/plan store and reuse the existing domain services. The model must not invent a second scheduler or write business tables directly.
 
-Sources: [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../../AGENTS.md), [src-routing-service](../roadguard/routing/service.py).
+Sources: [src-assistant-page](../../frontend/src/pages/AssistantPage.tsx), [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../docs/PROJECT_BASELINE.md), [src-routing-service](../roadguard/routing/service.py).
 
 Implementation sources: [src-assistant-api](../roadguard/assistant/api.py).
 
@@ -28,7 +28,7 @@ Treat unchanged labels and business rules as versioned evidence. Changed files i
 
 Mutable context_sources explain background and responsibility but do not override hashed executable/configuration facts. Do not bulk-index the whole repository, historical reports, secrets, uploaded images, SQLite files or synthetic runtime fixtures as current operational truth. The interface and generated answers use English; multilingual question matching retains stable source IDs and schema terms. The current baseline uses local multilingual E5 vectors and cosine ranking with explicit limits. Retrieval sends selected passages to the evidence selector; cross-language coverage and answer sufficiency still require evaluation.
 
-Sources: [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../../AGENTS.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-workflow-service](../roadguard/inspections/service.py).
+Sources: [context-team](../../../Miscellaneous/TEAM_WORK_ALLOCATION.md), [context-agents](../../docs/PROJECT_BASELINE.md), [src-workflow-schema](../roadguard/schemas/workflow.py), [src-workflow-service](../roadguard/inspections/service.py).
 
 Implementation sources: [src-vector-store](../roadguard/assistant/vector_store.py), [src-embedding](../roadguard/assistant/embedding.py), [src-semantic-retrieval](../roadguard/assistant/retrieval.py), [src-retrieval-setup](../roadguard/assistant/VECTOR_RETRIEVAL.md).
 

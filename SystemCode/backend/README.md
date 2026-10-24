@@ -12,7 +12,7 @@ Successful upload returns only `inspection_id`, `status`, `detection`, `task_id`
 
 Use Python 3.12 for the full application with real vision; pinned NumPy 2.5.2 requires Python >=3.12. Recorded local acceptance used Python 3.12.14. Base CI uses Python 3.11 without the optional vision dependencies. `requirements.txt` pins FastAPI, Pydantic, Uvicorn, Pillow for image decoding and python-multipart for multipart parsing. `requirements-ci.txt` includes these plus HTTPX and pytest. SQLite uses the standard library. Reinstall requirements in existing environments to obtain new packages.
 
-Run these commands from the repository root; create and activate a Python 3.12 environment on first use. If an existing `.venv` uses another Python version, create a separate environment with 3.12 and use that environment consistently; do not recreate an environment in use. Provision accounts following the [complete installation guide](../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Fresh-machine installation has not been independently validated:
+Run these commands from the repository root; create and activate a Python 3.12 environment on first use. If an existing `.venv` uses another Python version, create a separate environment with 3.12 and use that environment consistently; do not recreate an environment in use. Provision accounts following the [complete installation guide](../docs/INSTALLATION_AND_USER_GUIDE.md). Fresh-machine installation has not been independently validated:
 
 ```powershell
 py -3.12 -m venv .venv

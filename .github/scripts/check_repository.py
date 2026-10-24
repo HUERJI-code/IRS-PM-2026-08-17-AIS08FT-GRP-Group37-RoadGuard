@@ -15,10 +15,13 @@ from urllib.parse import unquote, urlsplit
 
 REQUIRED_FILES = (
     'README.md',
-    'AGENTS.md',
+    'SystemCode/docs/PROJECT_BASELINE.md',
     'SystemCode/README.md',
-    'ProjectReport/README.md',
-    'Video/README.md',
+    'ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf',
+    'ProjectReport/member-github.txt',
+    'ProjectReport/RoadGuard_ProjectProposal.pdf',
+    'SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md',
+    'SystemCode/docs/COURSE_MAPPING.md',
     'Miscellaneous/README.md',
     'Miscellaneous/TEAM_WORK_ALLOCATION.md',
     'SystemCode/config/project.example.json',
@@ -170,6 +173,10 @@ def validate(root: Path, paths: list[str]) -> tuple[list[str], dict[str, bool]]:
         if not any(name.startswith(FRONTEND_ROOT) and
                    re.search(r'\.(?:test|spec)\.[jt]sx?$', name) for name in tracked):
             errors.append('Frontend code requires real *.test.* or *.spec.* tests.')
+    allowed_report_files = {name for name in REQUIRED_FILES if name.startswith('ProjectReport/')}
+    for name in sorted(tracked):
+        if name.startswith('ProjectReport/') and (root / name).is_file() and name not in allowed_report_files:
+            errors.append(f'Unexpected final report artifact: {name}')
     return errors, {'python': has_python, 'frontend': has_frontend}
 
 
