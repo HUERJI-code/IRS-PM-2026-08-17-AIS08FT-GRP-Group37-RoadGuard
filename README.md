@@ -1,6 +1,6 @@
 # RoadGuard
 
-**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; the supplied presentation videos are included; broad semantic reliability and clean-machine installation remain outstanding.**
+**Status (2026-10-24): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; the supplied presentation videos are included; broad semantic reliability and clean-machine installation remain outstanding.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
@@ -17,7 +17,7 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Item | Value |
 | --- | --- |
 | Course | Intelligent Reasoning Systems (IRS) Practice Module |
-| Group | Group 37; repository team label: Group37 |
+| Group | RoadGuard; Group 37; repository label: Group37 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
 | Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; videos included; broad reliability pending |
@@ -27,7 +27,7 @@ Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`.
 
 Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
 
-RoadGuard is the group name. `Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label; no separate formal team name has been supplied. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
+RoadGuard is the group name. `Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
@@ -83,7 +83,7 @@ Start with the [installation and user guide](SystemCode/docs/INSTALLATION_AND_US
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](SystemCode/docs/COURSE_MAPPING.md) for scope and remaining limitations.
+The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [course functionality mapping](SystemCode/docs/COURSE_MAPPING.md) for supporting evidence and evaluation limitations.
 
 Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
 
