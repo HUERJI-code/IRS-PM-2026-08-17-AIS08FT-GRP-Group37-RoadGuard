@@ -44,7 +44,7 @@ SystemCode/model/weights/
 # Locally prepared submission packages and confidential individual submissions
 member-github.txt
 # Approved group roster for the final submission.
-!/Miscellaneous/member-github.txt
+!/ProjectReport/member-github.txt
 IndividualSubmission/
 submission-dist/
 *.zip

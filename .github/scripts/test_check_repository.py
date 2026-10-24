@@ -50,10 +50,18 @@ class RepositoryChecksTest(unittest.TestCase):
         self.assertTrue(any('missing the agreed structure' in error for error in self.inspect()[0]))
 
     def test_broken_links_fail_but_fenced_examples_and_urls_do_not(self):
-        self.write('README.md', '[rules](AGENTS.md)\n[web](https://example.com)\n```md\n[example](missing.md)\n```\n')
+        self.write('README.md', '[rules](SystemCode/docs/PROJECT_BASELINE.md)\n[web](https://example.com)\n```md\n[example](missing.md)\n```\n')
         self.assertEqual(self.inspect()[0], [])
         self.write('README.md', '[missing](missing.md)\n')
         self.assertTrue(any('Broken local' in error for error in self.inspect()[0]))
+
+    def test_final_report_directory_rejects_working_documents(self):
+        self.write('ProjectReport/draft.docx', 'working copy')
+        self.assertTrue(any('Unexpected final report artifact' in error for error in self.inspect()[0]))
+
+    def test_final_submission_requires_member_roster(self):
+        (self.root / 'ProjectReport/member-github.txt').unlink()
+        self.assertTrue(any('Missing required file: ProjectReport/member-github.txt' in error for error in self.inspect()[0]))
 
     def test_conflict_markers_and_environment_files_fail(self):
         self.write('README.md', '<' * 7 + ' HEAD\nconflicting text\n')

@@ -139,7 +139,7 @@ python -m pytest SystemCode/tests -q
 
 Tests cover complete queries above 100 tasks, original-field projection, unknowns, terminal filtering, conflicts/concurrency, caller connection lifecycle, corrupt data, reproducible fixtures, knowledge-source consistency and HTTP example. No real training, Google travel, planning, GPT or frontend demo was executed.
 
-See [Step 8](STEP8_VISION_ACCEPTANCE.md) for its dated data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and the current [a-knowledge-v19](../SystemCode/backend/knowledge/README.md); installation is in the [current guide](../ProjectReport/INSTALLATION_AND_USER_GUIDE.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). The v10 corpus now covers implemented GA/Greedy, saved plans, accounts and historical evaluations. Verify manifest digests before ingestion; the assistant remains unimplemented.
+See [Step 8](STEP8_VISION_ACCEPTANCE.md) for its dated data/model acceptance. C must use a-workflow-v5 (at most one box, nullable auto_acceptance, primary ≥0.60 auto-task) and the current [a-knowledge-v19](../SystemCode/backend/knowledge/README.md); installation is in the [current guide](../SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md). Display real detection/demo business flags separately. Existing A/B/C modules were integrated on 2026-10-18; see the [record](INTEGRATION_ACCEPTANCE_20261018.md). The v10 corpus now covers implemented GA/Greedy, saved plans, accounts and historical evaluations. Verify manifest digests before ingestion; the assistant remains unimplemented.
 
 
 ## Automatic planning update 2026-10-21

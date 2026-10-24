@@ -30,7 +30,7 @@ An inspector uploads a photo with separately supplied in-scope coordinates and a
 
 Accepted task creation automatically attempts GA and Greedy after the task commits, including confirm/correct approval of a pending inspection. The dispatcher checks the latest saved routes, current input revision and unassigned reasons. If automatic planning fails, the task remains saved and the interface warns that the dispatcher can retry in Four-crew routes. A completed calculation may still contain unassigned tasks due to constraints. Crew members see their fixed crew's latest GA route and can complete assigned active tasks. Corrections, cancellation, completion and availability changes can make saved plans stale; another explicit recalculation updates planning. The interface's schematic map is not turn-by-turn navigation.
 
-Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-routing-service](../roadguard/routing/service.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-install-guide](../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md).
+Sources: [src-workflow-service](../roadguard/inspections/service.py), [src-routing-service](../roadguard/routing/service.py), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-install-guide](../../docs/INSTALLATION_AND_USER_GUIDE.md).
 
 Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).
 
@@ -45,7 +45,7 @@ The deployment weight is bundled and checked against the backend manifest; infer
 
 The public `/api/v1/health` checks application/database access. The real model loads lazily; healthy status does not prove model readiness, Google access or an available GPT/RAG service. Recorded local installation is not independent clean-machine validation.
 
-Sources: [src-install-guide](../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-model-manifest](../../model/releases/roadguard-single-v1.json).
+Sources: [src-install-guide](../../docs/INSTALLATION_AND_USER_GUIDE.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-model-manifest](../../model/releases/roadguard-single-v1.json).
 
 <a id="operations-errors"></a>
 ## Common operational failures
@@ -65,6 +65,6 @@ classification: `confirmed_project_fact`. citation_id: `rg-kb-operations#operati
 
 Browser and script clients retain session cookies; writes require X-CSRF-Token. Use one hostname consistently, since localhost and 127.0.0.1 do not share cookies. Read-only GET calls do not require CSRF. Never use a real password/token as a retrieval example or copy it into an error explanation.
 
-Sources: [src-install-guide](../../../ProjectReport/INSTALLATION_AND_USER_GUIDE.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-routing-service](../roadguard/routing/service.py).
+Sources: [src-install-guide](../../docs/INSTALLATION_AND_USER_GUIDE.md), [src-account-guide](../../../Miscellaneous/ACCOUNT_ROLES.md), [src-routing-service](../roadguard/routing/service.py).
 
 Automatic planning sources: [src-automatic-planning](../roadguard/routing/automatic.py), [src-workflow-api](../roadguard/api/workflow.py).

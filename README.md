@@ -1,6 +1,6 @@
 # RoadGuard
 
-**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; broad semantic reliability, presentation videos and clean-machine installation remain outstanding.**
+**Status (2026-10-21): the authenticated inspection-to-completion prototype, four-crew planning, dispatcher assistant and final group report are delivered. Local ChromaDB/E5 retrieval is implemented; targeted real GPT and workflow acceptance has passed; the supplied presentation videos are included; broad semantic reliability and clean-machine installation remain outstanding.**
 
 Road damage assessment and maintenance planning for **Jurong, Singapore**, with **four repair crews**.
 
@@ -20,14 +20,14 @@ This repository follows the [IRS-PM project submission template](https://github.
 | Group | Group 37; repository team label: Group37 |
 | Demonstration area | Jurong East and Jurong West, Singapore; frozen URA MP2025 boundary |
 | Repair crews | Four simulated crews, sharing the NUS-ISS simulated dispatch origin outside the task area |
-| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; broad reliability and videos pending |
+| Current phase | Real inspection, review, tasks, four-crew planning and crew completion implemented; final report available; query-v3 assistant and persistent task adjustments implemented; targeted real GPT cases passed; videos included; broad reliability pending |
 | Course start date / batch code | 2026-08-17 / AIS08FT |
 
 Repository name: `IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard`.
 
 Private repository: [HUERJI-code / RoadGuard](https://github.com/HUERJI-code/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard).
 
-`Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label; no separate formal team name has been supplied. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
+RoadGuard is the group name. `Group37` represents the official group number confirmed by the owner on 2026-10-21, replacing the previous Group7 label; no separate formal team name has been supplied. Current repository, directory and submission names use Group37. Historical experiment evidence retains its original recorded paths and identifiers.
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
 
@@ -53,7 +53,7 @@ Measured vision results must be read with the corresponding experimental run and
 | Yan GuanTing | A0305485B | Four-crew Greedy/GA planning, crew and plan persistence, Google matrix provider and routing experiments | |
 | Wu TaoYi | A0356972M | Frontend foundation and workflow pages, map/comparison integration and the retrieval/confirmed-change assistant | |
 
-The contribution table and final report include the later assistant delivery. The approved submission roster is [member-github.txt](Miscellaneous/member-github.txt).
+The contribution table and final report include the later assistant delivery. The approved submission roster is [member-github.txt](ProjectReport/member-github.txt).
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
@@ -61,59 +61,35 @@ Two separate videos are required by the current course briefing:
 
 | Video | Target duration | Content | Status |
 | --- | --- | --- | --- |
-| Promotion / use-case demonstration | 5 minutes | Business pain, value and working use cases | Planned |
-| System design / technical explanation | 5 minutes | Architecture, reasoning methods and technical walkthrough | Planned |
+| Promotion / use-case demonstration | 5 minutes | Business pain, value and working use cases | [Included: 8m32s](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-promotion.mp4); exceeds target |
+| System design / technical explanation | 5 minutes | Architecture, reasoning methods and technical walkthrough | [Included: 4m55s](Video/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-system.mp4) |
 
-See [Video/README.md](Video/README.md) for naming and recording requirements.
+Both supplied videos are included as provided. The promotion recording exceeds the five-minute target.
 
 ## SECTION 5 : USER GUIDE
 
-Follow the [installation and user guide](ProjectReport/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. Before using the assistant, follow the [ChromaDB and embedding setup](SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md); real GPT questions also require the existing server-side provider configuration. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
+Follow the [installation and user guide](SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md) for Python 3.12, Node 22, account provisioning and both startup commands. Open the React app at `http://127.0.0.1:5173`; API documentation is at `http://127.0.0.1:8000/docs`. The [backend guide](SystemCode/backend/README.md), [frontend guide](SystemCode/frontend/README.md) and [account roles](Miscellaneous/ACCOUNT_ROLES.md) describe the available workflows. Before using the assistant, follow the [ChromaDB and embedding setup](SystemCode/backend/roadguard/assistant/VECTOR_RETRIEVAL.md); real GPT questions also require the existing server-side provider configuration. Use the [API contract](Miscellaneous/API_CONTRACT.md) for current interfaces; fixed examples are synthetic inputs, not automatically loaded application data.
 
 Repository layout:
 
 ```text
-IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard/
-  README.md
-  AGENTS.md
-  SystemCode/
-    config/project.example.json
-    backend/
-    frontend/
-    model/
-    experiments/
-    tests/
-  ProjectReport/
-    REPORT_OUTLINE.md
-    INSTALLATION_AND_USER_GUIDE.md
-    COURSE_MAPPING.md
-    Proposal/
-    figures/
-  Video/
-  Miscellaneous/
-    PROJECT_SCOPE.md
-    JURONG_SCOPE_AND_DEPOT.md
-    geography/
-    IMPLEMENTATION_PLAN.md
-    SUBMISSION_CHECKLIST.md
-    TEMPLATE_SOURCE.md
-    member-github.example.txt
+SystemCode/       Application, configuration, tests, experiments and user documentation
+ProjectReport/    Final report PDF, original proposal PDF and member-github.txt
+Video/            System and promotion recordings
+Miscellaneous/    Runtime geography, contracts and reproducibility evidence
 ```
 
-Start by reviewing the [project scope](Miscellaneous/PROJECT_SCOPE.md), [example configuration](SystemCode/config/project.example.json) and [implementation plan](Miscellaneous/IMPLEMENTATION_PLAN.md).
-
-All contributors and coding agents should first read the shared [project and agent collaboration rules](AGENTS.md). The file includes module boundaries, interface-change rules, validation requirements and a reusable agent kickoff prompt.
+Start with the [installation and user guide](SystemCode/docs/INSTALLATION_AND_USER_GUIDE.md), [project baseline](SystemCode/docs/PROJECT_BASELINE.md) and [configuration](SystemCode/config/project.example.json).
 
 ## SECTION 6 : PROJECT REPORT / PAPER
 
-The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.docx) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](ProjectReport/README.md) for scope and remaining limitations.
+The [current final group report](ProjectReport/IRS-PM-2026-08-17-AIS08FT-GRP-Group37-RoadGuard-Group-Report.pdf) is available in `ProjectReport/`. It includes the complete submitted proposal, the MR/RS/CGS mapping, and installation/user instructions. See the [report guide](SystemCode/docs/COURSE_MAPPING.md) for scope and remaining limitations.
 
 Required appendices include the proposal, functionality-to-course mapping, and installation/user guide. Individual reflections and peer evaluations are submitted confidentially through the individual Canvas assignment, following the current briefing.
 
 ## SECTION 7 : MISCELLANEOUS
 
-- [Project and agent collaboration rules](AGENTS.md)
-- [Feature branches, pull requests and CI](Miscellaneous/GITHUB_WORKFLOW.md)
+- [Project baseline and operational limitations](SystemCode/docs/PROJECT_BASELINE.md)
 - [Confirmed scope and open design decisions](Miscellaneous/PROJECT_SCOPE.md)
 - [Jurong boundary and NUS-ISS simulated dispatch origin](Miscellaneous/JURONG_SCOPE_AND_DEPOT.md)
 - [RDD2022ES version and eight-class label audit](Miscellaneous/DATASET_AND_LABEL_AUDIT.md)
@@ -124,11 +100,8 @@ Required appendices include the proposal, functionality-to-course mapping, and i
 - [Upload, review and manage persisted tasks](Miscellaneous/INSPECTION_REVIEW_TASK_WORKFLOW.md)
 - [B/C task snapshots, fixed inputs and knowledge handoff](Miscellaneous/BC_HANDOFF.md)
 - [RAG knowledge corpus: GA, plans, operations, evidence and integration requirements](SystemCode/backend/knowledge/README.md)
-- [Implementation milestones](Miscellaneous/IMPLEMENTATION_PLAN.md)
 - [Three-person work allocation and interface draft](Miscellaneous/TEAM_WORK_ALLOCATION.md)
-- [Submission checklist and file naming](Miscellaneous/SUBMISSION_CHECKLIST.md)
-- [Template and requirement provenance](Miscellaneous/TEMPLATE_SOURCE.md)
-- [Member / GitHub submission file](Miscellaneous/member-github.txt)
+- [Member / GitHub submission file](ProjectReport/member-github.txt)
 
 Development started from this course scaffold. The previous prototype has been abandoned at the project owner's request; its code and historical results are not part of this project baseline.
 
